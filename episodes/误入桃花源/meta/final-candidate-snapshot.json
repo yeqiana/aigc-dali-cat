@@ -1,0 +1,665 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "built_at": "2026-09-24T10:31:22+08:00",
+  "derived_evidence": true,
+  "authority": "locked source files listed by SHA",
+  "snapshot_is_authority": false,
+  "lock": {
+    "schema_version": 1,
+    "episode": {
+      "id": "误入桃花源",
+      "series": "07_误入",
+      "title": "误入桃花源",
+      "aspect_ratio": "4:5"
+    },
+    "release_version": "v1.0",
+    "publication": {
+      "platform": "douyin",
+      "actual_title": "挂了科那天，我钻进后山一个没有信号的村子",
+      "description": "高数重修考的交卷铃一响，我第一个冲出教室。没回宿舍，也没去食堂，只想找个没信号的地方坐一会儿。\n\n学校后坡的铁丝网被暴雨冲垮了一角，我从缺口钻了进去，一直走到成片野桃林，再从一道被铁线蕨遮住的石缝里爬了进去。\n\n石缝那头是四面绝壁扣着的一块窄盆地，三四百亩地，田埂直得像用尺子量过，黑夯土墙的屋子一间挨着一间。没有一根电线，也找不到一片塑料。村里人看见我，没有害怕，只是慢慢直起腰看了一会儿，就有人说，天快黑了，先进屋吃碗热食。\n\n我在那儿待了三天，睡得比这三年都沉。直到第三天傍晚，我给了他们家十五岁的孩子一粒薄荷糖。\n\n天亮前，带我进村的人把我送到石缝口，让我顺着暗水流爬，别回头，也别再来。\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+      "topics": [
+        "中国式怪谈",
+        "第一人称",
+        "细思极恐",
+        "桃花源",
+        "乡野怪谈",
+        "现实向",
+        "AI图文故事"
+      ],
+      "pinned_comment": "回头看图08：整段山谷没有一根电线，没有一片塑料。那个孩子尝到糖之后的那个眼神，是这条山谷几百年里第一次被外面的东西照亮。虚构故事，AI 生成。",
+      "published_at": null,
+      "timing_window": null,
+      "post_url": null
+    },
+    "frame_review_db_evidence": {
+      "storage": "mysql",
+      "review_type": "FINAL",
+      "count": 20,
+      "frames": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+      ],
+      "sha256": "4261111eee6a927b535f1fac3ae529299d45c62b092819bb13dbc1cbd07bd9b4"
+    },
+    "publication_sha256": "cd70903b0877a080acdee9a297d3b5090317ad25926b494fe5f625bb8ee9d7cf",
+    "story": {
+      "role": "story",
+      "path": "episodes/误入桃花源/docs/02_误入桃花源_StoryLock_V1.1.md",
+      "sha256": "cdc9b7fc8df53c28a5b7c45bb65c9b104df4de9c4e2fb7087a2d762c49646c12",
+      "bytes": 14648
+    },
+    "storyboard": {
+      "role": "storyboard",
+      "path": "episodes/误入桃花源/docs/03_误入桃花源_20张正式分镜_V1.1.md",
+      "sha256": "116c7b5ed1c68f8f2c4ef00abcb5aff09d562006a1663b7f59e1a83f1a209856",
+      "bytes": 10659
+    },
+    "story_gates_contract_sha256": "2d7e0ea0efbad1bb75e0a9cfacaabee0002370a86a03d56a85f29ca814bec9f2",
+    "release_manifest": {
+      "role": "release_manifest",
+      "path": "episodes/误入桃花源/meta/release-manifest.json",
+      "sha256": "8b900324a25b88fbcd4306afe776cc6dcc145fa6d5aa235944a8230193794392",
+      "bytes": 3551,
+      "archive_path": "release-manifest.json"
+    },
+    "cover": {
+      "role": "cover",
+      "path": "episodes/误入桃花源/production/cover/cover.png",
+      "sha256": "0df9caaba1ffa59aed54b1705ecbb8586e40a918d28201e6969f66c98e831125",
+      "bytes": 1975754,
+      "archive_path": "cover.png"
+    },
+    "body": [
+      {
+        "role": "body:01",
+        "path": "episodes/误入桃花源/production/publish/01.png",
+        "sha256": "0bd671df4a286c71a55dbb695c9fbea933105d10f8a17396ae5b4103239094b0",
+        "bytes": 2025034,
+        "archive_path": "publish/01.png"
+      },
+      {
+        "role": "body:02",
+        "path": "episodes/误入桃花源/production/publish/02.png",
+        "sha256": "208f6ef0beb27722e1e5283f7eddf9e019266d0d1a6f14ebc5b9adc3e49c94cd",
+        "bytes": 2742730,
+        "archive_path": "publish/02.png"
+      },
+      {
+        "role": "body:03",
+        "path": "episodes/误入桃花源/production/publish/03.png",
+        "sha256": "f70221d14a546a7cdce552d96dc81ec20db39c8eb29df41911120a0f2691651a",
+        "bytes": 3023621,
+        "archive_path": "publish/03.png"
+      },
+      {
+        "role": "body:04",
+        "path": "episodes/误入桃花源/production/publish/04.png",
+        "sha256": "99be58b841efead8f9c8fe695687761ed3ecc718a6bf1654d3d4dae906dac191",
+        "bytes": 2116897,
+        "archive_path": "publish/04.png"
+      },
+      {
+        "role": "body:05",
+        "path": "episodes/误入桃花源/production/publish/05.png",
+        "sha256": "9dd9c1e7c502cb9b7ea6fad1cf62416a8dfdcf8b096b61690b88681e35f7f6e1",
+        "bytes": 2570968,
+        "archive_path": "publish/05.png"
+      },
+      {
+        "role": "body:06",
+        "path": "episodes/误入桃花源/production/publish/06.png",
+        "sha256": "1be9570bc37f3da1d345c0d2838517de01af3e44877fbae907ce11dfa0fe2cf1",
+        "bytes": 2597925,
+        "archive_path": "publish/06.png"
+      },
+      {
+        "role": "body:07",
+        "path": "episodes/误入桃花源/production/publish/07.png",
+        "sha256": "2834de6619812a2a8ce1d99817f33291567a66dc461879d8e75a285d4f3a606f",
+        "bytes": 2490544,
+        "archive_path": "publish/07.png"
+      },
+      {
+        "role": "body:08",
+        "path": "episodes/误入桃花源/production/publish/08.png",
+        "sha256": "f4d6062b51e858fda7598ab706ec71d4bcdb609eeaef63be08d489d972d0b50f",
+        "bytes": 2034930,
+        "archive_path": "publish/08.png"
+      },
+      {
+        "role": "body:09",
+        "path": "episodes/误入桃花源/production/publish/09.png",
+        "sha256": "9f15495bcdd943a4ef39fe98eee7b97b020ba23810878c74ded660a9ff41c5f2",
+        "bytes": 2496462,
+        "archive_path": "publish/09.png"
+      },
+      {
+        "role": "body:10",
+        "path": "episodes/误入桃花源/production/publish/10.png",
+        "sha256": "0a8c067df6048a8801539b48c35a7dccd26615baac5e9bd5d083887a40763463",
+        "bytes": 2347679,
+        "archive_path": "publish/10.png"
+      },
+      {
+        "role": "body:11",
+        "path": "episodes/误入桃花源/production/publish/11.png",
+        "sha256": "4817cae9812f96cd5b34d985a0b0a1266c7fa9ac15427fb05267f8c85eed2b09",
+        "bytes": 2008952,
+        "archive_path": "publish/11.png"
+      },
+      {
+        "role": "body:12",
+        "path": "episodes/误入桃花源/production/publish/12.png",
+        "sha256": "c8d496b9d388b0e3dc4b3dbee784a8abc1a0dabf6c381c9e5e67b41c0c80bd60",
+        "bytes": 2115768,
+        "archive_path": "publish/12.png"
+      },
+      {
+        "role": "body:13",
+        "path": "episodes/误入桃花源/production/publish/13.png",
+        "sha256": "1bf31eac806ad98cbc08fe7704d54d2e1760ac289484a44e365c9208de1b43d5",
+        "bytes": 2301809,
+        "archive_path": "publish/13.png"
+      },
+      {
+        "role": "body:14",
+        "path": "episodes/误入桃花源/production/publish/14.png",
+        "sha256": "6764e3c676a0de85b04fb46404ab3d5c5345cda9a0628f0bff7396a99efd6c7f",
+        "bytes": 2226901,
+        "archive_path": "publish/14.png"
+      },
+      {
+        "role": "body:15",
+        "path": "episodes/误入桃花源/production/publish/15.png",
+        "sha256": "9805b12ff675fbeab675041c88c83d0b1936116a71923380dd1af09579d0303a",
+        "bytes": 1502012,
+        "archive_path": "publish/15.png"
+      },
+      {
+        "role": "body:16",
+        "path": "episodes/误入桃花源/production/publish/16.png",
+        "sha256": "971766ae528091b9a77ca50821956140cb22c86bab145f5ef05d8ac2bc7f812e",
+        "bytes": 2234128,
+        "archive_path": "publish/16.png"
+      },
+      {
+        "role": "body:17",
+        "path": "episodes/误入桃花源/production/publish/17.png",
+        "sha256": "a44e26f0597a6bb547c406e7f827fb60ee8562b29f009f8654d12417ae6ef477",
+        "bytes": 2463020,
+        "archive_path": "publish/17.png"
+      },
+      {
+        "role": "body:18",
+        "path": "episodes/误入桃花源/production/publish/18.png",
+        "sha256": "06a4b91df1178fd9e61fcb0229623c21c8014c1bb1062dd4b38d3f13db1723d9",
+        "bytes": 2887773,
+        "archive_path": "publish/18.png"
+      },
+      {
+        "role": "body:19",
+        "path": "episodes/误入桃花源/production/publish/19.png",
+        "sha256": "48df54741403163c49f7a642533d5a5f2618e5544737dc644a7293d849952c31",
+        "bytes": 2424327,
+        "archive_path": "publish/19.png"
+      },
+      {
+        "role": "body:20",
+        "path": "episodes/误入桃花源/production/publish/20.png",
+        "sha256": "303d2cba3e960ab56bb6a21755866502f8fa25e00ffcfed293c5925ee2c86450",
+        "bytes": 2968528,
+        "archive_path": "publish/20.png"
+      }
+    ],
+    "text_artifacts": [
+      {
+        "role": "captions",
+        "path": "episodes/误入桃花源/meta/subtitles.yaml",
+        "sha256": "8abb71225472d2be923e417d36cd64d7397f8863e49f1405d50df5acb75f95a0",
+        "bytes": 2159,
+        "archive_path": "text/subtitles.yaml"
+      },
+      {
+        "role": "publish_copy",
+        "path": "episodes/误入桃花源/release/publish-copy.md",
+        "sha256": "d98149a69288eee7547c7bdea20503224a3ec1bca521a347fc7dbe02b76f15e7",
+        "bytes": 1376,
+        "archive_path": "text/publish-copy.md"
+      },
+      {
+        "role": "propagation_card",
+        "path": "episodes/误入桃花源/release/propagation-card.md",
+        "sha256": "ec065b68c8450f4c02efb6d0e0c6b43a3ddf36e4df20a481ce7bad7a43348dbf",
+        "bytes": 2372,
+        "archive_path": "text/propagation-card.md"
+      }
+    ],
+    "evidence": [
+      {
+        "role": "story_semantic_review",
+        "path": "episodes/误入桃花源/meta/runtime/review-exports/story-semantic.json",
+        "sha256": "1a5f3025cef23b987124f47dc95d25d067c66bf2c17444d40463a121a0c32320",
+        "bytes": 13456,
+        "archive_path": "qa/story-semantic-review.json"
+      },
+      {
+        "role": "visual_profile_review",
+        "path": "episodes/误入桃花源/meta/runtime/review-exports/visual-profile.json",
+        "sha256": "e1984fc9c21fe6f0cb131bef85f44f11cb815f9c15a72ca6ea9b6963df6353b0",
+        "bytes": 7026,
+        "archive_path": "qa/visual-profile-review.json"
+      },
+      {
+        "role": "production_ledger",
+        "path": ".storyos/runtime/episodes/误入桃花源/exports/production-ledger.json",
+        "sha256": "6e2e3138189940120609d30d13fec69c06d605d88c8e7e816d9ee80cd0ea3f61",
+        "bytes": 315936,
+        "archive_path": "evidence/production-ledger.json"
+      },
+      {
+        "role": "frame_semantic_review",
+        "path": "episodes/误入桃花源/meta/frame-semantic-review.json",
+        "sha256": "e47cbe3ca0ab3ec9b5522a421a9d3e9670d34aa6452ddf8f5636c2cc19929a26",
+        "bytes": 12796,
+        "archive_path": "qa/frame-semantic-review.json"
+      },
+      {
+        "role": "frame_semantic_audit",
+        "path": "episodes/误入桃花源/meta/frame-semantic-audit.json",
+        "sha256": "3d6dec78352d984e0c8960a9439d691298e3c45f23b058fb845381eb83c9f472",
+        "bytes": 10925,
+        "archive_path": "qa/frame-semantic-audit.json"
+      },
+      {
+        "role": "subtitle_layout_audit",
+        "path": "episodes/误入桃花源/meta/subtitle-layout-audit.json",
+        "sha256": "976fb29244ef884ea917e28817c4bf262df1d6ec07a7acfcb0dc8b31e1b5291e",
+        "bytes": 16871,
+        "archive_path": "qa/subtitle-layout-audit.json"
+      },
+      {
+        "role": "text_audit",
+        "path": "episodes/误入桃花源/meta/text-audit.json",
+        "sha256": "36d7ee3f136b0f8ff6f56a24832f1e2ead56ab10cf533b195469dd2d22078b9c",
+        "bytes": 540,
+        "archive_path": "qa/text-audit.json"
+      },
+      {
+        "role": "release_semantic_review",
+        "path": "episodes/误入桃花源/meta/release-semantic-review.json",
+        "sha256": "e6f2a25350ae21598eddb2dfbef7fad9c6c1c84cab2d3280724c3821e03e5cb3",
+        "bytes": 6302,
+        "archive_path": "qa/release-semantic-review.json"
+      },
+      {
+        "role": "publish_compliance",
+        "path": "episodes/误入桃花源/meta/publish-compliance.json",
+        "sha256": "e0d5aaf7bdf9474dbb7d6f7070c07141e42ecf730017f213dbd18e9d379b142d",
+        "bytes": 435,
+        "archive_path": "qa/publish-compliance.json"
+      },
+      {
+        "role": "recent5_review",
+        "path": "episodes/误入桃花源/meta/recent5-review.json",
+        "sha256": "ef39f49dee8387eec0b45fda20b1558a6b4470c820ca40528eb5f618d560c87d",
+        "bytes": 1882,
+        "archive_path": "qa/recent5-review.json"
+      },
+      {
+        "role": "recent5_semantic_review",
+        "path": "episodes/误入桃花源/meta/recent5-semantic-review.json",
+        "sha256": "7f82773e8cc3618406b9f152989252f07c3a8b0490055e8f1887105a8c050d9b",
+        "bytes": 2040,
+        "archive_path": "qa/recent5-semantic-review.json"
+      },
+      {
+        "role": "frame_scout_summary",
+        "path": "episodes/误入桃花源/meta/frame-scout-summary.json",
+        "sha256": "195a594aa607517775c40fe5539ce2d4cf09f508c02940d2cb06e31edfc727af",
+        "bytes": 3978,
+        "archive_path": "qa/frame-scout-summary.json"
+      },
+      {
+        "role": "frame_contract_index",
+        "path": "episodes/误入桃花源/meta/runtime/contracts/frame-contract-index.json",
+        "sha256": "599aebc7dc834da1f57d902ae560bb437ef74a19166000b0a290123d64cd0b52",
+        "bytes": 9933,
+        "archive_path": "evidence/frame-contract-index.json"
+      },
+      {
+        "role": "visual_lock_baseline_review",
+        "path": "episodes/误入桃花源/meta/visual-lock-baseline-review.json",
+        "sha256": "84ef3a27a83b8212dabae291746d2b1883ab1066ba11c6251050eea9cd7d0ed4",
+        "bytes": 1704,
+        "archive_path": "qa/visual-lock-baseline-review.json"
+      },
+      {
+        "role": "visual_final_freeze",
+        "path": "episodes/误入桃花源/meta/visual-final-freeze.json",
+        "sha256": "f0654a9bb8b023c50080b57cb1f02a89b65d6f20ca1ad5416f2329177cf35e30",
+        "bytes": 12993,
+        "archive_path": "qa/visual-final-freeze.json"
+      },
+      {
+        "role": "caption_image_audit",
+        "path": "episodes/误入桃花源/meta/caption-image-audit.json",
+        "sha256": "c64fa67be50bca5891949ba23a026f132c5470a8442ecc39cae656143d940a12",
+        "bytes": 30294,
+        "archive_path": "qa/caption-image-audit.json"
+      }
+    ],
+    "delivery_files": [
+      {
+        "role": "release_manifest",
+        "path": "episodes/误入桃花源/meta/release-manifest.json",
+        "sha256": "8b900324a25b88fbcd4306afe776cc6dcc145fa6d5aa235944a8230193794392",
+        "bytes": 3551,
+        "archive_path": "release-manifest.json"
+      },
+      {
+        "role": "body:01",
+        "path": "episodes/误入桃花源/production/publish/01.png",
+        "sha256": "0bd671df4a286c71a55dbb695c9fbea933105d10f8a17396ae5b4103239094b0",
+        "bytes": 2025034,
+        "archive_path": "publish/01.png"
+      },
+      {
+        "role": "body:02",
+        "path": "episodes/误入桃花源/production/publish/02.png",
+        "sha256": "208f6ef0beb27722e1e5283f7eddf9e019266d0d1a6f14ebc5b9adc3e49c94cd",
+        "bytes": 2742730,
+        "archive_path": "publish/02.png"
+      },
+      {
+        "role": "body:03",
+        "path": "episodes/误入桃花源/production/publish/03.png",
+        "sha256": "f70221d14a546a7cdce552d96dc81ec20db39c8eb29df41911120a0f2691651a",
+        "bytes": 3023621,
+        "archive_path": "publish/03.png"
+      },
+      {
+        "role": "body:04",
+        "path": "episodes/误入桃花源/production/publish/04.png",
+        "sha256": "99be58b841efead8f9c8fe695687761ed3ecc718a6bf1654d3d4dae906dac191",
+        "bytes": 2116897,
+        "archive_path": "publish/04.png"
+      },
+      {
+        "role": "body:05",
+        "path": "episodes/误入桃花源/production/publish/05.png",
+        "sha256": "9dd9c1e7c502cb9b7ea6fad1cf62416a8dfdcf8b096b61690b88681e35f7f6e1",
+        "bytes": 2570968,
+        "archive_path": "publish/05.png"
+      },
+      {
+        "role": "body:06",
+        "path": "episodes/误入桃花源/production/publish/06.png",
+        "sha256": "1be9570bc37f3da1d345c0d2838517de01af3e44877fbae907ce11dfa0fe2cf1",
+        "bytes": 2597925,
+        "archive_path": "publish/06.png"
+      },
+      {
+        "role": "body:07",
+        "path": "episodes/误入桃花源/production/publish/07.png",
+        "sha256": "2834de6619812a2a8ce1d99817f33291567a66dc461879d8e75a285d4f3a606f",
+        "bytes": 2490544,
+        "archive_path": "publish/07.png"
+      },
+      {
+        "role": "body:08",
+        "path": "episodes/误入桃花源/production/publish/08.png",
+        "sha256": "f4d6062b51e858fda7598ab706ec71d4bcdb609eeaef63be08d489d972d0b50f",
+        "bytes": 2034930,
+        "archive_path": "publish/08.png"
+      },
+      {
+        "role": "body:09",
+        "path": "episodes/误入桃花源/production/publish/09.png",
+        "sha256": "9f15495bcdd943a4ef39fe98eee7b97b020ba23810878c74ded660a9ff41c5f2",
+        "bytes": 2496462,
+        "archive_path": "publish/09.png"
+      },
+      {
+        "role": "body:10",
+        "path": "episodes/误入桃花源/production/publish/10.png",
+        "sha256": "0a8c067df6048a8801539b48c35a7dccd26615baac5e9bd5d083887a40763463",
+        "bytes": 2347679,
+        "archive_path": "publish/10.png"
+      },
+      {
+        "role": "body:11",
+        "path": "episodes/误入桃花源/production/publish/11.png",
+        "sha256": "4817cae9812f96cd5b34d985a0b0a1266c7fa9ac15427fb05267f8c85eed2b09",
+        "bytes": 2008952,
+        "archive_path": "publish/11.png"
+      },
+      {
+        "role": "body:12",
+        "path": "episodes/误入桃花源/production/publish/12.png",
+        "sha256": "c8d496b9d388b0e3dc4b3dbee784a8abc1a0dabf6c381c9e5e67b41c0c80bd60",
+        "bytes": 2115768,
+        "archive_path": "publish/12.png"
+      },
+      {
+        "role": "body:13",
+        "path": "episodes/误入桃花源/production/publish/13.png",
+        "sha256": "1bf31eac806ad98cbc08fe7704d54d2e1760ac289484a44e365c9208de1b43d5",
+        "bytes": 2301809,
+        "archive_path": "publish/13.png"
+      },
+      {
+        "role": "body:14",
+        "path": "episodes/误入桃花源/production/publish/14.png",
+        "sha256": "6764e3c676a0de85b04fb46404ab3d5c5345cda9a0628f0bff7396a99efd6c7f",
+        "bytes": 2226901,
+        "archive_path": "publish/14.png"
+      },
+      {
+        "role": "body:15",
+        "path": "episodes/误入桃花源/production/publish/15.png",
+        "sha256": "9805b12ff675fbeab675041c88c83d0b1936116a71923380dd1af09579d0303a",
+        "bytes": 1502012,
+        "archive_path": "publish/15.png"
+      },
+      {
+        "role": "body:16",
+        "path": "episodes/误入桃花源/production/publish/16.png",
+        "sha256": "971766ae528091b9a77ca50821956140cb22c86bab145f5ef05d8ac2bc7f812e",
+        "bytes": 2234128,
+        "archive_path": "publish/16.png"
+      },
+      {
+        "role": "body:17",
+        "path": "episodes/误入桃花源/production/publish/17.png",
+        "sha256": "a44e26f0597a6bb547c406e7f827fb60ee8562b29f009f8654d12417ae6ef477",
+        "bytes": 2463020,
+        "archive_path": "publish/17.png"
+      },
+      {
+        "role": "body:18",
+        "path": "episodes/误入桃花源/production/publish/18.png",
+        "sha256": "06a4b91df1178fd9e61fcb0229623c21c8014c1bb1062dd4b38d3f13db1723d9",
+        "bytes": 2887773,
+        "archive_path": "publish/18.png"
+      },
+      {
+        "role": "body:19",
+        "path": "episodes/误入桃花源/production/publish/19.png",
+        "sha256": "48df54741403163c49f7a642533d5a5f2618e5544737dc644a7293d849952c31",
+        "bytes": 2424327,
+        "archive_path": "publish/19.png"
+      },
+      {
+        "role": "body:20",
+        "path": "episodes/误入桃花源/production/publish/20.png",
+        "sha256": "303d2cba3e960ab56bb6a21755866502f8fa25e00ffcfed293c5925ee2c86450",
+        "bytes": 2968528,
+        "archive_path": "publish/20.png"
+      },
+      {
+        "role": "cover",
+        "path": "episodes/误入桃花源/production/cover/cover.png",
+        "sha256": "0df9caaba1ffa59aed54b1705ecbb8586e40a918d28201e6969f66c98e831125",
+        "bytes": 1975754,
+        "archive_path": "cover.png"
+      },
+      {
+        "role": "captions",
+        "path": "episodes/误入桃花源/meta/subtitles.yaml",
+        "sha256": "8abb71225472d2be923e417d36cd64d7397f8863e49f1405d50df5acb75f95a0",
+        "bytes": 2159,
+        "archive_path": "text/subtitles.yaml"
+      },
+      {
+        "role": "publish_copy",
+        "path": "episodes/误入桃花源/release/publish-copy.md",
+        "sha256": "d98149a69288eee7547c7bdea20503224a3ec1bca521a347fc7dbe02b76f15e7",
+        "bytes": 1376,
+        "archive_path": "text/publish-copy.md"
+      },
+      {
+        "role": "propagation_card",
+        "path": "episodes/误入桃花源/release/propagation-card.md",
+        "sha256": "ec065b68c8450f4c02efb6d0e0c6b43a3ddf36e4df20a481ce7bad7a43348dbf",
+        "bytes": 2372,
+        "archive_path": "text/propagation-card.md"
+      },
+      {
+        "role": "story_semantic_review",
+        "path": "episodes/误入桃花源/meta/runtime/review-exports/story-semantic.json",
+        "sha256": "1a5f3025cef23b987124f47dc95d25d067c66bf2c17444d40463a121a0c32320",
+        "bytes": 13456,
+        "archive_path": "qa/story-semantic-review.json"
+      },
+      {
+        "role": "visual_profile_review",
+        "path": "episodes/误入桃花源/meta/runtime/review-exports/visual-profile.json",
+        "sha256": "e1984fc9c21fe6f0cb131bef85f44f11cb815f9c15a72ca6ea9b6963df6353b0",
+        "bytes": 7026,
+        "archive_path": "qa/visual-profile-review.json"
+      },
+      {
+        "role": "production_ledger",
+        "path": ".storyos/runtime/episodes/误入桃花源/exports/production-ledger.json",
+        "sha256": "6e2e3138189940120609d30d13fec69c06d605d88c8e7e816d9ee80cd0ea3f61",
+        "bytes": 315936,
+        "archive_path": "evidence/production-ledger.json"
+      },
+      {
+        "role": "frame_semantic_review",
+        "path": "episodes/误入桃花源/meta/frame-semantic-review.json",
+        "sha256": "e47cbe3ca0ab3ec9b5522a421a9d3e9670d34aa6452ddf8f5636c2cc19929a26",
+        "bytes": 12796,
+        "archive_path": "qa/frame-semantic-review.json"
+      },
+      {
+        "role": "frame_semantic_audit",
+        "path": "episodes/误入桃花源/meta/frame-semantic-audit.json",
+        "sha256": "3d6dec78352d984e0c8960a9439d691298e3c45f23b058fb845381eb83c9f472",
+        "bytes": 10925,
+        "archive_path": "qa/frame-semantic-audit.json"
+      },
+      {
+        "role": "subtitle_layout_audit",
+        "path": "episodes/误入桃花源/meta/subtitle-layout-audit.json",
+        "sha256": "976fb29244ef884ea917e28817c4bf262df1d6ec07a7acfcb0dc8b31e1b5291e",
+        "bytes": 16871,
+        "archive_path": "qa/subtitle-layout-audit.json"
+      },
+      {
+        "role": "text_audit",
+        "path": "episodes/误入桃花源/meta/text-audit.json",
+        "sha256": "36d7ee3f136b0f8ff6f56a24832f1e2ead56ab10cf533b195469dd2d22078b9c",
+        "bytes": 540,
+        "archive_path": "qa/text-audit.json"
+      },
+      {
+        "role": "release_semantic_review",
+        "path": "episodes/误入桃花源/meta/release-semantic-review.json",
+        "sha256": "e6f2a25350ae21598eddb2dfbef7fad9c6c1c84cab2d3280724c3821e03e5cb3",
+        "bytes": 6302,
+        "archive_path": "qa/release-semantic-review.json"
+      },
+      {
+        "role": "publish_compliance",
+        "path": "episodes/误入桃花源/meta/publish-compliance.json",
+        "sha256": "e0d5aaf7bdf9474dbb7d6f7070c07141e42ecf730017f213dbd18e9d379b142d",
+        "bytes": 435,
+        "archive_path": "qa/publish-compliance.json"
+      },
+      {
+        "role": "recent5_review",
+        "path": "episodes/误入桃花源/meta/recent5-review.json",
+        "sha256": "ef39f49dee8387eec0b45fda20b1558a6b4470c820ca40528eb5f618d560c87d",
+        "bytes": 1882,
+        "archive_path": "qa/recent5-review.json"
+      },
+      {
+        "role": "recent5_semantic_review",
+        "path": "episodes/误入桃花源/meta/recent5-semantic-review.json",
+        "sha256": "7f82773e8cc3618406b9f152989252f07c3a8b0490055e8f1887105a8c050d9b",
+        "bytes": 2040,
+        "archive_path": "qa/recent5-semantic-review.json"
+      },
+      {
+        "role": "frame_scout_summary",
+        "path": "episodes/误入桃花源/meta/frame-scout-summary.json",
+        "sha256": "195a594aa607517775c40fe5539ce2d4cf09f508c02940d2cb06e31edfc727af",
+        "bytes": 3978,
+        "archive_path": "qa/frame-scout-summary.json"
+      },
+      {
+        "role": "frame_contract_index",
+        "path": "episodes/误入桃花源/meta/runtime/contracts/frame-contract-index.json",
+        "sha256": "599aebc7dc834da1f57d902ae560bb437ef74a19166000b0a290123d64cd0b52",
+        "bytes": 9933,
+        "archive_path": "evidence/frame-contract-index.json"
+      },
+      {
+        "role": "visual_lock_baseline_review",
+        "path": "episodes/误入桃花源/meta/visual-lock-baseline-review.json",
+        "sha256": "84ef3a27a83b8212dabae291746d2b1883ab1066ba11c6251050eea9cd7d0ed4",
+        "bytes": 1704,
+        "archive_path": "qa/visual-lock-baseline-review.json"
+      },
+      {
+        "role": "visual_final_freeze",
+        "path": "episodes/误入桃花源/meta/visual-final-freeze.json",
+        "sha256": "f0654a9bb8b023c50080b57cb1f02a89b65d6f20ca1ad5416f2329177cf35e30",
+        "bytes": 12993,
+        "archive_path": "qa/visual-final-freeze.json"
+      },
+      {
+        "role": "caption_image_audit",
+        "path": "episodes/误入桃花源/meta/caption-image-audit.json",
+        "sha256": "c64fa67be50bca5891949ba23a026f132c5470a8442ecc39cae656143d940a12",
+        "bytes": 30294,
+        "archive_path": "qa/caption-image-audit.json"
+      }
+    ]
+  },
+  "snapshot_sha256": "278b1d415ac9c546b5fcf51a32414c70ef6e62e6c0d30af3d3c4750b7bb24300",
+  "release_review_binding": {
+    "release_semantic_review_sha256": "e6f2a25350ae21598eddb2dfbef7fad9c6c1c84cab2d3280724c3821e03e5cb3",
+    "reuse_status": "BOUND"
+  }
+}

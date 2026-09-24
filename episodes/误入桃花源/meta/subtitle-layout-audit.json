@@ -1,0 +1,429 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "engine": "story_os_subtitle_layout_v1",
+  "canonical_renderer": true,
+  "source": "episodes/误入桃花源/meta/subtitles.yaml",
+  "source_sha256": "8abb71225472d2be923e417d36cd64d7397f8863e49f1405d50df5acb75f95a0",
+  "policy": {
+    "punctuation_only_second_line": "drop_entire_second_line",
+    "max_lines": 2,
+    "font": "Microsoft YaHei Bold",
+    "font_size": 42,
+    "stroke_width": 4,
+    "left_margin": 72,
+    "horizontal_alignment": "left",
+    "default_y_ratio": 0.52,
+    "preferred_vertical_zone": [
+      0.42,
+      0.62
+    ],
+    "outside_zone_requires_reason": true
+  },
+  "frames": {
+    "01": {
+      "caption": "走廊的地还是湿的，教室里的卷子还摊着。",
+      "lines": [
+        "走廊的地还是湿的，教室里的卷子还摊着。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/01.png",
+      "base_sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4",
+      "output_path": "episodes/误入桃花源/production/publish/01.png",
+      "output_sha256": "0bd671df4a286c71a55dbb695c9fbea933105d10f8a17396ae5b4103239094b0",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "02": {
+      "caption": "铁丝网塌了一角，缺口就在草里。",
+      "lines": [
+        "铁丝网塌了一角，缺口就在草里。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 432,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/02.png",
+      "base_sha256": "1aa3334cb70cade22fb8022131981b740a18fe59fa4c58007e61f0c39ad3cbb1",
+      "output_path": "episodes/误入桃花源/production/publish/02.png",
+      "output_sha256": "208f6ef0beb27722e1e5283f7eddf9e019266d0d1a6f14ebc5b9adc3e49c94cd",
+      "y_ratio": 0.32,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 字幕右段压住了穿过缺口者的右臂和手部动作。"
+    },
+    "03": {
+      "caption": "渠底的泥，却被人踩得发亮。",
+      "lines": [
+        "渠底的泥，却被人踩得发亮。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/03.png",
+      "base_sha256": "5dfd2ab3e9ecc8b278968f4cff38a99a0f5dc4f049235535b41a7233c84200b2",
+      "output_path": "episodes/误入桃花源/production/publish/03.png",
+      "output_sha256": "f70221d14a546a7cdce552d96dc81ec20db39c8eb29df41911120a0f2691651a",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "04": {
+      "caption": "手电往里一照，两边的岩壁窄得能把人夹碎。",
+      "lines": [
+        "手电往里一照，两边的岩壁窄得能把人夹碎。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/04.png",
+      "base_sha256": "6b8688390d6df76e07caeb0be8c80158abd247391c70493767699db249b2409d",
+      "output_path": "episodes/误入桃花源/production/publish/04.png",
+      "output_sha256": "99be58b841efead8f9c8fe695687761ed3ecc718a6bf1654d3d4dae906dac191",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "05": {
+      "caption": "我以为自己看错了。",
+      "lines": [
+        "我以为自己看错了。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/05.png",
+      "base_sha256": "7bed818faa1bb7f10425dc67ff47f9d2b0012b81c6b0ce5a98ddffedcc9f7b76",
+      "output_path": "episodes/误入桃花源/production/publish/05.png",
+      "output_sha256": "9dd9c1e7c502cb9b7ea6fad1cf62416a8dfdcf8b096b61690b88681e35f7f6e1",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "06": {
+      "caption": "田里的人都直着腰，看着我。",
+      "lines": [
+        "田里的人都直着腰，看着我。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/06.png",
+      "base_sha256": "a69ab0e79390ece2382e6531c91cc15588570e321bff94aedc3b589e9a384358",
+      "output_path": "episodes/误入桃花源/production/publish/06.png",
+      "output_sha256": "1be9570bc37f3da1d345c0d2838517de01af3e44877fbae907ce11dfa0fe2cf1",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "07": {
+      "caption": "锄头还插在泥里，他看着我。",
+      "lines": [
+        "锄头还插在泥里，他看着我。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 432,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/07.png",
+      "base_sha256": "6b63a26985ad325301c494dab258bbaffcc43fa838162027f43b4b6b742fa4c7",
+      "output_path": "episodes/误入桃花源/production/publish/07.png",
+      "output_sha256": "2834de6619812a2a8ce1d99817f33291567a66dc461879d8e75a285d4f3a606f",
+      "y_ratio": 0.32,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 当前字幕的“锄头还插在泥里”横跨并遮住画面左下至中部那根插入泥中的锄头木柄，锄头是该句所指的关键道具。"
+    },
+    "08": {
+      "caption": "找不到一根电线。",
+      "lines": [
+        "找不到一根电线。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/08.png",
+      "base_sha256": "f13b5726b5509c290cf54ef78449c1da6e9b8c444efc1ba8a79ae37ecf212549",
+      "output_path": "episodes/误入桃花源/production/publish/08.png",
+      "output_sha256": "f4d6062b51e858fda7598ab706ec71d4bcdb609eeaef63be08d489d972d0b50f",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "09": {
+      "caption": "躺在竹席上，睁眼就是满山谷的雾。",
+      "lines": [
+        "躺在竹席上，睁眼就是满山谷的雾。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/09.png",
+      "base_sha256": "acee66bd2b88d370d4f8786bb9d8e3f84c19f9f0d0524fb036a821c85f74b457",
+      "output_path": "episodes/误入桃花源/production/publish/09.png",
+      "output_sha256": "9f15495bcdd943a4ef39fe98eee7b97b020ba23810878c74ded660a9ff41c5f2",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "10": {
+      "caption": "他一直盯着那台黑屏手机。",
+      "lines": [
+        "他一直盯着那台黑屏手机。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/10.png",
+      "base_sha256": "110083e83a8046ef702e8328f4df766a2eea6ded5e952e20678dc29b6cd10c42",
+      "output_path": "episodes/误入桃花源/production/publish/10.png",
+      "output_sha256": "0a8c067df6048a8801539b48c35a7dccd26615baac5e9bd5d083887a40763463",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "11": {
+      "caption": "就一粒绿糖，我捏在手指上。",
+      "lines": [
+        "就一粒绿糖，我捏在手指上。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 27,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/11.png",
+      "base_sha256": "41598f680f80efd378dfd440e098c576cb2f5f9aa86c2ebd8a4accb7226580f6",
+      "output_path": "episodes/误入桃花源/production/publish/11.png",
+      "output_sha256": "4817cae9812f96cd5b34d985a0b0a1266c7fa9ac15427fb05267f8c85eed2b09",
+      "y_ratio": 0.02,
+      "safe_zone_override_reason": "少年头部与接糖的手占满左中带；上移到 0.02 的屋顶/山景空带"
+    },
+    "12": {
+      "caption": "他问我这是什么果子。",
+      "lines": [
+        "他问我这是什么果子。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/12.png",
+      "base_sha256": "091b2b7ace7337f88121699f00c2d18eb71d45a88f6d59b1f5bd2c8fdb12b94d",
+      "output_path": "episodes/误入桃花源/production/publish/12.png",
+      "output_sha256": "c8d496b9d388b0e3dc4b3dbee784a8abc1a0dabf6c381c9e5e67b41c0c80bd60",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "13": {
+      "caption": "在外面，这东西想要多少有多少。",
+      "lines": [
+        "在外面，这东西想要多少有多少。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/13.png",
+      "base_sha256": "0773b41408ce8f5ee9ca6eb150148e442c63482d864ebc9d89ab349e08b8371c",
+      "output_path": "episodes/误入桃花源/production/publish/13.png",
+      "output_sha256": "1bf31eac806ad98cbc08fe7704d54d2e1760ac289484a44e365c9208de1b43d5",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "14": {
+      "caption": "他一刀劈下去，竹节裂开。",
+      "lines": [
+        "他一刀劈下去，竹节裂开。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/14.png",
+      "base_sha256": "a23b6e3806827a13b3bf2b3f189056dbe3c9eb8f7efccc611317c7df49d43519",
+      "output_path": "episodes/误入桃花源/production/publish/14.png",
+      "output_sha256": "6764e3c676a0de85b04fb46404ab3d5c5345cda9a0628f0bff7396a99efd6c7f",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    },
+    "15": {
+      "caption": "草席上摆着那张糖纸，还有那包湿纸巾。",
+      "lines": [
+        "草席上摆着那张糖纸，还有那包湿纸巾。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 594,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/15.png",
+      "base_sha256": "f7715994a73b37d9a985076ab47a96e28d52af936a1fc319dd49eafc674f535b",
+      "output_path": "episodes/误入桃花源/production/publish/15.png",
+      "output_sha256": "9805b12ff675fbeab675041c88c83d0b1936116a71923380dd1af09579d0303a",
+      "y_ratio": 0.44,
+      "safe_zone_override_reason": ""
+    },
+    "16": {
+      "caption": "进洞前，他塞给我一包东西。",
+      "lines": [
+        "进洞前，他塞给我一包东西。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 432,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/16.png",
+      "base_sha256": "a1536a60d3f398abdb60a23cbf5f176bf26d7a0210c56cfd80f3d4aff86c46b5",
+      "output_path": "episodes/误入桃花源/production/publish/16.png",
+      "output_sha256": "971766ae528091b9a77ca50821956140cb22c86bab145f5ef05d8ac2bc7f812e",
+      "y_ratio": 0.32,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 字幕压住了两人之间递交包裹的手部和包裹本身。"
+    },
+    "17": {
+      "caption": "从洞口往下看，屋顶上冒着炊烟。",
+      "lines": [
+        "从洞口往下看，屋顶上冒着炊烟。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 810,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/17.png",
+      "base_sha256": "19af1931874be07c92580fa2ce21d14f49277960c7014cb19aa59b42fe78e225",
+      "output_path": "episodes/误入桃花源/production/publish/17.png",
+      "output_sha256": "a44e26f0597a6bb547c406e7f827fb60ee8562b29f009f8654d12417ae6ef477",
+      "y_ratio": 0.6,
+      "safe_zone_override_reason": ""
+    },
+    "18": {
+      "caption": "山下车流，一辆接一辆。",
+      "lines": [
+        "山下车流，一辆接一辆。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 432,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/18.png",
+      "base_sha256": "1d6c7c8480a4de802afb2afdd61cf5d4861fc291d536edaed2d8f3157a16c7c9",
+      "output_path": "episodes/误入桃花源/production/publish/18.png",
+      "output_sha256": "06a4b91df1178fd9e61fcb0229623c21c8014c1bb1062dd4b38d3f13db1723d9",
+      "y_ratio": 0.32,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 字幕横跨山下公路的车流区域，遮住多辆行驶车辆这一核心画面证据。"
+    },
+    "19": {
+      "caption": "未接来电和消息，一下子全挤进来。",
+      "lines": [
+        "未接来电和消息，一下子全挤进来。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 68,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/19.png",
+      "base_sha256": "df1a6c0e33167356db2905a930551c0227fd99609388ce8b2b9afbff3d9b5a02",
+      "output_path": "episodes/误入桃花源/production/publish/19.png",
+      "output_sha256": "48df54741403163c49f7a642533d5a5f2618e5544737dc644a7293d849952c31",
+      "y_ratio": 0.0504,
+      "safe_zone_override_reason": "手机锁屏通知占满中部；上移到 0.05 的背影/山坡空带"
+    },
+    "20": {
+      "caption": "我把冷硬的麦饼咬碎咽下，大步走下山。",
+      "lines": [
+        "我把冷硬的麦饼咬碎咽下，大步走下山。"
+      ],
+      "dropped_punctuation_only_second_line": false,
+      "x": 72,
+      "y": 702,
+      "line_height": 54,
+      "font": "C:\\Windows\\Fonts\\msyhbd.ttc",
+      "font_size": 42,
+      "stroke_width": 4,
+      "silent": false,
+      "base_path": "episodes/误入桃花源/media/approved/20.png",
+      "base_sha256": "3b53bf80a9813615bf46fdf50743035fee2c54549a5787eaf1ba55ef1320ed62",
+      "output_path": "episodes/误入桃花源/production/publish/20.png",
+      "output_sha256": "303d2cba3e960ab56bb6a21755866502f8fa25e00ffcfed293c5925ee2c86450",
+      "y_ratio": 0.52,
+      "safe_zone_override_reason": ""
+    }
+  },
+  "summary": {
+    "passed": true,
+    "frame_count": 20
+  }
+}

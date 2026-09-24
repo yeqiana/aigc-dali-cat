@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-22T16:32:31+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "ordinary_fallback",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true,
+    "ordinary_life_override": false,
+    "legacy_first_major_anomaly_semantics": "first_major_anomaly"
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "anomaly_logic_stage": "ordinary",
+      "environment_severity": 9,
+      "contract_sha256": "ff4d26d476ac49b7b053ae79fc2f698db006a871928842990f1e4736bf54dcae",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 3,
+      "mode": "normal_record",
+      "role": "worst_capture_condition",
+      "impact": 1,
+      "scale_reference": "",
+      "anomaly_logic_stage": "ordinary",
+      "environment_severity": 19,
+      "contract_sha256": "0d6f958ce7d209816af81d541992033fcd0f468fb59ec71f95201956bec68889",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 5,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 2,
+      "scale_reference": "站在盆地边缘的人只占画面极小一角，村舍和田垄按真人真屋比例铺开，用来量出洼地不过三四百亩的封闭尺度",
+      "anomaly_logic_stage": "discovery",
+      "environment_severity": 11,
+      "contract_sha256": "b908428b9176687576d59ab9c1d8db78ea57ea46e027af510ae748717e59a086",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 15,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 3,
+      "scale_reference": "菜籽油灯只照亮床头一臂之内的范围，秦叔坐在低矮门框里被压成一个剪影；用人身和门框的真实尺寸量出灯圈之外那片黑的分量",
+      "anomaly_logic_stage": "reversal",
+      "environment_severity": 11,
+      "contract_sha256": "17e4c044431923c2b889bdae1dc85a7e20f68f6e332b5e2366c57dcc7a4896db",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

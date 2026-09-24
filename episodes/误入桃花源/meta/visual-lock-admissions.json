@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-22T21:53:31+08:00",
+  "items": {
+    "V-B": {
+      "id": "V-B",
+      "role": "ordinary_baseline",
+      "frame": 1,
+      "sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4",
+      "frame_contract_sha256": "ff4d26d476ac49b7b053ae79fc2f698db006a871928842990f1e4736bf54dcae",
+      "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-22T21:53:31+08:00",
+      "attempt": 0,
+      "review_row": {
+        "id": "V-B",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "湿发、湿卫衣、污水走廊、散落作业纸和教室黑板共同构成可验证的刚经历暴雨后的普通校园现场；前伸手臂明确了自拍持机来源，近距离广角畸变、边缘手指遮挡和未修饰皮肤均符合匆忙保存现场的手机记录。",
+        "sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4",
+        "frame_contract_sha256": "ff4d26d476ac49b7b053ae79fc2f698db006a871928842990f1e4736bf54dcae",
+        "frame": 1,
+        "role": "ordinary_baseline"
+      },
+      "provenance": {
+        "reconciled_from_historical_critic": true,
+        "log": "meta/visual-lock-critic-attempt-1.jsonl",
+        "candidate_attempt_id": "a9782af1296c",
+        "candidate_completed_at": "2026-09-22T17:21:25+08:00"
+      }
+    },
+    "V-W": {
+      "id": "V-W",
+      "role": "worst_capture_condition",
+      "frame": 3,
+      "sha256": "5dfd2ab3e9ecc8b278968f4cff38a99a0f5dc4f049235535b41a7233c84200b2",
+      "frame_contract_sha256": "0d6f958ce7d209816af81d541992033fcd0f468fb59ec71f95201956bec68889",
+      "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-22T21:53:31+08:00",
+      "attempt": 0,
+      "review_row": {
+        "id": "V-W",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "雨水打在镜头与前景叶片上有明确物理成因；湿滑石槽、积水、苔藓和落花的受雨状态一致。右下角可见持机者衣袖，第一人称站位成立；构图被枝叶遮挡且不规整，符合随手记录。自然阴天可用光，没有广告化提亮或电影调色。",
+        "sha256": "5dfd2ab3e9ecc8b278968f4cff38a99a0f5dc4f049235535b41a7233c84200b2",
+        "frame_contract_sha256": "0d6f958ce7d209816af81d541992033fcd0f468fb59ec71f95201956bec68889",
+        "frame": 3,
+        "role": "worst_capture_condition"
+      },
+      "provenance": {
+        "reconciled_from_historical_critic": true,
+        "log": "meta/visual-lock-critic-attempt-2.jsonl",
+        "candidate_attempt_id": "6443777b6dc0",
+        "candidate_completed_at": "2026-09-22T17:49:49+08:00"
+      }
+    },
+    "V-A": {
+      "id": "V-A",
+      "role": "first_major_anomaly",
+      "frame": 5,
+      "sha256": "7bed818faa1bb7f10425dc67ff47f9d2b0012b81c6b0ce5a98ddffedcc9f7b76",
+      "frame_contract_sha256": "b908428b9176687576d59ab9c1d8db78ea57ea46e027af510ae748717e59a086",
+      "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-22T21:53:31+08:00",
+      "attempt": 0,
+      "review_row": {
+        "id": "V-A",
+        "checks": {
+          "visual_profile_match": true,
+          "reality_first": true,
+          "ordinary_life_density": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "not_cinematic": true,
+          "causal_imperfection": true,
+          "environment_physics_fidelity": true,
+          "capture_credibility": true,
+          "anomaly_scale_delivery": true,
+          "scale_reference_fidelity": true,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "camera_defect_physics": true,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "character_appearance_anchor_fidelity": true,
+          "cultural_environment_fidelity": true
+        },
+        "issues": [],
+        "notes": "镜头位于湿滑洞口边缘，左下可见持机者湿袖、背包边缘、伸出的手和鞋，明确是其正在探身查看并保存的第一人称记录；村舍、田垄、积水稻田、石径和环形绝壁形成连续的真人尺度参照，异常感来自现实地貌中突然完整出现的封闭聚落，而非脱离物理的概念景观。",
+        "sha256": "7bed818faa1bb7f10425dc67ff47f9d2b0012b81c6b0ce5a98ddffedcc9f7b76",
+        "frame_contract_sha256": "b908428b9176687576d59ab9c1d8db78ea57ea46e027af510ae748717e59a086",
+        "frame": 5,
+        "role": "first_major_anomaly"
+      },
+      "provenance": {
+        "reconciled_from_historical_critic": true,
+        "log": "meta/visual-lock-critic-attempt-1.jsonl",
+        "candidate_attempt_id": "8c9f41fa0f7d",
+        "candidate_completed_at": "2026-09-22T17:30:28+08:00"
+      }
+    },
+    "V-H": {
+      "id": "V-H",
+      "role": "high_impact_admission",
+      "frame": 15,
+      "sha256": "f7715994a73b37d9a985076ab47a96e28d52af936a1fc319dd49eafc674f535b",
+      "frame_contract_sha256": "17e4c044431923c2b889bdae1dc85a7e20f68f6e332b5e2366c57dcc7a4896db",
+      "profile_sha256": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f",
+      "story_os_version": "2.6.1",
+      "status": "PASS",
+      "reviewed_at": "2026-09-22T20:10:46+08:00",
+      "attempt": 4,
+      "review_row": {
+        "id": "V-H",
+        "role": "high_impact_admission",
+        "frame": 15,
+        "notes": "油灯、草席、纸巾和零食建立了可信的室内日常与可用暖光；前景膝盖也让第一人称持机位置成立。但灯圈外的大面积纯黑在像素层面仍可被正常低照度解释，门框中的人物只是剪影，未形成可辨认的异常尺度或后果。油灯和门框提供了普通空间尺度，却无法量出或确认黑暗本身的异常分量，因此未兑现 impact=3 的高冲击准入。",
+        "checks": {
+          "not_cinematic": true,
+          "reality_first": true,
+          "available_light": true,
+          "unposed_capture": true,
+          "capture_credibility": true,
+          "causal_imperfection": true,
+          "visual_profile_match": true,
+          "camera_defect_physics": true,
+          "ordinary_life_density": true,
+          "anomaly_scale_delivery": false,
+          "screen_content_physics": true,
+          "world_identity_fidelity": true,
+          "scale_reference_fidelity": false,
+          "camera_authorship_physical": true,
+          "moment_capture_credibility": true,
+          "environment_physics_fidelity": true,
+          "cultural_environment_fidelity": true,
+          "character_appearance_anchor_fidelity": true
+        },
+        "issues": [
+          "HIGH_IMPACT_NOT_READABLE",
+          "SCALE_REFERENCE_INSUFFICIENT"
+        ],
+        "sha256": "f7715994a73b37d9a985076ab47a96e28d52af936a1fc319dd49eafc674f535b",
+        "frame_contract_sha256": "17e4c044431923c2b889bdae1dc85a7e20f68f6e332b5e2366c57dcc7a4896db",
+        "ledger_review_warnings": [
+          "review requires ready candidate, got PASSED\n"
+        ]
+      },
+      "provenance": {
+        "approval_basis": "direct_user_visual_admission",
+        "user_statement": "用户已直接查看并明确要求使用当前第15张图，接受自动审查指出的异常尺度不足，要求视觉准入总证据按直接用户审核通过",
+        "automatic_review_status": "FAIL",
+        "automatic_review_attempt": 4
+      },
+      "direct_user_override": {
+        "accepted": true,
+        "statement": "用户已直接查看并明确要求使用当前第15张图，接受自动审查指出的异常尺度不足，要求视觉准入总证据按直接用户审核通过",
+        "accepted_at": "2026-09-22T20:10:46+08:00",
+        "known_automatic_defect": true
+      }
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "episode": "误入桃花源",
+  "exception_type": "direct_user_contract_exception",
+  "created_at": "2026-09-22T22:00:00+08:00",
+  "user_statement": "用户明确指定：本篇第1、3、5、15张沿用原来的要求和原合同；其余画面按新版要求执行。",
+  "policy": {
+    "legacy_frames": [
+      "01",
+      "03",
+      "05",
+      "15"
+    ],
+    "current_frames": [
+      "02",
+      "04",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20"
+    ],
+    "legacy_pixels_remain_bound_to_original_contract": true,
+    "new_frames_bind_to_current_contract": true
+  },
+  "items": [
+    {
+      "frame": "01",
+      "from_contract_sha256": "ff4d26d476ac49b7b053ae79fc2f698db006a871928842990f1e4736bf54dcae",
+      "to_contract_sha256": "fa66cb7e13ab2452150c11cfb5a78782cde0d0fbcc1a06920bbade590ab14263",
+      "user_approved": true,
+      "delegated_auto_review": false,
+      "approval_basis": "direct_user_contract_exception",
+      "user_statement": "第1张沿用原来的要求。"
+    },
+    {
+      "frame": "03",
+      "from_contract_sha256": "0d6f958ce7d209816af81d541992033fcd0f468fb59ec71f95201956bec68889",
+      "to_contract_sha256": "893acd414f6dc3e78c4f849cd0e8dff059bc86344c44d7701470208a042f292a",
+      "user_approved": true,
+      "delegated_auto_review": false,
+      "approval_basis": "direct_user_contract_exception",
+      "user_statement": "第3张沿用原来的要求。"
+    },
+    {
+      "frame": "05",
+      "from_contract_sha256": "b908428b9176687576d59ab9c1d8db78ea57ea46e027af510ae748717e59a086",
+      "to_contract_sha256": "04767ae8afc6c16dbf8b286d2701f62f6b3c7c9019ad79362bc07de8eb19bd34",
+      "user_approved": true,
+      "delegated_auto_review": false,
+      "approval_basis": "direct_user_contract_exception",
+      "user_statement": "第5张沿用原来的要求。"
+    },
+    {
+      "frame": "15",
+      "from_contract_sha256": "17e4c044431923c2b889bdae1dc85a7e20f68f6e332b5e2366c57dcc7a4896db",
+      "to_contract_sha256": "a93639e387b729536b253412710f9cc9de27b3febaca477b37cd90fe51d4f3a1",
+      "user_approved": true,
+      "delegated_auto_review": false,
+      "approval_basis": "direct_user_contract_exception",
+      "user_statement": "第15张沿用原来的要求，并保留此前直接视觉准入决定。"
+    },
+    {
+      "frame": "09",
+      "from_contract_sha256": "be7e1d9e8115eb3dfe6a696a7eecfffe74b6c273d2d1cea5c9afd67554c38ffd",
+      "to_contract_sha256": "05795b7265ed9e0c894c3a2b3efdc12ce5f0fb6c4144c0d0fd5e7b8f74e4b58b",
+      "user_approved": true,
+      "delegated_auto_review": false,
+      "approval_basis": "direct_user_contract_exception",
+      "user_statement": "用户已明确要求：单张图片达到生图重试上限仍失败时，保留现有候选并标记通过，不阻塞整篇生产；第09张新版合同重试已耗尽。",
+      "reason": "第09帧经用户授权的 authority refresh 后按新版合同重试 3 次全部技术失败，用户在既有授权下接受该 hash 绑定的旧合同候选；此处登记 old->current 合同例外以供终审与门禁复用。",
+      "recorded_at": "2026-09-23"
+    }
+  ]
+}

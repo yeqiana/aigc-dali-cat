@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "900bb4a32a11137ab0b6dbb33990b694286aeafcc96d9d8fd6850eb7f67a07c2",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "847948dac6a43da2357b65659e570757927a2959151bf890676d5eb2ce476658",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "male",
+      "age": 23,
+      "build": "普通年轻人体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "黑色自然短发，被汗水和山雨打湿后略显蓬乱",
+        "haircut_anchor": "普通男大学生自然短碎发：自己剪的，发梢长短略不齐，额前碎发自然垂落，鬓角短、无明显层次或造型，出汗淋雨后贴头皮、不成形",
+        "hair_length_anchor": "耳上到耳中的短发，后颈发脚偏低，无刘海造型"
+      },
+      "clothing_anchor": "洗得发白的灰色连帽卫衣+深灰休闲长裤+磨平防滑纹的开胶旧运动鞋",
+      "device_anchor": "普通智能手机",
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "c761ff508288963da08db73a54ecba27081b6836c7e8b431a828089bbbf7fafc"
+}

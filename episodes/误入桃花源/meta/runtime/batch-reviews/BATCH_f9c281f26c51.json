@@ -1,0 +1,113 @@
+{
+  "batch_id": "BATCH_f9c281f26c51",
+  "frames": [
+    {
+      "frame": "08",
+      "candidate_sha256": "f13b5726b5509c290cf54ef78449c1da6e9b8c444efc1ba8a79ae37ecf212549",
+      "frame_contract_sha256": "74ae1b15f3b45a4f1f65a07d5717afd11739356fa737e8ba17c7a137f9b4441a",
+      "checks": {
+        "whole_image": "pass",
+        "key_regions": "pass"
+      },
+      "decision": "PASS_PREVIEW",
+      "unresolved": [],
+      "issue_codes": [],
+      "reason": "土灶火光、松木烟气、粗陶碗与碎麦饭、野葱、竹笋和浑浊米酒均清晰可见；屋内未见电线或塑料。秦叔喝酒、家人围灶的生活状态成立，低侧近景可由桌边的 P01 手持取得。",
+      "confidence": 0.9
+    },
+    {
+      "frame": "11",
+      "candidate_sha256": "41598f680f80efd378dfd440e098c576cb2f5f9aa86c2ebd8a4accb7226580f6",
+      "frame_contract_sha256": "9321b29011765a882901dba1498a60142e68db5f7a531af666e541eb1efe675a",
+      "checks": {
+        "whole_image": "pass",
+        "key_regions": "pass"
+      },
+      "decision": "PASS_PREVIEW",
+      "unresolved": [],
+      "issue_codes": [],
+      "reason": "P01 的双手、半管绿色包装与剥开的绿色硬糖构成可信第一人称递交动作；小石伸手、秦叔背对整理竹条、石台上的黑屏手机及暮色井台环境均符合合同。",
+      "confidence": 0.93
+    },
+    {
+      "frame": "13",
+      "candidate_sha256": "f5d16b99d7114500877ac592d07deb49566a0fedc6e6cd26bd48c3a7e3d50627",
+      "frame_contract_sha256": "80b3cc6a5c7b1278f6182ef8247a5d5790b2b4aee904168343d3a9ce31e849d7",
+      "checks": {
+        "whole_image": "fail",
+        "key_regions": "pass"
+      },
+      "decision": "REPAIR_NOW",
+      "unresolved": [],
+      "issue_codes": [
+        "GHOST_CAMERA_AUTHorship"
+      ],
+      "reason": "黑屏手机、少年、小石身后的理竹条者和暮色井台都出现，但画面把唯一主摄影者 P01 的完整身体拍入镜中，同时没有登记第二摄影者、自拍或固定机位来源；与 P01 第一人称手持合同冲突，形成明确幽灵摄影机。",
+      "confidence": 0.98
+    }
+  ],
+  "summary": "08、11 的现场物理与关键动作清楚可用，允许继续生产；13 的核心内容虽到位，但第一人称摄影归属明显不成立，应立即用 P01 POV 重出。",
+  "schema_version": 1,
+  "review_scope": "EARLY_BATCH_ACTUAL_PIXELS",
+  "final_pass_authority": false,
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-23T01:19:04+08:00",
+    "log": "episodes/误入桃花源/meta/runtime/batch-reviews/BATCH_f9c281f26c51-attempt-1.jsonl",
+    "review_capability": "vision",
+    "ephemeral": true,
+    "session_reused_from_generation": false,
+    "review_scope": "EARLY_BATCH_ACTUAL_PIXELS"
+  },
+  "unit_history": [
+    {
+      "frame": "08",
+      "candidate_sha256": "f13b5726b5509c290cf54ef78449c1da6e9b8c444efc1ba8a79ae37ecf212549",
+      "frame_contract_sha256": "74ae1b15f3b45a4f1f65a07d5717afd11739356fa737e8ba17c7a137f9b4441a",
+      "checks": {
+        "whole_image": "pass",
+        "key_regions": "pass"
+      },
+      "decision": "PASS_PREVIEW",
+      "unresolved": [],
+      "issue_codes": [],
+      "reason": "土灶火光、松木烟气、粗陶碗与碎麦饭、野葱、竹笋和浑浊米酒均清晰可见；屋内未见电线或塑料。秦叔喝酒、家人围灶的生活状态成立，低侧近景可由桌边的 P01 手持取得。",
+      "confidence": 0.9
+    },
+    {
+      "frame": "11",
+      "candidate_sha256": "41598f680f80efd378dfd440e098c576cb2f5f9aa86c2ebd8a4accb7226580f6",
+      "frame_contract_sha256": "9321b29011765a882901dba1498a60142e68db5f7a531af666e541eb1efe675a",
+      "checks": {
+        "whole_image": "pass",
+        "key_regions": "pass"
+      },
+      "decision": "PASS_PREVIEW",
+      "unresolved": [],
+      "issue_codes": [],
+      "reason": "P01 的双手、半管绿色包装与剥开的绿色硬糖构成可信第一人称递交动作；小石伸手、秦叔背对整理竹条、石台上的黑屏手机及暮色井台环境均符合合同。",
+      "confidence": 0.93
+    },
+    {
+      "frame": "13",
+      "candidate_sha256": "f5d16b99d7114500877ac592d07deb49566a0fedc6e6cd26bd48c3a7e3d50627",
+      "frame_contract_sha256": "80b3cc6a5c7b1278f6182ef8247a5d5790b2b4aee904168343d3a9ce31e849d7",
+      "checks": {
+        "whole_image": "fail",
+        "key_regions": "pass"
+      },
+      "decision": "REPAIR_NOW",
+      "unresolved": [],
+      "issue_codes": [
+        "GHOST_CAMERA_AUTHorship"
+      ],
+      "reason": "黑屏手机、少年、小石身后的理竹条者和暮色井台都出现，但画面把唯一主摄影者 P01 的完整身体拍入镜中，同时没有登记第二摄影者、自拍或固定机位来源；与 P01 第一人称手持合同冲突，形成明确幽灵摄影机。",
+      "confidence": 0.98
+    }
+  ]
+}

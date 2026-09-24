@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "276e0b26c545c8259ec7fe2ca1596d6ce441bf1b24a3f53f44c8afa1cf6a9bbd",
+  "world_state_synced": true,
+  "derived_from_preimage_authority": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "afternoon",
+      "weather": "humid late afternoon before a summer storm in a school corridor and on the overgrown back hill",
+      "precipitation": "none yet, thunderstorm building",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "opening state"
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "afternoon",
+      "weather": "humid late afternoon before a summer storm in a school corridor and on the overgrown back hill",
+      "precipitation": "none yet, thunderstorm building",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "afternoon",
+      "weather": "steady storm rain soaking a wild peach forest and the mouth of a narrow rock crevice in late afternoon",
+      "precipitation": "steady rain with heavy dripping from leaves and rock",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: afternoon -> afternoon"
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "afternoon",
+      "weather": "enclosed wet rock crevice interior with dripping walls and no direct weather visible",
+      "precipitation": "steady rain with heavy dripping from leaves and rock",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: afternoon -> afternoon"
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "dusk",
+      "weather": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+      "precipitation": "none, wet ground and roof thatch still dripping",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: afternoon -> dusk"
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+      "precipitation": "none, wet ground and roof thatch still dripping",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+      "precipitation": "none, wet ground and roof thatch still dripping",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "dusk",
+      "weather": "early dusk inside a windowless rammed-earth house lit only by the cooking stove",
+      "precipitation": "none indoors",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dusk -> dusk"
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "morning",
+      "weather": "soft misty morning in the valley, the frame standing in for three quiet days",
+      "precipitation": "none, heavy dew and dripping eaves",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dusk -> morning"
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "dusk",
+      "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: morning -> dusk"
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "night",
+      "weather": "windless black night inside the rammed-earth house, lit only by a low rapeseed-oil lamp",
+      "precipitation": "none, absolute stillness outside",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dusk -> night"
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "dawn",
+      "weather": "cold thick dawn fog whitening the valley and the crevice mouth",
+      "precipitation": "none, heavy condensation dripping from the rock ceiling",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: night -> dawn"
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "dawn",
+      "weather": "dawn fog thinning just enough to show cooking smoke and bent figures over the fields",
+      "precipitation": "none, heavy condensation dripping from the rock ceiling",
+      "ambient_light": "dawn_low",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dawn -> dawn"
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "morning",
+      "weather": "bright late morning daylight on the open hillside above the highway and the construction site",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dawn -> morning"
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "bright late morning daylight on the open hillside above the highway and the construction site",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "morning",
+      "weather": "bright late morning daylight on the open hillside above the highway and the construction site",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}

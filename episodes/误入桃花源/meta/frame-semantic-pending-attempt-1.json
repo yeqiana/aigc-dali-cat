@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "attempt": 1,
+  "recorded_at": "2026-09-23T13:43:51+08:00",
+  "contexts": {
+    "story_sha256": "cdc9b7fc8df53c28a5b7c45bb65c9b104df4de9c4e2fb7087a2d762c49646c12",
+    "storyboard_sha256": "116c7b5ed1c68f8f2c4ef00abcb5aff09d562006a1663b7f59e1a83f1a209856",
+    "visual_contract_sha256": "e694e5f21d7be1727fd932578027aa70e8d32cc4fc437c1f955d85bfa1e543dd"
+  },
+  "assets": [
+    {
+      "frame": "01",
+      "path": "episodes/误入桃花源/media/approved/01.png",
+      "sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4"
+    },
+    {
+      "frame": "02",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/02-ebd7a2518364-a3.png",
+      "sha256": "1aa3334cb70cade22fb8022131981b740a18fe59fa4c58007e61f0c39ad3cbb1"
+    },
+    {
+      "frame": "03",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/03-35c25b5d2999-a1.png",
+      "sha256": "5dfd2ab3e9ecc8b278968f4cff38a99a0f5dc4f049235535b41a7233c84200b2"
+    },
+    {
+      "frame": "04",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/04-638f75f8afb6-a2.png",
+      "sha256": "6b8688390d6df76e07caeb0be8c80158abd247391c70493767699db249b2409d"
+    },
+    {
+      "frame": "05",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/05-e427ce82f4be-a1.png",
+      "sha256": "7bed818faa1bb7f10425dc67ff47f9d2b0012b81c6b0ce5a98ddffedcc9f7b76"
+    },
+    {
+      "frame": "06",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/06-152464b9d8e6-a2.png",
+      "sha256": "a69ab0e79390ece2382e6531c91cc15588570e321bff94aedc3b589e9a384358"
+    },
+    {
+      "frame": "07",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/07-76b5d9019cb6-a1.png",
+      "sha256": "6b63a26985ad325301c494dab258bbaffcc43fa838162027f43b4b6b742fa4c7"
+    },
+    {
+      "frame": "08",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/08-ae3cc05afcad-a1.png",
+      "sha256": "f13b5726b5509c290cf54ef78449c1da6e9b8c444efc1ba8a79ae37ecf212549"
+    },
+    {
+      "frame": "09",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/09-574713a2ec31-a1.png",
+      "sha256": "acee66bd2b88d370d4f8786bb9d8e3f84c19f9f0d0524fb036a821c85f74b457"
+    },
+    {
+      "frame": "10",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/10-8b1b9ad43895-a2.png",
+      "sha256": "0d8fd408d236c4ba97ace512117ebf9c458f1eaff2fadec8c878e10d9659f634"
+    },
+    {
+      "frame": "11",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/11-68908d56aa77-a1.png",
+      "sha256": "41598f680f80efd378dfd440e098c576cb2f5f9aa86c2ebd8a4accb7226580f6"
+    },
+    {
+      "frame": "12",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/12-ebfddbc934bb-a2.png",
+      "sha256": "091b2b7ace7337f88121699f00c2d18eb71d45a88f6d59b1f5bd2c8fdb12b94d"
+    },
+    {
+      "frame": "13",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/13-d1bdd6846fb0-a1.png",
+      "sha256": "0773b41408ce8f5ee9ca6eb150148e442c63482d864ebc9d89ab349e08b8371c"
+    },
+    {
+      "frame": "14",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/14-eedf85e7d719-a2.png",
+      "sha256": "a23b6e3806827a13b3bf2b3f189056dbe3c9eb8f7efccc611317c7df49d43519"
+    },
+    {
+      "frame": "15",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/15-e4aacdf69360-a1.png",
+      "sha256": "f7715994a73b37d9a985076ab47a96e28d52af936a1fc319dd49eafc674f535b"
+    },
+    {
+      "frame": "16",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/16-32e527953c3b-a1.png",
+      "sha256": "ead48cc7ac9a16a9ad0e2006c7c0cdb3b7612d3168edc32ce49194d4c05a5d37"
+    },
+    {
+      "frame": "17",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/17-4748540da613-a1.png",
+      "sha256": "19af1931874be07c92580fa2ce21d14f49277960c7014cb19aa59b42fe78e225"
+    },
+    {
+      "frame": "18",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/18-731273e4dedd-a1.png",
+      "sha256": "1d6c7c8480a4de802afb2afdd61cf5d4861fc291d536edaed2d8f3157a16c7c9"
+    },
+    {
+      "frame": "19",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/19-8312472bbdfd-a1.png",
+      "sha256": "df1a6c0e33167356db2905a930551c0227fd99609388ce8b2b9afbff3d9b5a02"
+    },
+    {
+      "frame": "20",
+      "path": "episodes/误入桃花源/media/candidates/scheduled/20-ce72a1e905ef-a1.png",
+      "sha256": "3b53bf80a9813615bf46fdf50743035fee2c54549a5787eaf1ba55ef1320ed62"
+    }
+  ]
+}

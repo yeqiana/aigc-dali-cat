@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "episode": "误入桃花源",
+  "exception_type": "direct_user_storyboard_revision",
+  "user_approved": true,
+  "delegated_auto_review": false,
+  "user_statement": "用户已明确要求用本篇锁定故事继续完整生产；当前 V1.1 分镜只补齐前置规矩、中点重读与像素可读性，不改人物、事件顺序、动机、高潮选择或结尾。",
+  "items": [
+    {
+      "from_storyboard_sha256": "dfe696ea5468ee58b3d415c8be4c7c1376c9d7c38f33c6c156493074f3f6e6ee",
+      "to_storyboard_sha256": "116c7b5ed1c68f8f2c4ef00abcb5aff09d562006a1663b7f59e1a83f1a209856",
+      "user_approved": true,
+      "delegated_auto_review": false,
+      "reason": "V1.1 storyboard logic and evidence clarification under the locked story"
+    }
+  ]
+}

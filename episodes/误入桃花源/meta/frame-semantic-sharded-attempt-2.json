@@ -1,0 +1,152 @@
+{
+  "schema_version": 2,
+  "attempt": 2,
+  "review_scope": "SHARDED_FULL_FRAME_SET",
+  "recorded_at": "2026-09-23T14:15:30+08:00",
+  "shard_count": 4,
+  "max_review_inflight": 4,
+  "target_coverage": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20"
+  ],
+  "candidate_path": "episodes/误入桃花源/meta/.frame-semantic-review.candidate.json",
+  "candidate_sha256": "e93eb9436b961e18834314ab13fb0243ba64b42c4a5ccfefc010331383975276",
+  "source_bindings_sha256": "a1708b928378c61501b3491bce48638e69533e50e29a03a3fd7d231f8d61863b",
+  "global_closure": {
+    "status": "SKIPPED_LOCAL_FAILURE",
+    "anchor_frames": [],
+    "reason": "one or more local shard observations already failed"
+  },
+  "shards": [
+    {
+      "index": 1,
+      "target_frames": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05"
+      ],
+      "context_frames": [
+        "06",
+        "20"
+      ],
+      "selected_frames": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "20"
+      ],
+      "candidate_path": "episodes/误入桃花源/meta/.frame-semantic-shard-2-1.candidate.json",
+      "candidate_sha256": "b8e9228ecb7f61e98743f64b7772fe76af320f688348cf61daf7fe8a2253c211",
+      "log_path": "episodes/误入桃花源/meta/frame-semantic-critic-attempt-2-shard-1.jsonl"
+    },
+    {
+      "index": 2,
+      "target_frames": [
+        "06",
+        "07",
+        "08",
+        "09",
+        "10"
+      ],
+      "context_frames": [
+        "01",
+        "05",
+        "11",
+        "20"
+      ],
+      "selected_frames": [
+        "01",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "20"
+      ],
+      "candidate_path": "episodes/误入桃花源/meta/.frame-semantic-shard-2-2.candidate.json",
+      "candidate_sha256": "48b3ec1b871cf606907f118da507bf44dc337dcae7a6f365df6539f7a68c1925",
+      "log_path": "episodes/误入桃花源/meta/frame-semantic-critic-attempt-2-shard-2.jsonl"
+    },
+    {
+      "index": 3,
+      "target_frames": [
+        "11",
+        "12",
+        "13",
+        "14",
+        "15"
+      ],
+      "context_frames": [
+        "01",
+        "10",
+        "16",
+        "20"
+      ],
+      "selected_frames": [
+        "01",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "20"
+      ],
+      "candidate_path": "episodes/误入桃花源/meta/.frame-semantic-shard-2-3.candidate.json",
+      "candidate_sha256": "5231a45165c2e8ca2025d8fa554340ac3c4358ffddf9487d6d286473fd77eef3",
+      "log_path": "episodes/误入桃花源/meta/frame-semantic-critic-attempt-2-shard-3.jsonl"
+    },
+    {
+      "index": 4,
+      "target_frames": [
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+      ],
+      "context_frames": [
+        "01",
+        "15"
+      ],
+      "selected_frames": [
+        "01",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20"
+      ],
+      "candidate_path": "episodes/误入桃花源/meta/.frame-semantic-shard-2-4.candidate.json",
+      "candidate_sha256": "30beda684dd4d23f29e35695fbfbf4bd8a754b9faa14c4c37fe6b72a4b7df486",
+      "log_path": "episodes/误入桃花源/meta/frame-semantic-critic-attempt-2-shard-4.jsonl"
+    }
+  ]
+}

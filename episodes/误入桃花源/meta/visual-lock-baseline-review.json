@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "decision": "PASS",
+  "created_at": "2026-09-22T21:08:17+08:00",
+  "role": "ordinary_baseline",
+  "frame": 1,
+  "asset_path": "episodes/误入桃花源/media/candidates/scheduled/01-7a7a09d14bde-a4.png",
+  "sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4",
+  "frame_contract_sha256": "fa66cb7e13ab2452150c11cfb5a78782cde0d0fbcc1a06920bbade590ab14263",
+  "queue_item_id": "7a7a09d14bde",
+  "reviewer_scope": "delegated_pixel_review",
+  "checks": {
+    "visual_profile_match": "PASS",
+    "reality_first": "PASS",
+    "ordinary_life_density": "PASS",
+    "unposed_capture": "PASS",
+    "not_cinematic": "PASS",
+    "capture_credibility": "PASS",
+    "identity_usable": "PASS",
+    "group_members_distinct": "PASS",
+    "identity_anchor_usable": "PASS"
+  },
+  "face_boxes": [
+    {
+      "character_id": "P01",
+      "x": 0.47,
+      "y": 0.02,
+      "w": 0.45,
+      "h": 0.39
+    }
+  ],
+  "note": "actual-pixel evidence",
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 6,
+    "reviewed_at": "2026-09-22T21:09:02+08:00",
+    "bounded_visual_candidate_review": true,
+    "log": "episodes/误入桃花源/meta/visual-lock-baseline-critic-attempt-6.jsonl",
+    "review_capability": "vision",
+    "ephemeral": true,
+    "session_reused_from_generation": false,
+    "review_scope": "VISUAL_LOCK_BASELINE",
+    "log_sha256": "1f5f535619ecdbfec2292e4ae817dd8fb7914d3880a7f93bac8e67051469dadd"
+  },
+  "approved_at": "2026-09-22T21:09:36+08:00",
+  "provisional_master_created": false
+}

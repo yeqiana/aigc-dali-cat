@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-24T11:13:29+08:00",
+  "authority": {
+    "episode_state_mutated": false,
+    "source": "Story Lock + story-gates"
+  },
+  "story_core": "挂科与实习压力下的林舟误入封闭桃源，发现安宁靠隔绝外界维系，最终返回仍在奔流的现实。",
+  "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+  "character_relationship": "林舟受秦叔一家接纳；小石被林舟带来的糖与手机点燃对外界的渴望，秦叔为守住村庄生存秩序送林舟离开。",
+  "reversal_point": "秦叔揭示桃源是资源有限、只能靠封闭维持的枯井，并在夜里要求林舟天亮前离开。",
+  "required_frames": [
+    1,
+    5,
+    12,
+    14,
+    15,
+    17,
+    20
+  ],
+  "forbidden_deviation": [
+    "不把桃源写成仙境或超自然世界",
+    "不改写林舟最终返回现实并主动回应的结局"
+  ],
+  "frame_mapping": {
+    "01": {
+      "story_goal": "hook",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    },
+    "02": {
+      "story_goal": "hook",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "03": {
+      "story_goal": "hook",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "04": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "05": {
+      "story_goal": "reversal",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    },
+    "06": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "07": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "08": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "09": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "10": {
+      "story_goal": "escalation",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": true
+    },
+    "11": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "12": {
+      "story_goal": "escalation",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    },
+    "13": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "14": {
+      "story_goal": "escalation",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    },
+    "15": {
+      "story_goal": "climax",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    },
+    "16": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "17": {
+      "story_goal": "reversal",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    },
+    "18": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "19": {
+      "story_goal": null,
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": null,
+      "required": false
+    },
+    "20": {
+      "story_goal": "payoff",
+      "emotional_goal": "从逃避竞争、贪恋静止的安宁，转为接受现实压力并主动回应老师和母亲。",
+      "reversal_contribution": "reversal",
+      "required": true
+    }
+  }
+}

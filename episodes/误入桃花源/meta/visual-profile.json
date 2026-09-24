@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "adapter_version": "1.0",
+  "lifecycle_state": "FROZEN",
+  "lock_policy": "production_frozen",
+  "status": "selected",
+  "profile_id": "M00",
+  "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+  "selection": {
+    "status": "selected",
+    "source": "rule_engine",
+    "selector_version": "1.0",
+    "candidates": [],
+    "inputs_summary": {
+      "world": "",
+      "era": "",
+      "theme": "",
+      "genre": "",
+      "location": "",
+      "experience_type": "",
+      "series": "",
+      "previous_profile": "",
+      "realism": "",
+      "immersion": "",
+      "fantasy_level": "",
+      "forced_profile_id": "M00"
+    },
+    "adjudication": {
+      "resolved_profile_id": "M00",
+      "by": "story_os:full-auto",
+      "at": "2026-09-22T14:19:58.317030+00:00",
+      "source": "lifecycle_confirmation"
+    }
+  },
+  "selection_evidence": {
+    "selector_version": "1.0",
+    "source": "rule_engine",
+    "registry": "standards/visual_profiles/index.json",
+    "inputs_digest": "sha256:2869bdc2f2554af2b3ab5da499b3393433d46c3f9969a61fbdd5fb305cfae954",
+    "inputs_summary": {
+      "world": "",
+      "era": "",
+      "theme": "",
+      "genre": "",
+      "location": "",
+      "experience_type": "",
+      "series": "",
+      "previous_profile": "",
+      "realism": "",
+      "immersion": "",
+      "fantasy_level": "",
+      "forced_profile_id": "M00"
+    },
+    "matched_rules": [
+      "user_override=M00"
+    ],
+    "rejected": [],
+    "reason": [
+      "prio=user_override"
+    ],
+    "candidate_count": 0,
+    "notes": []
+  },
+  "confirmation_mode": "delegated_auto",
+  "confirmed_by": "story_os:full-auto",
+  "confirmed_at": "2026-09-22T14:19:58.317030+00:00",
+  "draft_created_at": "2026-09-22T14:19:57.212977+00:00",
+  "notes": [
+    "locked by story_os:full-auto at 2026-09-22T14:19:58.317030+00:00",
+    "frozen by story_os:full-auto at 2026-09-23T03:18:13.749362+00:00"
+  ],
+  "confirmation": {
+    "mode": "delegated_auto",
+    "confirmed_by": "story_os:full-auto",
+    "confirmed_at": "2026-09-22T14:19:58.317030+00:00",
+    "reason": "用户已指定本篇采用 M00 现实生活纪实母版；全自动生产授权下锁定已选视觉合同"
+  },
+  "frozen": {
+    "frozen_by": "story_os:full-auto",
+    "frozen_at": "2026-09-23T03:18:13.749362+00:00",
+    "reason": "production closure reconciled: a committed production asset exists (frame 01)",
+    "inherits_confirmation_by": "story_os:full-auto",
+    "trigger": "production_closure_reconcile",
+    "recorded_at": "2026-09-23T03:18:13.745625+00:00",
+    "frame": "01",
+    "production_attempt_id": "a9782af1296c",
+    "reconcile_reason": "committed production asset exists while visual profile remained LOCKED"
+  },
+  "frozen_by": "story_os:full-auto",
+  "frozen_at": "2026-09-23T03:18:13.749362+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "误入桃花源",
+  "reviewed_at": "2026-09-22T12:32:31+08:00",
+  "candidate_fingerprint_path": "episodes/误入桃花源/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "c5bb8d7dbb6a4432a87c4c501f11c21c01abd0b57431c128154d2c74527ddf10",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04",
+    "10-01"
+  ],
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-22T12:32:31+08:00",
+    "log": "episodes/误入桃花源/meta/recent5-semantic-critic.jsonl",
+    "log_sha256": "90788a312cc4864856febbf9189ece724ff5cd96f666a5d216182633afea6c92"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    },
+    {
+      "episode_id": "10-01",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

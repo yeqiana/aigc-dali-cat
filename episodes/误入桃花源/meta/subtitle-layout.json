@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "frames": {
+    "02": {
+      "y": 432,
+      "auto_placement_repairs_used": 1,
+      "placement_source": "caption_image_actual_pixel_audit",
+      "suggested_y_ratio": 0.32,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 字幕右段压住了穿过缺口者的右臂和手部动作。"
+    },
+    "16": {
+      "y": 432,
+      "auto_placement_repairs_used": 1,
+      "placement_source": "caption_image_actual_pixel_audit",
+      "suggested_y_ratio": 0.32,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 字幕压住了两人之间递交包裹的手部和包裹本身。"
+    },
+    "15": {
+      "y": 594,
+      "auto_placement_repairs_used": 0,
+      "placement_source": "manual_pixel_inspection_2026_09_23",
+      "suggested_y_ratio": 0.44
+    },
+    "17": {
+      "y": 810,
+      "auto_placement_repairs_used": 0,
+      "placement_source": "manual_pixel_inspection_2026_09_23",
+      "suggested_y_ratio": 0.6
+    },
+    "07": {
+      "y": 432,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 当前字幕的“锄头还插在泥里”横跨并遮住画面左下至中部那根插入泥中的锄头木柄，锄头是该句所指的关键道具。",
+      "auto_placement_repairs_used": 1,
+      "placement_source": "caption_image_actual_pixel_audit",
+      "suggested_y_ratio": 0.32
+    },
+    "11": {
+      "y": 27,
+      "safe_zone_override_reason": "少年头部与接糖的手占满左中带；上移到 0.02 的屋顶/山景空带",
+      "auto_placement_repairs_used": 1,
+      "placement_source": "manual_pixel_inspection_2026_09_23",
+      "suggested_y_ratio": 0.02
+    },
+    "19": {
+      "y": 68,
+      "safe_zone_override_reason": "手机锁屏通知占满中部；上移到 0.05 的背影/山坡空带",
+      "auto_placement_repairs_used": 0,
+      "placement_source": "manual_pixel_inspection_2026_09_23",
+      "suggested_y_ratio": 0.05
+    },
+    "18": {
+      "y": 432,
+      "safe_zone_override_reason": "actual-pixel subtitle obstruction: 字幕横跨山下公路的车流区域，遮住多辆行驶车辆这一核心画面证据。",
+      "auto_placement_repairs_used": 1,
+      "placement_source": "caption_image_actual_pixel_audit",
+      "suggested_y_ratio": 0.32
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "cca21961caf81a5745dd1fc0dd8ed96688467872e129a712b090395d9a7ee750",
+  "not_episode_stage": true,
+  "not_gate_authority": true,
+  "canonical_stage_source": "meta/episode-state.json",
+  "tasks": {
+    "CHARACTER_FINALIZE": {
+      "task_id": "preimage-character_finalize-cca21961caf8",
+      "status": "COMPLETED",
+      "request_id": null,
+      "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+      "updated_at": "2026-09-22T13:04:33+08:00"
+    },
+    "ENVIRONMENT_PREPARE": {
+      "task_id": "preimage-environment_prepare-cca21961caf8",
+      "status": "COMPLETED",
+      "request_id": null,
+      "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+      "updated_at": "2026-09-22T13:05:46+08:00"
+    },
+    "WORLD_PREPARE": {
+      "task_id": "preimage-world_prepare-cca21961caf8",
+      "status": "COMPLETED",
+      "request_id": null,
+      "candidate_path": "meta/runtime/preimage-candidates/world.json",
+      "updated_at": "2026-09-22T13:05:46+08:00"
+    },
+    "VISUAL_NARRATIVE_PREPARE": {
+      "task_id": "preimage-visual_narrative_prepare-cca21961caf8",
+      "status": "COMPLETED",
+      "request_id": null,
+      "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+      "updated_at": "2026-09-22T13:04:22+08:00"
+    }
+  },
+  "updated_at": "2026-09-22T13:05:46+08:00"
+}

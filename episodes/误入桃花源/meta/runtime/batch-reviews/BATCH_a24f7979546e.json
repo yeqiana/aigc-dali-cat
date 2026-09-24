@@ -1,0 +1,41 @@
+{
+  "batch_id": "BATCH_a24f7979546e",
+  "frames": [
+    {
+      "frame": "07",
+      "candidate_sha256": "6e66837de367f09d8fc3673c002441edb1ecf965d77454439877e740b7d3d450",
+      "frame_contract_sha256": "515c5b3bf2132ea138702ecf0941a03d06b315c2fa4bc18db2e1106346044665",
+      "checks": {
+        "whole_image": "fail",
+        "key_regions": "pass"
+      },
+      "decision": "REPAIR_NOW",
+      "unresolved": [],
+      "issue_codes": [
+        "POV_RECORDER_OBVIOUSLY_ILLEGAL",
+        "GHOST_CAMERA"
+      ],
+      "reason": "画面把唯一摄影者 P01 完整拍入，现场没有同行者、自拍或固定机位解释；与锁定的 P01 第一人称手持近身记录直接冲突。秦叔的泥手、插入泥中的短锄、湿石板、土屋门洞和暮色环境均清晰可信，但核心拍摄作者性已失效。",
+      "confidence": 0.98
+    }
+  ],
+  "summary": "07 的场景、人物动作、道具和雨后黄昏物理可用；唯一且明确的严重缺陷是单人第一人称合同下 P01 完整入镜造成幽灵摄影机，因此需立即内容返修。",
+  "schema_version": 1,
+  "review_scope": "EARLY_BATCH_ACTUAL_PIXELS",
+  "final_pass_authority": false,
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-23T00:54:27+08:00",
+    "log": "episodes/误入桃花源/meta/runtime/batch-reviews/BATCH_a24f7979546e-attempt-1.jsonl",
+    "review_capability": "vision",
+    "ephemeral": true,
+    "session_reused_from_generation": false,
+    "review_scope": "EARLY_BATCH_ACTUAL_PIXELS"
+  },
+  "unit_history": []
+}

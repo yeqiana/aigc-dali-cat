@@ -1,0 +1,66 @@
+{
+  "schema_version": 2,
+  "status": "AVAILABLE_CONTENT_FAIL",
+  "consecutive_technical_failures": 0,
+  "last_fingerprint": null,
+  "events": [
+    {
+      "at": "2026-09-22T17:37:56+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 1,
+      "issue_codes": [
+        "GHOST_CAMERA",
+        "IMPACT_UNDERDELIVERY",
+        "CINEMATIC_BLOCKING"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/误入桃花源/meta/visual-lock-critic-attempt-1.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-22T17:58:20+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 2,
+      "issue_codes": [
+        "ANOMALY_SCALE_NOT_DELIVERED"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/误入桃花源/meta/visual-lock-critic-attempt-2.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-22T19:31:01+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 3,
+      "issue_codes": [
+        "ANOMALY_SCALE_NOT_READABLE"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/误入桃花源/meta/visual-lock-critic-attempt-3.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-22T20:05:45+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 4,
+      "issue_codes": [
+        "HIGH_IMPACT_NOT_READABLE",
+        "SCALE_REFERENCE_INSUFFICIENT"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/误入桃花源/meta/visual-lock-critic-attempt-4.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    }
+  ],
+  "speculative_production_allowed": false,
+  "last_issue_codes": [
+    "HIGH_IMPACT_NOT_READABLE",
+    "SCALE_REFERENCE_INSUFFICIENT"
+  ],
+  "last_event_at": "2026-09-22T20:05:45+08:00",
+  "last_visual_lock_run_id": null
+}

@@ -1,0 +1,7 @@
+TOTAL=121
+CREATIVE_STORY: count=7 statuses={"BLOCKED":4,"REUSED":3} start=NaN end=NaN
+INCREMENTAL_PLAN: count=8 statuses={"PASS":4,"REUSED":4} start=NaN end=NaN
+PREIMAGE_COMPILE: count=3 statuses={"BLOCKED":1,"REUSED":2} start=NaN end=NaN
+VISUAL_LOCK: count=1 statuses={"BLOCKED":1} start=NaN end=NaN
+character_prepare: count=2 statuses={"PASS":2} start=NaN end=NaN
+frame_contract_compile: count=100 statuses={"PASS":82,"FAILED":18} start=NaN end=NaN

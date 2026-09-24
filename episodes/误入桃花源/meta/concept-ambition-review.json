@@ -1,0 +1,294 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 84,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "中段是全景级 hero frame：棋盘秧田、环形绝壁、几十双同时停手回头的眼睛，零字幕可读",
+        "封面把现代学生＋手机电筒塞进裸岩石缝，位置错位一眼成立",
+        "一枚工厂糖纸被当成文明级危险物退回，价值反转压进一帧，够冷够狠",
+        "闭环物件完整：带进去的糖纸、带出来的荷叶麦饼、被塞回的湿纸巾",
+        "讨论面直接落在“换不换”，评论区天然分裂"
+      ],
+      "risks": [
+        "高潮是手与糖纸的近景，视觉体量小于中段，需要极致的油灯材质与月光窗棂才不平",
+        "本集禁止超自然解释，世界观规模只能靠空间矛盾与人的后果读出来",
+        "山谷三天若处理成日常流水，会稀释压迫感与倒计时"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 13,
+        "escalation_ceiling": 12,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 10,
+        "discussion_space": 9
+      },
+      "concept_voltage": 70,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "“枯井不是仙境”主题直给，土灶橘红光里两代人的手与电子表同框，无需台词",
+        "高潮是门槛内侧的决绝，不用嘶吼也够冷"
+      ],
+      "risks": [
+        "与 C01 同源但抽掉了薄荷糖的物理证据链，冲击力明显下降",
+        "取景偏生活流，缺一个全景级 hero frame，视觉上限低于 C01"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 12,
+        "escalation_ceiling": 9,
+        "climax_visual_payoff": 8,
+        "mechanism_novelty": 9,
+        "discussion_space": 8
+      },
+      "concept_voltage": 60,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "缺口粗陶碗里的碎麦饭＋被泥土浸黑的手，最简陋的一顿饭配最整洁的屋子，反差可靠",
+        "五张古老的脸围住一只电子表，是干净的错位帧"
+      ],
+      "risks": [
+        "尺度最小的取景，高潮只是往灶膛推一把枯枝，视觉回报接近日常",
+        "两代焦虑的对照必须靠“外头，还争吗”才能读懂，静帧升级不可读"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 17,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 83,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "古代水井淤泥里一块工业玻璃，零台词冲突立刻成立，是真正的封面帧",
+        "相册最后一张照片正是眼前这条青石板路，时间线当场错位",
+        "井边全村第一次同时沉默，“沉默即裁决”可读性强",
+        "把一个村落升级成历代越界者的处理场，世界观规模显著放大"
+      ],
+      "risks": [
+        "中段关键信息寄在手机屏幕内容上，静帧可读性中等",
+        "需要改写用户锁定故事（锁定版没有前一位越界者），不能直接进生产"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 15,
+        "hero_frame": 15,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 74,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "取景框里就是一座不该存在的村落，天然自带“有人在场”的证明",
+        "“被拍的人比拍照的人更懂后果”，价值反转干脆",
+        "物证反噬把讨论推到“证明它存在过是好是坏”"
+      ],
+      "risks": [
+        "高潮只是手指停在删除键上，动作视觉体量过小",
+        "强依赖屏幕这一认知道具；同样要求改写锁定故事"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 15,
+        "escalation_ceiling": 11,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 10,
+        "discussion_space": 8
+      },
+      "concept_voltage": 68,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "唯一的退路窄到只能手脚并用地爬，封面帧紧张感成立",
+        "绝壁上滚石留下的白色痕迹是倒计时的实物证据",
+        "告别与倒计时在拂晓同一帧收束"
+      ],
+      "risks": [
+        "全篇张力来自时限而非视觉级差，中段容易退化成数日子",
+        "高潮只是递出一个荷叶包，回报温和，缺少第二层画面"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 15,
+        "escalation_ceiling": 12,
+        "climax_visual_payoff": 11,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 75,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "原始山林里出现现代塑料布窝棚，异常感一眼成立",
+        "一张模糊到看不清脸的身份证，证明他两边都不属于",
+        "停在半坡不继续往前走，本身就是可读的结局"
+      ],
+      "risks": [
+        "属人际悲剧尺度，缺世界级第二层视觉爆点",
+        "高潮是“停下”这一消极动作，静帧冲击力上限偏低"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 16,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 81,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "“这个地方静静记了每一个外来者一千七百年”是世界规则级构思，升级上限最高",
+        "墨迹未干的最后一行是最好的无字线索",
+        "名册把主角从路人变成编号，讨论面够大"
+      ],
+      "risks": [
+        "高潮必须读字（今天的日子），静帧不可读，无字测试不过",
+        "封面（压在神龛下的发黄手抄本）视觉普通，撑不起停止滑动的力度",
+        "需要改写锁定故事，不能直接进生产"
+      ]
+    },
+    {
+      "id": "C09",
+      "ambition_band": "A2",
+      "scores": {
+        "one_line_hook": 14,
+        "hero_frame": 13,
+        "escalation_ceiling": 10,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 11,
+        "discussion_space": 9
+      },
+      "concept_voltage": 67,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "直接掀开“仙境”给你看谷仓，反抗性反差强",
+        "五只碗分到几乎不差分毫，是可靠的无字分配帧"
+      ],
+      "risks": [
+        "属生态与制度揭示，画面级差小，升级体量偏平",
+        "高潮是一句解释性的自述，回报偏说明而少视觉"
+      ]
+    },
+    {
+      "id": "C10",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 16,
+        "hero_frame": 13,
+        "escalation_ceiling": 13,
+        "climax_visual_payoff": 9,
+        "mechanism_novelty": 14,
+        "discussion_space": 9
+      },
+      "concept_voltage": 74,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "元叙事：传说本身就是保护色，机制新颖度是全场最高之一",
+        "“不足为外人道也”被一代代人反复描过的墙面意象很狠"
+      ],
+      "risks": [
+        "封面（赤脚少年背着双手背诵）画面性弱，不构成停止滑动的理由",
+        "高潮严重依赖墙面文字，静帧不可读；需改写锁定故事"
+      ]
+    }
+  ],
+  "selected_id": "C01",
+  "selection_reason": "本集为 locked_story（allow_structure_rewrite=false），入选方向必须能直接进入生产、不改写用户锁定的核心事件、人物关系、高潮与结尾，因此只在同源方向 C01/C02/C03 中取一。C01 是三者的故事本体，也是全场电压最高（84，A4）且三段无字测试全过：封面把现代学生＋手机电筒塞进裸岩石缝，中段“棋盘秧田＋环形绝壁＋几十双同时停下的眼睛”是无字幕可读的全景 hero frame，结尾“被泥土浸黑的手把揉烂的绿色糖纸推回床头”把避难所即牢房的价值反转压进一帧。C02 只是同故事的主题直给、C03 只是单场景放大，两者电压（70/60）与视觉上限都低于 C01，且 C03 的升级必须靠台词才读得懂。C04（83）、C08（81）电压确实更高，但 C04 需要引入锁定故事中不存在的前一位越界者、C08 需要族谱名册且高潮必须读字，C05/C10 同样要求改写锁定故事或依赖屏幕与墙面文字，均不满足 locked_story 与无字测试的双重约束，只能留作同题材后续备选。候选池已按要求包含 3 个 A4 高野心方向（C01/C04/C08）。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "978464502027073cc0579bef2ec3cfb8d398447b80f7b158bca2329f1d86fff2",
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-22T12:30:23+08:00",
+    "log": "episodes/误入桃花源/meta/concept-ambition-critic-attempt-1.jsonl"
+  }
+}

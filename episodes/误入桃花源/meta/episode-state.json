@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "storage_episode_id": "EPU_29f8130b92a0050818f17708c1a278a1b3250493",
+  "episode_id": "误入桃花源",
+  "series": "07_误入",
+  "title": "误入桃花源",
+  "current_state": "STORYBOARD_LOCKED",
+  "disposition": "ACTIVE",
+  "runtime_storage": {
+    "production_queue": {
+      "authority": "runtime_workspace",
+      "policy": "native_workspace_v1"
+    }
+  },
+  "updated_at": "2026-09-22T04:49:25",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-22T03:43:09",
+      "note": "用户 2026-09-22 提供完整锁定故事；locked_story 全自动生产"
+    },
+    {
+      "state": "STORYBOARD_LOCKED",
+      "at": "2026-09-22T04:49:24",
+      "note": "Story Lock 完成：docs 02/03 V1.1 + story semantic review PASS(attempt 2)；Recent-5/Concept Ambition/导演密度/角色/开场锚点门禁通过；delegated_auto_review 记录，非用户亲手审核。locked_story 仅逻辑与结构润色。",
+      "mode": "advance"
+    }
+  ]
+}

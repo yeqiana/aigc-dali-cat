@@ -1,0 +1,1181 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "误入桃花源",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 3,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      10,
+      12,
+      14
+    ],
+    "climax_frame": 15,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json",
+    "recent5_evidence_note": "已完成 meta/recent5-review.json 与 meta/recent5-semantic-review.json：对 10-01《鳌太线·热汤》、09-04《瓶中世界》的 exact/semantic similarity 均为 0，mechanism_veto=false；本集为第一人称普通大学生误入封闭古村的现实题材，无超自然机制、无调查/抢修等职业工具型主角。",
+    "competing_explanations_note": "两种竞争解释：A 山谷是真实存在的避秦后裔封闭聚落；B 三年焦虑症下主角的精神避难/躯体化幻觉。两种读法都有文本支撑，均不引入超自然机制。",
+    "four_locks_note": "四把锁：越界者=主角自己自愿越过石缝；关系人物=陌生长辈秦叔及其十五岁独子小石（非同行同伴、非功能型职业）；母题逻辑=封闭族群对外界知识的恐惧与自保；闭环方式=主角主动回到现实、回复老师并回拨母亲。相较最近 5 篇（10-01 山难、09-04 旧物），越界者/关系人物/母题逻辑三把锁均不同，故 four_locks_diff_count=3。"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      3,
+      5,
+      15
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01",
+        "location": "Mainland China",
+        "key_prop": "普通智能手机",
+        "wardrobe": "locked wardrobe contract",
+        "weather_time": "locked temporal continuity"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2024",
+      "location": "Mainland China",
+      "photographer": "P01",
+      "shooting_reason": "出门时单手随手记录，没顾上取景",
+      "primary_capture": {
+        "id": "locked_primary_capture",
+        "device": "普通智能手机"
+      },
+      "secondary_captures": [],
+      "secondary_source_explanation": null,
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "locked Capture Event frames use ordinary handheld or explicitly justified fixed capture",
+        "restricted": "walking, close-range, window, backlight and bridge constraints are declared per-frame in Capture Event Contract",
+        "lost_control": "not present in the locked Story; any uncontrolled capture outside the contract is invalid rather than accepted as evidence"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/误入桃花源/media/candidates/scheduled/01-7a7a09d14bde-a4.png",
+          "sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4",
+          "decision": "passed",
+          "frame_contract_sha256": "ff4d26d476ac49b7b053ae79fc2f698db006a871928842990f1e4736bf54dcae",
+          "note": "本篇用户直接指定：第1张沿用原合同；当前像素与原合同 SHA 绑定。"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 3,
+          "asset_path": "episodes/误入桃花源/media/candidates/scheduled/03-35c25b5d2999-a1.png",
+          "sha256": "5dfd2ab3e9ecc8b278968f4cff38a99a0f5dc4f049235535b41a7233c84200b2",
+          "decision": "passed",
+          "frame_contract_sha256": "0d6f958ce7d209816af81d541992033fcd0f468fb59ec71f95201956bec68889",
+          "note": ""
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 5,
+          "asset_path": "episodes/误入桃花源/media/candidates/scheduled/05-e427ce82f4be-a1.png",
+          "sha256": "7bed818faa1bb7f10425dc67ff47f9d2b0012b81c6b0ce5a98ddffedcc9f7b76",
+          "decision": "passed",
+          "frame_contract_sha256": "b908428b9176687576d59ab9c1d8db78ea57ea46e027af510ae748717e59a086",
+          "note": ""
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 15,
+          "asset_path": "episodes/误入桃花源/media/candidates/scheduled/15-e4aacdf69360-a1.png",
+          "sha256": "f7715994a73b37d9a985076ab47a96e28d52af936a1fc319dd49eafc674f535b",
+          "decision": "passed",
+          "frame_contract_sha256": "17e4c044431923c2b889bdae1dc85a7e20f68f6e332b5e2366c57dcc7a4896db",
+          "note": ""
+        }
+      ]
+    },
+    "calibration_contact_sheet": {
+      "path": null,
+      "sha256": null
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "southern China summer wet season with abrupt afternoon thunderstorms",
+      "baseline": {
+        "condition": "warm humid late afternoon wet-season air before a summer storm",
+        "time_of_day": "afternoon",
+        "temperature_feel": "hot and sticky before the rain, cooling fast once it stops",
+        "ground_state": "damp packed earth, wet leaf litter and soaked rock",
+        "visibility": "flat overcast daylight with low contrast",
+        "wind": "heavy still air broken by sudden pre-storm gusts",
+        "precipitation": "storm rain arrives during the walk and has stopped by dusk",
+        "physical_cues": [
+          "flat grey storm sky",
+          "sweat-damp skin and humid haze",
+          "wet leaf litter and dripping vegetation overhead",
+          "no direct sun, shadows soft and diffuse"
+        ]
+      },
+      "segments": [
+        {
+          "id": "S01_LATE_AFTERNOON_CAMPUS",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "humid late afternoon before a summer storm in a school corridor and on the overgrown back hill",
+          "time_of_day": "afternoon",
+          "temperature_feel": "hot and sticky, sweat-heavy",
+          "ground_state": "worn corridor floor turning to damp packed earth and waist-high wet grass",
+          "visibility": "flat overcast late afternoon light, dull and low contrast",
+          "wind": "still air with an occasional gust carrying rain smell",
+          "precipitation": "none yet, thunderstorm building",
+          "physical_cues": [
+            "flat grey pre-storm sky",
+            "sweat on skin and damp corridor surfaces",
+            "waist-high grass and a collapsed rusted wire fence",
+            "phone screen glare in dull light"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S02_STORM_RAIN_FOREST",
+          "start_frame": 3,
+          "end_frame": 4,
+          "condition": "steady storm rain soaking a wild peach forest and the mouth of a narrow rock crevice in late afternoon",
+          "time_of_day": "afternoon",
+          "temperature_feel": "wet and cold, chilled by the draft out of the crevice",
+          "ground_state": "slick red earth, rotting leaves and streaming wet rock",
+          "visibility": "rain-dimmed forest light outside, near total darkness inside the crevice",
+          "wind": "cold damp draft blowing out of the rock slit",
+          "precipitation": "steady rain with heavy dripping from leaves and rock",
+          "physical_cues": [
+            "pale wet peach petals stuck to bark and ground",
+            "wet dark lichen on low twisted trunks",
+            "dripping wire fern covering the rock slit",
+            "water beading along a dry stone channel that still holds fresh footprints"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "rain droplets and smeared water on the phone lens only while the camera is outdoors and exposed",
+              "when": [
+                "camera outdoors",
+                "lens exposed to rain"
+              ]
+            },
+            {
+              "effect": "lens and screen fogging from humidity only inside the damp crevice",
+              "when": [
+                "inside the rock crevice",
+                "lens close to wet rock"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S03_POST_STORM_DUSK_BASIN",
+          "start_frame": 5,
+          "end_frame": 7,
+          "condition": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+          "time_of_day": "dusk",
+          "temperature_feel": "cool and damp, valley air settling",
+          "ground_state": "wet stone paving and damp tilled fields",
+          "visibility": "clear but dim twilight, painfully bright when stepping out of a dark tunnel",
+          "wind": "light cooling air moving down the valley",
+          "precipitation": "none, wet ground and roof thatch still dripping",
+          "physical_cues": [
+            "blinding pale twilight sky seen from a dark tunnel mouth",
+            "humid sheen on stone slab paths",
+            "young rice in rows straight as if measured",
+            "rammed-earth walls and thatch roofs with no brick and no plastic in frame"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "wet sheen and shallow puddles on the stone slab paving",
+              "when": [
+                "stone paving visible",
+                "just after rain"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S04_DUSK_HEARTH_MEAL",
+          "start_frame": 8,
+          "end_frame": 8,
+          "condition": "early dusk inside a windowless rammed-earth house lit only by the cooking stove",
+          "time_of_day": "dusk",
+          "temperature_feel": "warm near the stove, cool away from it",
+          "ground_state": "dry packed-earth floor",
+          "visibility": "very low, orange stove light from below with deep shadow",
+          "wind": "no wind indoors, faint smoke drift",
+          "precipitation": "none indoors",
+          "physical_cues": [
+            "blue-grey pine smoke in the air",
+            "orange stove flames underlighting coarse pottery bowls",
+            "cracked wheat, salted wild onion and bitter bamboo shoots on the low table",
+            "no electric light, no wire and no plastic anywhere in frame"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "fine smoke haze in the air only close to the burning stove",
+              "when": [
+                "stove burning",
+                "low indoor light"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S05_MISTY_MORNING_VALLEY",
+          "start_frame": 9,
+          "end_frame": 9,
+          "condition": "soft misty morning filling the valley between the cliffs",
+          "time_of_day": "morning",
+          "temperature_feel": "cool and damp with heavy dew",
+          "ground_state": "dew-wet bamboo mat and damp stone",
+          "visibility": "milky morning mist veiling the cliff walls",
+          "wind": "gentle cool cross-draft through the house",
+          "precipitation": "none, heavy dew and dripping eaves",
+          "physical_cues": [
+            "milky mist unrolling between the cliffs",
+            "damp bamboo mat in a cross-draft",
+            "farm tools left drying by the stream",
+            "village children keeping their distance at the edge of frame"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S06_LATE_DUSK_WELL",
+          "start_frame": 10,
+          "end_frame": 14,
+          "condition": "late dusk at the old well as the last daylight fades behind the cliffs",
+          "time_of_day": "dusk",
+          "temperature_feel": "cooling quickly, air going still",
+          "ground_state": "dry stone well ledge and split bamboo strips",
+          "visibility": "dim twilight falling fast, faces lit by stove fire and the last sky light",
+          "wind": "almost no wind, air very still",
+          "precipitation": "none",
+          "physical_cues": [
+            "last warm rim of daylight on the cliff tops",
+            "stove fire reflected on faces from behind",
+            "a dead black phone screen lying on the stone slab",
+            "still air with no leaf movement"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "S07_WINDLESS_NIGHT_LAMP",
+          "start_frame": 15,
+          "end_frame": 15,
+          "condition": "windless black night inside the rammed-earth house, lit only by a low rapeseed-oil lamp",
+          "time_of_day": "night",
+          "temperature_feel": "cold night air, damp bedding",
+          "ground_state": "dry packed-earth floor and coarse straw mat",
+          "visibility": "a small yellow pool around the lamp flame and pure black beyond it",
+          "wind": "no wind at all",
+          "precipitation": "none, absolute stillness outside",
+          "physical_cues": [
+            "single low rapeseed-oil flame with a long black shadow",
+            "lamp light falling only on the mat and the two objects placed there",
+            "pit-black wall and ceiling beyond the light",
+            "seated figure reduced to a silhouette in the doorway"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "deep black falloff beyond the lamp light pool",
+              "when": [
+                "oil lamp turned low",
+                "no other light source"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S08_DAWN_FOG_FAREWELL",
+          "start_frame": 16,
+          "end_frame": 17,
+          "condition": "cold thick dawn fog whitening the valley and the crevice mouth",
+          "time_of_day": "dawn",
+          "temperature_feel": "raw cold, fog soaking through clothing",
+          "ground_state": "soaking wet rock, dripping moss and muddy ground",
+          "visibility": "dense flat white fog with very low contrast",
+          "wind": "still cold air",
+          "precipitation": "none, heavy condensation dripping from the rock ceiling",
+          "physical_cues": [
+            "water beads dripping from the rock ceiling",
+            "fog blanking the cliff walls to flat white",
+            "woven reed packages held in a mud-blackened hand",
+            "stone crevice mouth half swallowed by fog"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "condensation beading and dripping from the rock ceiling",
+              "when": [
+                "under the rock ceiling",
+                "cold damp air"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "S09_MORNING_OUTSIDE_WORLD",
+          "start_frame": 18,
+          "end_frame": 20,
+          "condition": "bright late morning daylight on the open hillside above the highway and the construction site",
+          "time_of_day": "morning",
+          "temperature_feel": "hot, dry and oppressive compared with the valley",
+          "ground_state": "dry dusty earth, gravel and asphalt lower down",
+          "visibility": "hard clear daylight with dust and heat haze over the road",
+          "wind": "strong hillside wind carrying exhaust, asphalt and dust",
+          "precipitation": "none",
+          "physical_cues": [
+            "hard morning sun glinting on truck metal and asphalt",
+            "rolling dust over the construction site",
+            "heavy trucks queued along the ring road",
+            "mud-caked broken sneakers on a steep dirt path"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "04": {
+          "condition": "enclosed wet rock crevice interior with dripping walls and no direct weather visible",
+          "time_of_day": "afternoon",
+          "ground_state": "wet slick rock under hand and knee with shallow gritty water",
+          "visibility": "near total darkness except the phone flashlight cone and a thin white light slit far ahead",
+          "physical_cues": [
+            "cold wet rock pressing in on both sides",
+            "sharp stalactites scraping the backpack zipper",
+            "dripping water echoing in a narrow void",
+            "a thin blinding white slit at the far end"
+          ]
+        },
+        "09": {
+          "condition": "soft misty morning in the valley, the frame standing in for three quiet days",
+          "time_of_day": "morning",
+          "physical_cues": [
+            "milky mist unrolling between the cliffs",
+            "motionless resting body on the damp bamboo mat",
+            "same flat morning light as the rest of the valley scenes"
+          ]
+        },
+        "17": {
+          "condition": "dawn fog thinning just enough to show cooking smoke and bent figures over the fields",
+          "time_of_day": "dawn",
+          "physical_cues": [
+            "cooking smoke rising straight into a white sky",
+            "rooster on the fence in flat fog light",
+            "bent figures already working the field rows",
+            "no colour or warmth added to the village"
+          ]
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "林舟举在胸前的手机和仍在不停弹消息的屏幕",
+          "身后空下来的成排阶梯教室座位",
+          "走廊惨白灯管与被汗浸湿的衣领"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "齐腰杂草里被暴雨冲垮一角的绿色铁丝网破口",
+          "通往南岭余脉的红土小径",
+          "手机信号一格格掉到最后彻底没有"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "03": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "虬曲低矮的野桃树与挂着雨水和粉白残瓣的枝",
+          "湿漉漉的墨绿地衣和铁线蕨",
+          "一条没人维护、渠底渠沿却留着当天脚印的干涸石渠",
+          "蕨叶后狭窄石缝里往外冒的阴冷穿堂风"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "04": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "贴身的湿冷岩壁与刮蹭书包拉链的尖锐钟乳石",
+          "手机电筒那点锥形光",
+          "裂缝尽头毫无预兆的一线惨白强光"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "05": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "四面环形绝壁扣住的狭窄盆地全貌",
+          "被灌溉渠切得横平竖直、像用尺子量过的棋盘状农田",
+          "清一色黑夯土墙茅草屋与笔直的青石板路",
+          "画面里找不到红砖、电线与塑料"
+        ],
+        "scale_reference": "站在盆地边缘的人只占画面极小一角，村舍和田垄按真人真屋比例铺开，用来量出洼地不过三四百亩的封闭尺度",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "06": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "砸进溪水的碎石与散开的水面涟漪",
+          "田埂上停在半路的动作和屋檐下停下的梭子",
+          "几十双同时转过来、被漫长岁月磨平的木讷眼睛",
+          "没有敌意也没有惊恐的集体静止"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "插进泥里的短锄与被泥土浸得发黑的手掌",
+          "林舟脚下开胶破旧的球鞋",
+          "村头田埂与低矮土屋的门洞"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "08": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "土灶橘红火光下的粗陶碗",
+          "碎麦饭、盐渍野葱、发苦竹笋与浑浊米酒",
+          "松木青蓝烟气与被磨得指纹模糊的手",
+          "屋里没有一根电线、找不到一片塑料"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "09": {
+        "narrative_role": "evidence",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [
+          "绝壁间像幕布一样拉开的乳白晨雾",
+          "穿堂风里的粗竹席与晒着的农具",
+          "远远跟着却不敢走近的村里孩子"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "10": {
+        "narrative_role": "escalation",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "石台上电量耗尽、屏幕漆黑的手机方块",
+          "小石一眨不眨的眼睛",
+          "手里削到一半的竹篾与老水井石沿"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "画面中心剥开的绿色硬糖与半管润喉薄荷糖",
+          "少年伸过来又缩回去的手",
+          "背对着在理竹条的秦叔背影"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "12": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "少年猛地暴凸一下的眼珠和僵住的脸",
+          "瞳孔深处突然烧起来的那簇火",
+          "最后一点天光和灶火在他脸上的分界线"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "被举到少年眼前却依然黑屏的手机",
+          "探过身来的少年上半身",
+          "远处仍在理竹条的秦叔背影"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "14": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_amplified",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "狠狠劈进剁木桩、把厚竹劈得粉碎的柴刀",
+          "秦叔死死按在颤抖刀柄上、始终没有抬起的头",
+          "田埂上停在半途的动作与隔壁院停下来的织机",
+          "整座山谷第二次、比第一次更彻底的静止"
+        ],
+        "scale_reference": "用田埂上定在半途的人和停下的织机作真实尺度，让整片山谷在同一秒停住；一个人的一刀被撑成整座村子的动作",
+        "escalation_from": 6,
+        "generation_depends_on": []
+      },
+      "15": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "床头那张被揉烂的绿色糖纸和半包湿纸巾",
+          "被挑得极低的一盏菜籽油灯火苗",
+          "只被灯照亮的一小块草席和门框里秦叔的剪影",
+          "灯圈之外全是黑"
+        ],
+        "scale_reference": "菜籽油灯只照亮床头一臂之内的范围，秦叔坐在低矮门框里被压成一个剪影；用人身和门框的真实尺寸量出灯圈之外那片黑的分量",
+        "escalation_from": 14,
+        "generation_depends_on": []
+      },
+      "16": {
+        "narrative_role": "transition",
+        "frame_mode": "normal_record",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "浓雾里被浸成惨白的石缝口",
+          "洞顶不断滴落的冷水",
+          "塞进手里的两个干荷叶包硬麦饼"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "17": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "照常升起、直直插向灰白天空的炊烟",
+          "篱笆上打鸣的公鸡",
+          "田垄间已经开始弯腰下地的人影",
+          "同一个村庄里再没有半点诗意的冷画面"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "18": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "山下绕城高速上连成长队的重型货车",
+          "工地打桩机与翻滚的泥尘",
+          "上午刺眼白昼下泛白的高速路面",
+          "前景里沾满泥的手和破球鞋"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "19": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "布满划痕、疯狂弹出未接来电和消息的手机屏",
+          "辅导员催实习证明的消息挂在最上面",
+          "母亲催面试的最新微信"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      },
+      "20": {
+        "narrative_role": "residue",
+        "frame_mode": "payoff",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "被咬开的干荷叶和冷硬干涩的麦饼",
+          "混着尾气与沥青味的半山腰风口",
+          "踩着满是泥的破球鞋走下山土路的背影"
+        ],
+        "scale_reference": "",
+        "escalation_from": null,
+        "generation_depends_on": []
+      }
+    },
+    "world_identity": {
+      "applicable": true,
+      "override_required": false,
+      "source": "GLOBAL_DEFAULT",
+      "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+      "profile_path": "config/profiles/world_identity/default.json",
+      "override_path": null,
+      "override_evidence": "meta/world-identity.json 不存在，PREIMAGE 输入快照 authority_sha256.world_identity=null，故本集按默认档生效，不新增覆盖文件",
+      "country": "China",
+      "region": "Mainland China",
+      "story_era": "2024 年当代",
+      "culture_context": "contemporary_mainland_chinese_daily_life：故事发生在南方山区某高校及其后山，人物全部为中国大陆本地居民",
+      "population": "中国大陆本地居民；P01 是 23 岁普通男大学生（重修考试失利、被实习证明与家里催促压着），不得英雄化或网红化；谷内村民是与大陆同源、世代封闭的避秦后裔，不是外国人或虚构族群",
+      "protagonist_identity": "ordinary Chinese young adult（默认 19-30 岁档，本集 P01=23）",
+      "language_context": "简体中文与普通话语境；秦叔的古怪口音按同一种中文的古老方言残余处理，不做外语化处理",
+      "architecture_context": "两处都是中国大陆真实建筑：现代高校后勤区、走廊与后山荒坡；绝壁盆地内的夯土茅草屋、青石板路、石渠与水井是中国前现代乡村建筑",
+      "traffic_context": "山脚绕城高速与工地按大陆公路、货车与打桩机惯例呈现",
+      "consumer_goods_context": "外来工业物只有主角随身物（智能手机、书包、薄荷糖与塑料糖纸、湿纸巾、干荷叶包麦饼）；谷内不得出现塑料、电器与现代工业制品",
+      "hard_rules": [
+        "不引入外国人群、外国建筑、外国交通惯例或外国文化道具",
+        "不强制民族特征，保留中国大陆自然的地域与民族多样性",
+        "谷内的古是物质文化层面的前现代，不构成虚构世界身份，因此不写 meta/world-identity.json、不另立世界规则",
+        "世界身份变更只能由用户或 Story 明确指定后走 meta/world-identity.json 覆盖，本集不覆盖"
+      ]
+    },
+    "world_state": {
+      "applicable": true,
+      "world_model": "双层现实：现代世界（2024 大陆高校与城市）与绝壁盆地内的封闭村落；两层都是真实物理世界，唯一通道是石缝，全程不引入超自然机制",
+      "initial_time": "afternoon_late",
+      "initial_location": "学校后勤处旁的阶梯教室走廊",
+      "initial_weather": "南方夏季暴雨前夕的闷热潮湿，午后雷雨前的土腥气",
+      "initial_character_state": "P01 独自一人，手心出汗、衣服被汗浸湿，只想找一个没有蜂窝信号的地方坐一会儿",
+      "recorder": {
+        "photographer_id": "P01",
+        "active_device": "普通智能手机",
+        "second_photographer": false,
+        "device_state": "开场满电并显示消息；谷中第 1-3 天耗尽电量后变成一块黑屏方块（Frame 10 起为黑屏；Frame 04 石缝内曾用手机电筒）；出谷后重新有电并恢复消息轰炸",
+        "device_visibility_rule": "手机在第一人称画面里可以自然入画；不得出现第二个拍摄者、自拍杆、无人机等本集不存在的记录设备"
+      },
+      "signal_and_access": {
+        "signal": "谷内没有蜂窝信号，这是主角进山的动机；谷内不得出现信号格、来电或消息推送",
+        "access": "石缝是唯一进出通道且极度逼仄；秦叔说明夏至山洪会把石缝用滚石彻底填死，之后不再通行"
+      },
+      "material_culture": {
+        "valley_forbidden": "无电线、无电力、无塑料、无现代工业制品、无现代建材（无红砖、无瓦片）",
+        "valley_present": "黑夯土墙、茅草覆顶、青石板路、灌溉渠、桑竹、粗陶器、粗布与家织土布、菜籽油灯、柴刀与剁木桩、松木灶火、粗竹席、老水井、荷叶包干粮",
+        "outside_world": "阶梯教室、荧光灯、连帽卫衣、双肩包、智能手机、微信群消息、绕城高速重卡、工地打桩机、沥青味与汽车尾气",
+        "import_rule": "外来工业物只有塑料糖纸被带进谷内并被秦叔当成必须清除的污染；任何一帧都不得让谷内长出电线、塑料或电器"
+      },
+      "persistent_props": [
+        "P01 的普通智能手机（谷中后段为黑屏方块）",
+        "洗得发白的双肩书包",
+        "磨平防滑纹、鞋头开胶的旧运动鞋",
+        "干涸石渠里被踩得发亮、还留着当天脚印的渠底（Frame 03 第一处可辨认证据）",
+        "秦叔的短锄（Frame 07）",
+        "秦叔的柴刀与剁木桩（Frame 14）",
+        "被揉烂的绿色塑料糖纸与半包湿纸巾（Frame 15 关键物证）",
+        "荷叶包着的硬麦饼（Frame 16 与 Frame 20）"
+      ],
+      "world_invariants": [
+        "山谷不是仙境也不是幻觉，而是一个封闭族群为了活命而自我封闭的世界；村民对越界者的态度是木讷温和，不是敌意或惊悚",
+        "村民几百年来按规矩限制生育、遇旱涝就勒紧裤腰带，山谷实际是一口枯井，不是丰饶乐园",
+        "外来知识（糖、铁鸟、琉璃屏、神仙灯火）会让年轻人再也握不住锄头，因此村里必须把越界者赶出去，本集的驱动力是这条规矩而不是怪物",
+        "村民动作在越界者被发现的瞬间会整体定格（Frame 06 与 Frame 14 两次），这是环境的集体反应，不是同步表演"
+      ],
+      "character_presence": "P01 全程在场；秦叔（短锄汉子）与秦家五口自 Frame 07/08 出现；十五岁独子小石自 Frame 10 起成为关键互动对象，并在 Frame 12-14 被点燃；Frame 17 之后离开山谷，不再出现任何村民",
+      "anomaly_phase": {
+        "segments": [
+          "Frame 01-04 ordinary",
+          "Frame 05 discovery",
+          "Frame 06-11 ordinary 与人情阶段",
+          "Frame 12 confirmation",
+          "Frame 13 human_consequence",
+          "Frame 14 causal_contradiction",
+          "Frame 15 reversal",
+          "Frame 17 与 Frame 20 payoff"
+        ],
+        "note": "全程无超自然证据；异常指的是不该存在于任何地图上的一座封闭村落，其冲击靠尺度参照与真实物理成立"
+      },
+      "environment_physics_note": "天气与光照按真实物理与拍摄现场成立，不做滤镜化；谷内外的空气质量、湿度与光比差异必须由真实环境造成"
+    },
+    "temporal_continuity": {
+      "applicable": true,
+      "binding": "本时间轴在提交后必须与已提交的 meta/world-state.json 绑定（source_world_state_sha256 与 world_state_synced=true）；世界状态漂移时时间轴必须随之重建，不得沿用旧绑定",
+      "timeline": [
+        "Frame 01-02 / D1 / afternoon_late：周五下午四点交卷后，暴雨前夕的闷热午后，从阶梯教室走廊到后勤处背后的荒坡铁丝网缺口",
+        "Frame 03 / D1 / afternoon_to_dusk：石灰岩梁后的野桃林与干涸石渠，天光转弱、空气阴湿，落花混雨",
+        "Frame 04 / D1 / dusk_no_daylight：石缝内部没有日照，只有手机电筒，出洞前看不到外面",
+        "Frame 05-07 / D1 / dusk：入谷当天黄昏，强逆光惨白、天色将黑，秦叔说天快黑了湿气重",
+        "Frame 08 / D1 / night：当夜在秦家土屋吃热食，光源只有松木灶火",
+        "Frame 09 / D2-D3 / dawn_to_dusk_montage：待了三天的时间跨度压缩，公鸡打鸣与晨雾拉开到午后竹席到夕阳斜照再到傍晚溪边听旧事；这是本集最大的时间跳跃，必须给出正数 elapsed_minutes 与 transition_reason",
+        "Frame 10-14 / D3 / dusk：第三天傍晚在老水井旁削竹篾、给糖、说外面的事、柴刀劈碎厚竹，黄昏天光缓慢转暮",
+        "Frame 15 / D3 / night：那夜无风、天黑得像倒扣的生铁锅，光源只有被挑低的菜籽油灯",
+        "Frame 16-17 / D4 / dawn：拂晓浓雾把山谷浸成惨白，送别与回望时炊烟照常升起",
+        "Frame 18-20 / D4 / morning：上午刺眼白昼，出洞、山脚高速与工地、半山腰风口看手机、下山；从夜到昼的最大跳变发生在这里"
+      ],
+      "weather_rule": "现代世界是 D1 夏季闷热将雨的午后与 D4 烈日燥热的上午；谷内是阴湿多雾的封闭微气候，D4 拂晓浓雾是最强湿度证据。天气不得滤镜化，也不得为了好看而随意改变",
+      "major_transition_rules": [
+        "D1 夜到 D2/D3 白天：跨夜跳变，必须给出正数 elapsed_minutes（不小于 480）与 transition_reason",
+        "D3 夜到 D4 拂晓：跨夜跳变，必须给出正数 elapsed_minutes（不小于 480）与 transition_reason",
+        "D4 拂晓到 D4 上午：光照由惨白雾光转为硬直射日光，必须给出 transition_reason",
+        "谷内与谷外是同一个上午的真实光照，不因空间是否封闭而改变物理时间",
+        "夜与昼或大幅天气与光照跳变不得静默发生；同一段落内的日间推进也必须单调、不倒退"
+      ],
+      "light_progression": "荧光灯（Frame 01）到天光（02/03）到电筒（04）到黄昏逆光（05-07）到灶火（08）到天光（09-11、13、14）到灶火与暮色交界（12）到菜籽油灯（15）到拂晓雾光（16-17）到烈日（18、20）到手机屏幕光（19）"
+    },
+    "wardrobe": {
+      "applicable": true,
+      "temperature_band": "夏季闷热潮湿；谷内阴湿偏凉（晨雾与穿堂风）",
+      "weather": "D1 闷热将雨，D4 上午烈日；谷内阴湿多雾",
+      "look_policy": "每个角色全片只有一套稳定造型；除泥污、雨水、汗湿与褶皱等物理变化外不得换装，任何换装都必须有可见的剧情理由",
+      "P01": {
+        "look_id": "P01_BASE",
+        "garments": "洗得发白的灰色连帽卫衣加深灰休闲长裤",
+        "footwear": "磨平防滑纹、鞋头开胶的旧运动鞋",
+        "headwear": "无；黑色自然短发被汗水和山雨打湿后略显蓬乱",
+        "carried": "洗得发白的双肩书包（侧兜装薄荷糖，后段装荷叶包麦饼）",
+        "state_changes": "越界后球鞋与裤脚逐渐沾满泥浆，卫衣被汗浸透并被雨水打湿；三天不换洗，只能在脏污与湿度上推进，不得忽然变干净或换上新衣"
+      },
+      "villagers": {
+        "rule": "全部为中国大陆前现代乡村土布衣着，不得出现现代面料、拉链、塑料、印花或工业染色的现代服装",
+        "秦叔": "挽起粗布裤脚的粗布短衫，手掌被泥土浸得发黑、指纹磨平，一嘴发黄的残牙；劳作时随身短锄与柴刀",
+        "织麻妇人": "粗麻与家织土布衣，劳作状态，站在屋檐下织机旁",
+        "幼童": "粗布短衣，赤脚在泥地里追逐",
+        "小石": "十五岁少年，粗布衣、赤脚或草鞋；Frame 12 起把绿色塑料糖纸攥皱偷偷塞进粗布衣襟，Frame 14 之后糖纸进入秦叔之手"
+      },
+      "physics": "衣着必须与夏季闷热或谷内阴湿、徒步攀爬与田间劳作的活动量匹配；不得出现与季节错配的保暖层或与劳作错配的精致时装；不得对女性角色做情色化取景",
+      "identity_consistency": "P01 的卫衣、长裤、破球鞋与书包必须逐帧一致，它既是身份锚点也是外头来的这一设定的视觉证据；村民衣着不得忽然现代化"
+    },
+    "narrative_core": {
+      "story_mode": "first_person_ordinary_reality_meets_sealed_village",
+      "anomaly_applicable": true,
+      "anomaly_family": "人间异常：一座被绝壁封了几百年的避乱后裔聚落；无任何超自然机制",
+      "core_visual_contrast": "校园与绕城高速的拥挤、湿热、轰鸣，对四面环形绝壁下那三四百亩整齐到不自然的封闭村落——没有红砖、没有塑料瓦、没有一根电线",
+      "relationship_arc": "现实压力出场（01-03）→ 误入并撞见山谷（04-07）→ 一顿穷饭与当面立规矩（08）→ 三天清静与中点重读（09-10）→ 知情越界赠糖（11-13）→ 反制与逐客（14-15）→ 退路将被封死与最后回望（16-17）→ 山下的轰鸣与压回来的现实（18-19）→ 咬碎麦饼选择回到河里（20）",
+      "midpoint": "Frame10 老水井旁：把前三天的“清静”一次性改判成“这村子几百年谁都没见过外面”，把秦叔的照顾改判成看管",
+      "visual_emotional_peak": "Frames14-15 一刀劈碎的厚竹与整谷第二次定格，接当夜油灯下的逐客翻案",
+      "ending": "Frame20 咬碎冷硬麦饼、回复老师、回拨母亲，带着山谷的残留走下山，回到那条一直往前滚的河",
+      "protagonist_visual_role": "P01 林舟：23 岁普通理工科本科生，非调查员/记者/科考队员，无任何专业异常处理职能；他的身份与技能都不能成为解开这个村子的捷径",
+      "theme_statement": "桃花源不是仙境，是一口枯井；外面的世界很累但一直在往前滚，山谷很静却是一潭死水",
+      "closure_props": [
+        "荷叶包的两块硬麦饼（他带出来的，也是他咽下去的）",
+        "绿色塑料糖纸（他带进去的，被当面退回来）",
+        "半包湿纸巾（被塞回书包的现代物）",
+        "始终没电、从头到尾没有真正亮过的黑屏手机"
+      ],
+      "forbidden": [
+        "灵力、法术、封印、结界、平行时空等超自然解释",
+        "把秦叔写成反派、怪物或邪教教主；他的动机是族群自保",
+        "把主角写成调查员、记者、科考队员或其他专业异常处理者",
+        "复刻真实明星或网红面孔；人物必须是原创、普通、可信的真人长相",
+        "商业摆拍、影楼光、瓷白皮或 AI 精致脸",
+        "山谷内出现电器、电线、塑料制品或现代建材",
+        "让手机在少年面前亮屏并展示任何真实画面",
+        "改写结尾：主角必须主动回到现实、回复老师并回拨母亲",
+        "用“更大的光”代替空间矛盾与人的后果来升级冲击力"
+      ]
+    },
+    "shot_progression": {
+      "source": "meta/shot-progression-review.json",
+      "source_status": "LOCKED",
+      "genre_family": "travel_anomaly",
+      "interaction_density": "NOT_APPLICABLE：本集是单人第一人称故事，固定人物锚点只有 P01；秦叔、小石等只在剧情中段出现，不是同行同伴，多人互动密度与开头群体互动规则按 review 的 exception_reason 不适用",
+      "grammar": "现实随手记录式第一人称；每一张先是一次可信的拍摄事件，再是一张叙事画面",
+      "scale_arc": "close → wide → medium → close → extreme_wide → wide → medium → close → wide → detail → close → close → medium → medium → close → wide → wide → extreme_wide → detail → medium",
+      "scene_reuse": "20 帧 scene_position_id 全不相同，无 exact scene_position_id 复用；Frame17 与 Frame05/06 是同景重读而非复用同一机位素材",
+      "lighting": "所有光源必须现场可得：走廊灯管、天光、阳光、手机电筒、手机屏幕、灶火、菜籽油灯；禁止无来源轮廓光与电影主光",
+      "practical_lighting_required": true,
+      "review_rules_applied": {
+        "max_identical_setup_consecutive": 2,
+        "min_unique_setups_in_5_frames": 3,
+        "frame10_requires_new_question_or_evidence": true,
+        "scale_only_escalation_is_not_enough": true,
+        "max_passive_human_frames_after_confirmation": 2,
+        "emotion_intensity_range": [
+          0,
+          4
+        ],
+        "emotion_trigger_required_at_intensity_gte": 2,
+        "synchronized_theatrical_reaction_forbidden": true,
+        "exact_scene_position_reuse_forbidden": true,
+        "min_cinematic_reference_frames": 2
+      },
+      "frame_rules": {
+        "frame01": "重修考交卷铃刚砸下的第一人称近景；辅导员点名与母亲五十九秒语音同时在屏上；现实压力与随身手机锚点先立起来",
+        "frame03": "第一处可辨认异常证据：没人维护的干涸石渠渠底与渠沿却被踩得发亮（当天的脚印），石缝里还冒出不该有的阴冷穿堂风；只给证据，不做解释",
+        "frame05": "本集唯一一次完整露出封闭盆地，用微缩模型般的规整村落提供最强停滑画面；逆光剪影，不做海报式对称",
+        "frame06": "落石一声后整座山谷第一次定格；村民是被漫长岁月磨平的温吞，不是惊恐；禁止同步戏剧化反应",
+        "frame08": "规矩由秦叔当着主角的面在饭桌上说出口（“外头的响动，别进娃们的耳朵”），使 Frame11 的赠糖成为知情越界而非无意失手",
+        "frame10": "中点改判：黑屏手机对照没有电线、没有塑料、整齐得像用尺子量过的田，把“清静”一次性读成“谁都没见过外面”",
+        "frame14": "一刀劈碎厚竹后整座山谷第二次定格，必须比 Frame06 更彻底（远处田埂的动作停在半途、织机声停、连狗都不叫），读得出整座山谷在同时执行规矩",
+        "frame17": "与 Frame05/06 同景重读：同样照常升起的炊烟被翻译成千年墓穴；画面元素不变，含义翻转",
+        "frame20": "用两个具体动作落地选择（咬碎麦饼 + 回复老师、回拨母亲），结尾不得改写"
+      },
+      "frames": [
+        {
+          "frame": "01",
+          "shot_scale": "close",
+          "scene_position_id": "campus_exam_corridor_phone_01",
+          "anomaly_logic_stage": "ordinary",
+          "function": "重修考交卷铃刚砸下，手机屏上辅导员点名与母亲语音并存，先把现实压力与随身手机锚点立起来"
+        },
+        {
+          "frame": "02",
+          "shot_scale": "wide",
+          "scene_position_id": "campus_backhill_fence_gap_02",
+          "anomaly_logic_stage": "ordinary",
+          "function": "从校园一口气推到无人荒坡的绿色铁丝网缺口，信号掉到零"
+        },
+        {
+          "frame": "03",
+          "shot_scale": "medium",
+          "scene_position_id": "wild_peach_crevice_mouth_03",
+          "anomaly_logic_stage": "ordinary",
+          "function": "野桃林与干涸石渠：没人维护的渠底渠沿却被踩得发亮，第一处可辨认证据"
+        },
+        {
+          "frame": "04",
+          "shot_scale": "close",
+          "scene_position_id": "crevice_tunnel_light_slit_04",
+          "anomaly_logic_stage": "ordinary",
+          "function": "石缝贴身爬行只留一线白光，越界由主角自己选择"
+        },
+        {
+          "frame": "05",
+          "shot_scale": "extreme_wide",
+          "scene_position_id": "basin_panorama_first_sight_05",
+          "anomaly_logic_stage": "discovery",
+          "function": "逆光第一次完整露出被绝壁扣住的封闭盆地"
+        },
+        {
+          "frame": "06",
+          "shot_scale": "wide",
+          "scene_position_id": "valley_collective_freeze_06",
+          "anomaly_logic_stage": "ordinary",
+          "function": "落石一声后整座山谷第一次定格，人物偏置留出检查空间"
+        },
+        {
+          "frame": "07",
+          "shot_scale": "medium",
+          "scene_position_id": "village_head_laoqin_greeting_07",
+          "anomaly_logic_stage": "ordinary",
+          "function": "秦叔近身、温和邀他进屋吃碗热食，紧张从危险转到说不出的不对劲"
+        },
+        {
+          "frame": "08",
+          "shot_scale": "close",
+          "scene_position_id": "qin_house_hearth_dinner_08",
+          "anomaly_logic_stage": "ordinary",
+          "function": "灶火穷饭与没头没尾的问句，同桌上把规矩当着主角的面说出口"
+        },
+        {
+          "frame": "09",
+          "shot_scale": "wide",
+          "scene_position_id": "valley_idle_three_days_mist_09",
+          "anomaly_logic_stage": "ordinary",
+          "function": "三天清静坐实，同时预埋中点重读的证据"
+        },
+        {
+          "frame": "10",
+          "shot_scale": "detail",
+          "scene_position_id": "well_side_black_phone_stare_10",
+          "anomaly_logic_stage": "ordinary",
+          "function": "中点改判：黑屏手机对照没有电线、没有塑料、尺子量过的田"
+        },
+        {
+          "frame": "11",
+          "shot_scale": "close",
+          "scene_position_id": "mint_candy_handover_11",
+          "anomaly_logic_stage": "ordinary",
+          "function": "知情越界：他在知道规矩的前提下把小石想要的工业糖果递过去"
+        },
+        {
+          "frame": "12",
+          "shot_scale": "close",
+          "scene_position_id": "xiao_shi_ignited_gaze_12",
+          "anomaly_logic_stage": "confirmation",
+          "function": "工业甜味与外面的描述同时击中少年，眼里烧起一簇火"
+        },
+        {
+          "frame": "13",
+          "shot_scale": "medium",
+          "scene_position_id": "describing_outside_world_13",
+          "anomaly_logic_stage": "human_consequence",
+          "function": "举着始终黑屏的手机描述外面，给的是描述不是证据"
+        },
+        {
+          "frame": "14",
+          "shot_scale": "medium",
+          "scene_position_id": "laoqin_cleaver_crack_14",
+          "anomaly_logic_stage": "causal_contradiction",
+          "function": "一刀劈碎厚竹后整座山谷第二次定格，比第一次更彻底"
+        },
+        {
+          "frame": "15",
+          "shot_scale": "close",
+          "scene_position_id": "oil_lamp_expulsion_night_15",
+          "anomaly_logic_stage": "reversal",
+          "function": "油灯、糖纸与湿纸巾：仙境翻案成一口枯井，是牢房"
+        },
+        {
+          "frame": "16",
+          "shot_scale": "wide",
+          "scene_position_id": "dawn_fog_farewell_crevice_16",
+          "anomaly_logic_stage": "ordinary",
+          "function": "拂晓告别，两个荷叶麦饼与一条将被山洪填死的退路"
+        },
+        {
+          "frame": "17",
+          "shot_scale": "wide",
+          "scene_position_id": "last_look_back_village_17",
+          "anomaly_logic_stage": "payoff",
+          "function": "最后一次回望，同样的炊烟被重读成千年墓穴"
+        },
+        {
+          "frame": "18",
+          "shot_scale": "extreme_wide",
+          "scene_position_id": "backhill_highway_roar_18",
+          "anomaly_logic_stage": "spatial_contradiction",
+          "function": "一山之隔：山头是封死的静，山下是高速与工地的轰鸣"
+        },
+        {
+          "frame": "19",
+          "shot_scale": "detail",
+          "scene_position_id": "hillside_phone_flood_19",
+          "anomaly_logic_stage": "ordinary",
+          "function": "被躲开的现实原封不动压回来，而且比他走之前更急"
+        },
+        {
+          "frame": "20",
+          "shot_scale": "medium",
+          "scene_position_id": "downhill_choice_reply_20",
+          "anomaly_logic_stage": "payoff",
+          "function": "咬碎麦饼、回复老师、回拨母亲，踩着泥球鞋走下山"
+        }
+      ]
+    },
+    "capture_grammar": {
+      "device": "P01 随身的一台普通智能手机；全集第一人称手持或随手记录，frame01/10/13/19 的黑屏与划痕必须可读",
+      "device_never_shows_content": "手机全程黑屏或只有消息提示，在少年面前从未真正亮过；他给的是一次描述，不是证据",
+      "photo_feel": "像当事人用普通手机随手拍到的即时感：轻微不完美、自然皮肤质感、非剧照摆拍",
+      "composition": "subject-first 随手取景，背景留真实生活痕迹，不做对称海报构图；Frame06/14 的群像定格把人物偏置一侧，把空出的青石板路与屋檐暗区留给观众反复检查",
+      "practical_lighting": "现实光源：走廊灯管、天光、阳光、手机电筒、手机屏幕、灶火、菜籽油灯；禁止无来源轮廓光与电影主光",
+      "modern_device_budget": "山谷可见画面必须大于 95% 无现代工业物（无电线、无塑料、无红砖、无塑料瓦）；唯一现代物是主角随身带入并被退回的糖纸与湿纸巾，以及始终黑屏的手机；主体现代感只由这件设备承担",
+      "realism_rule": "年代与采集设备的物理真实性优先于母风格质感；山谷的整齐靠像素成立而不是滤镜，也不靠“更大的光”升级冲击",
+      "village_restraint_rule": "村民不喊不叫、不表演惊恐；山谷的压迫来自全体同时定格与“被漫长岁月磨平的温吞”，不是怪物",
+      "continuity": "P01 身份与衣着锚点全 20 帧稳定：洗得发白的灰色连帽卫衣＋深灰休闲长裤＋磨平防滑纹的开胶旧球鞋、黑色自然短发；秦叔、小石等只在剧情中段出现、非同行同伴，不作为 P01 身份漂移的依据",
+      "anomaly_progression": "ordinary(01-04，越界由主角自选) → discovery(05 第一次看见封闭盆地) → ordinary(06-11，全谷定格与中点重读是把“清静”改判成事实，不是超自然) → confirmation(12 少年眼里的火) → human_consequence(13 描述外面) → causal_contradiction(14 整谷第二次定格) → reversal(15 仙境翻案成枯井/牢房) → ordinary(16 拂晓告别) → payoff(17 同景重读) → spatial_contradiction(18 一山之隔的静与轰鸣) → ordinary(19 现实压回) → payoff(20 选择回到河里)",
+      "anomaly_never_supernatural": "本集的“异常”只指封闭聚落与全体同时定格；不出现灵力、法术、封印、结界、平行时空，也不靠怪物或超自然解释制造恐怖"
+    },
+    "fast_frame_scout": {
+      "schema_version": 1,
+      "enabled": true,
+      "policy": "risk_based_v21",
+      "final_critic_still_required": true,
+      "decisions": [
+        "PASS_FAST",
+        "REPAIR_NOW",
+        "DEFER_TO_FINAL"
+      ],
+      "high_risk_required": true
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "waived",
+    "production": "waived",
+    "recommendation_fit": "passed",
+    "publish": "passed"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  },
+  "character": {
+    "finalize": {
+      "character": "P01 单人男主，第一人称 POV。普通男大学生，23 岁，中国大陆现代（2024）本地青年；全片仅此一个角色身份锚点，不新增同行同伴、不引入第二主角。",
+      "identity": {
+        "status": "LOCKED",
+        "source": "meta/character-contract.json + meta/character-visual-contract.json（两者 status=LOCKED）",
+        "origin": "原创角色，非任何真人、明星或网红相似",
+        "story_named_as": "林舟（锁定故事文本中辅导员消息称呼其名；character-contract 本身未定义姓名字段，此处仅作文本身份锚点，不新增合同字段）",
+        "face": "独立可辨的普通年轻人面孔；轻微不对称；自然可见皮肤纹理；无重度妆感、无 AI 网红脸、无瓷感皮肤、无过度对称；camera_friendly_but_believable=true",
+        "attractiveness": "moderately_above_average_but_real",
+        "reference_similarity_target": "low",
+        "celebrity_likeness": false,
+        "influencer_face": false,
+        "same_person_across_frames": true,
+        "forbidden_unmotivated_drift": [
+          "国籍/文化身份",
+          "显龄（apparent age）",
+          "面孔身份",
+          "发型或发长",
+          "体型",
+          "角色职能",
+          "服装锚点（除非 wardrobe 合同显式变更）"
+        ]
+      },
+      "pov": {
+        "character_id": "P01",
+        "first_person": true,
+        "stable_across_frames": true,
+        "note": "与锁定故事的第一人称自述一致：P01 即持机/被拍主体；全片不切换到他人视角。"
+      },
+      "appearance": {
+        "hair": "黑色自然短发；普通男大学生自剪短碎发（发梢长短略不齐、额前碎发自然垂落、鬓角短、无明显层次或造型），长度约耳上到耳中、后颈发脚偏低、无刘海造型；被汗水和山雨打湿后贴头皮、略显蓬乱",
+        "body_build": "lean_proportionate_natural（普通年轻人体型，非健身/模特体型）",
+        "allowed_state_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "exact_reference_hairstyle_copy": false
+      },
+      "wardrobe_baseline": {
+        "clothing_anchor": "洗得发白的灰色连帽卫衣 + 深灰休闲长裤 + 磨平防滑纹的开胶旧运动鞋",
+        "device_anchor": "普通智能手机（故事中为电量耗尽、屏幕漆黑的方块）",
+        "carry": "洗得发白的双肩包",
+        "rationale": "锁定故事明确写出同一套衣着与随身物；卫衣、长裤、旧运动鞋、双肩包、手机在进出山谷全程不更换，不因场景进入古村而替换为古装或新衣。",
+        "change_rule": "仅当 visual.wardrobe 合同显式变更时方可改动；本任务与下游生图不得擅自替换服装锚点。"
+      },
+      "world_identity": {
+        "profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+        "effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+        "resident_context": "mainland Chinese local residents",
+        "nationality_context": "Chinese"
+      },
+      "reality_priority": "现实质感优先：真实布料褶皱与使用痕迹、自然光下的皮肤质地；主角是考试失利的普通青年，不作为职业异常处理者出现。",
+      "pixel_master_relationship": "本候选仅为文本身份锚点；Visual Lock 通过后的像素母版才是更强的身份参照。",
+      "validation": {
+        "read_authority": [
+          "meta/character-contract.json（LOCKED）",
+          "meta/character-visual-contract.json（LOCKED）",
+          "meta/story-gates.json",
+          "meta/runtime-request.json（locked_story 锁定剧情）"
+        ],
+        "checks": {
+          "identity_source": "character-contract.cast.members[P01] + character-visual-contract.members.P01",
+          "pov_consistent_with_story": true,
+          "wardrobe_baseline_present": true,
+          "textual_appearance_anchor_present": true,
+          "cast_size_stable": "cast.size=1 / single_male，无成员增删",
+          "no_anomaly_test": "character-contract.no_anomaly_test.pass=true，rechecked_against_final_story=true"
+        },
+        "not_done": [
+          "未生成像素母版（pixel master 属 Visual Lock 产物）",
+          "未改写 Story、分镜或字幕",
+          "未写共享 authority、meta/episode-state.json 或 meta/story-gates.json"
+        ]
+      }
+    }
+  },
+  "release": {
+    "final_candidate_snapshot": {
+      "schema_version": 1,
+      "enabled": true,
+      "delivery_must_consume_snapshot": true,
+      "snapshot_is_authority": false
+    }
+  }
+}

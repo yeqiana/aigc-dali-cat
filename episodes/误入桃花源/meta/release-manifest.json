@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode": {
+    "id": "误入桃花源",
+    "series": "07_误入",
+    "title": "误入桃花源",
+    "format": "douyin_photo_carousel",
+    "aspect_ratio": "4:5"
+  },
+  "release": {
+    "version": "v1.0",
+    "body_frame_count": 20,
+    "publish_dir": "episodes/误入桃花源/production/publish",
+    "body_glob": "[0-9][0-9].png",
+    "cover_path": "episodes/误入桃花源/production/cover/cover.png",
+    "contact_sheet_path": null
+  },
+  "artifacts": {
+    "story": "episodes/误入桃花源/docs/02_误入桃花源_StoryLock_V1.1.md",
+    "storyboard": "episodes/误入桃花源/docs/03_误入桃花源_20张正式分镜_V1.1.md",
+    "visual_spec": "episodes/误入桃花源/meta/visual-profile.json",
+    "captions": "episodes/误入桃花源/meta/subtitles.yaml",
+    "publish_copy": "episodes/误入桃花源/release/publish-copy.md",
+    "production_review": "episodes/误入桃花源/release/production-review.md",
+    "propagation_card": "episodes/误入桃花源/release/propagation-card.md"
+  },
+  "quality": {
+    "production_gate": "pending",
+    "propagation_score": 8.8,
+    "s_min_score": 7.8,
+    "propagation_decision": "publishable",
+    "publish_decision": "go",
+    "decision_note": "直接用户终稿接受（meta/runtime/final-acceptance-events.jsonl）受控例外放行：帧语义/scout FAIL 证据原样保留；production_gate 保持 pending 不冒充通过；详见 release/production-review.md。"
+  },
+  "publication": {
+    "platform": "douyin",
+    "actual_title": "挂了科那天，我钻进后山一个没有信号的村子",
+    "description": "高数重修考的交卷铃一响，我第一个冲出教室。没回宿舍，也没去食堂，只想找个没信号的地方坐一会儿。\n\n学校后坡的铁丝网被暴雨冲垮了一角，我从缺口钻了进去，一直走到成片野桃林，再从一道被铁线蕨遮住的石缝里爬了进去。\n\n石缝那头是四面绝壁扣着的一块窄盆地，三四百亩地，田埂直得像用尺子量过，黑夯土墙的屋子一间挨着一间。没有一根电线，也找不到一片塑料。村里人看见我，没有害怕，只是慢慢直起腰看了一会儿，就有人说，天快黑了，先进屋吃碗热食。\n\n我在那儿待了三天，睡得比这三年都沉。直到第三天傍晚，我给了他们家十五岁的孩子一粒薄荷糖。\n\n天亮前，带我进村的人把我送到石缝口，让我顺着暗水流爬，别回头，也别再来。\n\n人物、地点、情节均为虚构；内容由 AI 生成。",
+    "topics": [
+      "中国式怪谈",
+      "第一人称",
+      "细思极恐",
+      "桃花源",
+      "乡野怪谈",
+      "现实向",
+      "AI图文故事"
+    ],
+    "pinned_comment": "回头看图08：整段山谷没有一根电线，没有一片塑料。那个孩子尝到糖之后的那个眼神，是这条山谷几百年里第一次被外面的东西照亮。虚构故事，AI 生成。",
+    "published_at": null,
+    "timing_window": null,
+    "post_url": null
+  },
+  "data_review": {
+    "report_path": "reports/数据验收报告.md",
+    "completed_checkpoints": [],
+    "first_hour_metrics": {
+      "captured_at": null,
+      "exposure": null,
+      "plays": null,
+      "likes": null,
+      "comments": null,
+      "saves": null,
+      "shares": null,
+      "followers_gained": null,
+      "profile_visits": null,
+      "avg_images_viewed": null,
+      "swipe_away_rate": null,
+      "caption_expand_rate": null
+    }
+  }
+}

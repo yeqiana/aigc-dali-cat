@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "derived_from_preimage_authority": true,
+  "initial_state": {
+    "time": "afternoon",
+    "location": "学校后勤处旁的阶梯教室走廊",
+    "weather": "humid late afternoon before a summer storm in a school corridor and on the overgrown back hill",
+    "characters": {
+      "P01": {
+        "gender": "male",
+        "age": 23,
+        "build": "普通年轻人体型",
+        "hair": "黑色自然短发，被汗水和山雨打湿后略显蓬乱",
+        "clothing_anchor": "洗得发白的灰色连帽卫衣+深灰休闲长裤+磨平防滑纹的开胶旧运动鞋",
+        "device_anchor": "普通智能手机",
+        "status": "present"
+      }
+    },
+    "recorder": {
+      "photographer_id": "P01",
+      "active_device": "普通智能手机"
+    },
+    "props": {
+      "P01 的普通智能手机（谷中后段为黑屏方块）": {
+        "state": "persistent"
+      },
+      "洗得发白的双肩书包": {
+        "state": "persistent"
+      },
+      "磨平防滑纹、鞋头开胶的旧运动鞋": {
+        "state": "persistent"
+      },
+      "干涸石渠里被踩得发亮、还留着当天脚印的渠底（Frame 03 第一处可辨认证据）": {
+        "state": "persistent"
+      },
+      "秦叔的短锄（Frame 07）": {
+        "state": "persistent"
+      },
+      "秦叔的柴刀与剁木桩（Frame 14）": {
+        "state": "persistent"
+      },
+      "被揉烂的绿色塑料糖纸与半包湿纸巾（Frame 15 关键物证）": {
+        "state": "persistent"
+      },
+      "荷叶包着的硬麦饼（Frame 16 与 Frame 20）": {
+        "state": "persistent"
+      }
+    },
+    "anomaly": {
+      "phase": "ordinary"
+    }
+  },
+  "frames": {
+    "01": {
+      "delta": {
+        "time": "afternoon",
+        "location": "学校后勤处旁的阶梯教室走廊",
+        "weather": "humid late afternoon before a summer storm in a school corridor and on the overgrown back hill",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "重修考交卷铃砸在头顶，林舟把写满潦草算式的答卷往前一推，低头冲出阶梯教室；掌心里的手机在湿热走廊里震个不停"
+    },
+    "02": {
+      "delta": {
+        "time": "afternoon",
+        "location": "学校后勤处背后的荒坡与铁丝网缺口",
+        "weather": "humid late afternoon before a summer storm in a school corridor and on the overgrown back hill",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "林舟没回宿舍也没去食堂，一路拐到学校后勤处背后的荒坡，从半人高的铁丝网缺口钻了进去"
+    },
+    "03": {
+      "delta": {
+        "time": "afternoon",
+        "location": "石灰岩梁后的野桃林与干涸石渠尽头",
+        "weather": "steady storm rain soaking a wild peach forest and the mouth of a narrow rock crevice in late afternoon",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "转过一道被雨水冲刷发白的石灰岩梁，林子变成成片野桃林，落花混着雨水砸在后颈上，空气里是花瓣与野草在阴暗处腐烂发酵后泛出的微酸冷甜；一条几乎被杂草淹没的干涸石渠横在面前，两头都被草盖住，可渠底和渠沿却被人踩得发亮——没人维护的渠，还留着当天的脚印；石渠尽头是被密密麻麻的铁线蕨遮住的狭窄石缝，阴冷的穿堂风正从缝隙里直往外冒"
+    },
+    "04": {
+      "delta": {
+        "time": "afternoon",
+        "location": "石缝通道内部",
+        "weather": "enclosed wet rock crevice interior with dripping walls and no direct weather visible",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "他想起早读课背过的“初极狭，才通人”，明知里面更不会有信号，还是关掉手机页面、打开电筒弯腰钻了进去；在极逼仄的石缝里摸着湿滑岩壁爬了百十来步，水滴在空洞里回响，眼前的岩缝突然裂开一道惨白的光"
+    },
+    "05": {
+      "delta": {
+        "time": "dusk",
+        "location": "环形绝壁下的盆地边缘乱石堆",
+        "weather": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+        "anomaly": {
+          "phase": "discovery"
+        }
+      },
+      "story_event": "林舟跌跌撞撞爬出乱石，抬手挡住刺眼的白光，整个人僵在原地——那不是仙境，而是一块被封在深渊底部的三四百亩洼地"
+    },
+    "06": {
+      "delta": {
+        "time": "dusk",
+        "location": "盆地田埂与屋檐之间",
+        "weather": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "他的破球鞋带下一块碎石砸进溪水，“咚”的一声之后，整个山谷的动作同时定格，所有人木讷地看向他的连帽衫和双肩包"
+    },
+    "07": {
+      "delta": {
+        "time": "dusk",
+        "location": "村头田埂边",
+        "weather": "pale storm-washed dusk light over an enclosed basin after the rain has stopped",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "汉子把短锄插进泥里走过来，用舌根发硬的古怪口音平静地问他是不是外头来的，又看了看他的球鞋，说天快黑了、湿气重，先进屋吃碗热食"
+    },
+    "08": {
+      "delta": {
+        "time": "dusk",
+        "location": "村头秦家土屋土灶旁",
+        "weather": "early dusk inside a windowless rammed-earth house lit only by the cooking stove",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "土屋里没有一根电线、找不到一片塑料，空气里只有松木的青蓝烟气；秦家五口默默围坐，秦叔就着瓦罐喝了一口酒，淡淡问了一句“外头，还争吗？”；林舟把这些年的争一件件说给他听，秦叔讲完老祖宗当年逃进来、天子要兵将领要粮的事，把碗底最后一口米酒喝干，才补上一句不高不低的话：“外头的响动，别进娃们的耳朵。”说完叫小石把弟妹带回里屋睡了"
+    },
+    "09": {
+      "delta": {
+        "time": "morning",
+        "location": "秦家土屋外竹席与溪边",
+        "weather": "soft misty morning in the valley, the frame standing in for three quiet days",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "头两天他几乎以为自己掉进了精神疗养院：跟着公鸡醒来、看晨雾拉开、午后睡到夕阳斜照、傍晚在溪边听老人讲对不上年号的旧事；三年焦虑症好像突然自愈，心跳第一次缓得像谷里的死水。但这三天里他每提一句外头的事，秦家人只是听着、谁都不接话；村里的孩子远远跟着他看，不敢走近"
+    },
+    "10": {
+      "delta": {
+        "time": "dusk",
+        "location": "村头老水井旁",
+        "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "第三天傍晚，他坐在老水井旁帮秦叔削竹篾，十五岁的小石蹲在旁边，眼睛一眨不眨盯着那台早就没电的黑屏手机；他忽然把前三天重新看了一遍——没有电线、没有塑料、整齐得像用尺子量过的田，这些不是清静，是这村子几百年里谁都没见过外面；秦叔留他吃饭、留他住，也不全是待客，是把他放在规矩里看着"
+    },
+    "11": {
+      "delta": {
+        "time": "dusk",
+        "location": "老水井旁的石台边",
+        "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "他从书包侧兜摸出最后半管润喉薄荷糖，剥出一粒绿色的递过去；小石怯生生看了父亲一眼，见秦叔背对着在理竹条，飞快地把糖塞进嘴里"
+    },
+    "12": {
+      "delta": {
+        "time": "dusk",
+        "location": "老水井旁石台前",
+        "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "工业提纯的浓烈薄荷脑直冲上来，少年整个人像被电击中一样僵住，声音发着抖问“这是什么果子”；而他从那片黑玻璃里听来的铁鸟、大海和月亮，让那双眼睛里烧起他在每个自习室和招聘会上见过的火"
+    },
+    "13": {
+      "delta": {
+        "time": "dusk",
+        "location": "老水井旁石台前",
+        "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "他笑了笑，顺手拿起那台黑屏手机晃了晃，说在外面这东西想要多少有多少，要是它有电，能看见一万公里外的大海、天上飞的铁鸟，还有月亮其实就是个坑坑洼洼的大石头"
+    },
+    "14": {
+      "delta": {
+        "time": "dusk",
+        "location": "老水井旁剁木桩边",
+        "weather": "late dusk at the old well as the last daylight fades behind the cliffs",
+        "anomaly": {
+          "phase": "causal_contradiction"
+        }
+      },
+      "story_event": "一声极脆的裂响刺破黄昏：秦叔手里的柴刀偏了半寸，把一根厚竹劈得粉碎；他手按在刀柄上，声音平得像结了冰的深潭，只说了一句“小石，后山的羊圈该关了。去。”；那一声之后整座山谷第二次定了格，比 Frame 06 那次更彻底——远处田埂上的动作停在半途，隔壁院的织机声也停了，连狗都不叫"
+    },
+    "15": {
+      "delta": {
+        "time": "night",
+        "location": "秦家土屋草席床头",
+        "weather": "windless black night inside the rammed-earth house, lit only by a low rapeseed-oil lamp",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "那夜没风，天幕黑得像扣下来的生铁锅；门轴吱呀一声，秦叔端着菜籽油灯进来，把糖纸和湿纸巾放在他床头，说天亮前出山去，又讲这山谷从来不是什么仙境，是一口枯井——人要活命，就只能把这口井当成天地"
+    },
+    "16": {
+      "delta": {
+        "time": "dawn",
+        "location": "石缝入口外的浓雾中",
+        "weather": "cold thick dawn fog whitening the valley and the crevice mouth",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "拂晓时分寒雾把山谷浸成惨白；秦叔把他送到石缝前，塞给他两个用晒干的荷叶包着的硬麦饼，说顺着暗水流的方向爬、别回头，等夏至山洪下来这道缝就会被滚石彻底填死"
+    },
+    "17": {
+      "delta": {
+        "time": "dawn",
+        "location": "石缝口回望盆地村落",
+        "weather": "dawn fog thinning just enough to show cooking smoke and bent figures over the fields",
+        "anomaly": {
+          "phase": "payoff"
+        }
+      },
+      "story_event": "钻进石缝的最后一瞬，他回过头看了一眼：炊烟照常升起，公鸡照常啼叫，可他眼里再也没有了那种诗意，只看见一群难民的后代用世世代代的封闭给自己修的千年墓穴"
+    },
+    "18": {
+      "delta": {
+        "time": "morning",
+        "location": "学校后山出洞处，面向绕城高速与工地",
+        "weather": "bright late morning daylight on the open hillside above the highway and the construction site",
+        "anomaly": {
+          "phase": "spatial_contradiction"
+        }
+      },
+      "story_event": "他拨开洞口湿烂的藤蔓滚出后山，上午刺眼的白昼晃得眼睛生疼；山脚下高速货车的轰鸣像海啸撞进耳膜，打桩机的震动顺着地表传上来，震得脚踝发麻"
+    },
+    "19": {
+      "delta": {
+        "time": "morning",
+        "location": "后山半山腰风口",
+        "weather": "bright late morning daylight on the open hillside above the highway and the construction site",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "口袋里的手机突然疯狂震动，未接来电和提示音连成一片；辅导员说明早九点前必须交实习证明，母亲说表哥已经帮他约好了下周二的面试，让他把衣服穿整齐点"
+    },
+    "20": {
+      "delta": {
+        "time": "morning",
+        "location": "后山下山土路",
+        "weather": "bright late morning daylight on the open hillside above the highway and the construction site",
+        "anomaly": {
+          "phase": "payoff"
+        }
+      },
+      "story_event": "他站在风口里把那口混着尾气与沥青味的浊气吸进肺里，咬碎冷硬的麦饼，给辅导员回“收到，老师，我周一上午当面交您”，再按下母亲的通话回拨键，然后踩着满是泥的旧球鞋头也不回地走下山"
+    }
+  }
+}

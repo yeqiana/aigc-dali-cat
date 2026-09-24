@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "rules": {
+    "delete_frame_test": true,
+    "max_frames_without_strong_progress": 5,
+    "max_repeated_visual_without_new_information": 2
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "重修考交卷和手机上两屏消息立起主角的现实压力，删掉就无法解释他为什么往外走。"
+    },
+    {
+      "frame": "02",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "从校园走廊推到后勤处背后的荒坡和铁丝网缺口；进去后手机信号一格一格掉到没有、他关机省电，他和外面那根线在这里被物理切断。"
+    },
+    {
+      "frame": "03",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "植被和地面从人工湿地松变成野桃林与干涸石渠；渠底渠沿被人踩得发亮是全集第一处可辨认证据——没人维护的渠，脚印却是新的。"
+    },
+    {
+      "frame": "04",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "石缝内的压迫感和一线白光把不确定推到最大，他明知里面更不会有信号还是自己钻了进去；删掉后面的揭示就没有铺垫。"
+    },
+    {
+      "frame": "05",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "第一次完整看见绝壁下的封闭盆地村落，是本集的核心证据与停滑画面。"
+    },
+    {
+      "frame": "06",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "全体村民同时定格注视，把这里不属于外面从风景升级成事实。"
+    },
+    {
+      "frame": "07",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "秦叔第一次开口并邀他进屋，确立村里人的温和与古怪口音这组矛盾。"
+    },
+    {
+      "frame": "08",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "秦家土屋的无电、松烟与碎麦饭，加上“外头还争吗”这一问，再把“外头的响动别进娃们的耳朵”这条规矩当着主角的面说出口——删掉它，第 11 帧就不再是有代价的越界。"
+    },
+    {
+      "frame": "09",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "三天里的晨雾与午睡让他真的松下来，同时埋下“他每提外头的事秦家人都不接话、孩子远远跟着看”；缺这一帧，中点的改判和第 15 帧的逐客都不构成代价。"
+    },
+    {
+      "frame": "10",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "中点把前三天重新看一遍，把“没有电线、没有塑料、田整齐得像尺子量过”从清静改判成谁都没见过外面，把照顾改判成看管；不是单纯升级，而是改判前文证据。"
+    },
+    {
+      "frame": "11",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "那粒工厂薄荷糖是全篇的引信，删掉后面所有后果都不成立。"
+    },
+    {
+      "frame": "12",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "少年眼里烧起的那簇火确认了外面的东西对这个村子意味着什么。"
+    },
+    {
+      "frame": "13",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "他描述的大海、铁鸟与月亮，把外面从一颗糖升级成整套生活方式。"
+    },
+    {
+      "frame": "14",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "秦叔一刀劈碎厚竹并支开儿子，那一声之后整座山谷第二次定格、比第一次更彻底，证明规矩是整座山谷在同时执行，是恐惧对好奇的反制。"
+    },
+    {
+      "frame": "15",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "半夜提灯、糖纸和湿纸巾、天亮前出山，把桃花源彻底翻成一口枯井。"
+    },
+    {
+      "frame": "16",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "拂晓浓雾里的告别和两个荷叶麦饼，是结尾闭环必须回收的实物。"
+    },
+    {
+      "frame": "17",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "同样的炊烟与下地人影第二次出现却只剩森冷，删掉母题就没有落地。"
+    },
+    {
+      "frame": "18",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "爬出洞口后高速轰鸣与打桩机把空间关系反转，点明山谷与现实只有一山之隔。"
+    },
+    {
+      "frame": "19",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "辅导员催实习证明、母亲催面试的消息原封不动压回来，证明山谷没有替他解决任何事。"
+    },
+    {
+      "frame": "20",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "咬下那口麦饼、回复老师、回拨母亲，用动作收束全篇的选择。"
+    }
+  ]
+}

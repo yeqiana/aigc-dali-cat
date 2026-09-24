@@ -1,0 +1,143 @@
+{
+  "release_checks": {
+    "cover_title_match": true,
+    "cover_frame01_handoff": true,
+    "first3_coherence": true,
+    "climax_upgrade": true,
+    "payoff_honesty": true,
+    "description_consistency": true,
+    "no_caption_invented_core_evidence": true,
+    "subtitle_left_middle_and_unobstructed": true,
+    "caption_conversational_hook_quality": true,
+    "no_unverifiable_real_group_accusation": true,
+    "real_location_handled_as_fictional_story_context": true
+  },
+  "issue_codes": [],
+  "notes": [
+    "封面实际叠字与给定标题一致；封面/首帧均为考后湿走廊自拍，第二帧转入后山铁网缺口，第三帧沿桃林石渠进入石缝，入口连续。",
+    "指定高潮帧15实际呈现油灯、被退回的绿色糖纸与湿纸巾及门口人影；它兑现赠糖后果并推动天亮前离村。指定结尾帧20实际呈现咬食麦饼、下山与现代车流，回收离村和返回现实。",
+    "正文注明人物地点情节虚构、内容由AI生成；话题未指向真实地点、群体或现实案件。字幕简短，每帧不超过一行，未见扩写出缺失的核心画面证据。",
+    "subtitle-layout-audit 与 caption-image-audit 均为 PASS；20 帧输出哈希与当前发布图一致，字幕源哈希匹配，全部帧通过支持性与无遮挡检查。"
+  ],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "artifacts": {
+    "cover": {
+      "path": "episodes/误入桃花源/production/cover/cover.png",
+      "sha256": "0df9caaba1ffa59aed54b1705ecbb8586e40a918d28201e6969f66c98e831125"
+    },
+    "body01": {
+      "path": "episodes/误入桃花源/production/publish/01.png",
+      "sha256": "0bd671df4a286c71a55dbb695c9fbea933105d10f8a17396ae5b4103239094b0"
+    },
+    "body02": {
+      "path": "episodes/误入桃花源/production/publish/02.png",
+      "sha256": "208f6ef0beb27722e1e5283f7eddf9e019266d0d1a6f14ebc5b9adc3e49c94cd"
+    },
+    "body03": {
+      "path": "episodes/误入桃花源/production/publish/03.png",
+      "sha256": "f70221d14a546a7cdce552d96dc81ec20db39c8eb29df41911120a0f2691651a"
+    },
+    "body04": {
+      "path": "episodes/误入桃花源/production/publish/04.png",
+      "sha256": "99be58b841efead8f9c8fe695687761ed3ecc718a6bf1654d3d4dae906dac191"
+    },
+    "body05": {
+      "path": "episodes/误入桃花源/production/publish/05.png",
+      "sha256": "9dd9c1e7c502cb9b7ea6fad1cf62416a8dfdcf8b096b61690b88681e35f7f6e1"
+    },
+    "body06": {
+      "path": "episodes/误入桃花源/production/publish/06.png",
+      "sha256": "1be9570bc37f3da1d345c0d2838517de01af3e44877fbae907ce11dfa0fe2cf1"
+    },
+    "body07": {
+      "path": "episodes/误入桃花源/production/publish/07.png",
+      "sha256": "2834de6619812a2a8ce1d99817f33291567a66dc461879d8e75a285d4f3a606f"
+    },
+    "body08": {
+      "path": "episodes/误入桃花源/production/publish/08.png",
+      "sha256": "f4d6062b51e858fda7598ab706ec71d4bcdb609eeaef63be08d489d972d0b50f"
+    },
+    "body09": {
+      "path": "episodes/误入桃花源/production/publish/09.png",
+      "sha256": "9f15495bcdd943a4ef39fe98eee7b97b020ba23810878c74ded660a9ff41c5f2"
+    },
+    "body10": {
+      "path": "episodes/误入桃花源/production/publish/10.png",
+      "sha256": "0a8c067df6048a8801539b48c35a7dccd26615baac5e9bd5d083887a40763463"
+    },
+    "body11": {
+      "path": "episodes/误入桃花源/production/publish/11.png",
+      "sha256": "4817cae9812f96cd5b34d985a0b0a1266c7fa9ac15427fb05267f8c85eed2b09"
+    },
+    "body12": {
+      "path": "episodes/误入桃花源/production/publish/12.png",
+      "sha256": "c8d496b9d388b0e3dc4b3dbee784a8abc1a0dabf6c381c9e5e67b41c0c80bd60"
+    },
+    "body13": {
+      "path": "episodes/误入桃花源/production/publish/13.png",
+      "sha256": "1bf31eac806ad98cbc08fe7704d54d2e1760ac289484a44e365c9208de1b43d5"
+    },
+    "body14": {
+      "path": "episodes/误入桃花源/production/publish/14.png",
+      "sha256": "6764e3c676a0de85b04fb46404ab3d5c5345cda9a0628f0bff7396a99efd6c7f"
+    },
+    "body15": {
+      "path": "episodes/误入桃花源/production/publish/15.png",
+      "sha256": "9805b12ff675fbeab675041c88c83d0b1936116a71923380dd1af09579d0303a"
+    },
+    "body16": {
+      "path": "episodes/误入桃花源/production/publish/16.png",
+      "sha256": "971766ae528091b9a77ca50821956140cb22c86bab145f5ef05d8ac2bc7f812e"
+    },
+    "body17": {
+      "path": "episodes/误入桃花源/production/publish/17.png",
+      "sha256": "a44e26f0597a6bb547c406e7f827fb60ee8562b29f009f8654d12417ae6ef477"
+    },
+    "body18": {
+      "path": "episodes/误入桃花源/production/publish/18.png",
+      "sha256": "06a4b91df1178fd9e61fcb0229623c21c8014c1bb1062dd4b38d3f13db1723d9"
+    },
+    "body19": {
+      "path": "episodes/误入桃花源/production/publish/19.png",
+      "sha256": "48df54741403163c49f7a642533d5a5f2618e5544737dc644a7293d849952c31"
+    },
+    "body20": {
+      "path": "episodes/误入桃花源/production/publish/20.png",
+      "sha256": "303d2cba3e960ab56bb6a21755866502f8fa25e00ffcfed293c5925ee2c86450"
+    },
+    "climax": {
+      "path": "episodes/误入桃花源/production/publish/15.png",
+      "sha256": "9805b12ff675fbeab675041c88c83d0b1936116a71923380dd1af09579d0303a"
+    },
+    "payoff": {
+      "path": "episodes/误入桃花源/production/publish/20.png",
+      "sha256": "303d2cba3e960ab56bb6a21755866502f8fa25e00ffcfed293c5925ee2c86450"
+    },
+    "captions": {
+      "path": "episodes/误入桃花源/meta/subtitles.yaml",
+      "sha256": "8abb71225472d2be923e417d36cd64d7397f8863e49f1405d50df5acb75f95a0"
+    },
+    "publish_copy": {
+      "path": "episodes/误入桃花源/release/publish-copy.md",
+      "sha256": "d98149a69288eee7547c7bdea20503224a3ec1bca521a347fc7dbe02b76f15e7"
+    },
+    "propagation_card": {
+      "path": "episodes/误入桃花源/release/propagation-card.md",
+      "sha256": "ec065b68c8450f4c02efb6d0e0c6b43a3ddf36e4df20a481ce7bad7a43348dbf"
+    }
+  },
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-23T21:05:54+08:00",
+    "log": "episodes/误入桃花源/meta/release-critic.jsonl"
+  }
+}

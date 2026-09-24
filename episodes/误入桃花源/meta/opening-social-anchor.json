@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "applicable": false,
+  "mode": "not_applicable",
+  "reason": "本集为单人第一人称独行故事：主角林舟一个人进山散心，全片唯一固定人物锚点是 P01，没有多人同行/返乡/出游的朋友团体可建立关系。",
+  "exception_reason": "Runtime Request 为单人锁定故事（cast= single_male，P01 第一人称）。故事从阶梯教室独自离场到独自钻进后山，村中秦叔、小石等属于剧情中段出现的他人，不是同行同伴，无法在 Frame 01-02 用 2 人以上自拍建立团体关系。若强行加入自拍群像会违背锁定剧情，因此判定 opening social anchor 不适用。",
+  "opening_frames": [],
+  "rules": {
+    "preferred_frame_range": [1, 2],
+    "preferred_contexts": ["vehicle", "destination_checkin"],
+    "selfie_required_when_applicable": true,
+    "minimum_people_visible": 2,
+    "establish_relationship_before_anomaly": true,
+    "strong_anomaly_forbidden_in_opening_anchor": true,
+    "commercial_or_staged_group_photo_forbidden": true,
+    "allow_exception_with_reason": true
+  }
+}

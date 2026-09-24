@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "principle": "A frame must first be a credible capture event, then a narrative image.",
+  "max_causal_defects_per_frame": 2,
+  "derived_from_preimage_authority": true,
+  "frames": {
+    "01": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "出门时单手随手记录，没顾上取景",
+      "device_position": "P01 冲出阶梯教室门口时切到手机前置镜头，边走边举在胸前拍到自己的清晰正脸与走廊背景",
+      "subject_awareness": "partial",
+      "operator_state": "act; urgent",
+      "framing_constraint": "近距离前置自拍，P01清晰正脸完整入镜，不裁切，不遮挡",
+      "retained_reason": "先用一场重修考和两屏消息把主角的现实压力与随身手机锚点立起来，交代他为什么要往外走",
+      "causal_defects": []
+    },
+    "02": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "钻进去前回头看了一眼，随手拍下这个缺口",
+      "device_position": "蹲身在齐腰荒草里，低角度仰看被暴雨冲垮一角的绿色铁丝网缺口",
+      "subject_awareness": "partial",
+      "operator_state": "move; ordinary",
+      "framing_constraint": "远景",
+      "retained_reason": "把普通校园一口气推到无人荒坡，告诉观众他已经离开有人和信号的地方",
+      "causal_defects": []
+    },
+    "03": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "钻进石缝前顺手照了一张，想留个记号",
+      "device_position": "弯腰站在石渠边，手机电筒照向被野生铁线蕨遮住的狭窄石缝",
+      "subject_awareness": "partial",
+      "operator_state": "notice; curious",
+      "framing_constraint": "中景",
+      "retained_reason": "用野桃林、蕨叶和石缝把现实山林过渡到入口，同时把第一处可辨认证据交给画面：一条没人管的干渠，脚印却是新的",
+      "causal_defects": []
+    },
+    "04": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "爬行途中灯照着前方，顺手按了一下",
+      "device_position": "石缝内贴身仰拍，手机电筒贴着湿冷岩壁向前，前方是一线惨白光缝",
+      "subject_awareness": "partial",
+      "operator_state": "move; alert",
+      "framing_constraint": "近景; 两侧湿冷岩壁与尖锐钟乳石在手机电筒前形成的真实遮挡",
+      "retained_reason": "把空间压到最窄，用一线光把“要出去了”和“不知道外面是什么”同时放在画面里；这一次越界是主角自己选的，不是被带进去的",
+      "causal_defects": []
+    },
+    "05": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他下意识举起手机，把刚看清的东西拍了下来",
+      "device_position": "从乱石堆里爬出后站定的第一人称大远景，逆着惨白强光望向绝壁底部",
+      "subject_awareness": "partial",
+      "operator_state": "observe; alert",
+      "framing_constraint": "远景",
+      "retained_reason": "本集第一次把“误入桃花源”完整露出来，用微缩模型般的规整村落提供最强的停滑画面",
+      "causal_defects": []
+    },
+    "06": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他僵在原地，手没放下，镜头也是这样歪的",
+      "device_position": "站在田埂这侧，把人物放在画面一侧、让空出来的石板路和田垄成为第二信息区",
+      "subject_awareness": "partial",
+      "operator_state": "observe; uneasy",
+      "framing_constraint": "远景",
+      "retained_reason": "用一个瞬间的集体静止把“这里不属于外面”从风景变成事实，制造第一次真正的发毛",
+      "causal_defects": []
+    },
+    "07": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他被领着往前走，手机还举在手里",
+      "device_position": "从下往上略带仰角的近身平视，汉子走到他面前、短锄插在泥里",
+      "subject_awareness": "aware",
+      "operator_state": "discuss; alert",
+      "framing_constraint": "中景",
+      "retained_reason": "让第一个开口的村里人显得温和而不是威胁，把观众的紧张从“危险”转到“说不出的不对劲”",
+      "causal_defects": []
+    },
+    "08": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "碗端在手里，随手拍了一张桌上的饭",
+      "device_position": "土灶旁坐下来后的侧低角度近景，橘红灶火从下方打亮粗陶碗",
+      "subject_awareness": "aware",
+      "operator_state": "discuss; relaxed",
+      "framing_constraint": "近景",
+      "retained_reason": "用一顿真正的穷饭和一个没头没尾的问句，把这个村子和他生活的那套评价体系摆到同一张桌上；并在同一桌上把村子的规矩当着主角的面说出口：外头的东西不许进娃的耳朵",
+      "causal_defects": []
+    },
+    "09": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "早上醒来躺在竹席上随手拍的一张",
+      "device_position": "躺在穿堂风吹过的粗竹席上，向绝壁方向平拍的清晨远景",
+      "subject_awareness": "partial",
+      "operator_state": "observe; relaxed",
+      "framing_constraint": "远景; 绝壁之间清晨真实存在的水汽晨雾",
+      "retained_reason": "把“这里其实很舒服”坐实，同时预埋中点重读所需的证据：他的清静，是这村子把外面彻底关掉之后的样子",
+      "causal_defects": []
+    },
+    "10": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "削竹篾的手停下来，他把手机摆在石台上拍了一张",
+      "device_position": "蹲在水井边削竹篾时，越过自己膝头俯拍到石台上那块黑屏手机",
+      "subject_awareness": "partial",
+      "operator_state": "notice; curious",
+      "framing_constraint": "特写",
+      "retained_reason": "中点把问题从“这是什么地方”换成“他们没见过什么”，并把前面所有“清静”的证据一次性改判成“看管”，用一个黑屏物件把后面的事全部引出来",
+      "causal_defects": []
+    },
+    "11": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "递糖时顺手拍了一张，觉得这场面挺好玩",
+      "device_position": "把手伸到膝前的手持近景，糖纸和绿色硬糖占画面中心",
+      "subject_awareness": "aware",
+      "operator_state": "act; relaxed",
+      "framing_constraint": "近景",
+      "retained_reason": "用一个再普通不过的工业糖果当引信，让城市和山村之间第一次真正发生交换",
+      "causal_defects": []
+    },
+    "12": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他没料到会这样，下意识拍下了这张脸",
+      "device_position": "贴近少年正面的近景，黄昏最后一点天光和灶火在他脸上分界",
+      "subject_awareness": "aware",
+      "operator_state": "consequence; alert",
+      "framing_constraint": "近景; 黄昏余晖与土灶明火形成的真实明暗交界",
+      "retained_reason": "把“外面的世界”第一次变成具体后果：不是他震惊，是一个没见过的少年从此再也握不住手里的锄头",
+      "causal_defects": []
+    },
+    "13": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "边说边拍，想记下这个孩子第一次听说大海的样子",
+      "device_position": "把黑屏手机举到少年眼前的中景，两个人的侧脸都在画面里",
+      "subject_awareness": "aware",
+      "operator_state": "act; curious",
+      "framing_constraint": "中景",
+      "retained_reason": "把“外面”从一颗糖升级成整套生活方式，同时仍然让手机保持黑屏——他给的是描述，不是证据",
+      "causal_defects": []
+    },
+    "14": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "声音太响，他下意识把镜头转过去",
+      "device_position": "顺着“喀嚓”一声转过去的中景，柴刀和剁木桩在画面一侧，秦叔没有抬头",
+      "subject_awareness": "aware",
+      "operator_state": "consequence; uneasy",
+      "framing_constraint": "中景",
+      "retained_reason": "让父亲用一个不动声色的动作证明前面的糖和描述已经越界，并让“外来的东西不许进村”这条规矩表现为整座山谷在同时执行，而不是一个人的脾气",
+      "causal_defects": []
+    },
+    "15": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他翻身坐起，灯芯挑得极低，只能借光拍下床头这两样东西",
+      "device_position": "躺在草席上向外拍的近景，油灯放在床头，秦叔坐在门槛上只露出轮廓",
+      "subject_awareness": "aware",
+      "operator_state": "discuss; uneasy",
+      "framing_constraint": "近景; 菜籽油灯灯芯被压低后的真实光照范围",
+      "retained_reason": "把整篇故事翻过来：不是他误入了桃花源，是这些人被困在自己造了千年的牢房里，并因此必须把他赶走",
+      "causal_defects": []
+    },
+    "16": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "进洞前他最后抬手拍了一张石缝",
+      "device_position": "站在石缝口正前方略低的角度，浓雾把画面压成一片惨白",
+      "subject_awareness": "aware",
+      "operator_state": "move; uneasy",
+      "framing_constraint": "远景",
+      "retained_reason": "把告别做成封门：他拿到的是干粮，被交代的是一辈子别再进来",
+      "causal_defects": []
+    },
+    "17": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他觉得自己应该记下最后这一眼",
+      "device_position": "站在石缝口回身望向村子的远景，视线贴着田垄和屋顶",
+      "subject_awareness": "partial",
+      "operator_state": "observe; uneasy",
+      "framing_constraint": "远景",
+      "retained_reason": "让同样的画面第二次出现却完全不同，把诗意的桃花源翻译成恐惧的牢房",
+      "causal_defects": []
+    },
+    "18": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "他被声音震得站住，抬手拍下了山下",
+      "device_position": "从后山灌木里跌出来后的第一人称大远景，山下高速和工地铺满画面下部",
+      "subject_awareness": "partial",
+      "operator_state": "consequence; alert",
+      "framing_constraint": "远景",
+      "retained_reason": "用一山之隔把封闭的静和轰鸣的动并置，让观众自己看出两个世界是怎样贴着彼此的",
+      "causal_defects": []
+    },
+    "19": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "震动停不下来，他只好先按开看一眼",
+      "device_position": "站在半山腰风口里，俯拍布满划痕的手机屏幕，未接来电和消息叠在一起",
+      "subject_awareness": "partial",
+      "operator_state": "notice; urgent",
+      "framing_constraint": "特写",
+      "retained_reason": "让被他躲开的现实原封不动地回来，而且比他走之前更急，说明山谷里没有替他解决任何事",
+      "causal_defects": []
+    },
+    "20": {
+      "photographer_id": "P01",
+      "capture_device": "普通智能手机",
+      "why_capture_now": "下山路上他自己拍的最后一张",
+      "device_position": "边走边拍的中景，麦饼举在嘴边，另一只手在屏幕上打字",
+      "subject_awareness": "partial",
+      "operator_state": "act; alert",
+      "framing_constraint": "中景",
+      "retained_reason": "用两个具体动作把选择落地：他不要避难所，他要回到那条吵闹但一直在往前滚的河里",
+      "causal_defects": []
+    }
+  }
+}

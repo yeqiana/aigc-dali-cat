@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "reconciled_at": "2026-09-23T15:18:41+08:00",
+  "rows": [
+    {
+      "item_id": "ebd7a2518364",
+      "frame": 2,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "TECH_FAILED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "638f75f8afb6",
+      "frame": 4,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "REPAIRING",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "ae3cc05afcad",
+      "frame": 8,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "TECH_FAILED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "8b1b9ad43895",
+      "frame": 10,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "REPAIRING",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "68908d56aa77",
+      "frame": 11,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "TECH_FAILED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "ebfddbc934bb",
+      "frame": 12,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "TECH_FAILED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "eedf85e7d719",
+      "frame": 14,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "REPAIRING",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "32e527953c3b",
+      "frame": 16,
+      "outcome": "REVIEWED_CANDIDATE_RETAINED",
+      "ledger_status": "REPAIR_AUTHORIZED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "4748540da613",
+      "frame": 17,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "731273e4dedd",
+      "frame": 18,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "76b5d9019cb6",
+      "frame": 7,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "LOCKED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d1bdd6846fb0",
+      "frame": 13,
+      "outcome": "REVIEWED_CANDIDATE_RETAINED",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "FAILED"
+    },
+    {
+      "item_id": "8312472bbdfd",
+      "frame": 19,
+      "outcome": "REVIEWED_CANDIDATE_RETAINED",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "ce72a1e905ef",
+      "frame": 20,
+      "outcome": "REVIEWED_CANDIDATE_RETAINED",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "FAILED"
+    },
+    {
+      "item_id": "4e0e638e9ddc",
+      "frame": 4,
+      "outcome": "WORKER_FAILURE_REPLAYED",
+      "ledger_status": "REPAIRING",
+      "lifecycle_state": "FAILED"
+    },
+    {
+      "item_id": "32385f1eb4b1",
+      "frame": 10,
+      "outcome": "WORKER_SUCCESS_REPLAYED",
+      "ledger_status": "REPAIRING",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "d9ffbe19d88e",
+      "frame": 14,
+      "outcome": "DEAD_WORKER_NO_RUNNER_RESULT_RETRYABLE",
+      "ledger_status": "REPAIRING",
+      "lifecycle_state": "BACKEND_INVOKED"
+    }
+  ]
+}
