@@ -96,7 +96,15 @@ def json_sha(data):
     return hashlib.sha256(raw).hexdigest()
 def build(ep,source_runtime="chatgpt"):
     ep=Path(ep).resolve()
-    if stage(ep)!="STORYBOARD_LOCKED":raise ValueError("handoff requires current_state=STORYBOARD_LOCKED")
+    # The handoff is a rebuildable derived cache. Once the Episode has crossed
+    # STORYBOARD_LOCKED, a runtime-request/storage migration may require its
+    # authority subset to be refreshed while production is already running.
+    # Rebuilding it does not advance or rewrite the canonical Episode stage.
+    from story_os_contract import canonical_stages
+    current_stage=stage(ep)
+    order=canonical_stages()
+    if current_stage not in order or order.index(current_stage)<order.index("STORYBOARD_LOCKED"):
+        raise ValueError("handoff requires current_state at or after STORYBOARD_LOCKED")
     ce=character_contract.validate(ep,require_locked=True)
     if ce:raise ValueError("character contract invalid: "+"; ".join(ce))
     env=environment_contract.verify(ep)

@@ -94,7 +94,10 @@ def verify(ep: Path) -> list[str]:
         key = f"{frame:02d}"; item = mapping.get(key)
         if not isinstance(item, dict):
             errors.append(f"story_dna_frame_mapping_missing:{key}"); continue
-        contract = _read(runtime_workspace.resolve_read_path(ep, CONTRACT_ROOT / f"{key}.json"), {}) or {}
+        # MySQL metadata mode stores frame contracts in the repository; the
+        # legacy 01.json cache is intentionally absent in that mode.
+        import frame_contract
+        contract = frame_contract.load_cached_contract(ep, frame) or {}
         contract_mapping = contract.get("story_dna_mapping")
         if not isinstance(contract_mapping, dict):
             errors.append(f"story_dna_contract_mapping_missing:{key}")
