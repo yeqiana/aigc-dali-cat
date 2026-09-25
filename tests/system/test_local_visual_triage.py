@@ -13,10 +13,14 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import image_technical_gate
+import grounding_dino_provider
 import local_visual_triage
 import repair_integrity
 import local_visual_triage_summary
+import perceptual_similarity_provider
+import pose_diagnostic_provider
 import sface_shadow_runtime
+import sam2_mask_provider
 import visual_embedding_provider
 import subtitle_face_safe_area
 import visual_fingerprint
@@ -104,6 +108,27 @@ def test_optional_embedding_provider_is_disabled_without_model_activation():
     assert result["reason"] == "DISABLED"
 
 
+def test_round4_heavy_providers_are_explicitly_fail_soft_by_default():
+    assert grounding_dino_provider.inspect(
+        Path("."), {"frame": 1, "object_queries": ["phone"]}, Path("missing.png"), {"enabled": False}
+    )["status"] == "SKIPPED"
+    assert sam2_mask_provider.segment_change_region(
+        Path("missing.png"), [0, 0, 10, 10], {"enabled": False}
+    )["status"] == "SKIPPED"
+    assert pose_diagnostic_provider.inspect(Path("missing.png"), {"enabled": False})["status"] == "SKIPPED"
+    assert perceptual_similarity_provider.compare(
+        Path("left.png"), Path("right.png"), {"enabled": False}
+    )["status"] == "SKIPPED"
+
+
+def test_grounding_dino_uses_explicit_object_queries_without_contract_access():
+    queries = grounding_dino_provider.object_queries(
+        Path("."), {"frame": 1, "object_queries": ["phone", "phone", "red bottle"]},
+        {"max_queries": 8},
+    )
+    assert queries == ["phone", "red bottle"]
+
+
 def test_sface_shadow_fails_soft_when_models_are_missing():
     with patch.object(sface_shadow_runtime, "_resolve_model", return_value=None):
         result = sface_shadow_runtime.inspect(
@@ -159,8 +184,14 @@ def test_local_triage_refreshes_episode_kpi_summary():
             )
         assert report["embedding"]["status"] == "SKIPPED"
         assert report["sface_shadow"]["status"] == "SKIPPED"
+        assert report["object_presence"]["status"] == "SKIPPED"
+        assert report["pose_diagnostic"]["status"] == "SKIPPED"
+        assert report["object_presence"]["reason"] == "DISABLED"
+        assert report["pose_diagnostic"]["reason"] == "DISABLED"
         summary = local_visual_triage_summary.collect(ep, write=False)
         assert summary["report_count"] == 1
+        assert summary["provider_status_counts"]["object_presence"]["SKIPPED"] == 1
+        assert summary["provider_status_counts"]["pose_diagnostic"]["SKIPPED"] == 1
 
 
 def test_triage_hint_is_sha_bound_and_only_surfaces_suspect():

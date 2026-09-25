@@ -10,6 +10,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import production_ledger
+import perceptual_similarity_provider
+import sam2_mask_provider
 import visual_fingerprint
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -95,6 +97,17 @@ def inspect(ep: Path, item: dict, candidate_path: Path, candidate_fp: dict, conf
             "source": source,
         }
 
+    sam2_mask = sam2_mask_provider.segment_change_region(
+        candidate_path,
+        list(bbox) if bbox else None,
+        config.get("sam2") or {},
+    )
+    lpips = perceptual_similarity_provider.compare(
+        source_path,
+        candidate_path,
+        config.get("lpips") or {},
+    )
+
     issues = []
     noop_rms_max = float(config.get("repair_noop_rms_max", 0.002))
     if comparison["same_sha256"]:
@@ -104,6 +117,8 @@ def inspect(ep: Path, item: dict, candidate_path: Path, candidate_fp: dict, conf
     ssim_warn_below = float(config.get("repair_ssim_warn_below", 0.55))
     if ssim < ssim_warn_below:
         issues.append("REPAIR_GLOBAL_SSIM_LOW")
+    issues.extend(str(x) for x in (sam2_mask.get("issues") or []))
+    issues.extend(str(x) for x in (lpips.get("issues") or []))
 
     return {
         "status": "SUSPECT" if issues else "PASS",
@@ -121,5 +136,7 @@ def inspect(ep: Path, item: dict, candidate_path: Path, candidate_fp: dict, conf
             "rms_normalized": round(rms, 6),
             "block_ssim": ssim,
         },
-        "mask_policy": "NOT_AVAILABLE_PHASE_A",
+        "sam2_mask": sam2_mask,
+        "lpips": lpips,
+        "mask_policy": "SAM2_ADVISORY" if sam2_mask.get("status") not in {"SKIPPED", "FAILED"} else "NOT_AVAILABLE",
     }

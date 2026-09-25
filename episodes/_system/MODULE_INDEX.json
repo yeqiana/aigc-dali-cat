@@ -57,7 +57,11 @@
     "visual_embedding_provider.py",
     "sface_shadow_runtime.py",
     "local_visual_triage_summary.py",
-    "subtitle_face_safe_area.py"
+    "subtitle_face_safe_area.py",
+    "grounding_dino_provider.py",
+    "sam2_mask_provider.py",
+    "pose_diagnostic_provider.py",
+    "perceptual_similarity_provider.py"
   ],
   "release": [
     "final_candidate_snapshot.py",

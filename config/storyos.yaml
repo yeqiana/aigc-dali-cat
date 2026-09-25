@@ -160,6 +160,32 @@ production:
     sface:
       enabled: true
       max_references: 2
+    # Grounding DINO：只使用显式本地模型目录，不允许 Runtime 在线下载。
+    grounding_dino:
+      enabled: false
+      model_path: ""
+      max_queries: 8
+      box_threshold: 0.35
+      text_threshold: 0.25
+      flag_missing_queries: false
+    # SAM2：只围绕 Repair changed bbox 生成 advisory mask。
+    sam2:
+      enabled: false
+      model_path: ""
+      broad_mask_warn_above: 0.65
+    # RTMPose/兼容 ONNX：只做姿态置信度诊断，不授予 anatomy PASS。
+    pose:
+      enabled: false
+      model_path: ""
+      input_width: 192
+      input_height: 256
+      mean_confidence_warn_below: 0.15
+    # LPIPS：可选 Repair perceptual drift；依赖缺失时 fail-soft SKIP。
+    lpips:
+      enabled: false
+      net: alex
+      max_side: 512
+      warn_above: 0.45
 
   # Visual Lock ordinary baseline 在普通返修仍失败后，可再生成有界竞争候选。
   # 这些候选不增加 content_repairs_used；任意一张经 Codex Vision PASS 即成为 Pixel Master。

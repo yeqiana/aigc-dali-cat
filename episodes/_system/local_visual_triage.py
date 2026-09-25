@@ -12,7 +12,9 @@ import time
 from pathlib import Path
 
 import image_technical_gate
+import grounding_dino_provider
 import local_visual_triage_summary
+import pose_diagnostic_provider
 import repair_integrity
 import sface_shadow_runtime
 import story_json
@@ -143,11 +145,21 @@ def inspect_candidate(ep: Path, item: dict, output: Path) -> dict:
         )
         embedding = visual_embedding_provider.embed(output, config.get("embedding") or {})
         sface = sface_shadow_runtime.inspect(ep, output, config.get("sface") or {})
+        object_presence = grounding_dino_provider.inspect(ep, item, output, config.get("grounding_dino") or {})
+        pose = pose_diagnostic_provider.inspect(output, config.get("pose") or {})
         issues = list(technical.get("hard_errors") or []) + list(technical.get("warnings") or [])
         issues.extend(str(row.get("kind")) for row in duplicates)
         issues.extend(str(x) for x in (repair.get("issues") or []))
+        issues.extend(str(x) for x in (object_presence.get("issues") or []))
+        issues.extend(str(x) for x in (pose.get("issues") or []))
         hard_fail = technical.get("status") == "FAIL"
-        suspect = bool(duplicates) or technical.get("status") == "SUSPECT" or repair.get("status") == "SUSPECT"
+        suspect = (
+            bool(duplicates)
+            or technical.get("status") == "SUSPECT"
+            or repair.get("status") == "SUSPECT"
+            or object_presence.get("status") == "SUSPECT"
+            or pose.get("status") == "SUSPECT"
+        )
         block = bool(hard_fail and config.get("hard_failures_block_commit") is True)
         status = "FAIL" if hard_fail else ("SUSPECT" if suspect else "PASS")
         rel = diagnostic_rel(item.get("id"))
@@ -172,6 +184,8 @@ def inspect_candidate(ep: Path, item: dict, output: Path) -> dict:
             "repair_integrity": repair,
             "embedding": embedding,
             "sface_shadow": sface,
+            "object_presence": object_presence,
+            "pose_diagnostic": pose,
             "elapsed_seconds": round(time.perf_counter() - started, 4),
             "diagnostic_path": rel.as_posix(),
         }

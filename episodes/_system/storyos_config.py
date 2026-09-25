@@ -136,6 +136,61 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("production.local_visual_triage.sface.enabled must be a bool")
             if type(sface.get("max_references")) is not int or not 1 <= sface.get("max_references") <= 8:
                 errors.append("production.local_visual_triage.sface.max_references must be an int between 1 and 8")
+        grounding = triage.get("grounding_dino")
+        if not isinstance(grounding, dict):
+            errors.append("production.local_visual_triage.grounding_dino must be a mapping")
+        else:
+            if not isinstance(grounding.get("enabled"), bool):
+                errors.append("production.local_visual_triage.grounding_dino.enabled must be a bool")
+            if not isinstance(grounding.get("model_path"), str):
+                errors.append("production.local_visual_triage.grounding_dino.model_path must be a string")
+            if type(grounding.get("max_queries")) is not int or not 1 <= grounding.get("max_queries") <= 32:
+                errors.append("production.local_visual_triage.grounding_dino.max_queries must be an int between 1 and 32")
+            for key in ("box_threshold", "text_threshold"):
+                value = grounding.get(key)
+                if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0.0 <= float(value) <= 1.0:
+                    errors.append(f"production.local_visual_triage.grounding_dino.{key} must be between 0 and 1")
+            if not isinstance(grounding.get("flag_missing_queries"), bool):
+                errors.append("production.local_visual_triage.grounding_dino.flag_missing_queries must be a bool")
+        sam2 = triage.get("sam2")
+        if not isinstance(sam2, dict):
+            errors.append("production.local_visual_triage.sam2 must be a mapping")
+        else:
+            if not isinstance(sam2.get("enabled"), bool):
+                errors.append("production.local_visual_triage.sam2.enabled must be a bool")
+            if not isinstance(sam2.get("model_path"), str):
+                errors.append("production.local_visual_triage.sam2.model_path must be a string")
+            value = sam2.get("broad_mask_warn_above")
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0.0 <= float(value) <= 1.0:
+                errors.append("production.local_visual_triage.sam2.broad_mask_warn_above must be between 0 and 1")
+        pose = triage.get("pose")
+        if not isinstance(pose, dict):
+            errors.append("production.local_visual_triage.pose must be a mapping")
+        else:
+            if not isinstance(pose.get("enabled"), bool):
+                errors.append("production.local_visual_triage.pose.enabled must be a bool")
+            if not isinstance(pose.get("model_path"), str):
+                errors.append("production.local_visual_triage.pose.model_path must be a string")
+            for key in ("input_width", "input_height"):
+                value = pose.get(key)
+                if type(value) is not int or not 64 <= value <= 2048:
+                    errors.append(f"production.local_visual_triage.pose.{key} must be an int between 64 and 2048")
+            value = pose.get("mean_confidence_warn_below")
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0.0 <= float(value) <= 1.0:
+                errors.append("production.local_visual_triage.pose.mean_confidence_warn_below must be between 0 and 1")
+        lpips = triage.get("lpips")
+        if not isinstance(lpips, dict):
+            errors.append("production.local_visual_triage.lpips must be a mapping")
+        else:
+            if not isinstance(lpips.get("enabled"), bool):
+                errors.append("production.local_visual_triage.lpips.enabled must be a bool")
+            if lpips.get("net") not in {"alex", "vgg", "squeeze"}:
+                errors.append("production.local_visual_triage.lpips.net must be alex, vgg or squeeze")
+            if type(lpips.get("max_side")) is not int or not 64 <= lpips.get("max_side") <= 2048:
+                errors.append("production.local_visual_triage.lpips.max_side must be an int between 64 and 2048")
+            value = lpips.get("warn_above")
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0.0 <= float(value) <= 2.0:
+                errors.append("production.local_visual_triage.lpips.warn_above must be between 0 and 2")
     if get_path(cfg, "provider.exact_raw_canvas_required") is not False:
         errors.append("provider.exact_raw_canvas_required must be false for current desktop image transport")
     if get_path(cfg, "provider.measure_raw_dimensions_locally") is not True:

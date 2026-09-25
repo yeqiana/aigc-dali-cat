@@ -27,6 +27,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
                 rows.append(data)
     statuses = {}
     issue_counts = {}
+    provider_status_counts = {}
     duplicate_count = 0
     near_duplicate_count = 0
     repair_noop_count = 0
@@ -35,6 +36,20 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         status = str(row.get("status") or "UNKNOWN")
         statuses[status] = statuses.get(status, 0) + 1
         elapsed += float(row.get("elapsed_seconds") or 0.0)
+        provider_rows = {
+            "embedding": row.get("embedding"),
+            "sface_shadow": row.get("sface_shadow"),
+            "object_presence": row.get("object_presence"),
+            "pose_diagnostic": row.get("pose_diagnostic"),
+            "sam2_mask": (row.get("repair_integrity") or {}).get("sam2_mask"),
+            "lpips": (row.get("repair_integrity") or {}).get("lpips"),
+        }
+        for provider_name, provider_row in provider_rows.items():
+            if not isinstance(provider_row, dict):
+                continue
+            provider_status = str(provider_row.get("status") or "UNKNOWN")
+            bucket = provider_status_counts.setdefault(provider_name, {})
+            bucket[provider_status] = bucket.get(provider_status, 0) + 1
         for issue in row.get("issue_codes") or []:
             key = str(issue)
             issue_counts[key] = issue_counts.get(key, 0) + 1
@@ -52,6 +67,7 @@ def collect(ep: Path, *, write: bool = True) -> dict:
         "report_count": len(rows),
         "status_counts": statuses,
         "issue_counts": issue_counts,
+        "provider_status_counts": provider_status_counts,
         "duplicate_evidence_count": duplicate_count,
         "near_duplicate_evidence_count": near_duplicate_count,
         "repair_noop_count": repair_noop_count,
