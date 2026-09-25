@@ -37,6 +37,24 @@ def test_upsert_serializes_payload():
     assert json.loads(connection.executed[0][1][-1])["request_id"] == "preimage-1"
 
 
+def test_upsert_externalized_payload_stores_projection():
+    connection = FakeConnection()
+    payload = {"request_id": "preimage-big", "status": "HOST_ACTION_REQUIRED", "prompt": "x" * 20000}
+    MySqlHostRequestRepository(connection).upsert({
+        "host_request_id": "preimage-big",
+        "episode_id": "EPU_1",
+        "request_type": "PREIMAGE_WORLD",
+        "status": "HOST_ACTION_REQUIRED",
+        "payload": payload,
+        "payload_ref": {"rel": "meta/runtime/host-request-documents/preimage-big.json", "sha256": "a" * 64, "bytes": 20000},
+    })
+    stored = json.loads(connection.executed[0][1][-1])
+    assert stored["projection_type"] == "HOST_REQUEST_REF"
+    assert stored["request_id"] == "preimage-big"
+    assert stored["document"]["rel"].startswith("meta/runtime/host-request-documents/")
+    assert "prompt" not in stored
+
+
 def test_get_and_list_decode_payload():
     raw = {
         "HOST_REQUEST_ID": "preimage-1", "EPISODE_ID": "EPU_1",

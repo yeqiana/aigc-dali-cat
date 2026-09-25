@@ -7,8 +7,16 @@ import runtime_workspace
 import storage_config
 import story_json
 
+from platform.repository.mysql.payload_policy import (
+    MAX_INLINE_PAYLOAD_BYTES,
+    document_reference,
+    payload_bytes,
+    payload_sha256,
+)
+
 
 REL = Path("meta/runtime/host-requests")
+DOCUMENT_ROOT = Path("meta/runtime/host-request-documents")
 
 
 def _episode_id(ep: Path) -> str:
@@ -21,6 +29,37 @@ def request_rel(request_id: str) -> Path:
 
 def compatibility_path(ep: Path, request_id: str) -> Path:
     return runtime_workspace.workspace_path(Path(ep).resolve(), request_rel(request_id))
+
+
+def _document_rel(payload: dict) -> Path:
+    request_id = str(payload.get("request_id") or "host-request")
+    digest = payload_sha256(payload)
+    return DOCUMENT_ROOT / f"{request_id}-{digest}.json"
+
+
+def _externalize_if_needed(ep: Path, payload: dict) -> dict | None:
+    if payload_bytes(payload) <= MAX_INLINE_PAYLOAD_BYTES:
+        return None
+    rel = _document_rel(payload)
+    path = runtime_workspace.write_json(Path(ep).resolve(), rel, payload)
+    return document_reference(payload, rel.as_posix(), bytes_size=path.stat().st_size)
+
+
+def _resolve_payload(ep: Path, row: dict) -> dict | None:
+    payload = row.get("payload")
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("projection_type") != "HOST_REQUEST_REF":
+        return payload
+    document = payload.get("document")
+    if not isinstance(document, dict):
+        raise ValueError("host request projection missing document reference")
+    full = runtime_workspace.read_json(Path(ep).resolve(), document.get("rel"), default=None)
+    if not isinstance(full, dict):
+        raise ValueError("host request authority document missing")
+    if payload_sha256(full) != str(document.get("sha256") or "").lower():
+        raise ValueError("host request authority document sha256 mismatch")
+    return full
 
 
 def _request_type(payload: dict) -> str:
@@ -60,18 +99,22 @@ def save(ep: Path, payload: dict) -> dict:
     if mode != "mysql":
         path = runtime_workspace.write_json(ep, request_rel(request_id), payload)
     mysql_written = False
+    document_ref = None
     if mode in {"dual", "mysql"}:
         from platform.repository.mysql.mysql_connection import MySqlConnection
         from platform.repository.mysql.mysql_host_request_repository import MySqlHostRequestRepository
         from platform.repository.mysql.schema_v2 import DATABASE_NAME
 
+        document_ref = _externalize_if_needed(ep, payload)
         connection = MySqlConnection(**storage_config.mysql_connection_kwargs({"database": DATABASE_NAME}))
         try:
-            MySqlHostRequestRepository(connection).upsert(_record(ep, payload))
+            record = _record(ep, payload)
+            record["payload_ref"] = document_ref
+            MySqlHostRequestRepository(connection).upsert(record)
             mysql_written = True
         finally:
             connection.close()
-    return {"mode": mode, "mysql_written": mysql_written, "path": path}
+    return {"mode": mode, "mysql_written": mysql_written, "path": path, "document_ref": document_ref}
 
 
 def load(ep: Path, request_id: str) -> dict | None:
@@ -86,8 +129,10 @@ def load(ep: Path, request_id: str) -> dict | None:
         try:
             connection = MySqlConnection(**storage_config.mysql_connection_kwargs({"database": DATABASE_NAME}))
             row = MySqlHostRequestRepository(connection).get_by_id(str(request_id))
-            if row and isinstance(row.get("payload"), dict):
-                return row["payload"]
+            if row:
+                resolved = _resolve_payload(ep, row)
+                if isinstance(resolved, dict):
+                    return resolved
         except Exception:
             if mode == "mysql":
                 raise
@@ -117,7 +162,7 @@ def list_all(ep: Path) -> list[dict]:
         try:
             connection = MySqlConnection(**storage_config.mysql_connection_kwargs({"database": DATABASE_NAME}))
             for row in MySqlHostRequestRepository(connection).list_by_episode(_episode_id(ep)):
-                payload = row.get("payload")
+                payload = _resolve_payload(ep, row)
                 if isinstance(payload, dict) and payload.get("request_id"):
                     rows[str(payload["request_id"])] = payload
         except Exception:

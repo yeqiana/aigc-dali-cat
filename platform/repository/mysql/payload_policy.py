@@ -151,6 +151,26 @@ def runtime_review_projection(payload: dict[str, Any], reference: dict[str, Any]
     return projection_envelope(payload, reference, "RUNTIME_REVIEW_REQUEST_REF", fields)
 
 
+def host_request_projection(payload: dict[str, Any], reference: dict[str, Any]) -> dict[str, Any]:
+    task = payload.get("task")
+    fields: dict[str, Any] = {
+        "request_id": payload.get("request_id"),
+        "status": payload.get("status"),
+        "next_step": payload.get("next_step"),
+        "request_type": payload.get("request_type"),
+        "runtime": payload.get("runtime"),
+        "source": payload.get("source"),
+        "episode_state": payload.get("episode_state"),
+        "created_at": payload.get("created_at"),
+        "started_at": payload.get("started_at"),
+        "finished_at": payload.get("finished_at"),
+        "finalized_at": payload.get("finalized_at"),
+        "task_id": task.get("task_id") if isinstance(task, dict) else None,
+        "task_type": task.get("task_type") if isinstance(task, dict) else None,
+    }
+    return projection_envelope(payload, reference, "HOST_REQUEST_REF", fields)
+
+
 def metric_snapshot_projection(payload: dict[str, Any], reference: dict[str, Any]) -> dict[str, Any]:
     scalar_keys = (
         "kind", "final_status", "not_stage_gate", "telemetry_only", "fail_soft",

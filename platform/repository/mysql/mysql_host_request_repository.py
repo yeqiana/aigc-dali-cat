@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 from copy import deepcopy
-from platform.repository.mysql.payload_policy import bounded_json
+from platform.repository.mysql.payload_policy import bounded_json, host_request_projection
 
 
 _UPSERT_SQL = """
@@ -59,7 +59,10 @@ class MySqlHostRequestRepository:
         missing = [key for key in required if row.get(key) in (None, "")]
         if missing:
             raise ValueError("host request missing required fields: " + ", ".join(missing))
-        payload = bounded_json(row["payload"], entity="host request")
+        payload_value = row["payload"]
+        if row.get("payload_ref") is not None:
+            payload_value = host_request_projection(payload_value, row["payload_ref"])
+        payload = bounded_json(payload_value, entity="host request")
         self.connection.execute(
             _UPSERT_SQL,
             (
