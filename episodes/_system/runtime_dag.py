@@ -38,6 +38,7 @@ import next_action
 import episode_performance
 import runtime_timeout_policy
 import runtime_node_registry
+import runtime_node_execution
 import runtime_node_evidence
 import storyos_config
 import runtime_scheduler
@@ -348,21 +349,39 @@ def run_release_preflight_recovery(ep: Path, codex=None, timeout=None) -> tuple[
 
 def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     """Give direct DAG invocations the same active/wait accounting as a runner."""
+    # A bounded-run contract error must fail before telemetry creates any durable
+    # evidence. _execute keeps the same guard for callers that intentionally use
+    # the lower-level helper.
+    if until is not None and until not in STAGES:
+        raise ValueError("unknown runtime DAG stop target: "+str(until))
     runtime_ownership.assert_v3_owner("runtime_dag.execute")
-    sessions=(episode_performance.load(ep,True).get("execution_sessions") or [])
-    open_session=next((row for row in reversed(sessions) if not row.get("ended_at")),None)
-    owned=open_session is None
+
+    # Performance telemetry is explicitly fail-soft and is never a production
+    # gate. A temporary test repository, unavailable metric authority, or other
+    # observability failure must not prevent the DAG from executing.
+    telemetry_available=True
+    try:
+        sessions=(episode_performance.load(ep,True).get("execution_sessions") or [])
+        open_session=next((row for row in reversed(sessions) if not row.get("ended_at")),None)
+    except Exception:
+        telemetry_available=False
+        open_session=None
+    owned=telemetry_available and open_session is None
     session=open_session.get("session_id") if open_session else None
+    telemetry_owned=False
     if owned:
         session=episode_performance.safe_begin_execution_session(ep,source="runtime_dag")
-    if owned or (open_session or {}).get("source")=="runtime_dag":
+        telemetry_owned=session is not None
+    elif telemetry_available and (open_session or {}).get("source")=="runtime_dag":
+        telemetry_owned=True
+    if telemetry_owned:
         episode_performance.safe_transition_execution_state(ep,"ACTIVE",session_id=session,source="runtime_dag")
     rc=None
     try:
         rc=_execute(ep,codex=codex,timeout=timeout,run_id=run_id,trace_id=trace_id,until=until)
         return rc
     finally:
-        if owned or (open_session or {}).get("source")=="runtime_dag":
+        if telemetry_owned:
             state=episode_performance.execution_state_for_result(rc if rc is not None else 1)
             episode_performance.safe_transition_execution_state(ep,state,session_id=session,source="runtime_dag")
             if state=="IDLE":
