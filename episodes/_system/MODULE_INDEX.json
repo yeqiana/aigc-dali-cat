@@ -63,7 +63,9 @@
     "pose_diagnostic_provider.py",
     "perceptual_similarity_provider.py",
     "isolated_ml_runtime.py",
-    "local_vision_provision.py"
+    "local_vision_provision.py",
+    "local_vision_health.py",
+    "local_visual_triage_benchmark.py"
   ],
   "release": [
     "final_candidate_snapshot.py",

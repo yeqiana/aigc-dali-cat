@@ -3,7 +3,6 @@
 """Optional local-only SAM2 repair-region mask diagnostic."""
 from __future__ import annotations
 
-import importlib.util
 import sys
 
 from functools import lru_cache
@@ -31,7 +30,8 @@ def available(config: dict) -> dict:
     model = _model_dir(config)
     if model is None:
         return {"available": False, "reason": "MODEL_MISSING"}
-    missing = [name for name in ("torch", "transformers") if importlib.util.find_spec(name) is None]
+    dependencies = isolated_ml_runtime.dependency_status(("torch", "transformers"))
+    missing = [name for name in ("torch", "transformers") if dependencies.get(name) is not True]
     if missing:
         return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": ",".join(missing)}
     return {"available": True, "model_path": str(model)}

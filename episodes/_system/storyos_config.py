@@ -126,6 +126,8 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("production.local_visual_triage.embedding.provider must be onnx")
             if not isinstance(embedding.get("model_path"), str):
                 errors.append("production.local_visual_triage.embedding.model_path must be a string")
+            if embedding.get("enabled") is True and not str(embedding.get("model_path") or "").strip():
+                errors.append("production.local_visual_triage.embedding.model_path required when enabled")
             if type(embedding.get("input_size")) is not int or not 64 <= embedding.get("input_size") <= 1024:
                 errors.append("production.local_visual_triage.embedding.input_size must be an int between 64 and 1024")
         sface = triage.get("sface")
@@ -144,6 +146,8 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("production.local_visual_triage.grounding_dino.enabled must be a bool")
             if not isinstance(grounding.get("model_path"), str):
                 errors.append("production.local_visual_triage.grounding_dino.model_path must be a string")
+            if grounding.get("enabled") is True and not str(grounding.get("model_path") or "").strip():
+                errors.append("production.local_visual_triage.grounding_dino.model_path required when enabled")
             if type(grounding.get("max_queries")) is not int or not 1 <= grounding.get("max_queries") <= 32:
                 errors.append("production.local_visual_triage.grounding_dino.max_queries must be an int between 1 and 32")
             for key in ("box_threshold", "text_threshold"):
@@ -160,6 +164,8 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("production.local_visual_triage.sam2.enabled must be a bool")
             if not isinstance(sam2.get("model_path"), str):
                 errors.append("production.local_visual_triage.sam2.model_path must be a string")
+            if sam2.get("enabled") is True and not str(sam2.get("model_path") or "").strip():
+                errors.append("production.local_visual_triage.sam2.model_path required when enabled")
             value = sam2.get("broad_mask_warn_above")
             if not isinstance(value, (int, float)) or isinstance(value, bool) or not 0.0 <= float(value) <= 1.0:
                 errors.append("production.local_visual_triage.sam2.broad_mask_warn_above must be between 0 and 1")
@@ -171,6 +177,8 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("production.local_visual_triage.pose.enabled must be a bool")
             if not isinstance(pose.get("model_path"), str):
                 errors.append("production.local_visual_triage.pose.model_path must be a string")
+            if pose.get("enabled") is True and not str(pose.get("model_path") or "").strip():
+                errors.append("production.local_visual_triage.pose.model_path required when enabled")
             for key in ("input_width", "input_height"):
                 value = pose.get(key)
                 if type(value) is not int or not 64 <= value <= 2048:

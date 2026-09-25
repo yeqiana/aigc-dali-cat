@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import importlib.util
+import copy
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -17,6 +18,8 @@ import image_technical_gate
 import isolated_ml_runtime
 import grounding_dino_provider
 import local_visual_triage
+import local_visual_triage_benchmark
+import local_vision_health
 import local_vision_provision
 import repair_integrity
 import local_visual_triage_summary
@@ -112,6 +115,53 @@ def test_model_provision_status_ignores_huggingface_housekeeping_files():
         assert row["complete"] is True
         assert row["missing_required"] == []
         assert row["total_model_bytes"] == len(b"{}") + len(b"weights")
+
+
+def test_sidecar_dependency_probe_uses_actual_ml_interpreter():
+    result = isolated_ml_runtime.dependency_status(("torch", "transformers"))
+    assert result.get("torch") is True
+    # Transformers is installed in the dedicated sidecar venv on this workstation.
+    # On a clean environment this assertion is intentionally conditional.
+    if isolated_ml_runtime.VENV_PYTHON.is_file():
+        assert result.get("transformers") is True
+
+
+def test_local_vision_health_snapshot_reports_disabled_heavy_providers():
+    report = local_vision_health.snapshot()
+    assert report["sidecar_runtime"]["status"] == "READY"
+    assert report["summary"]["enabled_heavy_provider_count"] == 0
+    assert report["summary"]["production_heavy_models_active"] is False
+    assert report["model_cache"]["sam2-tiny"]["present"] is False
+    assert report["model_cache"]["grounding-dino-tiny"]["present"] is False
+
+
+def test_heavy_provider_activation_requires_explicit_model_path():
+    cfg = copy.deepcopy(__import__("storyos_config").load_config())
+    triage = cfg["production"]["local_visual_triage"]
+    for key in ("embedding", "grounding_dino", "sam2", "pose"):
+        triage[key]["enabled"] = True
+        triage[key]["model_path"] = ""
+    errors = __import__("storyos_config").validate(cfg)
+    for key in ("embedding", "grounding_dino", "sam2", "pose"):
+        assert any(
+            f"production.local_visual_triage.{key}.model_path required when enabled" in error
+            for error in errors
+        )
+
+
+def test_local_visual_triage_benchmark_is_read_only():
+    base = ROOT / "episodes/_tests"
+    base.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="triage-benchmark-", dir=base) as raw:
+        image = _image(Path(raw) / "bench.png", size=(108, 135), value=110)
+        report = local_visual_triage_benchmark.run(
+            image, iterations=2, expected_size=(108, 135)
+        )
+        assert report["read_only"] is True
+        assert report["status"] in {"PASS", "SUSPECT"}
+        assert report["image_size"] == [108, 135]
+        assert report["iterations"] == 2
+        assert report["seconds"]["mean"] >= 0
 
 
 def test_visual_fingerprint_is_deterministic_and_comparable():

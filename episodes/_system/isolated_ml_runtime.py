@@ -17,6 +17,7 @@ import atexit
 import queue
 import threading
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,6 +58,82 @@ def python_executable() -> Path:
     if VENV_PYTHON.is_file():
         return VENV_PYTHON.resolve()
     return Path(sys.executable).resolve()
+
+
+@lru_cache(maxsize=16)
+def dependency_status(names: tuple[str, ...]) -> dict[str, bool]:
+    """Probe optional dependencies in the actual sidecar interpreter."""
+    requested = tuple(sorted({str(name).strip() for name in names if str(name).strip()}))
+    if not requested:
+        return {}
+    WORKDIR.mkdir(parents=True, exist_ok=True)
+    code = (
+        "import importlib.util,json,sys;"
+        "print(json.dumps({n:(importlib.util.find_spec(n) is not None) for n in sys.argv[1:]}))"
+    )
+    completed = subprocess.run(
+        [str(python_executable()), "-c", code, *requested],
+        cwd=str(WORKDIR),
+        env=_clean_pythonpath(dict(os.environ)),
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+    if completed.returncode != 0:
+        return {name: False for name in requested}
+    try:
+        data = json.loads((completed.stdout or "").strip().splitlines()[-1])
+    except Exception:
+        return {name: False for name in requested}
+    return {name: data.get(name) is True for name in requested}
+
+
+@lru_cache(maxsize=1)
+def runtime_probe() -> dict:
+    """Return sidecar interpreter / Torch capability without importing Torch in StoryOS."""
+    WORKDIR.mkdir(parents=True, exist_ok=True)
+    code = """import importlib.util, json, platform, sys
+data = {
+    "python": sys.executable,
+    "platform_file": platform.__file__,
+    "machine": platform.machine(),
+    "torch_present": importlib.util.find_spec("torch") is not None,
+}
+if data["torch_present"]:
+    import torch
+    data["torch_version"] = torch.__version__
+    data["cuda_available"] = torch.cuda.is_available()
+print(json.dumps(data))
+"""
+    completed = subprocess.run(
+        [str(python_executable()), "-c", code],
+        cwd=str(WORKDIR),
+        env=_clean_pythonpath(dict(os.environ)),
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+    if completed.returncode != 0:
+        return {
+            "status": "FAILED",
+            "python": str(python_executable()),
+            "reason": (completed.stderr or completed.stdout or "").strip()[-1200:],
+        }
+    try:
+        data = json.loads((completed.stdout or "").strip().splitlines()[-1])
+    except Exception as exc:
+        return {
+            "status": "FAILED",
+            "python": str(python_executable()),
+            "reason": f"{type(exc).__name__}: {exc}",
+        }
+    return {"status": "READY", **data}
 
 
 def _start_worker(script: Path) -> dict:

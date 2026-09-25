@@ -8,7 +8,6 @@ from a queue item or its Resolved Frame Contract and returns advisory evidence.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import sys
 from functools import lru_cache
 from pathlib import Path
@@ -60,7 +59,8 @@ def available(config: dict) -> dict:
     model = _model_dir(config)
     if model is None:
         return {"available": False, "reason": "MODEL_MISSING"}
-    missing = [name for name in ("torch", "transformers") if importlib.util.find_spec(name) is None]
+    dependencies = isolated_ml_runtime.dependency_status(("torch", "transformers"))
+    missing = [name for name in ("torch", "transformers") if dependencies.get(name) is not True]
     if missing:
         return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": ",".join(missing)}
     return {"available": True, "model_path": str(model), "model_manifest_sha256": _manifest_sha(model)}

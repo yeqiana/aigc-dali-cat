@@ -3,7 +3,6 @@
 """Optional LPIPS repair similarity diagnostic. Never installs/downloads models."""
 from __future__ import annotations
 
-import importlib.util
 import sys
 
 from functools import lru_cache
@@ -17,7 +16,8 @@ import visual_fingerprint
 def available(config: dict) -> dict:
     if config.get("enabled") is not True:
         return {"available": False, "reason": "DISABLED"}
-    missing = [name for name in ("torch", "lpips") if importlib.util.find_spec(name) is None]
+    dependencies = isolated_ml_runtime.dependency_status(("torch", "lpips"))
+    missing = [name for name in ("torch", "lpips") if dependencies.get(name) is not True]
     if missing:
         return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": ",".join(missing)}
     return {"available": True}
