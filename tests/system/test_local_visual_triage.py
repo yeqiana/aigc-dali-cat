@@ -19,6 +19,7 @@ import isolated_ml_runtime
 import grounding_dino_provider
 import local_visual_triage
 import local_visual_triage_benchmark
+import local_visual_experiment
 import local_vision_health
 import local_vision_provision
 import repair_integrity
@@ -174,6 +175,97 @@ def test_visual_fingerprint_is_deterministic_and_comparable():
         assert a["phash"] == b["phash"]
         assert visual_fingerprint.compare(a, b)["same_sha256"] is True
         assert visual_fingerprint.compare(a, b)["dhash_distance"] == 0
+
+
+def _experiment_episode(root: Path, *, critical: float, repairs: int, calls: int,
+                        elapsed: float, tokens: int, triage_reports: int = 20) -> Path:
+    import story_json
+    ep = root
+    (ep / "meta/runtime/diagnostics").mkdir(parents=True, exist_ok=True)
+    story_json.write_json(ep / "meta/episode-performance-ledger.json", {
+        "summary": {
+            "critical_path": {"critical_path_seconds": critical},
+            "images": {
+                "attempts": 20 + repairs,
+                "repair_attempts": repairs,
+                "technical_failures_or_retries": 0,
+                "image_backend_seconds": 100.0,
+            },
+            "performance_slo": {"active_wall_seconds": critical * 0.8},
+        },
+        "finalized_at": "2026-09-25T12:00:00+08:00",
+    })
+    story_json.write_json(ep / "meta/caption-image-audit.json", {
+        "summary": {
+            "passed": True,
+            "total_frames": 20,
+            "vision_review_telemetry": {
+                "vision_candidate_frames": 20,
+                "local_skipped_frames": max(0, 20 - calls),
+                "vision_frames": calls,
+                "vision_call_count": calls,
+                "vision_elapsed_seconds": elapsed,
+                "vision_tokens": {"input_tokens": tokens},
+            },
+        }
+    })
+    story_json.write_json(ep / "meta/frame-semantic-review.json", {
+        "frames": [{"frame": f"{index:02d}"} for index in range(1, 21)],
+        "issue_codes": [],
+        "near_duplicate_pairs": [],
+        "summary": {"passed": True},
+    })
+    if triage_reports:
+        story_json.write_json(
+            ep / "meta/runtime/diagnostics/local-visual-triage-summary.json",
+            {
+                "report_count": triage_reports,
+                "local_triage_elapsed_seconds": 1.8,
+                "near_duplicate_evidence_count": 0,
+                "repair_noop_count": 0,
+                "status_counts": {"PASS": triage_reports},
+                "provider_status_counts": {},
+            },
+        )
+    return ep
+
+
+def test_local_visual_experiment_snapshot_compare_and_readiness():
+    base_root = ROOT / "episodes/_tests"
+    base_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="ab-baseline-", dir=base_root) as baseline_raw, \
+            tempfile.TemporaryDirectory(prefix="ab-treatment-", dir=base_root) as treatment_raw:
+        baseline_ep = _experiment_episode(
+            Path(baseline_raw), critical=1000.0, repairs=10, calls=10, elapsed=500.0, tokens=10000
+        )
+        treatment_ep = _experiment_episode(
+            Path(treatment_raw), critical=700.0, repairs=7, calls=5, elapsed=250.0, tokens=5000
+        )
+        baseline = local_visual_experiment.snapshot(baseline_ep)
+        treatment = local_visual_experiment.snapshot(treatment_ep)
+        assert local_visual_experiment.treatment_readiness(treatment)["ready"] is True
+        result = local_visual_experiment.compare(baseline, treatment)
+        assert result["status"] == "MEASURABLE"
+        assert result["quality_regression"] is False
+        assert result["deltas"]["critical_path_seconds_per_frame"]["reduction_pct"] == 30.0
+        assert result["deltas"]["repair_attempts_per_frame"]["reduction_pct"] == 30.0
+        assert result["deltas"]["caption_vision_call_count_per_frame"]["reduction_pct"] == 50.0
+        assert result["all_targets_met"] is True
+
+
+def test_local_visual_experiment_readiness_fails_without_triage_summary():
+    base_root = ROOT / "episodes/_tests"
+    base_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="ab-incomplete-", dir=base_root) as raw:
+        ep = _experiment_episode(
+            Path(raw), critical=1000.0, repairs=10, calls=10, elapsed=500.0,
+            tokens=10000, triage_reports=0,
+        )
+        snap = local_visual_experiment.snapshot(ep)
+        readiness = local_visual_experiment.treatment_readiness(snap)
+        assert readiness["ready"] is False
+        assert "local_triage_summary" in readiness["missing"]
+        assert "LOCAL_TRIAGE_SUMMARY_MISSING" in snap["warnings"]
 
 
 def test_technical_gate_hard_fails_canvas_mismatch_only():
