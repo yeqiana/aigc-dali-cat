@@ -19,6 +19,7 @@ from release_preflight import verify_recent5_evidence, verify_series_lock, verif
 from reference_execution_receipt import verify as verify_reference_execution
 import story_json
 import runtime_evidence_contract
+import episode_state_persistence
 
 ROOT=Path(__file__).resolve().parents[2]
 STATES=canonical_stages()
@@ -68,7 +69,7 @@ def direct_release(ep):
     if payload.get('user_approved') is not True:e.append('release package is not direct-user approved')
     e.extend(verify_payload(ep,payload));return e
 def run_gate(ep,target):
-    state=load_json(ep/'meta/episode-state.json');manifest=load_json(ep/'meta/release-manifest.json')
+    state=episode_state_persistence.load(Path(ep).resolve()) or {};manifest=load_json(ep/'meta/release-manifest.json')
     if not is_enforced(state,manifest):return True,['legacy/pre-V1.8 episode: evidence gate not enforced until metadata is upgraded']
     idx=STATES.index(target);errors=[];info=[]
     if idx>=STATES.index('PRODUCTION_PASSED'):

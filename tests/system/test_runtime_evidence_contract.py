@@ -89,6 +89,21 @@ class RuntimeEvidenceContractTests(unittest.TestCase):
             for message in messages
         ), messages)
 
+    def test_storyboard_evidence_gate_reads_state_from_persistence_without_local_json(self):
+        (self.ep / "meta/release-manifest.json").write_text(
+            json.dumps({"tool_version": "2.6.1"}), encoding="utf-8")
+        self.assertFalse((self.ep / "meta/episode-state.json").exists())
+        with mock.patch.object(
+                evidence_gate.episode_state_persistence,
+                "load",
+                return_value={"tool_version": "2.6.1", "current_state": "IDEA_LOCKED"}), \
+             mock.patch.object(evidence_gate, "any_approval", return_value=(True, [], "test")), \
+             mock.patch.object(evidence_gate, "story_review_required", return_value=False), \
+             mock.patch.object(evidence_gate, "verify_recent5_evidence", return_value=[]):
+            ok, messages = evidence_gate.run_gate(self.ep, "STORYBOARD_LOCKED")
+        self.assertTrue(ok, messages)
+        self.assertIn("story_lock basis=test", messages)
+
     def test_runtime_evidence_sinks_are_local_diagnostics_not_git_authority(self):
         for rel in (
             "episodes/**/meta/runtime/trace-events.jsonl",
