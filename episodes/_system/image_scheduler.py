@@ -42,6 +42,7 @@ import runtime_event_collector
 import production_recovery
 import production_ledger
 import runtime_timeout_policy
+import local_visual_triage
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -527,9 +528,19 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 and Path(result["output"]).is_file()
             )
             ok=False
+            triage_blocked=False
+            triage_failure_code=None
             if backend_ok:
-                production_recovery.mark_terminal(ep,item,"SUCCESS_PREPARED")
-                ok,msg=ledger_success(ep,item,result)
+                triage=local_visual_triage.inspect_candidate(ep,item,Path(result["output"]))
+                item["local_visual_triage"]=local_visual_triage.queue_summary(triage)
+                if triage.get("block_commit"):
+                    triage_blocked=True
+                    triage_failure_code=str(triage.get("failure_code") or "NORMALIZE_TECHNICAL_FAILURE")
+                    msg="LOCAL_VISUAL_TRIAGE_HARD_FAIL: "+",".join(triage.get("issue_codes") or [triage_failure_code])
+                    ledger_tech_fail(ep,item,triage_failure_code,msg)
+                else:
+                    production_recovery.mark_terminal(ep,item,"SUCCESS_PREPARED")
+                    ok,msg=ledger_success(ep,item,result)
             if ok:
                 item["status"]="generated"
                 item["output_path"]=repo_rel(Path(result["output"]))
@@ -547,7 +558,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 if not msg:
                     msg="image backend failed without terminal output"
                 has_failure=True
-                code="CANDIDATE_COMMIT_FAILED" if backend_ok else classify_error(msg)
+                code=triage_failure_code if triage_blocked else ("CANDIDATE_COMMIT_FAILED" if backend_ok else classify_error(msg))
                 if not backend_ok: ledger_tech_fail(ep,item,code,msg)
                 item["status"]=_terminal_technical_status(item,code)
                 item["technical_failure_code"]=code

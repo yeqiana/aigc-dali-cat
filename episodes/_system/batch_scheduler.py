@@ -29,6 +29,7 @@ import production_ledger
 import runtime_observability
 import runtime_timeout_policy
 import episode_performance
+import local_visual_triage
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -116,6 +117,13 @@ def _fallback_single(ep,item,timeout,codex):
     item["attempts"]=int(item.get("attempts") or 0)+1
     res=image_worker_pool.execute(ep,item,timeout,codex)
     if res.get("returncode")==0 and res.get("output") and Path(res["output"]).is_file():
+        triage=local_visual_triage.inspect_candidate(ep,item,Path(res["output"]))
+        item["local_visual_triage"]=local_visual_triage.queue_summary(triage)
+        if triage.get("block_commit"):
+            code=str(triage.get("failure_code") or "NORMALIZE_TECHNICAL_FAILURE")
+            msg="LOCAL_VISUAL_TRIAGE_HARD_FAIL: "+",".join(triage.get("issue_codes") or [code])
+            ledger_tech_fail(ep,item,code,msg)
+            return False,res,msg
         ok,msg=ledger_success(ep,item,res)
         return ok,res,msg
     return False,res,res.get("stdout") or "single fallback failed"
@@ -255,8 +263,25 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
             if image_event.event == "IMAGE_SUCCESS":
                 result=payload.get("result") or payload
                 if result.get("returncode")==0 and result.get("output") and Path(result["output"]).is_file():
-                    production_recovery.mark_terminal(ep,item,"SUCCESS_PREPARED")
-                    ok,msg=ledger_success(ep,item,result)
+                    triage=local_visual_triage.inspect_candidate(ep,item,Path(result["output"]))
+                    item["local_visual_triage"]=local_visual_triage.queue_summary(triage)
+                    if triage.get("block_commit"):
+                        code=str(triage.get("failure_code") or "NORMALIZE_TECHNICAL_FAILURE")
+                        msg="LOCAL_VISUAL_TRIAGE_HARD_FAIL: "+",".join(triage.get("issue_codes") or [code])
+                        ledger_tech_fail(ep,item,code,msg)
+                        item["status"]="blocked" if code in __import__("image_scheduler").NON_REGENERATING_FAILURE_CODES else "tech_failed"
+                        item["technical_failure_code"]=code
+                        item["candidate_output_path"]=str(result["output"])
+                        item["completed_at"]=now()
+                        item["last_error"]=msg[-1000:]
+                        production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED",code=code)
+                        episode_performance.safe_record_queue_image_attempt(ep,item,status=item["status"],error_code=code)
+                        has_human_block=has_human_block or item["status"]=="blocked"
+                        has_technical_failure=True
+                        ok=False
+                    else:
+                        production_recovery.mark_terminal(ep,item,"SUCCESS_PREPARED")
+                        ok,msg=ledger_success(ep,item,result)
                     if ok:
                         item["status"]="generated"
                         item["completed_at"]=now()
@@ -270,7 +295,7 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                         successful_results+=1
                         production_recovery.mark_terminal(ep,item,"COMMITTED")
                         episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
-                    else:
+                    elif not triage.get("block_commit"):
                         # The backend already produced pixels; keep the open
                         # attempt/candidate for reconciliation, never regenerate.
                         item["status"]="blocked"

@@ -26,6 +26,7 @@ import runtime_timeout_policy
 import production_ledger
 import local_vision_shadow
 import subtitle_render_integrity
+import subtitle_face_safe_area
 import quota_observability
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -197,6 +198,7 @@ def _prompt(ep: Path, rows: list[dict], texts: dict[str, str], out: Path) -> str
         for r in rows
     )
     ocr_hint = local_vision_shadow.ocr_hint(ep, [r["frame"] for r in rows])
+    face_hint = subtitle_face_safe_area.hint(ep, [r["frame"] for r in rows])
     return f"""You are the Story OS final-publish Caption ↔ Image + Subtitle Obstruction Critic.
 Review ONLY the supplied FINAL publish pixels after subtitle rendering.
 For each frame judge two things:
@@ -209,6 +211,7 @@ Mappings:
 
 Local pre-scan (advisory only, never authoritative):
 {ocr_hint or "none"}
+{face_hint or "none"}
 
 Write ONLY JSON to {out.relative_to(ROOT).as_posix()}:
 {{"frames":[{{"frame":"01","supported":true,"subtitle_unobstructed":true,"suggested_y_ratio":null,"obstruction_reason":"","notes":"specific pixel evidence"}}],"summary":{{"passed":true}}}}
@@ -411,6 +414,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
     # frames that actually need a vision call. Fail-soft; never blocks or
     # changes audit results, and never reduces the formal critic workload.
     local_cleared = {}
+    face_safe_report = {"status": "NOT_APPLICABLE", "summary": {}}
     if nonempty:
         integrity = subtitle_render_integrity.inspect_frames(
             ep, [row["frame"] for row in nonempty])
@@ -418,6 +422,8 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
         if corrupt:
             raise ValueError("subtitle publish pixels fail local render integrity: " + ", ".join(corrupt))
         ocr_report = local_vision_shadow.run_caption_ocr_shadow(
+            ep, keys=[row["frame"] for row in nonempty])
+        face_safe_report = subtitle_face_safe_area.run(
             ep, keys=[row["frame"] for row in nonempty])
         local_cleared = local_vision_shadow.locally_clear_caption_frames(
             ep, [row["frame"] for row in nonempty], ocr_report, integrity)
@@ -478,6 +484,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
             subtitle_layout.apply_pixel_safe_overrides(ep, placement_repairs)
             repair_keys = sorted(placement_repairs)
             subtitle_layout.render_frames(ep, repair_keys)
+            face_safe_report = subtitle_face_safe_area.run(ep, keys=repair_keys)
             repaired_frames, repaired_meta = _review_frame_records(ep)
             repaired_by_key = {row["frame"]: row for row in repaired_frames}
             repaired_image_sha, repaired_caption_sha, repaired_texts, repaired_source_meta = _hashes(ep, repaired_frames)
@@ -516,6 +523,10 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
             "local_reviewed_frames": sorted(local_cleared),
             "local_review_count": len(local_cleared),
             "visual_review_invalidated": False,
+            "face_safe_area_shadow": {
+                "status": face_safe_report.get("status"),
+                "summary": face_safe_report.get("summary") or {},
+            },
             "vision_review_telemetry": {
                 "vision_candidate_frames": vision_candidate_frames,
                 "empty_caption_count": empty_caption_count,

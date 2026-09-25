@@ -137,6 +137,30 @@ production:
   max_content_repairs_per_frame: 1
   technical_retry_counts_as_content_repair: false
 
+  # Local Visual Triage：在图片写入 Production Ledger 前做轻量确定性检查。
+  # 只有不可解码/正式画布不匹配等硬技术故障允许阻断 commit；其余全部只标 SUSPECT。
+  local_visual_triage:
+    enabled: true
+    hard_failures_block_commit: true
+    near_duplicate_phash_max_distance: 4
+    near_duplicate_dhash_max_distance: 4
+    low_entropy_warn_below: 1.5
+    dark_luma_warn_below: 5.0
+    bright_luma_warn_above: 250.0
+    low_edge_mean_warn_below: 1.5
+    repair_noop_rms_max: 0.002
+    repair_ssim_warn_below: 0.55
+    # DINOv2/同类 embedding 通过显式本地 ONNX 模型启用；StoryOS 永不自动下载模型。
+    embedding:
+      enabled: false
+      provider: onnx
+      model_path: ""
+      input_size: 224
+    # SFace 只做 individual character-master crop 排序；阈值未校准前绝不参与 PASS/FAIL。
+    sface:
+      enabled: true
+      max_references: 2
+
   # Visual Lock ordinary baseline 在普通返修仍失败后，可再生成有界竞争候选。
   # 这些候选不增加 content_repairs_used；任意一张经 Codex Vision PASS 即成为 Pixel Master。
   visual_lock_baseline_pool:

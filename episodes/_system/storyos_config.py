@@ -93,6 +93,49 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("production must use continuous_first_completed=true and wave_barrier=false")
     if get_path(cfg, "production.ledger_single_writer") is not True:
         errors.append("production.ledger_single_writer must be true")
+    triage = get_path(cfg, "production.local_visual_triage")
+    if not isinstance(triage, dict):
+        errors.append("production.local_visual_triage must be a mapping")
+    else:
+        for key in ("enabled", "hard_failures_block_commit"):
+            if not isinstance(triage.get(key), bool):
+                errors.append(f"production.local_visual_triage.{key} must be a bool")
+        for key in ("near_duplicate_phash_max_distance", "near_duplicate_dhash_max_distance"):
+            value = triage.get(key)
+            if type(value) is not int or not 0 <= value <= 16:
+                errors.append(f"production.local_visual_triage.{key} must be an int between 0 and 16")
+        ranges = {
+            "low_entropy_warn_below": (0.0, 8.0),
+            "dark_luma_warn_below": (0.0, 64.0),
+            "bright_luma_warn_above": (191.0, 255.0),
+            "low_edge_mean_warn_below": (0.0, 64.0),
+            "repair_noop_rms_max": (0.0, 0.05),
+            "repair_ssim_warn_below": (0.0, 1.0),
+        }
+        for key, (lo, hi) in ranges.items():
+            value = triage.get(key)
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or not lo <= float(value) <= hi:
+                errors.append(f"production.local_visual_triage.{key} must be between {lo} and {hi}")
+        embedding = triage.get("embedding")
+        if not isinstance(embedding, dict):
+            errors.append("production.local_visual_triage.embedding must be a mapping")
+        else:
+            if not isinstance(embedding.get("enabled"), bool):
+                errors.append("production.local_visual_triage.embedding.enabled must be a bool")
+            if embedding.get("provider") != "onnx":
+                errors.append("production.local_visual_triage.embedding.provider must be onnx")
+            if not isinstance(embedding.get("model_path"), str):
+                errors.append("production.local_visual_triage.embedding.model_path must be a string")
+            if type(embedding.get("input_size")) is not int or not 64 <= embedding.get("input_size") <= 1024:
+                errors.append("production.local_visual_triage.embedding.input_size must be an int between 64 and 1024")
+        sface = triage.get("sface")
+        if not isinstance(sface, dict):
+            errors.append("production.local_visual_triage.sface must be a mapping")
+        else:
+            if not isinstance(sface.get("enabled"), bool):
+                errors.append("production.local_visual_triage.sface.enabled must be a bool")
+            if type(sface.get("max_references")) is not int or not 1 <= sface.get("max_references") <= 8:
+                errors.append("production.local_visual_triage.sface.max_references must be an int between 1 and 8")
     if get_path(cfg, "provider.exact_raw_canvas_required") is not False:
         errors.append("provider.exact_raw_canvas_required must be false for current desktop image transport")
     if get_path(cfg, "provider.measure_raw_dimensions_locally") is not True:

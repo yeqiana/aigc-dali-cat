@@ -98,6 +98,20 @@ def run_lane(ep, fake_backend):
     S.ledger_begin = lambda ep_arg, item: (True, "mock begin ok")
     S.ledger_success = lambda ep_arg, item, result: (True, "mock commit ok")
     S.ledger_tech_fail = lambda ep_arg, item, code, message: None
+    # This test isolates scheduler concurrency semantics. Local Visual Triage
+    # has its own pixel-validity coverage and must not interpret the stub's
+    # intentionally non-image "mock-png" bytes.
+    S.local_visual_triage = SimpleNamespace(
+        inspect_candidate=lambda ep_arg, item, output: {
+            "status": "PASS", "block_commit": False, "issue_codes": [],
+            "candidate_sha256": "0" * 64, "diagnostic_path": None,
+        },
+        queue_summary=lambda report: {
+            "status": report["status"], "block_commit": False,
+            "failure_code": None, "issue_codes": [], "diagnostic_path": None,
+            "candidate_sha256": report["candidate_sha256"],
+        },
+    )
     return S.run_scheduler_async(ep, max_workers=5, timeout=30, codex=None)
 
 
@@ -106,7 +120,7 @@ def load_q(ep):
 
 
 class RepairLaneConcurrencyTest(unittest.TestCase):
-    def test_three_inflight_with_first_completed_refill(self):
+    def test_five_inflight_with_first_completed_refill(self):
         frames = {
             12: {"kind": "success", "delay": 0.20},
             16: {"kind": "success", "delay": 0.03},
@@ -128,8 +142,8 @@ class RepairLaneConcurrencyTest(unittest.TestCase):
             self.assertEqual(len(ids), len(set(ids)), "duplicate dispatch detected")
             self.assertEqual(len(completed), 6)
             peak = max(w["inflight_after"] for w in waves)
-            self.assertEqual(peak, 3, f"expected 3 in flight, got peak={peak}")
-            self.assertGreater(len(trace["started"]), 3)
+            self.assertEqual(peak, 5, f"expected 5 in flight, got peak={peak}")
+            self.assertGreater(len(trace["started"]), 5)
             done = [x for x in q["items"] if x["status"] == "generated"]
             self.assertEqual(len(done), 6)
             self.assertEqual(rc, 0)
@@ -164,9 +178,10 @@ class RepairLaneConcurrencyTest(unittest.TestCase):
         finally:
             td.cleanup()
 
-    def test_tech_failure_degrades_three_two_one(self):
-        # First three items fail; cap must step 3 -> 2 -> 1 and later
-        # dispatches must never exceed the degraded cap.
+    def test_tech_failure_degrades_and_success_can_restore(self):
+        # Current production cap is 5. Technical failures lower the cap while
+        # two consecutive successes may restore one slot, so interleaved
+        # completions are intentionally not a fixed 5 -> 4 -> 3 -> 2 sequence.
         frames = {12: {"kind": "tech", "delay": 0.02},
                   16: {"kind": "tech", "delay": 0.05},
                   17: {"kind": "tech", "delay": 0.09},
@@ -180,11 +195,15 @@ class RepairLaneConcurrencyTest(unittest.TestCase):
             q = load_q(ep)
             waves = q["waves"]
             caps = [w["next_parallel"] for w in waves]
-            self.assertIn(2, caps)
-            self.assertIn(1, caps)
-            degraded_dispatches = [w for w in waves if w["status"] == "dispatched" and w["next_parallel"] == 1]
+            self.assertIn(4, caps)
+            self.assertIn(3, caps)
+            self.assertLessEqual(min(caps), 3)
+            degraded_dispatches = [
+                w for w in waves
+                if w["status"] == "dispatched" and int(w["next_parallel"]) <= 3
+            ]
             for w in degraded_dispatches:
-                self.assertLessEqual(w["inflight_after"], 1)
+                self.assertLessEqual(w["inflight_after"], w["next_parallel"])
             statuses = {x["frame"]: x["status"] for x in q["items"]}
             self.assertEqual(statuses[18], "generated")
             self.assertEqual(statuses[19], "generated")

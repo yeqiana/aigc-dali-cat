@@ -24,6 +24,7 @@ import runtime_router
 import story_json
 import runtime_timeout_policy
 import production_ledger
+import local_visual_triage
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ("visual", "fast_frame_scout")
@@ -182,6 +183,7 @@ def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=Non
     risk=classify_frame(ep,frame)
     contract=frame_contract.compile_frame(ep,frame,write_cache=True)
     asset_sha=sha256_file(image)
+    local_triage_hint=local_visual_triage.hint_for_frame(ep, frame, asset_sha)
     base={
         "schema_version":1,
         "story_os_version":contract["story_os_version"],
@@ -210,6 +212,9 @@ Resolved Frame Contract:
 <frame_contract>
 {contract['prompt_contract']}
 </frame_contract>
+
+Local Visual Triage pre-scan (advisory only; never authoritative):
+{local_triage_hint or "none"}
 
 Look only for obvious:
 - identity drift

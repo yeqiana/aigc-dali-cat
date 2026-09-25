@@ -30,6 +30,7 @@ import story_json
 import runtime_timeout_policy
 import runtime_workspace
 import episode_state_persistence
+import local_visual_triage
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -1049,6 +1050,20 @@ resolve_codex = critic_runner.resolve_codex
 command_prefix = critic_runner.prefix
 
 
+def _local_triage_prompt_block(ep: Path, rows: list[dict]) -> str:
+    hints = []
+    for row in rows:
+        try:
+            hint = local_visual_triage.hint_for_frame(
+                ep, int(row["frame"]), str(row.get("sha256") or "")
+            )
+        except Exception:
+            hint = ""
+        if hint:
+            hints.append(hint)
+    return "\n".join(hints) if hints else "none"
+
+
 def critic_prompt(ep: Path, frames: list[dict], candidate: Path, attempt: int) -> str:
     rel_ep = ep.relative_to(ROOT).as_posix()
     story, storyboard = episode_files(ep)
@@ -1057,6 +1072,7 @@ def critic_prompt(ep: Path, frames: list[dict], candidate: Path, attempt: int) -
     rel_gates = (ep / "meta/story-gates.json").relative_to(ROOT).as_posix()
     rel_out = candidate.relative_to(ROOT).as_posix()
     mapping = "\n".join(f"- attachment/frame {row['frame']}: {row['path_rel']}" for row in frames)
+    local_triage_block = _local_triage_prompt_block(ep, frames)
     version = episode_contract_version(ep)
     directing_v3 = directing_v3_required(ep)
     # STORY_OS_V221_PROMPT_ALIGN: the Required-shape sample must list exactly the
@@ -1081,6 +1097,9 @@ Resolved Frame Contracts: {runtime_workspace.workspace_path(ep, phase4_contract.
 
 Attached images are in numeric order and map as follows:
 {mapping}
+
+Local Visual Triage pre-scan (advisory only; never authoritative):
+{local_triage_block}
 
 This is critic attempt {attempt}. Judge the ACTUAL pixels against Story Lock + storyboard + authenticity/continuity anchors.
 Episode contract version: {episode_contract_version(ep)}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0. Earlier episodes must not fail on V2.2-only criteria.
@@ -2114,6 +2133,7 @@ def _exception_review_prompt(ep: Path, rows: list[dict], targets: list[str], can
         f"- {'TARGET' if row['exception_target'] else 'CONTEXT'} frame {row['frame']}: {row['path_rel']}"
         for row in rows
     )
+    local_triage_block = _local_triage_prompt_block(ep, rows)
     return f"""You are a FRESH isolated final Production Frame Semantic Critic.
 This is a DIRECT-USER-EXCEPTION re-review. Do NOT generate or edit images and do NOT trust earlier PASS/FAIL labels.
 Only the TARGET frames may change Production Ledger state. CONTEXT frames are already locked and are supplied only to judge continuity.
@@ -2130,6 +2150,9 @@ Resolved Frame Contracts live at {runtime_workspace.workspace_path(ep, phase4_co
 
 Attached mapping:
 {mapping}
+
+Local Visual Triage pre-scan (advisory only; never authoritative):
+{local_triage_block}
 
 Judge ACTUAL pixels against Story Lock, storyboard, Frame Contract, camera-authorship physics, world identity, continuity and anomaly readability.
 PASS only when every required check is true and issue_codes is empty. Context rows must also remain valid; if a context row is inconsistent with a target, fail the relevant row rather than hiding the conflict.
@@ -2491,6 +2514,7 @@ def _ordinary_patch_prompt(ep: Path, rows: list[dict], targets: list[str], candi
         f"- {'TARGET' if row['patch_target'] else 'CONTEXT'} frame {row['frame']}: {row['path_rel']}"
         for row in rows
     )
+    local_triage_block = _local_triage_prompt_block(ep, rows)
     return f"""You are a FRESH isolated final Production Frame Semantic Critic.
 This is a BOUNDED ORDINARY-REPAIR PATCH review. Do NOT generate or edit images and do NOT trust earlier labels.
 Only TARGET frames may change Production Ledger state. CONTEXT frames are already LOCKED and are supplied only to judge continuity.
@@ -2506,6 +2530,9 @@ Read these locked authorities before judging:
 
 Attached mapping:
 {mapping}
+
+Local Visual Triage pre-scan (advisory only; never authoritative):
+{local_triage_block}
 
 Judge ACTUAL pixels against Story Lock, storyboard, Frame Contract, camera-authorship physics, world identity, continuity and anomaly readability.
 PASS only when every required check is true and issue_codes is empty. A CONTEXT failure invalidates this patch review and must not be hidden.
