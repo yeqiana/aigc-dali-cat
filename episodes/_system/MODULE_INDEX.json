@@ -61,7 +61,9 @@
     "grounding_dino_provider.py",
     "sam2_mask_provider.py",
     "pose_diagnostic_provider.py",
-    "perceptual_similarity_provider.py"
+    "perceptual_similarity_provider.py",
+    "isolated_ml_runtime.py",
+    "local_vision_provision.py"
   ],
   "release": [
     "final_candidate_snapshot.py",

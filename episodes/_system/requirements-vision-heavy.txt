@@ -1,0 +1,8 @@
+# Optional heavy local vision diagnostics; keep out of the base StoryOS runtime.
+# Runtime providers never auto-download model weights. Model directories/files
+# must be provisioned explicitly under .storyos_cache or another configured path.
+transformers>=4.56,<6
+torch>=2.4,<3
+torchvision>=0.19,<1
+lpips>=0.1.4,<1
+onnxruntime>=1.19,<2

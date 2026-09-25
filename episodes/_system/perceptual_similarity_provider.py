@@ -3,8 +3,13 @@
 """Optional LPIPS repair similarity diagnostic. Never installs/downloads models."""
 from __future__ import annotations
 
+import importlib.util
+import sys
+
 from functools import lru_cache
 from pathlib import Path
+
+import isolated_ml_runtime
 
 import visual_fingerprint
 
@@ -12,11 +17,9 @@ import visual_fingerprint
 def available(config: dict) -> dict:
     if config.get("enabled") is not True:
         return {"available": False, "reason": "DISABLED"}
-    try:
-        import lpips  # noqa: F401
-        import torch  # noqa: F401
-    except ImportError as exc:
-        return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": str(exc)}
+    missing = [name for name in ("torch", "lpips") if importlib.util.find_spec(name) is None]
+    if missing:
+        return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": ",".join(missing)}
     return {"available": True}
 
 
@@ -40,10 +43,7 @@ def _tensor(path: Path, size: int):
     return torch.from_numpy(array).permute(2, 0, 1).unsqueeze(0)
 
 
-def compare(source: Path, candidate: Path, config: dict) -> dict:
-    info = available(config)
-    if not info["available"]:
-        return {"status": "SKIPPED", "diagnostic_only": True, **info}
+def _compare_local(source: Path, candidate: Path, config: dict) -> dict:
     try:
         import torch
         net = str(config.get("net") or "alex")
@@ -67,3 +67,26 @@ def compare(source: Path, candidate: Path, config: dict) -> dict:
         }
     except Exception as exc:
         return {"status": "FAILED", "diagnostic_only": True, "reason": f"{type(exc).__name__}: {exc}"}
+
+
+def compare(source: Path, candidate: Path, config: dict) -> dict:
+    info = available(config)
+    if not info["available"]:
+        return {"status": "SKIPPED", "diagnostic_only": True, **info}
+    return isolated_ml_runtime.call(
+        Path(__file__),
+        {"source": str(Path(source).resolve()), "candidate": str(Path(candidate).resolve()), "config": config},
+        timeout=int(config.get("timeout_seconds") or 180),
+    )
+
+
+def _isolated_handler(payload: dict) -> dict:
+    return _compare_local(
+        Path(payload["source"]),
+        Path(payload["candidate"]),
+        payload.get("config") or {},
+    )
+
+
+if __name__ == "__main__" and "--isolated-server" in sys.argv:
+    isolated_ml_runtime.serve(_isolated_handler)

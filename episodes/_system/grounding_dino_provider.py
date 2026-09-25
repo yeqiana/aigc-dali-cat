@@ -8,10 +8,13 @@ from a queue item or its Resolved Frame Contract and returns advisory evidence.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
+import sys
 from functools import lru_cache
 from pathlib import Path
 
 import story_json
+import isolated_ml_runtime
 import visual_fingerprint
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,11 +60,9 @@ def available(config: dict) -> dict:
     model = _model_dir(config)
     if model is None:
         return {"available": False, "reason": "MODEL_MISSING"}
-    try:
-        import torch  # noqa: F401
-        from transformers import AutoModelForZeroShotObjectDetection, AutoProcessor  # noqa: F401
-    except ImportError as exc:
-        return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": str(exc)}
+    missing = [name for name in ("torch", "transformers") if importlib.util.find_spec(name) is None]
+    if missing:
+        return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": ",".join(missing)}
     return {"available": True, "model_path": str(model), "model_manifest_sha256": _manifest_sha(model)}
 
 
@@ -133,15 +134,7 @@ def _load(model_path: str):
     return processor, model
 
 
-def inspect(ep: Path, item: dict, candidate: Path, config: dict) -> dict:
-    if config.get("enabled") is not True:
-        return {"status": "SKIPPED", "diagnostic_only": True, "reason": "DISABLED", "queries": []}
-    queries = object_queries(Path(ep), item, config)
-    if not queries:
-        return {"status": "SKIPPED", "diagnostic_only": True, "reason": "NO_OBJECT_QUERIES", "queries": []}
-    info = available(config)
-    if not info["available"]:
-        return {"status": "SKIPPED", "diagnostic_only": True, "queries": queries, **info}
+def _inspect_local(candidate: Path, queries: list[str], config: dict, info: dict) -> dict:
     try:
         import torch
         from PIL import Image
@@ -192,3 +185,37 @@ def inspect(ep: Path, item: dict, candidate: Path, config: dict) -> dict:
             "status": "FAILED", "diagnostic_only": True, "may_affect_gate": False,
             "queries": queries, "reason": f"{type(exc).__name__}: {exc}",
         }
+
+
+def inspect(ep: Path, item: dict, candidate: Path, config: dict) -> dict:
+    if config.get("enabled") is not True:
+        return {"status": "SKIPPED", "diagnostic_only": True, "reason": "DISABLED", "queries": []}
+    queries = object_queries(Path(ep), item, config)
+    if not queries:
+        return {"status": "SKIPPED", "diagnostic_only": True, "reason": "NO_OBJECT_QUERIES", "queries": []}
+    info = available(config)
+    if not info["available"]:
+        return {"status": "SKIPPED", "diagnostic_only": True, "queries": queries, **info}
+    return isolated_ml_runtime.call(
+        Path(__file__),
+        {
+            "candidate": str(Path(candidate).resolve()),
+            "queries": queries,
+            "config": config,
+            "info": info,
+        },
+        timeout=int(config.get("timeout_seconds") or 180),
+    )
+
+
+def _isolated_handler(payload: dict) -> dict:
+    return _inspect_local(
+        Path(payload["candidate"]),
+        [str(x) for x in payload.get("queries") or []],
+        payload.get("config") or {},
+        payload.get("info") or {},
+    )
+
+
+if __name__ == "__main__" and "--isolated-server" in sys.argv:
+    isolated_ml_runtime.serve(_isolated_handler)

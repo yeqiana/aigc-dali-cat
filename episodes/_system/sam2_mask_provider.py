@@ -3,8 +3,13 @@
 """Optional local-only SAM2 repair-region mask diagnostic."""
 from __future__ import annotations
 
+import importlib.util
+import sys
+
 from functools import lru_cache
 from pathlib import Path
+
+import isolated_ml_runtime
 
 import visual_fingerprint
 
@@ -26,11 +31,9 @@ def available(config: dict) -> dict:
     model = _model_dir(config)
     if model is None:
         return {"available": False, "reason": "MODEL_MISSING"}
-    try:
-        import torch  # noqa: F401
-        from transformers import Sam2Model, Sam2Processor  # noqa: F401
-    except ImportError as exc:
-        return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": str(exc)}
+    missing = [name for name in ("torch", "transformers") if importlib.util.find_spec(name) is None]
+    if missing:
+        return {"available": False, "reason": "DEPENDENCY_MISSING", "detail": ",".join(missing)}
     return {"available": True, "model_path": str(model)}
 
 
@@ -43,12 +46,7 @@ def _load(model_path: str):
     return processor, model
 
 
-def segment_change_region(candidate: Path, box_xyxy: list[int] | tuple[int, int, int, int] | None, config: dict) -> dict:
-    if not box_xyxy:
-        return {"status": "SKIPPED", "diagnostic_only": True, "reason": "NO_CHANGE_BOX"}
-    info = available(config)
-    if not info["available"]:
-        return {"status": "SKIPPED", "diagnostic_only": True, **info}
+def _segment_local(candidate: Path, box_xyxy, config: dict, info: dict) -> dict:
     try:
         import numpy as np
         import torch
@@ -63,10 +61,7 @@ def segment_change_region(candidate: Path, box_xyxy: list[int] | tuple[int, int,
             inputs = processor(images=image, input_boxes=[[box]], return_tensors="pt")
         with torch.inference_mode():
             outputs = model(**inputs, multimask_output=False)
-        masks = processor.post_process_masks(
-            outputs.pred_masks.cpu(),
-            inputs["original_sizes"],
-        )
+        masks = processor.post_process_masks(outputs.pred_masks.cpu(), inputs["original_sizes"])
         mask = masks[0]
         if hasattr(mask, "detach"):
             mask = mask.detach().cpu().numpy()
@@ -88,3 +83,29 @@ def segment_change_region(candidate: Path, box_xyxy: list[int] | tuple[int, int,
         }
     except Exception as exc:
         return {"status": "FAILED", "diagnostic_only": True, "reason": f"{type(exc).__name__}: {exc}"}
+
+
+def segment_change_region(candidate: Path, box_xyxy: list[int] | tuple[int, int, int, int] | None, config: dict) -> dict:
+    if not box_xyxy:
+        return {"status": "SKIPPED", "diagnostic_only": True, "reason": "NO_CHANGE_BOX"}
+    info = available(config)
+    if not info["available"]:
+        return {"status": "SKIPPED", "diagnostic_only": True, **info}
+    return isolated_ml_runtime.call(
+        Path(__file__),
+        {"candidate": str(Path(candidate).resolve()), "box_xyxy": list(box_xyxy), "config": config, "info": info},
+        timeout=int(config.get("timeout_seconds") or 180),
+    )
+
+
+def _isolated_handler(payload: dict) -> dict:
+    return _segment_local(
+        Path(payload["candidate"]),
+        payload.get("box_xyxy"),
+        payload.get("config") or {},
+        payload.get("info") or {},
+    )
+
+
+if __name__ == "__main__" and "--isolated-server" in sys.argv:
+    isolated_ml_runtime.serve(_isolated_handler)

@@ -1,0 +1,4 @@
+# Grounding DINO / SAM2 sidecar dependencies. Base StoryOS runtime stays unchanged.
+transformers>=4.56,<6
+huggingface-hub>=0.34,<2
+safetensors>=0.4,<1

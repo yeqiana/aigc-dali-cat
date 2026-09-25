@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import importlib.util
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -13,8 +14,10 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import image_technical_gate
+import isolated_ml_runtime
 import grounding_dino_provider
 import local_visual_triage
+import local_vision_provision
 import repair_integrity
 import local_visual_triage_summary
 import perceptual_similarity_provider
@@ -29,6 +32,86 @@ import visual_fingerprint
 def _image(path: Path, size=(64, 64), value=128) -> Path:
     Image.new("RGB", size, (value, value, value)).save(path)
     return path
+
+
+def test_isolated_ml_runtime_reuses_worker_and_uses_stdlib_platform():
+    base = ROOT / "episodes/_tests"
+    base.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="isolated-ml-", dir=base) as raw:
+        worker = Path(raw) / "worker.py"
+        worker.write_text(
+            "import json, os, platform, sys\n"
+            "counter = 0\n"
+            "for line in sys.stdin:\n"
+            "    counter += 1\n"
+            "    json.loads(line)\n"
+            "    print(json.dumps({'status':'COMPLETE','counter':counter,'cwd':os.getcwd(),'platform_file':platform.__file__}), flush=True)\n",
+            encoding="utf-8",
+        )
+        first = isolated_ml_runtime.call(worker, {"n": 1}, timeout=10)
+        second = isolated_ml_runtime.call(worker, {"n": 2}, timeout=10)
+        assert first["status"] == "COMPLETE"
+        assert first["counter"] == 1
+        assert second["counter"] == 2
+        assert Path(second["platform_file"]).name.lower() == "platform.py"
+        assert str(ROOT / "platform").lower() not in str(second["platform_file"]).lower()
+        assert ".storyos_cache" in second["cwd"]
+    isolated_ml_runtime.shutdown_all()
+
+
+def test_isolated_ml_runtime_can_import_torch_when_installed():
+    if importlib.util.find_spec("torch") is None:
+        return
+    base = ROOT / "episodes/_tests"
+    base.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="isolated-torch-", dir=base) as raw:
+        worker = Path(raw) / "torch_worker.py"
+        worker.write_text(
+            "import json, platform, sys, torch\n"
+            "for line in sys.stdin:\n"
+            "    json.loads(line)\n"
+            "    print(json.dumps({'status':'COMPLETE','torch':torch.__version__,'platform_file':platform.__file__}), flush=True)\n",
+            encoding="utf-8",
+        )
+        result = isolated_ml_runtime.call(worker, {"probe": True}, timeout=30)
+        assert result["status"] == "COMPLETE"
+        assert Path(result["platform_file"]).name.lower() == "platform.py"
+    isolated_ml_runtime.shutdown_all()
+
+
+def test_model_provision_status_ignores_huggingface_housekeeping_files():
+    base = ROOT / "episodes/_tests"
+    base.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="model-status-", dir=base) as raw:
+        target = Path(raw)
+        cache = target / ".cache" / "huggingface"
+        cache.mkdir(parents=True)
+        (cache / "CACHEDIR.TAG").write_text("cache", encoding="utf-8")
+        spec = {
+            "repo_id": "test/model",
+            "target": target,
+            "allow_patterns": ["config.json", "model.safetensors"],
+            "required_files": ["config.json", "model.safetensors"],
+        }
+        row = local_vision_provision._model_status(spec)
+        assert row["present"] is False
+        assert row["partial"] is False
+        assert row["total_model_bytes"] == 0
+        assert row["files"] == []
+        assert row["missing_required"] == ["config.json", "model.safetensors"]
+
+        (target / "config.json").write_text("{}", encoding="utf-8")
+        row = local_vision_provision._model_status(spec)
+        assert row["present"] is False
+        assert row["partial"] is True
+        assert row["missing_required"] == ["model.safetensors"]
+
+        (target / "model.safetensors").write_bytes(b"weights")
+        row = local_vision_provision._model_status(spec)
+        assert row["present"] is True
+        assert row["complete"] is True
+        assert row["missing_required"] == []
+        assert row["total_model_bytes"] == len(b"{}") + len(b"weights")
 
 
 def test_visual_fingerprint_is_deterministic_and_comparable():
