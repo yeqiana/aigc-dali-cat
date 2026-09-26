@@ -1,0 +1,849 @@
+{
+  "schema_version": 2,
+  "kind": "p1_character_paired_benchmark_series_result",
+  "generated_at": "2026-09-26T18:59:32+08:00",
+  "requested_valid_runs": 5,
+  "attempted_run_count": 5,
+  "valid_run_count": 5,
+  "checks": {
+    "minimum_valid_runs": true,
+    "all_valid_runs_semantic_equivalent": true,
+    "telemetry_complete": true,
+    "no_failure_timeout": true,
+    "authority_zero_regression": true,
+    "fixed_provider_model": true,
+    "wall_regression_within_5pct": true,
+    "token_regression_within_10pct": true
+  },
+  "pass": true,
+  "legacy_execution": {
+    "schema_version": 1,
+    "complete": true,
+    "real_model_execution": true,
+    "wall_seconds": 23.0,
+    "input_tokens": 29568,
+    "output_tokens": 427,
+    "repeated_reads": 0,
+    "failure": false,
+    "timeout": false,
+    "provider": "codex_cli_subscription",
+    "model": "gpt-5.6-luna",
+    "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt",
+    "sample_count": 5,
+    "aggregation": "median_of_valid_paired_runs"
+  },
+  "shadow_execution": {
+    "schema_version": 1,
+    "complete": true,
+    "real_model_execution": true,
+    "wall_seconds": 23.06,
+    "input_tokens": 29554,
+    "output_tokens": 556,
+    "repeated_reads": 0,
+    "failure": false,
+    "timeout": false,
+    "provider": "codex_cli_subscription",
+    "model": "gpt-5.6-luna",
+    "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt",
+    "sample_count": 5,
+    "aggregation": "median_of_valid_paired_runs"
+  },
+  "metrics": {
+    "legacy_wall_seconds": 23.0,
+    "shadow_wall_seconds": 23.06,
+    "wall_regression": 0.0026086956521738573,
+    "legacy_total_tokens": 29995.0,
+    "shadow_total_tokens": 30148.0,
+    "token_regression": 0.0051008501416902816,
+    "legacy_wall_samples": {
+      "count": 5,
+      "median": 23.0,
+      "min": 19.47,
+      "max": 28.0,
+      "p90": null,
+      "p95": null,
+      "percentile_policy": "omitted_below_20_samples"
+    },
+    "shadow_wall_samples": {
+      "count": 5,
+      "median": 23.06,
+      "min": 17.58,
+      "max": 30.51,
+      "p90": null,
+      "p95": null,
+      "percentile_policy": "omitted_below_20_samples"
+    },
+    "legacy_token_samples": {
+      "count": 5,
+      "median": 29995.0,
+      "min": 29966.0,
+      "max": 30193.0,
+      "p90": null,
+      "p95": null,
+      "percentile_policy": "omitted_below_20_samples"
+    },
+    "shadow_token_samples": {
+      "count": 5,
+      "median": 30148.0,
+      "min": 29930.0,
+      "max": 30163.0,
+      "p90": null,
+      "p95": null,
+      "percentile_policy": "omitted_below_20_samples"
+    },
+    "individual_wall_regressions": [
+      0.2850133809099017,
+      -0.2521428571428571,
+      0.0026086956521738573,
+      -0.09707241910631745,
+      0.18623639191290836
+    ],
+    "individual_token_regressions": [
+      0.006073550023359808,
+      -0.001667778519012675,
+      -0.0013910509058391019,
+      -0.0017669611601933656,
+      -0.00016573853089366217
+    ]
+  },
+  "thresholds": {
+    "wall_regression_max": 0.05,
+    "token_regression_max": 0.1,
+    "minimum_valid_runs": 5
+  },
+  "runs": [
+    {
+      "schema_version": 1,
+      "kind": "p1_character_paired_benchmark_result",
+      "generated_at": "2026-09-26T18:57:50+08:00",
+      "checks": {
+        "same_contract_valid": true,
+        "semantic_equivalent": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "wall_regression_within_5pct": false,
+        "token_regression_within_10pct": true,
+        "authority_zero_regression": true
+      },
+      "pass": false,
+      "legacy_errors": [],
+      "shadow_errors": [],
+      "comparison": {
+        "schema_version": 1,
+        "task_id": "preimage-character_finalize-f51a1adbb917",
+        "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+        "comparison_mode": "deterministic_first",
+        "legacy_valid": true,
+        "shadow_valid": true,
+        "legacy_errors": [],
+        "shadow_errors": [],
+        "required_scope_coverage": {
+          "legacy": [
+            "character.finalize"
+          ],
+          "shadow": [
+            "character.finalize"
+          ],
+          "required": [
+            "character.finalize"
+          ]
+        },
+        "payload_sha256": {
+          "legacy": "256994c7a967073e66a05559a671feb06d0ddd90022117d4dbd6493c95295e97",
+          "shadow": "2bbbf67bc96bd15897c2bcae3f38c19c029d5a86c1caffbdb1d05b7533b11ac2"
+        },
+        "structural_equal": false,
+        "domain_semantic": {
+          "semantic_equivalent": true,
+          "legacy": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "shadow": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "mode": "both_candidates_satisfy_same_frozen_character_obligations"
+        },
+        "needs_semantic_review": false,
+        "canonical_side_effect": false
+      },
+      "legacy_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 22.42,
+        "input_tokens": 29568,
+        "output_tokens": 398,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "shadow_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 28.81,
+        "input_tokens": 29554,
+        "output_tokens": 594,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "metrics": {
+        "legacy_wall_seconds": 22.42,
+        "shadow_wall_seconds": 28.81,
+        "wall_regression": 0.2850133809099017,
+        "legacy_total_tokens": 29966,
+        "shadow_total_tokens": 30148,
+        "token_regression": 0.006073550023359808,
+        "legacy_repeated_reads": 0,
+        "shadow_repeated_reads": 0
+      },
+      "thresholds": {
+        "wall_regression_max": 0.05,
+        "token_regression_max": 0.1
+      },
+      "production_cutover_performed": false,
+      "run_index": 1,
+      "legacy_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-01-legacy.json",
+      "shadow_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-01-shadow.json"
+    },
+    {
+      "schema_version": 1,
+      "kind": "p1_character_paired_benchmark_result",
+      "generated_at": "2026-09-26T18:58:18+08:00",
+      "checks": {
+        "same_contract_valid": true,
+        "semantic_equivalent": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "wall_regression_within_5pct": true,
+        "token_regression_within_10pct": true,
+        "authority_zero_regression": true
+      },
+      "pass": true,
+      "legacy_errors": [],
+      "shadow_errors": [],
+      "comparison": {
+        "schema_version": 1,
+        "task_id": "preimage-character_finalize-f51a1adbb917",
+        "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+        "comparison_mode": "deterministic_first",
+        "legacy_valid": true,
+        "shadow_valid": true,
+        "legacy_errors": [],
+        "shadow_errors": [],
+        "required_scope_coverage": {
+          "legacy": [
+            "character.finalize"
+          ],
+          "shadow": [
+            "character.finalize"
+          ],
+          "required": [
+            "character.finalize"
+          ]
+        },
+        "payload_sha256": {
+          "legacy": "92798d7725712fc9900b0ab8c6983e27395ace893ba1a70ff0db96a46033cd6b",
+          "shadow": "a81af1ba2dc1b1d14282dc1bb8b7ea4091c70951778e34a5be854dc0248c190d"
+        },
+        "structural_equal": false,
+        "domain_semantic": {
+          "semantic_equivalent": true,
+          "legacy": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "shadow": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "mode": "both_candidates_satisfy_same_frozen_character_obligations"
+        },
+        "needs_semantic_review": false,
+        "canonical_side_effect": false
+      },
+      "legacy_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 28.0,
+        "input_tokens": 29568,
+        "output_tokens": 412,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "shadow_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 20.94,
+        "input_tokens": 29554,
+        "output_tokens": 376,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "metrics": {
+        "legacy_wall_seconds": 28.0,
+        "shadow_wall_seconds": 20.94,
+        "wall_regression": -0.2521428571428571,
+        "legacy_total_tokens": 29980,
+        "shadow_total_tokens": 29930,
+        "token_regression": -0.001667778519012675,
+        "legacy_repeated_reads": 0,
+        "shadow_repeated_reads": 0
+      },
+      "thresholds": {
+        "wall_regression_max": 0.05,
+        "token_regression_max": 0.1
+      },
+      "production_cutover_performed": false,
+      "run_index": 2,
+      "legacy_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-02-legacy.json",
+      "shadow_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-02-shadow.json"
+    },
+    {
+      "schema_version": 1,
+      "kind": "p1_character_paired_benchmark_result",
+      "generated_at": "2026-09-26T18:58:42+08:00",
+      "checks": {
+        "same_contract_valid": true,
+        "semantic_equivalent": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "wall_regression_within_5pct": true,
+        "token_regression_within_10pct": true,
+        "authority_zero_regression": true
+      },
+      "pass": true,
+      "legacy_errors": [],
+      "shadow_errors": [],
+      "comparison": {
+        "schema_version": 1,
+        "task_id": "preimage-character_finalize-f51a1adbb917",
+        "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+        "comparison_mode": "deterministic_first",
+        "legacy_valid": true,
+        "shadow_valid": true,
+        "legacy_errors": [],
+        "shadow_errors": [],
+        "required_scope_coverage": {
+          "legacy": [
+            "character.finalize"
+          ],
+          "shadow": [
+            "character.finalize"
+          ],
+          "required": [
+            "character.finalize"
+          ]
+        },
+        "payload_sha256": {
+          "legacy": "3214b7e60b579eabe38644cf9f1a0a99e5b40adc6c8702131de06e555b74ac92",
+          "shadow": "d970e81e01ded61da759d0c35f2a35545c036adba74eb108ab385d02327ae2e6"
+        },
+        "structural_equal": false,
+        "domain_semantic": {
+          "semantic_equivalent": true,
+          "legacy": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "shadow": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "mode": "both_candidates_satisfy_same_frozen_character_obligations"
+        },
+        "needs_semantic_review": false,
+        "canonical_side_effect": false
+      },
+      "legacy_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 23.0,
+        "input_tokens": 29609,
+        "output_tokens": 584,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "shadow_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 23.06,
+        "input_tokens": 29595,
+        "output_tokens": 556,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "metrics": {
+        "legacy_wall_seconds": 23.0,
+        "shadow_wall_seconds": 23.06,
+        "wall_regression": 0.0026086956521738573,
+        "legacy_total_tokens": 30193,
+        "shadow_total_tokens": 30151,
+        "token_regression": -0.0013910509058391019,
+        "legacy_repeated_reads": 0,
+        "shadow_repeated_reads": 0
+      },
+      "thresholds": {
+        "wall_regression_max": 0.05,
+        "token_regression_max": 0.1
+      },
+      "production_cutover_performed": false,
+      "run_index": 3,
+      "legacy_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-03-legacy.json",
+      "shadow_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-03-shadow.json"
+    },
+    {
+      "schema_version": 1,
+      "kind": "p1_character_paired_benchmark_result",
+      "generated_at": "2026-09-26T18:59:01+08:00",
+      "checks": {
+        "same_contract_valid": true,
+        "semantic_equivalent": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "wall_regression_within_5pct": true,
+        "token_regression_within_10pct": true,
+        "authority_zero_regression": true
+      },
+      "pass": true,
+      "legacy_errors": [],
+      "shadow_errors": [],
+      "comparison": {
+        "schema_version": 1,
+        "task_id": "preimage-character_finalize-f51a1adbb917",
+        "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+        "comparison_mode": "deterministic_first",
+        "legacy_valid": true,
+        "shadow_valid": true,
+        "legacy_errors": [],
+        "shadow_errors": [],
+        "required_scope_coverage": {
+          "legacy": [
+            "character.finalize"
+          ],
+          "shadow": [
+            "character.finalize"
+          ],
+          "required": [
+            "character.finalize"
+          ]
+        },
+        "payload_sha256": {
+          "legacy": "fea822ab2bd65f1e08963f6cc0092467e96577f819d8ef07253b8672eefe3606",
+          "shadow": "b051115ff10ffa7da6954d48f42d38e6d043d16d9f22d4bcee28789d7594bd30"
+        },
+        "structural_equal": false,
+        "domain_semantic": {
+          "semantic_equivalent": true,
+          "legacy": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "shadow": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "mode": "both_candidates_satisfy_same_frozen_character_obligations"
+        },
+        "needs_semantic_review": false,
+        "canonical_side_effect": false
+      },
+      "legacy_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 19.47,
+        "input_tokens": 29568,
+        "output_tokens": 427,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "shadow_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 17.58,
+        "input_tokens": 29554,
+        "output_tokens": 388,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "metrics": {
+        "legacy_wall_seconds": 19.47,
+        "shadow_wall_seconds": 17.58,
+        "wall_regression": -0.09707241910631745,
+        "legacy_total_tokens": 29995,
+        "shadow_total_tokens": 29942,
+        "token_regression": -0.0017669611601933656,
+        "legacy_repeated_reads": 0,
+        "shadow_repeated_reads": 0
+      },
+      "thresholds": {
+        "wall_regression_max": 0.05,
+        "token_regression_max": 0.1
+      },
+      "production_cutover_performed": false,
+      "run_index": 4,
+      "legacy_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-04-legacy.json",
+      "shadow_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-04-shadow.json"
+    },
+    {
+      "schema_version": 1,
+      "kind": "p1_character_paired_benchmark_result",
+      "generated_at": "2026-09-26T18:59:32+08:00",
+      "checks": {
+        "same_contract_valid": true,
+        "semantic_equivalent": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "wall_regression_within_5pct": false,
+        "token_regression_within_10pct": true,
+        "authority_zero_regression": true
+      },
+      "pass": false,
+      "legacy_errors": [],
+      "shadow_errors": [],
+      "comparison": {
+        "schema_version": 1,
+        "task_id": "preimage-character_finalize-f51a1adbb917",
+        "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+        "comparison_mode": "deterministic_first",
+        "legacy_valid": true,
+        "shadow_valid": true,
+        "legacy_errors": [],
+        "shadow_errors": [],
+        "required_scope_coverage": {
+          "legacy": [
+            "character.finalize"
+          ],
+          "shadow": [
+            "character.finalize"
+          ],
+          "required": [
+            "character.finalize"
+          ]
+        },
+        "payload_sha256": {
+          "legacy": "2bbbf67bc96bd15897c2bcae3f38c19c029d5a86c1caffbdb1d05b7533b11ac2",
+          "shadow": "2bbbf67bc96bd15897c2bcae3f38c19c029d5a86c1caffbdb1d05b7533b11ac2"
+        },
+        "structural_equal": true,
+        "domain_semantic": {
+          "semantic_equivalent": true,
+          "legacy": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "shadow": {
+            "pass": true,
+            "errors": [],
+            "obligations": {
+              "cast_ids": [
+                "P01",
+                "P02",
+                "P03"
+              ],
+              "names": {
+                "P01": "玄奘",
+                "P02": "悟空",
+                "P03": "八戒"
+              },
+              "appearance_anchors": {
+                "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+                "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+                "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+              },
+              "pov_character_id": "P01",
+              "pov_person": "first_person"
+            },
+            "mode": "deterministic_frozen_character_obligations"
+          },
+          "mode": "both_candidates_satisfy_same_frozen_character_obligations"
+        },
+        "needs_semantic_review": false,
+        "canonical_side_effect": false
+      },
+      "legacy_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 25.72,
+        "input_tokens": 29568,
+        "output_tokens": 600,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "shadow_execution": {
+        "schema_version": 1,
+        "complete": true,
+        "errors": [],
+        "real_model_execution": true,
+        "wall_seconds": 30.51,
+        "input_tokens": 29554,
+        "output_tokens": 609,
+        "repeated_reads": 0,
+        "failure": false,
+        "timeout": false,
+        "provider": "codex_cli_subscription",
+        "model": "gpt-5.6-luna",
+        "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt"
+      },
+      "metrics": {
+        "legacy_wall_seconds": 25.72,
+        "shadow_wall_seconds": 30.51,
+        "wall_regression": 0.18623639191290836,
+        "legacy_total_tokens": 30168,
+        "shadow_total_tokens": 30163,
+        "token_regression": -0.00016573853089366217,
+        "legacy_repeated_reads": 0,
+        "shadow_repeated_reads": 0
+      },
+      "thresholds": {
+        "wall_regression_max": 0.05,
+        "token_regression_max": 0.1
+      },
+      "production_cutover_performed": false,
+      "run_index": 5,
+      "legacy_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-05-legacy.json",
+      "shadow_candidate_path": ".storyos/tmp/p1-character-paired-runs/run-05-shadow.json"
+    }
+  ],
+  "production_cutover_performed": false,
+  "note": "Acceptance uses medians across at least five valid paired runs. Every raw run remains in the report; provider jitter is not discarded.",
+  "source_episode": "episodes/独立篇/01_五环外的浓雾",
+  "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+  "model_requested": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "provider": "codex_cli_subscription",
+  "same_input_snapshot": true
+}

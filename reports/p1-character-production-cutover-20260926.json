@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "p1_character_production_cutover_record",
+  "status": "PRODUCTION_ENABLED",
+  "checks": {
+    "cutover_gate_ready": true,
+    "paired_benchmark_pass": true,
+    "paired_authority_zero_regression": true,
+    "production_enabled": true,
+    "shadow_disabled": true,
+    "production_smoke_pass": true,
+    "receipt_committed": true,
+    "legacy_fallback_not_used": true
+  },
+  "evidence": {
+    "cutover_gate": "reports/p1-character-cutover-gate-20260926.json",
+    "paired_benchmark": "reports/p1-character-paired-benchmark-20260926.json",
+    "production_smoke": "reports/p1-character-production-cutover-smoke-20260926.json",
+    "pre_cutover_gate": {
+      "path": "reports/p1-character-pre-cutover-gate-20260926.json",
+      "sha256": "3fa581a3dfbd91a34c111c572aaa94af7228a0aa24244fea8cc68d2e54c54a9d",
+      "status": "PASS",
+      "kind": "p1_character_pre_cutover_gate",
+      "immutable": true,
+      "source_evidence": {
+        "p0": {
+          "path": "reports/p0-agent-acceptance-20260926.json",
+          "sha256": "f9a8ca90cc1fce3d46f544d56ae30f1aca31aa8fcdecf337dc88b5ce708b8d15"
+        },
+        "p0_baseline": {
+          "path": "reports/p0-preimage-agent-baseline-20260926.json",
+          "sha256": "e672176a8127b9f8c5fbcf5f4f3895d30d8fcbfb8fb5b986010f7fb4ee63a3e3"
+        },
+        "probe": {
+          "path": "reports/p1-character-shadow-probe-20260926.json",
+          "sha256": "adc9553b9ef3830618dee27aa1bc73cfc8c04e87b3cf3751f2e4e786738e1439"
+        },
+        "shadow_smoke": {
+          "path": "reports/p1-character-shadow-smoke-20260926.json",
+          "sha256": "453dd51d4c7edb3185612f53f0f0ca4dcb48290ce6a0c7e9d345124f0fbeee5b"
+        },
+        "paired": {
+          "path": "reports/p1-character-paired-benchmark-20260926.json",
+          "sha256": "292bd8d016d669d3b7be689e0b8145047afaf838fefd770561d8c6dc5567ffab"
+        },
+        "original_cutover_record": {
+          "path": "reports/p1-character-cutover-record-pre-repair-20260926.json",
+          "sha256": "21c3dd83a73ecb2f0024ad657f1bef482fcdf17c800ed12d1d464c18bec1f41c"
+        }
+      }
+    }
+  },
+  "rollback": {
+    "production_enabled": false,
+    "shadow_enabled": true,
+    "legacy_fallback_preserved": true
+  },
+  "production_cutover_performed": true
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "kind": "p1_character_production_cutover_smoke",
+  "production_enabled": true,
+  "shadow_enabled": false,
+  "canonical_request_count": 4,
+  "shadow_request_count": 0,
+  "character_agent_adapter": "CHARACTER_FINALIZE_AGENT",
+  "authority_commit_status": "PASS",
+  "authority_committed": true,
+  "execution_status": "COMMITTED",
+  "execution_eligible": false,
+  "receipt_status": "COMMITTED",
+  "legacy_fallback_active": false,
+  "episode_state": "STORYBOARD_LOCKED",
+  "pass": true
+}

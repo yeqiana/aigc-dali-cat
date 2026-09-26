@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "p1_character_post_cutover_health",
+  "generated_at": "2026-09-26T19:35:02+08:00",
+  "status": "PASS",
+  "checks": {
+    "production_enabled": true,
+    "shadow_disabled_in_production": true,
+    "legacy_fallback_available": true,
+    "cutover_record_success": true,
+    "pre_cutover_gate_pass": true,
+    "record_references_pre_cutover_gate": true,
+    "production_smoke_pass": true
+  },
+  "blockers": [],
+  "adapter_state": {
+    "production_enabled": true,
+    "shadow_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "note": "shadow_enabled=false is the expected production state and does not invalidate the pre-cutover gate.",
+  "evidence": {
+    "pre_cutover_gate": {
+      "path": "reports/p1-character-pre-cutover-gate-20260926.json",
+      "sha256": "3fa581a3dfbd91a34c111c572aaa94af7228a0aa24244fea8cc68d2e54c54a9d"
+    },
+    "production_cutover_record": {
+      "path": "reports/p1-character-production-cutover-20260926.json",
+      "sha256": "2bcb75ddf78085442933b220930e266dea0c285435a8b5674af9e75067fe3b83"
+    },
+    "production_smoke": {
+      "path": "reports/p1-character-production-cutover-smoke-20260926.json",
+      "sha256": "002a570776b51df72cc1bc928d73d2d01c9c7e1572cb2180863d80ec48865340"
+    }
+  }
+}

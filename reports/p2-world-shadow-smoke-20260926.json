@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "kind": "p2_world_prepare_real_episode_shadow_protocol_smoke",
+  "status": "PASS",
+  "episode": "episodes/独立篇/01_五环外的浓雾",
+  "episode_state_before": "STORYBOARD_LOCKED",
+  "episode_state_after": "STORYBOARD_LOCKED",
+  "world_prepare": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "canonical_request_count": 4,
+    "world_shadow_request_count": 1,
+    "shadow_request_id": "preimage-world-shadow-b8d84adee28614e1",
+    "execution_id": "exec_world_shadow_3b065b64d4da1304ad9e5006",
+    "idempotency_key": "idem_preimage_55c43aa160a7ab6538ee7dd2116858c77fe890e50dfa154b",
+    "attempt": 1,
+    "execution_status": "SHADOW_COMPLETED",
+    "shadow_domain": true,
+    "candidate_validation_errors": [],
+    "candidate_path_written": false,
+    "comparison_status": "WAITING_FOR_LEGACY",
+    "duplicate_completion_status": "FINALIZED",
+    "producer_kind": "deterministic contract-shaped protocol smoke; no World real-model producer is wired"
+  },
+  "authority": {
+    "source_sha_before": {
+      "story_gates": "065450f753c660bffc412218807a8d6bec495188d5e00d206a526d7e7ca2ee59",
+      "character_contract": "b2aaa1c82b79c606037b29b67207a7feb4a9cd4e08479bbd098a66d3ce5aa190",
+      "character_visual_contract": "788c69dd6395436d121f16a628fda04d5ac6b3cf37ba3b2cf236496129c8947a",
+      "story_semantic_review": "917fa6854c22852a904150568aa4a98a3257478cfcd121eb68ffcef1f0334d5a",
+      "world_identity": null,
+      "runtime_request_preimage": "1be30f7513ed2d9364d31f7ac202ecd2b6a4bf82feeba1c95b86cc00ff29077a",
+      "story_lock": "5d384431cd945f205471e59f2e8730f9942728c60c9325ef4a5e1b1565fc1048",
+      "visual_profile": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+    },
+    "source_sha_after": {
+      "story_gates": "065450f753c660bffc412218807a8d6bec495188d5e00d206a526d7e7ca2ee59",
+      "character_contract": "b2aaa1c82b79c606037b29b67207a7feb4a9cd4e08479bbd098a66d3ce5aa190",
+      "character_visual_contract": "788c69dd6395436d121f16a628fda04d5ac6b3cf37ba3b2cf236496129c8947a",
+      "story_semantic_review": "917fa6854c22852a904150568aa4a98a3257478cfcd121eb68ffcef1f0334d5a",
+      "world_identity": null,
+      "runtime_request_preimage": "1be30f7513ed2d9364d31f7ac202ecd2b6a4bf82feeba1c95b86cc00ff29077a",
+      "story_lock": "5d384431cd945f205471e59f2e8730f9942728c60c9325ef4a5e1b1565fc1048",
+      "visual_profile": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+    },
+    "zero_regression": true,
+    "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+    "authority_scope": [
+      "visual.world_identity",
+      "visual.world_state",
+      "visual.temporal_continuity",
+      "visual.wardrobe"
+    ]
+  },
+  "host_pointer": {
+    "before_shadow": "preimage-35f0a7b2b4eaa8da",
+    "after_shadow": "preimage-35f0a7b2b4eaa8da",
+    "unchanged": true
+  },
+  "canonical_preimage_metrics": {
+    "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+    "authority_snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+    "snapshot_scope": "current_authority_snapshot",
+    "requested": 4,
+    "started": 0,
+    "finished": 0,
+    "inflight_now": 0,
+    "peak_observed_concurrency": 0,
+    "unmeasured_requests": 4,
+    "measurement": "host_execution_intervals_only"
+  },
+  "world_shadow_metrics": {
+    "kind": "world_prepare_agent_shadow_metrics",
+    "requested": 1,
+    "finalized": 1,
+    "compared": 0,
+    "failed": 0,
+    "structural_equal": 0,
+    "canonical_side_effect": false,
+    "included_in_preimage_concurrency_metric": false,
+    "telemetry_complete": false
+  },
+  "telemetry": {
+    "schema_version": 1,
+    "complete": false,
+    "errors": [
+      "real_model_execution must be true",
+      "wall_seconds must be a non-negative number",
+      "input_tokens must be a non-negative int",
+      "output_tokens must be a non-negative int",
+      "repeated_reads must be a non-negative int",
+      "failure must be a bool",
+      "timeout must be a bool"
+    ],
+    "real_model_execution": false,
+    "wall_seconds": null,
+    "input_tokens": null,
+    "output_tokens": null,
+    "repeated_reads": null,
+    "failure": null,
+    "timeout": null,
+    "provider": null,
+    "model": null,
+    "telemetry_source": null
+  },
+  "paired_benchmark": {
+    "status": "NOT_RUN_NO_REAL_MODEL_PRODUCER",
+    "valid_pairs": 0
+  },
+  "image_generation_invoked": false
+}
