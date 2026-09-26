@@ -1,8 +1,8 @@
-# Story OS 多模式编排与子 Agent 改造实施 / 测试 / 验收方案 V1.1
+# Story OS 多模式编排与子 Agent 改造最终实施 / 测试 / 验收方案 V1.1
 
 > 日期：2026-09-26
-> 状态：REVISED IMPLEMENTATION PLAN / 二次评审版
-> 前置评审：`Story_OS_多模式编排与子Agent改造实施测试验收方案_V1.0_评审_20260926.md`
+> 状态：FINAL / GO FOR IMPLEMENTATION（P0 / P1 Shadow）
+> 本文已合并 V1.1 二次架构评审结论，作为后续改造唯一执行与验收依据
 > 适用范围：StoryOS Runtime / Workflow / Agent Runtime / PREIMAGE / Review / Release
 > 核心原则：**复用现有 Runtime、AgentRuntime、PREIMAGE Candidate/Barrier/Commit，不新增第二套状态机、第二套通用 Agent Runtime、第二套 Authority Commit Engine。**
 
@@ -1799,3 +1799,356 @@ StoryOS 需要的是：
 等这批证明收益后，再增加 World / Visual / Critic Adapter。
 
 **任何新 Agent，如果不能证明速度、成本、质量或恢复性至少一项改善，就不进入 Production。**
+
+---
+
+# 38. 二次评审结论与强制实施门槛（已合并）
+
+本节合并原 V1.1 二次评审中所有对实施具有约束力的结论。后续不再单独维护评审文档。
+
+## 38.1 最终 Verdict
+
+```text
+方案方向：GO
+P0 协议 / 幂等 / 基线实施：GO
+P1 Character Adapter Shadow：GO
+P1 Production Cutover：CONDITIONAL GO
+P2+ World / Visual / Critic：按 P1 实测收益逐项 GO
+```
+
+当前没有需要重写总体方案的架构级 Blocking Issue。
+
+Production Cutover 仍有一个不可绕过的硬门槛：
+
+> **Durable Execution Eligibility + Idempotent Commit Receipt**
+
+因此：
+
+- 可以立即开始 P0；
+- 可以在 P0 期间开发 Character Adapter skeleton 与 Shadow Compare；
+- 可以在 P0 通过后运行 Character Adapter Shadow；
+- **不能在 P0 Commit Gate 通过前，让 Agent Candidate 替换现有 Production producer。**
+
+## 38.2 已解决的结构性问题
+
+| 问题 | 最终处理 |
+|---|---|
+| Chain / Parallel / Router / Reflection / Hierarchical 混成单一模式 | 拆成 `execution_topology / routing_policy / review_policy / control_policy` |
+| Character Agent 修改 PREIMAGE frozen input | 拆成 Character Authoring/Lock 与 PREIMAGE CharacterFinalizeAgentAdapter |
+| 新建第二套 Agent Runtime / Registry | 复用 `platform/agent/runtime`；临时 Registry 不作为 Production Authority |
+| Reducer 变成第二套 Commit Engine | Reducer 只做 collect/verify facade，最终调用现有 `authority_commit.py` |
+| Episode Supervisor 与 Scheduler 重叠 | Runtime DAG + Scheduler 仍是唯一 Episode 内 runnable owner |
+| 性能基线错误使用串行路径 | 基线固定为当前 HEAD 的并行 PREIMAGE |
+| WebCodex → Codex 无条件 fallback | 改为 required capability 全满足才允许 fallback |
+| Three-View late override 生命周期不清 | 使用 SHA / snapshot / contract invalidation，STALE 不新增 Episode State |
+| Guardian 重复造 Recovery | Guardian 只做 detection/classification，动作复用现有 recovery |
+| 缺 Shadow | 正式增加 P1.5 Shadow |
+| AgentExecutionContract 字段不足 | 增加 idempotency / attempt / capability / trace / shadow / resume 等 |
+| Duplicate Dispatch 未覆盖 | 增加 D1-D4 故障注入和 Commit Receipt Gate |
+
+## 38.3 P0 强制 Gate：Execution Eligibility + Commit Receipt
+
+现有 `authority_commit.py` 已经提供：
+
+- expected SHA；
+- snapshot；
+- process lock；
+- atomic write；
+- append-only commit evidence。
+
+但当前还不能天然保证：
+
+```text
+commit succeeded
+→ response lost
+→ same request replay
+→ idempotent success
+→ zero second mutation
+```
+
+P0 必须补齐最小的执行资格与提交收据能力，且不得形成第二套 Authority Store。
+
+必须证明：
+
+### A. Replay
+
+```text
+same idempotency_key
++ previous commit success
+→ REPLAYED / equivalent success
+→ zero second mutation
+```
+
+### B. Attempt Supersede
+
+```text
+attempt 2 active / committed
+attempt 1 late return
+→ attempt 1 rejected
+```
+
+### C. Execution Eligibility
+
+```text
+execution_id not eligible
+→ commit fail-closed
+```
+
+### D. Storage Parity
+
+MySQL authority mode 与 JSON compatibility / test mode 必须保持相同逻辑语义。
+
+在 A-D 全部通过前：
+
+> **Character Adapter 只能 Shadow，不能成为 canonical producer。**
+
+## 38.4 Platform Agent Contract 的实施约束
+
+P0 应优先评估两种 backward-compatible 方案：
+
+### Option A：扩展现有 AgentExecutionPlan 的 optional fields
+
+前提：
+
+- API serialization 无破坏；
+- Execution Recorder 无破坏；
+- Trace 无破坏；
+- 已有 Agent caller 无需同步迁移。
+
+### Option B：Episode Adapter Envelope
+
+```text
+EpisodeAgentExecutionEnvelope
+        contains
+AgentExecutionPlan
+```
+
+如果直接改 Platform Contract 会扩大兼容风险，优先采用 Envelope。
+
+无论哪种方案，都禁止再新增第二套通用 Agent Runtime。
+
+## 38.5 Shadow Comparator 成本约束
+
+Shadow 比较顺序必须优先 deterministic：
+
+```text
+schema
+→ required field coverage
+→ normalized structural diff
+→ domain-specific validators
+→ sampled semantic critic only when necessary
+```
+
+不允许默认再启动一个昂贵 LLM 来比较每一份 Shadow Candidate，否则会污染 wall/token benchmark。
+
+## 38.6 Capability Router 健康时效
+
+Task Capability Router 必须区分：
+
+```text
+declared capability
+available now
+healthy enough for this task
+```
+
+动态 probe 必须记录：
+
+- sampled_at；
+- TTL；
+- health result；
+- capability snapshot。
+
+不能因为检测到 `codex.exe` 就推断它拥有 host workspace、review isolation、image generation、connector 等未声明 capability。
+
+## 38.7 Three-View 最终约束
+
+正常注册窗口：
+
+```text
+Character Authoring
+→ before Character Visual LOCK
+```
+
+Late override：
+
+```text
+Direct User Authority Change
+→ character visual verification stale
+→ PREIMAGE snapshot stale
+→ Frame Contract stale
+→ downstream candidate non-reusable
+```
+
+这里的 STALE 是派生有效性，不是新的 Episode State。
+
+## 38.8 Runtime Guardian 最终边界
+
+Guardian 第一版只负责：
+
+```text
+detect
+→ classify
+→ call existing recovery action
+```
+
+复用：
+
+- `production_recovery.py` / persistence；
+- `runtime_failure_classifier.py`；
+- `runtime_failure_strategy.py`；
+- persistent runner heartbeat / owner lock；
+- image retry-tech；
+- scheduler；
+- checkpoint。
+
+Guardian 常驻 LLM 调用必须为：
+
+```text
+0
+```
+
+只有 deterministic classifier 无法分类时，才允许按需启动 Diagnostic Agent。
+
+---
+
+# 39. 最终实施顺序（唯一顺序）
+
+后续改造统一按以下顺序执行。
+
+## P0-A：Baseline / Contract Freeze
+
+- 冻结 current HEAD benchmark；
+- Platform Agent Contract compatibility assessment；
+- orchestration metadata projection；
+- no production behavior change。
+
+必须产出 current HEAD PREIMAGE Performance Ledger baseline。
+
+## P0-B：Execution Identity
+
+- idempotency_key；
+- execution_id；
+- attempt；
+- supersede；
+- resume；
+- trace；
+- eligibility state。
+
+## P0-C：Commit Receipt
+
+- durable commit receipt；
+- commit eligibility precondition；
+- replay；
+- D1-D4；
+- MySQL / JSON logical parity。
+
+只有 P0-A/B/C 全部通过，才允许进入 Production Adapter Cutover。
+
+## P1：Character Finalize Adapter
+
+只包装：
+
+```text
+PREIMAGE CHARACTER_FINALIZE
+```
+
+保持原 task contract、authority scope、verifier、barrier 和 `authority_commit`。
+
+## P1.5：Character Shadow
+
+```text
+legacy producer = canonical
+agent adapter = shadow candidate
+```
+
+比较：
+
+- schema；
+- semantic equivalence；
+- wall；
+- token；
+- repeated read；
+- failure；
+- timeout。
+
+## P1 Production
+
+必须同时满足：
+
+```text
+P0 Commit Gate
++ Character Shadow
++ Performance Baseline
++ Authority Zero Regression
+```
+
+才允许切正式 producer。
+
+## P2
+
+World / Visual 逐个 Adapter 接入，**每个都必须先 Shadow**。
+
+## P3+
+
+Critic / Task Capability Router / Guardian 按收益逐项推进。
+
+---
+
+# 40. 最终 Go / No-Go
+
+## GO：现在允许开始
+
+- P0-A；
+- P0-B；
+- P0-C；
+- Character Adapter skeleton；
+- Shadow comparison framework；
+- 对应测试。
+
+## CONDITIONAL GO
+
+以下动作必须等待 P0 Gate：
+
+- Character Agent 替换现有 Production producer；
+- Agent Candidate 成为 canonical PREIMAGE 输入；
+- duplicate-dispatch runtime 正式启用。
+
+## 暂不实施
+
+- 新 Agent Registry Service；
+- 新 Authority Commit Engine；
+- 新 Episode Scheduler；
+- 大 Episode Supervisor；
+- World / Visual / Critic 一次全部上线。
+
+---
+
+# 41. 最终执行口径
+
+本文件是后续改造的**唯一施工图 + 测试方案 + 验收标准 + 评审约束**。
+
+以后执行时不再在“实施方案”和“评审文档”之间来回选择。
+
+冲突处理原则：
+
+```text
+Authority / Safety Gate
+> Phase Acceptance
+> Implementation Detail
+> Performance Optimization
+```
+
+即：
+
+- Authority 安全优先于提速；
+- P0 Gate 优先于 P1 Production；
+- Shadow 证明收益优先于继续增加 Agent；
+- 不允许为了 Agent 化而重造现有成熟 Runtime。
+
+最终执行结论：
+
+# **GO FOR IMPLEMENTATION**
+
+但 GO 的范围严格定义为：
+
+> **立即进入 P0；P0 通过后进入 Character Adapter Shadow；Production Cutover 必须通过 Commit Receipt + Attempt Supersede + D1-D4 + Shadow + Performance Baseline + Authority Zero Regression。**
