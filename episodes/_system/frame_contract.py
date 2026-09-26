@@ -46,6 +46,7 @@ import episode_contract_persistence
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE_ROOT = Path("meta/runtime/contracts/frames")
+EXPORT_ROOT = Path("exports/frame-contracts")
 INDEX_REL = Path("meta/runtime/contracts/frame-contract-index.json")
 PROJECTION_MIGRATION_REL = Path("meta/runtime/frame-contract-projection-migrations.json")
 CONTRACT_EXCEPTION_REL = Path("meta/runtime/frame-contract-exceptions.json")
@@ -669,6 +670,26 @@ def load_cached_contract(ep: Path, frame: int | str) -> dict | None:
     return frame_contract_persistence.load_latest(
         Path(ep).resolve(), frame, legacy_path=cache_read_path(ep, frame)
     )
+
+
+def materialize_export(ep: Path, frame: int | str) -> Path:
+    """Materialize the current resolved contract for tools that require a file input.
+
+    MySQL mode intentionally does not recreate the legacy per-frame cache. Review
+    adapters still need an immutable source file to attach, so export the verified
+    repository-backed payload into Runtime Workspace without changing authority.
+    """
+    ep = Path(ep).resolve()
+    key = f"{int(frame):02d}"
+    payload = load_cached_contract(ep, frame)
+    if not isinstance(payload, dict):
+        payload = compile_frame(ep, frame, write_cache=True)
+        payload = load_cached_contract(ep, frame) or payload
+    current = compile_frame(ep, frame, write_cache=False)
+    if str(payload.get("contract_sha256") or "").lower() != str(current.get("contract_sha256") or "").lower():
+        if not recorded_contract_matches_current(ep, frame, payload.get("contract_sha256")):
+            raise ValueError(f"frame {key} resolved contract stale")
+    return runtime_workspace.write_json(ep, EXPORT_ROOT / f"{key}.json", payload)
 
 
 def _monotonic_projection_fill(old: object, new: object) -> bool:

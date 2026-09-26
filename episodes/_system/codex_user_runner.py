@@ -1207,9 +1207,14 @@ def remove_endpoint(pid: int | None = None) -> None:
 
 
 def serve(host: str = "127.0.0.1", port: int = 0, token: str | None = None) -> int:
-    from platform.repository.mysql.mysql_connection_pool import set_process_role
-
-    set_process_role("runner")
+    # The user-mode bridge does not access MySQL itself. Mark the inherited
+    # connection-pool role through the same environment fallback used by
+    # mysql_connection_pool.process_role() instead of importing StoryOS's
+    # top-level `platform` package here. In an interactive Python launched by
+    # PowerShell, stdlib `platform` may already be present in sys.modules; the
+    # late package import would then fail before the bridge can publish its
+    # loopback endpoint.
+    os.environ.setdefault("STORYOS_MYSQL_POOL_ROLE", "runner")
     identity = current_identity()
     if is_non_interactive(identity):
         print(

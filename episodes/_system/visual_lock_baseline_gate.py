@@ -177,11 +177,10 @@ def run_product_critic(ep,attempt=1):
     sources=[repo_file(draft["asset_path"]),ep/"meta/story-gates.json"]
     if spec_source is not None:sources.append(spec_source)
     prov=frame_contract.provenance(ep,int(draft["frame"]))
-    if prov and prov.get("path"):
-        prov_path=(ep/str(prov["path"])).resolve()
-        prov_path.relative_to(ep.resolve())
-        if not prov_path.is_file():raise ValueError(f"baseline frame contract missing: {prov['path']}")
-        sources.append(prov_path)
+    if prov:
+        contract_source=frame_contract.materialize_export(ep,int(draft["frame"]))
+        if not contract_source.is_file():raise ValueError(f"baseline frame contract export missing: {prov.get('path')}")
+        sources.append(contract_source)
     request=product_review_adapter.prepare(ep,kind="visual-lock-baseline",runtime=runtime,attempt=attempt,prompt=critic_prompt(ep),source_paths=sources,candidate_path=ep/CANDIDATE_REL)
     return request
 

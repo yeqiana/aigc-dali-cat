@@ -560,6 +560,21 @@ class RecoveryTests(unittest.TestCase):
             stack.enter_context(patch.object(batch,"ensure_image_capability",return_value=capable))
             stack.enter_context(patch.object(batch,"ROOT",self.ep))
             stack.enter_context(patch.object(batch,"ledger_tech_fail"))
+            # These recovery tests isolate scheduler/ledger state transitions.  The
+            # test artifacts are sentinel byte files, not decodable images, so
+            # production Local Visual Triage must not turn them into content failures.
+            stack.enter_context(patch.object(
+                batch.local_visual_triage,
+                "inspect_candidate",
+                return_value={
+                    "status":"PASS",
+                    "block_commit":False,
+                    "failure_code":None,
+                    "issue_codes":[],
+                    "diagnostic_path":None,
+                    "candidate_sha256":None,
+                },
+            ))
             yield stack
 
     def test_capability_wait_does_not_consume_frames(self):
