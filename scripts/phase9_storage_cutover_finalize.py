@@ -66,6 +66,21 @@ def _columns(connection, table: str) -> set[str]:
     return {str(row["COLUMN_NAME"]).upper() for row in rows}
 
 
+def _column_char_length(connection, table: str, name: str) -> int | None:
+    rows = connection.query_all(
+        "SELECT CHARACTER_MAXIMUM_LENGTH FROM information_schema.COLUMNS "
+        "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=%s AND COLUMN_NAME=%s",
+        (table, name),
+    )
+    if not rows:
+        return None
+    row = rows[0]
+    raw = row.get("CHARACTER_MAXIMUM_LENGTH")
+    if raw is None:
+        raw = row.get("character_maximum_length")
+    return int(raw) if raw is not None else None
+
+
 def _ensure_column(connection, table: str, name: str, ddl: str) -> bool:
     if name.upper() in _columns(connection, table):
         return False
@@ -113,6 +128,13 @@ def upgrade_runtime_tables(connection) -> list[str]:
         for name, ddl in columns.items():
             if _ensure_column(connection, table, name, ddl):
                 added.append(f"{table}.{name}")
+    production_status_len = _column_char_length(connection, "TB_PRODUCTION_FRAME", "STATUS")
+    if production_status_len is not None and production_status_len < 64:
+        connection.execute(
+            "ALTER TABLE TB_PRODUCTION_FRAME MODIFY COLUMN STATUS "
+            "VARCHAR(64) NOT NULL COMMENT '当前生产状态'"
+        )
+        added.append("TB_PRODUCTION_FRAME.STATUS:VARCHAR(64)")
     if _ensure_index(connection, "TB_TRACE_SPAN", "INDEX_TB_TRACE_SPAN_START_TIME", "START_TIME"):
         added.append("TB_TRACE_SPAN.INDEX_TB_TRACE_SPAN_START_TIME")
     return added

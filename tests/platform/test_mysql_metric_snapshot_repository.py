@@ -7,12 +7,14 @@ class FakeConnection:
     def __init__(self):
         self.executed = []
         self.row = None
+        self.queries = []
 
     def execute(self, sql, params=()):
         self.executed.append((sql, params))
         return 1
 
     def query_one(self, sql, params=()):
+        self.queries.append((sql, params))
         return self.row
 
 
@@ -36,3 +38,6 @@ def test_metric_snapshot_upsert_and_load():
     loaded = repo.get_latest("EPU_test", "WORKFLOW_PERFORMANCE")
     assert loaded["payload"] == {"ok": True}
     assert loaded["metric_type"] == "WORKFLOW_PERFORMANCE"
+    latest_sql, latest_params = conn.queries[-1]
+    assert latest_params == ("EPU_test", "WORKFLOW_PERFORMANCE")
+    assert "ORDER BY OBSERVED_TIME DESC, CREATE_TIME DESC, METRIC_ID DESC" in latest_sql

@@ -38,6 +38,15 @@ def test_v2_schema_contains_high_volume_json_targets():
         assert table in ddl
 
 
+def test_production_frame_status_supports_long_runtime_states():
+    ddl = "\n".join(sql for _step, sql in schema_v2.DDL_STEPS)
+    marker = "CREATE TABLE IF NOT EXISTS TB_PRODUCTION_FRAME"
+    start = ddl.index(marker)
+    section = ddl[start:].split("\nCREATE TABLE IF NOT EXISTS ", 1)[0]
+    assert "STATUS VARCHAR(64) NOT NULL" in section
+    assert len("USER_CONTINUATION_REPAIR_AUTHORIZED") <= 64
+
+
 def test_recovery_journal_uses_blob_authority_not_json_column():
     ddl = "\n".join(sql for _step, sql in schema_v2.DDL_STEPS)
     marker = "CREATE TABLE IF NOT EXISTS TB_PRODUCTION_RECOVERY_JOURNAL"
