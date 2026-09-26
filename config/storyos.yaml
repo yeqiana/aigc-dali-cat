@@ -232,6 +232,18 @@ agent_runtime:
     enabled: true
     config: config/agent_runtime/codex-subscription-batch.json
 
+  # Specialized Agent Adapter 按 adapter 独立开关。Character Finalize 已通过 P1 Cutover Gate；
+  # Production 走 Agent Adapter，仍复用原 verifier/barrier/authority_commit；技术故障保留 legacy fallback。
+  adapters:
+    character_finalize:
+      shadow_enabled: false
+      production_enabled: true
+      legacy_fallback_on_technical: true
+    world_prepare:
+      # P2 starts Shadow-first; canonical WORLD_PREPARE remains legacy until its own cutover gate passes.
+      shadow_enabled: true
+      production_enabled: false
+
 runtime:
   # 当前整体 Runtime = WORK：Story、前期资产、门禁与发布由产品运行时执行。
   # Codex 仅用于配置为 CODEX 的图片生成/返修与像素审查执行层。

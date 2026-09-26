@@ -200,6 +200,7 @@ def capabilities() -> dict:
         'workspace_transport': workspace.transport,
         'workspace_execution_mode': workspace.execution_mode,
         'workspace_host_managed': workspace.host_managed,
+        'model_usage_telemetry': workspace.usage_telemetry,
         'local_codex_vision_spawn_allowed': bool(codex) and local_codex_vision_allowed(),
         'product_runtime_host_required': effective in {'WORK', 'WEB'},
         'product_runtime_image_host_required': effective in {'WORK', 'WEB'} and image_runtime in {'PRODUCT_RUNTIME', 'AUTO'},

@@ -20,6 +20,7 @@ class WorkspaceProvider:
     host_managed: bool
     local_subprocess: bool
     repository_access: str
+    usage_telemetry: str = "not_exposed"
 
     @property
     def is_webcodex(self) -> bool:
@@ -32,6 +33,7 @@ class WorkspaceProvider:
             "workspace_execution_mode": self.execution_mode,
             "workspace_host_managed": self.host_managed,
             "webcodex_allowed": self.is_webcodex,
+            "model_usage_telemetry": self.usage_telemetry,
         }
 
 
@@ -43,6 +45,7 @@ PROVIDERS = {
         host_managed=True,
         local_subprocess=False,
         repository_access="use WebCodex Project tools through the configured MCP/Runner",
+        usage_telemetry="not_exposed_by_workspace_transport",
     ),
 }
 
@@ -114,6 +117,7 @@ def self_test() -> None:
     assert spec.transport == "WEBCODEX"
     assert spec.host_managed is True
     assert spec.local_subprocess is False
+    assert spec.usage_telemetry == "not_exposed_by_workspace_transport"
     assert spec.contract_fields()["webcodex_allowed"] is True
 
 

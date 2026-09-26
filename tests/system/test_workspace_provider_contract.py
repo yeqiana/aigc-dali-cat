@@ -24,6 +24,8 @@ def test_webcodex_is_workspace_provider_not_runtime() -> None:
     assert spec.execution_mode == "host_mcp_runner"
     assert spec.host_managed is True
     assert spec.local_subprocess is False
+    assert spec.usage_telemetry == "not_exposed_by_workspace_transport"
+    assert spec.contract_fields()["model_usage_telemetry"] == "not_exposed_by_workspace_transport"
     assert storyos_config.get_path(cfg, "runtime.preferred_runtime") == "WORK"
     assert storyos_config.get_path(cfg, "runtime.review.text.runtime") == "WORK"
     assert storyos_config.get_path(cfg, "runtime.review.governance.runtime") == "WORK"
@@ -38,6 +40,7 @@ def test_runtime_capabilities_expose_provider_without_promoting_it_to_runtime() 
     assert caps["workspace_transport"] == "WEBCODEX"
     assert caps["workspace_execution_mode"] == "host_mcp_runner"
     assert caps["workspace_host_managed"] is True
+    assert caps["model_usage_telemetry"] == "not_exposed_by_workspace_transport"
     assert caps["preferred_runtime"] == "WORK"
     assert caps["workspace_transport"] not in runtime_executor_role.EXECUTOR_ROLES
 

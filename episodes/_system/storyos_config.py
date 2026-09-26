@@ -217,6 +217,16 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("agent_runtime.batch.enabled must be true")
     if get_path(cfg, "agent_runtime.codex_subscription_batch.enabled") is not True:
         errors.append("agent_runtime.codex_subscription_batch.enabled must be true")
+    if not isinstance(get_path(cfg, "agent_runtime.adapters.character_finalize.shadow_enabled"), bool):
+        errors.append("agent_runtime.adapters.character_finalize.shadow_enabled must be a bool")
+    if not isinstance(get_path(cfg, "agent_runtime.adapters.character_finalize.production_enabled"), bool):
+        errors.append("agent_runtime.adapters.character_finalize.production_enabled must be a bool")
+    if not isinstance(get_path(cfg, "agent_runtime.adapters.character_finalize.legacy_fallback_on_technical"), bool):
+        errors.append("agent_runtime.adapters.character_finalize.legacy_fallback_on_technical must be a bool")
+    if not isinstance(get_path(cfg, "agent_runtime.adapters.world_prepare.shadow_enabled"), bool):
+        errors.append("agent_runtime.adapters.world_prepare.shadow_enabled must be a bool")
+    if not isinstance(get_path(cfg, "agent_runtime.adapters.world_prepare.production_enabled"), bool):
+        errors.append("agent_runtime.adapters.world_prepare.production_enabled must be a bool")
     preferred_runtime = str(get_path(cfg, "runtime.preferred_runtime", "")).upper()
     if preferred_runtime not in {"WORK", "WEB", "CODEX"}:
         errors.append("runtime.preferred_runtime must be WORK, WEB or CODEX")
