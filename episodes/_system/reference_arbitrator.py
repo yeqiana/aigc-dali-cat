@@ -74,17 +74,23 @@ def _identity_need(ep,hm,contract_refs,scope="batch",identity_requirements=None)
     if any(tok.lower() in low for tok in HUMAN_TOKENS):return True,None,"human_primary_subject"
     return False,None,"no_human_identity_signal"
 def _master_identity(ep,frame,scope,character_id):
+    allow=scope in {"visual_lock","repair"}
+    group=character_visual_contract.pixel_master_reference(ep,allow_provisional=allow)
+    if group:
+        self_reference=False
+        try:self_reference=int(str(group.get("frame") or "0"))==int(frame)
+        except Exception:self_reference=False
+        if not self_reference:
+            if character_id:
+                crop=character_visual_contract.crop_reference(ep,character_id,allow_provisional=allow)
+                if crop:return crop,"individual_crop"
+            return {k:group[k] for k in ("path","role","kind") if k in group},"group_master"
+    three_view=character_visual_contract.three_view_reference(ep,character_id)
+    if three_view:
+        return {k:three_view[k] for k in ("path","role","kind","character_id") if k in three_view},"character_three_view"
     series_ref=character_visual_contract.series_identity_reference(ep,character_id)
     if series_ref:return {k:series_ref[k] for k in ("path","role","kind") if k in series_ref},"series_character_identity"
-    allow=scope in {"visual_lock","repair"};group=character_visual_contract.pixel_master_reference(ep,allow_provisional=allow)
-    if not group:return None,None
-    try:
-        if int(str(group.get("frame") or "0"))==int(frame):return None,"self_reference_blocked"
-    except Exception:pass
-    if character_id:
-        crop=character_visual_contract.crop_reference(ep,character_id,allow_provisional=allow)
-        if crop:return crop,"individual_crop"
-    return {k:group[k] for k in ("path","role","kind") if k in group},"group_master"
+    return None,"self_reference_blocked" if group else None
 def select(ep,frame,scope="batch"):
     ep=Path(ep).resolve();frame=int(frame);c,hm,contract_refs=_contract_rows(ep,frame);required_identity_ids=_contract_identity_ids(c);need,cid,need_reason=_identity_need(ep,hm,contract_refs,scope=scope,identity_requirements=c.get("identity_requirements") or [])
     identity_cid=None if need_reason=="selfie_capture_event" else cid
@@ -93,9 +99,10 @@ def select(ep,frame,scope="batch"):
     # must never override the current calibrated identity.
     series_ref=character_visual_contract.series_identity_reference(ep,identity_cid) if need else None
     current_master=character_visual_contract.pixel_master_reference(ep,allow_provisional=(scope in {"visual_lock","repair"})) if need else None
+    three_view_ref=character_visual_contract.three_view_reference(ep,identity_cid) if need else None
     if current_master and identity_cid:
         series_ref=None
-    if scope in {"visual_lock","repair"} and need and not series_ref:
+    if scope in {"visual_lock","repair"} and need and not series_ref and not three_view_ref:
         try:group=character_visual_contract.pixel_master_reference(ep,allow_provisional=True)
         except Exception:group=None
         if group and int(str(group.get("frame") or "0"))==frame:need=False
@@ -111,6 +118,8 @@ def select(ep,frame,scope="batch"):
         for required_cid in required_identity_ids:
             if required_cid==identity_cid:continue
             crop=character_visual_contract.crop_reference(ep,required_cid,allow_provisional=allow)
+            if not crop:
+                crop=character_visual_contract.three_view_reference(ep,required_cid)
             if not crop:continue
             if any(x.get("path")==crop.get("path") for x in chosen):continue
             chosen.append(crop)

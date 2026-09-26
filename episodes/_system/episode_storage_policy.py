@@ -30,6 +30,7 @@ _DERIVED_CONFIG_SNAPSHOT_REL = "meta/runtime/" + "effective-" + "config.json"
 
 RULES: tuple[tuple[str, StorageDecision], ...] = (
     ("media/**", StorageDecision(FILE, "KEEP", "media", "binary/media assets stay in file or object storage")),
+    ("references/characters/three-view.json", StorageDecision(FILE, "KEEP", "character_reference_manifest", "optional user-supplied preproduction three-view identity anchor manifest")),
     ("*/scripts/sub_data.json", StorageDecision(FILE, "KEEP", "historical_source_data", "legacy subtitle/story source data is a source artifact, not runtime state")),
     ("*/docs/manifest.json", StorageDecision(FILE, "KEEP", "historical_document_manifest", "legacy documentation manifest stays with the archived Episode material")),
     ("_archive/.storyos-non-episode.json", StorageDecision(FILE, "KEEP", "archive_metadata", "archive scope marker is repository metadata, not runtime authority")),

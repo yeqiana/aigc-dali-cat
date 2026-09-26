@@ -92,3 +92,78 @@ def test_identity_need_without_contract_or_human_signal_stays_false(monkeypatch,
     assert needed is False
     assert character_id is None
     assert reason == "no_human_identity_signal"
+
+
+
+def test_three_view_is_used_before_pixel_master(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "pixel_master_reference",
+        lambda *_args, **_kwargs: None,
+    )
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "three_view_reference",
+        lambda _ep, cid: {
+            "path": f"{cid}-three-view.png",
+            "role": f"character_three_view:{cid}",
+            "kind": "identity",
+            "character_id": cid,
+        },
+    )
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "series_identity_reference",
+        lambda *_args, **_kwargs: {
+            "path": "series.png",
+            "role": "series_character_identity:P01",
+            "kind": "identity",
+        },
+    )
+
+    ref, source = arbitrator._master_identity(tmp_path, 1, "visual_lock", "P01")
+
+    assert source == "character_three_view"
+    assert ref["path"] == "P01-three-view.png"
+
+
+def test_pixel_master_supersedes_three_view(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "pixel_master_reference",
+        lambda *_args, **_kwargs: {
+            "path": "master.png",
+            "role": "character_pixel_master",
+            "kind": "identity",
+            "frame": "01",
+        },
+    )
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "crop_reference",
+        lambda _ep, cid, **_kwargs: {
+            "path": f"{cid}.png",
+            "role": f"character_crop:{cid}",
+            "kind": "identity",
+            "character_id": cid,
+        },
+    )
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "three_view_reference",
+        lambda *_args, **_kwargs: {
+            "path": "three-view.png",
+            "role": "character_three_view:P01",
+            "kind": "identity",
+        },
+    )
+    monkeypatch.setattr(
+        arbitrator.character_visual_contract,
+        "series_identity_reference",
+        lambda *_args, **_kwargs: None,
+    )
+
+    ref, source = arbitrator._master_identity(tmp_path, 2, "batch", "P01")
+
+    assert source == "individual_crop"
+    assert ref["path"] == "P01.png"

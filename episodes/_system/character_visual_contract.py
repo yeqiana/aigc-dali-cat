@@ -14,6 +14,7 @@ from pathlib import Path
 import world_identity_contract  # STORY_OS_V221_WORLD_IDENTITY
 import story_json
 import character_contract
+import character_three_view
 import episode_contract_persistence
 import runtime_workspace
 
@@ -165,6 +166,7 @@ def prepare(ep,force=False):
     cp=character_contract.load(ep) or {}
     members=((cp.get("cast") or {}).get("members") or [])
     world_identity = world_identity_contract.effective(ep) if world_identity_contract.required(ep) else None
+    three_view_anchor = character_three_view.summary(ep)
     primary=set(_primary_ids(cp));rows={}
     for m in members:
         cid=str(m.get("id") or "");g=str(m.get("gender") or "");is_primary=cid in primary
@@ -208,8 +210,15 @@ def prepare(ep,force=False):
         "must_not_copy":["exact_face_geometry","exact_eye_nose_mouth_combination","exact_hairstyle","distinctive_personal_markers","celebrity_identity"],
         "reference_is_not_identity_master":True,"real_person_exact_likeness_forbidden":True
       },
+      "preproduction_identity_anchor":three_view_anchor,
+      "identity_anchor_policy":{
+        "three_view_role":"PREPRODUCTION_IDENTITY_ANCHOR",
+        "three_view_identity_consistency":"strict_character",
+        "generic_reference_policy_applies":False,
+        "pixel_master_supersedes_three_view":True
+      },
       "master_policy":{
-        "preferred_identity_source":["character_individual_crop","character_pixel_master","ordinary_baseline_group_selfie","original_character_library_asset"],
+        "preferred_identity_source":["character_individual_crop","character_pixel_master","character_three_view_anchor","ordinary_baseline_group_selfie","original_character_library_asset"],
         "preproduction_only_must_not_generate_master_images":True,
         "ordinary_baseline_can_become_group_identity_master":True,
         "pixel_master_artifact":PIXEL_MASTER_REL.as_posix(),
@@ -239,6 +248,19 @@ def validate(ep,require_locked=True):
     rp=d.get("reference_policy") or {}
     if rp.get("real_person_exact_likeness_forbidden") is not True:e.append("exact real-person likeness must be forbidden")
     if rp.get("reference_is_not_identity_master") is not True:e.append("reference image must not become identity master")
+    try:
+        current_three_view=character_three_view.summary(ep)
+    except ValueError as exc:
+        e.append(str(exc));current_three_view={"applicable":False}
+    stored_three_view=d.get("preproduction_identity_anchor") or {"applicable":False}
+    if current_three_view.get("applicable"):
+        if stored_three_view.get("applicable") is not True or stored_three_view.get("manifest_sha256")!=current_three_view.get("manifest_sha256"):
+            e.append("character three-view anchor stale or missing from character visual contract")
+        policy=d.get("identity_anchor_policy") or {}
+        if policy.get("three_view_role")!="PREPRODUCTION_IDENTITY_ANCHOR":e.append("three-view identity anchor policy missing")
+        if policy.get("pixel_master_supersedes_three_view") is not True:e.append("three-view must be superseded by pixel master")
+    elif stored_three_view.get("applicable") is True:
+        e.append("character three-view anchor source missing")
     primary=set(str(x) for x in (d.get("primary_cast_ids") or []));members=d.get("members") or {}
     if not members:e.append("character visual members missing")
     cp=character_contract.load(ep)
@@ -444,6 +466,10 @@ def validate_crops(ep):
             elif sha_file(fp).lower()!=str(row.get("sha256") or "").lower():e.append(f"crop {cid} sha mismatch")
         except Exception:e.append(f"crop {cid} path invalid")
     return e
+
+def three_view_reference(ep,character_id):
+    return character_three_view.reference(Path(ep).resolve(), character_id)
+
 
 def crop_reference(ep,character_id,allow_provisional=False):
     ep=Path(ep).resolve()
