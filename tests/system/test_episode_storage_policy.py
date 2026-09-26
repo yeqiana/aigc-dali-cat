@@ -77,6 +77,7 @@ def test_gates_budgets_and_runtime_projections_have_explicit_targets():
     assert policy.classify("meta/runtime/trace-current.json").target == policy.REDIS
     assert policy.classify("meta/runtime/trace-summary.json").target == policy.MYSQL
     assert policy.classify("meta/runtime-execution.json").target == policy.MYSQL
+    assert policy.classify("meta/runtime/preimage-executions.json").target == policy.MYSQL
 
 
 def test_runtime_metric_documents_target_mysql():

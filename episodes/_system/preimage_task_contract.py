@@ -222,6 +222,13 @@ def task_contract(ep: Path, task_type: str, snapshot: dict, *, resume: bool = Fa
         "retry_policy": {"retry_failed_only": True, "stale_requires_new_snapshot": True},
         "authority_scope": list(spec["scope"]),
         "target": "candidate_only_no_shared_authority_write",
+        "candidate_schema_version": 1,
+        "execution_topology": "parallel_safe",
+        "routing_policy": "fixed",
+        "review_policy": "none",
+        "control_policy": "supervised",
+        "capability_requirements": ["reasoning", "filesystem"],
+        "execution_budget": {"max_rounds": 1, "max_tokens": None, "timeout_seconds": 900},
         "status": "PENDING",
         "resume": bool(resume),
     }
@@ -234,6 +241,40 @@ def validate_patch_scopes(tasks: list[dict]) -> None:
             if scope in seen:
                 raise ValueError(f"PREIMAGE authority scope collision: {scope} ({seen[scope]}, {task.get('task_id')})")
             seen[scope] = str(task.get("task_id"))
+
+
+def model_execution_evidence(candidate: dict) -> dict:
+    """Normalize optional model execution telemetry without inventing missing data."""
+    raw = candidate.get("model_execution") if isinstance(candidate, dict) else None
+    raw = dict(raw) if isinstance(raw, dict) else {}
+    errors=[]
+    if raw.get("real_model_execution") is not True:
+        errors.append("real_model_execution must be true")
+    wall=raw.get("wall_seconds")
+    if not isinstance(wall,(int,float)) or isinstance(wall,bool) or float(wall)<0:
+        errors.append("wall_seconds must be a non-negative number")
+    for key in ("input_tokens","output_tokens","repeated_reads"):
+        value=raw.get(key)
+        if type(value) is not int or value<0:
+            errors.append(f"{key} must be a non-negative int")
+    for key in ("failure","timeout"):
+        if not isinstance(raw.get(key),bool):
+            errors.append(f"{key} must be a bool")
+    return {
+        "schema_version":1,
+        "complete":not errors,
+        "errors":errors,
+        "real_model_execution":raw.get("real_model_execution") is True,
+        "wall_seconds":float(wall) if isinstance(wall,(int,float)) and not isinstance(wall,bool) and float(wall)>=0 else None,
+        "input_tokens":raw.get("input_tokens") if type(raw.get("input_tokens")) is int and raw.get("input_tokens")>=0 else None,
+        "output_tokens":raw.get("output_tokens") if type(raw.get("output_tokens")) is int and raw.get("output_tokens")>=0 else None,
+        "repeated_reads":raw.get("repeated_reads") if type(raw.get("repeated_reads")) is int and raw.get("repeated_reads")>=0 else None,
+        "failure":raw.get("failure") if isinstance(raw.get("failure"),bool) else None,
+        "timeout":raw.get("timeout") if isinstance(raw.get("timeout"),bool) else None,
+        "provider":raw.get("provider"),
+        "model":raw.get("model"),
+        "telemetry_source":raw.get("telemetry_source"),
+    }
 
 
 def verify_candidate(candidate: dict, task: dict) -> list[str]:

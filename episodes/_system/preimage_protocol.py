@@ -19,7 +19,7 @@ def now(): return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timesp
 def _patches(candidate: dict) -> list[tuple[str,dict]]:
     return [(scope, dict(candidate["payload"][scope])) for scope in candidate["authority_scope"]]
 
-def commit_candidates(ep: Path, snapshot: dict, task_rows: list[dict]) -> dict:
+def commit_candidates(ep: Path, snapshot: dict, task_rows: list[dict], *, execution_contexts: list[dict] | None = None) -> dict:
     """Single orchestration path from candidates to committed Snapshot B.
 
     Each atomic patch compares the latest SHA. Any concurrent authority change
@@ -42,14 +42,14 @@ def commit_candidates(ep: Path, snapshot: dict, task_rows: list[dict]) -> dict:
         task_ids=[task["task_id"] for task in task_rows],node_ids=[task["node_id"] for task in task_rows],patches=patches,
         candidate_paths=[task["candidate_output"] for task in task_rows],
         preflight_validator=lambda: [err for task,candidate in zip(task_rows,candidates) for err in tasks.verify_candidate(candidate,task)],
-        replace_existing_scopes=scopes)
-    if result["status"] != "PASS": return {"status":result["status"],"committed":False,"transaction":result}
+        replace_existing_scopes=scopes,execution_contexts=execution_contexts)
+    if result["status"] not in {"PASS","REPLAYED"}: return {"status":result["status"],"committed":False,"transaction":result}
     committed=preimage_authority_snapshot.build(ep,write=True,kind="PREIMAGE_COMMITTED_SNAPSHOT")
     barrier={"schema_version":1,"name":"PREIMAGE_AUTHORITY_READY","not_episode_stage":True,"not_gate_authority":True,
              "canonical_stage_source":"meta/episode-state.json","status":"READY","input_snapshot_id":snapshot["snapshot_id"],
              "committed_snapshot_id":committed["snapshot_id"],"created_at":now(),"commit_count":1}
     atomic.atomic_write_json(Path(ep)/BARRIER_REL,barrier)
-    return {"status":"PASS","committed":True,"transaction":result,"committed_snapshot":committed,"barrier":barrier}
+    return {"status":"PASS","committed":True,"replayed":result["status"]=="REPLAYED","transaction":result,"committed_snapshot":committed,"barrier":barrier}
 
 def barrier_ready(ep: Path) -> bool:
     row=story_json.read_json(Path(ep)/BARRIER_REL,default={}) or {}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "p0_agent_protocol_acceptance",
+  "generated_at": "2026-09-26T12:53:52+08:00",
+  "git_head": "5000e82294930bc01dd39913a7cd13ddf73214b8",
+  "tests": [
+    "tests/system/test_preimage_execution_idempotency.py",
+    "tests/system/test_preimage_execution_mysql_parity.py",
+    "tests/system/test_preimage_protocol_replay_barrier.py",
+    "tests/system/test_agent_execution_envelope.py",
+    "tests/platform/test_mysql_workflow_task_repositories.py",
+    "tests/system/test_episode_storage_policy.py"
+  ],
+  "pytest": {
+    "return_code": 0,
+    "stdout_tail": ".........................                                                [100%]\n25 passed in 1.28s",
+    "stderr_tail": ""
+  },
+  "mysql_receipt_rollback_smoke": {
+    "pass": true,
+    "inside_transaction": {
+      "prepared_roundtrip": true,
+      "committed_roundtrip": true
+    },
+    "rolled_back_task_absent": true,
+    "rolled_back_workflow_absent": true,
+    "mysql_alive": true,
+    "database": "story_os_runtime"
+  },
+  "gates": {
+    "replay": true,
+    "attempt_supersede": true,
+    "execution_eligibility": true,
+    "storage_parity": true,
+    "d1_d4": true
+  },
+  "commit_gate_ready": true
+}

@@ -69,4 +69,6 @@ def test_task_upsert_list_and_delete_projection():
         "PAYLOAD": '{"step":"CREATIVE_STORY"}',
     }]
     assert repo.list_run("WR_1")[0]["payload"]["step"] == "CREATIVE_STORY"
+    conn.one = conn.rows[0]
+    assert repo.get("TASK_1")["task_id"] == "TASK_1"
     assert repo.delete_run_projection("WR_1") == 1

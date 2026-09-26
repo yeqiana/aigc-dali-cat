@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "kind": "p0_preimage_agent_protocol_baseline",
+  "benchmark_scope": "deterministic_fixture_protocol_only",
+  "not_production_model_latency": true,
+  "baseline_source": "clean_detached_git_worktree",
+  "generated_at": "2026-09-26T11:15:28+08:00",
+  "git_head": "5000e82294930bc01dd39913a7cd13ddf73214b8",
+  "git_worktree_clean": true,
+  "runs_requested": 5,
+  "tests": [
+    "tests/system/test_preimage_task_contract.py",
+    "tests/system/test_preimage_parallel_execution.py",
+    "tests/system/test_preimage_parallel_runtime.py",
+    "tests/system/test_preimage_authority_inputs.py",
+    "tests/system/test_preimage_authority_collision.py"
+  ],
+  "runs": [
+    {
+      "return_code": 0,
+      "wall_seconds": 7.368839,
+      "stdout_tail": "..............                                                           [100%]\n14 passed in 6.57s",
+      "stderr_tail": ""
+    },
+    {
+      "return_code": 0,
+      "wall_seconds": 3.098106,
+      "stdout_tail": "..............                                                           [100%]\n14 passed in 2.40s",
+      "stderr_tail": ""
+    },
+    {
+      "return_code": 0,
+      "wall_seconds": 3.070013,
+      "stdout_tail": "..............                                                           [100%]\n14 passed in 2.38s",
+      "stderr_tail": ""
+    },
+    {
+      "return_code": 0,
+      "wall_seconds": 3.092763,
+      "stdout_tail": "..............                                                           [100%]\n14 passed in 2.44s",
+      "stderr_tail": ""
+    },
+    {
+      "return_code": 0,
+      "wall_seconds": 3.027225,
+      "stdout_tail": "..............                                                           [100%]\n14 passed in 2.37s",
+      "stderr_tail": ""
+    }
+  ],
+  "summary": {
+    "successful_runs": 5,
+    "failed_runs": 0,
+    "median_wall_seconds": 3.092763,
+    "min_wall_seconds": 3.027225,
+    "max_wall_seconds": 7.368839,
+    "p90_wall_seconds": null,
+    "p95_wall_seconds": null,
+    "percentile_note": "n<10; p90/p95 intentionally not reported"
+  },
+  "production_performance_summary": {
+    "path": "reports/story-os-performance-summary.json",
+    "sha256": null
+  }
+}

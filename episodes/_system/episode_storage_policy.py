@@ -159,6 +159,7 @@ RULES: tuple[tuple[str, StorageDecision], ...] = (
     ("meta/runtime/raw-candidate-budget.json", StorageDecision(MYSQL, "REMOVE_AFTER_CUTOVER", "budget", "candidate budget must survive Redis loss; hot counters may be cached")),
     ("meta/runtime/raw-candidate-budget-override.json", StorageDecision(MYSQL, "REMOVE_AFTER_CUTOVER", "budget", "budget override is auditable authorization")),
     ("meta/runtime/runtime-execution.json", StorageDecision(MYSQL, "REMOVE_AFTER_CUTOVER", "workflow", "runtime execution history/projection")),
+    ("meta/runtime/preimage-executions.json", StorageDecision(MYSQL, "REMOVE_AFTER_CUTOVER", "workflow", "PREIMAGE Agent execution eligibility and commit receipt projection")),
     ("meta/runtime-execution.json", StorageDecision(MYSQL, "REMOVE_AFTER_CUTOVER", "workflow", "legacy runtime execution history/projection")),
     ("meta/runtime/transport-state.json", StorageDecision(REDIS, "REMOVE_AFTER_CUTOVER", "hot_state", "current transport state is rebuildable")),
     ("meta/transport-state.json", StorageDecision(REDIS, "REMOVE_AFTER_CUTOVER", "hot_state", "current transport state is rebuildable")),

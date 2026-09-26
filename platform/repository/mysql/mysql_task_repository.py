@@ -31,6 +31,15 @@ WHERE WORKFLOW_RUN_ID=%s
 ORDER BY CREATE_TIME ASC, TASK_ID ASC
 """.strip()
 
+_GET_SQL = """
+SELECT TASK_ID, EPISODE_ID, WORKFLOW_RUN_ID, TASK_TYPE, FRAME_NO,
+       STATUS, ATTEMPT_NO, OWNER_ID, START_TIME, END_TIME, PAYLOAD,
+       CREATE_TIME, UPDATE_TIME
+FROM TB_TASK
+WHERE TASK_ID=%s
+LIMIT 1
+""".strip()
+
 _DELETE_RUN_SQL = """
 DELETE FROM TB_TASK
 WHERE WORKFLOW_RUN_ID=%s
@@ -74,6 +83,9 @@ class MySqlTaskRepository:
             "task_id": str(row["task_id"]),
             "workflow_run_id": str(row["workflow_run_id"]),
         }
+
+    def get(self, task_id: str) -> dict | None:
+        return self._decode(self.connection.query_one(_GET_SQL, (str(task_id),)))
 
     def list_run(self, workflow_run_id: str) -> list[dict]:
         rows = self.connection.query_all(_LIST_RUN_SQL, (str(workflow_run_id),)) or []
