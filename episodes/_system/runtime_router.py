@@ -18,6 +18,9 @@ VALID = {'CODEX', 'WORK', 'WEB'}
 VALID_IMAGE_RUNTIMES = {'CODEX', 'PRODUCT_RUNTIME', 'AUTO'}
 VALID_REVIEW_RUNTIMES = {'CODEX', 'WORK', 'AUTO'}
 
+_WEBCODEX_TRUE = {'1', 'true', 'yes', 'on'}
+_WEBCODEX_FALSE = {'0', 'false', 'no', 'off'}
+
 
 def preferred_runtime() -> str:
     raw = str(storyos_config.get_path(_CONFIG, 'runtime.preferred_runtime') or 'WORK').strip().upper()
@@ -86,9 +89,44 @@ def vision_review_max_inflight_final() -> int:
     return value
 
 
-def _effective_runtime() -> str:
+def _codex_cli_path() -> str | None:
+    return shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
+
+
+def webcodex_available() -> tuple[bool, str]:
+    """Detect the host-managed WebCodex workspace from runtime evidence, not config alone."""
+    forced = os.getenv('STORY_OS_WEBCODEX_AVAILABLE', '').strip().lower()
+    if forced in _WEBCODEX_TRUE:
+        return True, 'STORY_OS_WEBCODEX_AVAILABLE override'
+    if forced in _WEBCODEX_FALSE:
+        return False, 'STORY_OS_WEBCODEX_AVAILABLE override'
+    service_root = os.getenv('WEBCODEX_SERVICE_ROOT', '').strip()
+    if service_root and Path(service_root).expanduser().is_dir():
+        return True, 'WEBCODEX_SERVICE_ROOT detected'
+    env_file = os.getenv('WEBCODEX_ENV_FILE', '').strip()
+    if env_file and Path(env_file).expanduser().is_file():
+        return True, 'WEBCODEX_ENV_FILE detected'
+    return False, 'no WebCodex host environment detected'
+
+
+def _runtime_with_reason() -> tuple[str, str]:
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
-    return override if override in VALID else preferred_runtime()
+    if override in VALID:
+        return override, 'STORY_OS_RUNTIME override'
+    preferred = preferred_runtime()
+    if preferred not in {'WORK', 'WEB'}:
+        return preferred, 'config runtime.preferred_runtime'
+    fallback_enabled = bool(storyos_config.get_path(_CONFIG, 'runtime.codex_fallback_when_webcodex_unavailable'))
+    workspace = workspace_provider.current()
+    webcodex_ok, webcodex_reason = webcodex_available()
+    codex = _codex_cli_path()
+    if fallback_enabled and workspace.is_webcodex and not webcodex_ok and codex:
+        return 'CODEX', f'WebCodex unavailable ({webcodex_reason}); Codex CLI fallback'
+    return preferred, 'config runtime.preferred_runtime'
+
+
+def _effective_runtime() -> str:
+    return _runtime_with_reason()[0]
 
 
 def local_codex_allowed(*, explicit: bool = False) -> bool:
@@ -122,9 +160,10 @@ def local_codex_vision_allowed(*, explicit: bool = False) -> bool:
 
 def capabilities() -> dict:
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
-    codex = shutil.which('codex') or shutil.which('codex.exe') or shutil.which('codex.cmd')
+    codex = _codex_cli_path()
     preferred = preferred_runtime()
-    effective = _effective_runtime()
+    effective, effective_reason = _runtime_with_reason()
+    webcodex_ok, webcodex_reason = webcodex_available()
     image_runtime, image_runtime_reason = image_execution_runtime()
     text_runtime, text_runtime_reason = text_review_runtime()
     vision_runtime, vision_runtime_reason = vision_review_runtime()
@@ -135,6 +174,10 @@ def capabilities() -> dict:
         'runtime_override': override if override in VALID else None,
         'preferred_runtime': preferred,
         'effective_runtime': effective,
+        'effective_runtime_reason': effective_reason,
+        'webcodex_detected': webcodex_ok,
+        'webcodex_detection_reason': webcodex_reason,
+        'codex_fallback_active': effective == 'CODEX' and 'fallback' in effective_reason.lower(),
         'repository_filesystem': ROOT.is_dir(),
         'repository_writable': os.access(ROOT, os.W_OK),
         'codex_cli': codex,
@@ -160,16 +203,12 @@ def capabilities() -> dict:
         'local_codex_vision_spawn_allowed': bool(codex) and local_codex_vision_allowed(),
         'product_runtime_host_required': effective in {'WORK', 'WEB'},
         'product_runtime_image_host_required': effective in {'WORK', 'WEB'} and image_runtime in {'PRODUCT_RUNTIME', 'AUTO'},
-        'note': 'WORK is the ChatGPT authoring/governance runtime. WebCodex is its host-managed Workspace Provider, not a Runtime or Episode authority. Image generation/repair and actual-pixel vision review are independently routed Codex capabilities; neither grants Codex Story/PREIMAGE/Release authority.',
+        'note': 'WORK remains the preferred ChatGPT authoring/governance runtime and WebCodex is its host-managed Workspace Provider. When WebCodex host evidence is absent and Codex CLI is available, StoryOS may fall back to CODEX so execution can continue. Explicit STORY_OS_RUNTIME always wins.',
     }
 
 
 def detect() -> tuple[str, str]:
-    caps = capabilities()
-    if caps['runtime_override']:
-        return caps['runtime_override'], 'STORY_OS_RUNTIME override'
-    runtime = caps['preferred_runtime']
-    return runtime, 'config runtime.preferred_runtime'
+    return _runtime_with_reason()
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=f'Story OS V{story_os_version()} runtime router')

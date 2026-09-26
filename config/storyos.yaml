@@ -252,6 +252,9 @@ runtime:
   codex_image_controller_model: gpt-5.6-luna
   codex_image_reasoning_effort: medium
   local_codex_fallback: explicit_only
+  # 整体 Runtime 的兜底只在无显式 STORY_OS_RUNTIME 时生效：
+  # WebCodex host 不可检测且本机 Codex CLI 可用时，允许自动降级到 CODEX 继续执行。
+  codex_fallback_when_webcodex_unavailable: true
   continuous_host_loop: true
   host_loop_max_cycles: 64
   next_action_path: meta/runtime/next-action.json

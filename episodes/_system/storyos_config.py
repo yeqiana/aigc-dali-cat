@@ -229,6 +229,8 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.codex_image_reasoning_effort must be medium")
     if get_path(cfg, "runtime.local_codex_fallback") != "explicit_only":
         errors.append("runtime.local_codex_fallback must be explicit_only")
+    if not isinstance(get_path(cfg, "runtime.codex_fallback_when_webcodex_unavailable"), bool):
+        errors.append("runtime.codex_fallback_when_webcodex_unavailable must be a bool")
     errors.extend(workspace_provider.validate_config(cfg))
     # Review capability routing. WORK remains text/governance authority; actual-pixel
     # review is a separate isolated Codex capability and does not switch the whole Runtime.

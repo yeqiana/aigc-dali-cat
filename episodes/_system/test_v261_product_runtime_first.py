@@ -78,6 +78,36 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.assertEqual(caps["governance_review_runtime"], "WORK")
         self.assertTrue(caps["local_codex_vision_spawn_allowed"])
 
+    def test_default_runtime_falls_back_to_codex_when_webcodex_is_unavailable(self) -> None:
+        with mock.patch.dict(os.environ, {
+            "STORY_OS_WEBCODEX_AVAILABLE": "0",
+        }, clear=False), mock.patch.object(runtime_router, "_codex_cli_path", return_value="C:/fake/codex.exe"):
+            runtime, reason = runtime_router.detect()
+            caps = runtime_router.capabilities()
+        self.assertEqual(runtime, "CODEX")
+        self.assertIn("Codex CLI fallback", reason)
+        self.assertEqual(caps["effective_runtime"], "CODEX")
+        self.assertTrue(caps["codex_fallback_active"])
+        self.assertFalse(caps["webcodex_detected"])
+        self.assertTrue(caps["local_codex_spawn_allowed"])
+
+    def test_default_runtime_stays_work_when_webcodex_is_unavailable_without_codex(self) -> None:
+        with mock.patch.dict(os.environ, {
+            "STORY_OS_WEBCODEX_AVAILABLE": "0",
+        }, clear=False), mock.patch.object(runtime_router, "_codex_cli_path", return_value=None):
+            runtime, reason = runtime_router.detect()
+        self.assertEqual(runtime, "WORK")
+        self.assertIn("preferred_runtime", reason)
+
+    def test_explicit_work_override_disables_automatic_codex_fallback(self) -> None:
+        with mock.patch.dict(os.environ, {
+            "STORY_OS_RUNTIME": "WORK",
+            "STORY_OS_WEBCODEX_AVAILABLE": "0",
+        }, clear=False), mock.patch.object(runtime_router, "_codex_cli_path", return_value="C:/fake/codex.exe"):
+            runtime, reason = runtime_router.detect()
+        self.assertEqual(runtime, "WORK")
+        self.assertEqual(reason, "STORY_OS_RUNTIME override")
+
     def test_codex_requires_explicit_runtime_or_explicit_call(self) -> None:
         os.environ["STORY_OS_RUNTIME"] = "WORK"
         self.assertFalse(runtime_router.local_codex_allowed())
