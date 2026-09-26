@@ -1,0 +1,238 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 18,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "The kneeling action and immediate cymbal response form a highly legible human-action-to-anomaly chain.",
+        "Cover, mid and climax each have distinct visual states: fog-gate contradiction, ritual-trigger activation, then enclosed metal escape.",
+        "The belief-versus-practical-survival question gives the spectacle a character-level discussion engine."
+      ],
+      "risks": [
+        "The climax must preserve the physical scale of the giant cymbal interior so it does not collapse into a generic dark-room scene.",
+        "The fake-temple material clues must remain visually concrete rather than becoming exposition."
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 17,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 13,
+        "discussion_space": 10
+      },
+      "concept_voltage": 89,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "Memory-as-toll has a clear transactional rule and strong emotional choice space.",
+        "The glowing road made of surrendered memories provides a large visual climax."
+      ],
+      "risks": [
+        "Abstract memories need careful visual embodiment to avoid dependence on captions.",
+        "The mechanism can drift toward familiar memory-loss fantasy if the toll process is not specific."
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 19,
+        "escalation_ceiling": 20,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 12,
+        "discussion_space": 8
+      },
+      "concept_voltage": 92,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "City-scale radial growth is immediately high ambition and has a clear A5 ceiling.",
+        "Wrong-scale copies of familiar Beijing structures give the middle escalation a readable visual grammar."
+      ],
+      "risks": [
+        "The current concept is stronger as world spectacle than as a protagonist-driven causal engine.",
+        "Without a human trigger or cost it risks becoming observational geography rather than a story."
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 89,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "Modern visitor details appearing on gold statues make the identity threat visually concrete.",
+        "The accumulation from one wrong statue to a hall of assimilated visitors has a clean escalation ladder."
+      ],
+      "risks": [
+        "The assimilation trigger is not yet defined, weakening action-response causality.",
+        "Identity-copy sculpture anomalies are more familiar than the strongest pool directions."
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 20,
+        "escalation_ceiling": 20,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 13,
+        "discussion_space": 7
+      },
+      "concept_voltage": 93,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "An inverted tower descending from the sky is instantly legible without text.",
+        "The final gravity inversion provides an unmistakable A5 world-rule payoff."
+      ],
+      "risks": [
+        "The current concept does not yet connect the world-rule change to a meaningful protagonist choice.",
+        "Its discussion space is more abstract and less character-specific than C01 or C02."
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 12,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 10,
+        "mechanism_novelty": 14,
+        "discussion_space": 9
+      },
+      "concept_voltage": 79,
+      "wordless_test": {
+        "stop_scroll": false,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "The ten-second displaced echo is a precise rule with strong causal puzzle potential.",
+        "Future-sound prediction creates a good philosophical choice problem."
+      ],
+      "risks": [
+        "Its central mechanism is auditory and therefore weak in a wordless image-first gate.",
+        "The proposed climax relies on textualized sound-source markers rather than purely visual evidence."
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A5",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 20,
+        "escalation_ceiling": 20,
+        "climax_visual_payoff": 15,
+        "mechanism_novelty": 14,
+        "discussion_space": 8
+      },
+      "concept_voltage": 95,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "A transparent sacred mountain buried under ordinary wasteland is a powerful single-image contradiction.",
+        "The kilometer-scale reveal supports a genuine A5 climax with strong depth and scale references."
+      ],
+      "risks": [
+        "The concept is currently discovery-led; it lacks the action-response causality and irreversible protagonist choice that C01 already contains.",
+        "The spectacle could overwhelm character stakes unless a stronger human cost is designed."
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 9,
+        "discussion_space": 8
+      },
+      "concept_voltage": 82,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "The approaching fourth figure creates an exceptionally readable image sequence.",
+        "The final viewpoint takeover is a strong photographic reversal."
+      ],
+      "risks": [
+        "The photograph-extra-person mechanism is comparatively familiar.",
+        "Its anomaly ceiling is materially smaller than the A4/A5 directions in the pool."
+      ]
+    }
+  ],
+  "selected_id": "C01",
+  "selection_reason": "C03, C05 and C07 reach a larger raw world-scale spectacle, but C01 is the strongest production concept because it already combines A4 visual ambition with an ordinary protagonist action that causes an immediate abnormal response, a readable escalation from counterfeit material clues to giant-cymbal imprisonment, a strong wordless Cover/Mid/Climax sequence, and a character-level ending choice. It therefore has the best balance of stop-scroll image power, causal retellability, emotional stake and payoff rather than relying on discovery spectacle alone.",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "dc0e54c9fd5c7422220e39fb487a1bd08b2fd04fdb5419031cf4ff0daa95e702",
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-25T14:01:05+08:00",
+    "workspace_provider": "webcodex",
+    "workspace_transport": "WEBCODEX",
+    "isolation_mode": "fresh_product_review_turn",
+    "webcodex_used": true,
+    "request_path": "episodes/独立篇/01_五环外的浓雾/meta/runtime/reviews/concept-ambition-attempt-1-request.json",
+    "request_id": "concept-ambition-a1-dbf007723351a686",
+    "request_fingerprint": "dbf007723351a68657f449951e10eeebf077ac806de3d9a789628d411eaa0e6a"
+  }
+}

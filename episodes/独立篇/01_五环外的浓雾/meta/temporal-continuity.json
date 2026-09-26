@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "d41268f4b0e0bcabda05c8a74e1b081cd411c3b6244ff574c298e6abc4874981",
+  "world_state_synced": true,
+  "derived_from_preimage_authority": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "night",
+      "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": "opening state"
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: night -> night"
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: night -> night"
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+      "precipitation": "无降水，雾和车窗冷凝是主要水汽来源",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}

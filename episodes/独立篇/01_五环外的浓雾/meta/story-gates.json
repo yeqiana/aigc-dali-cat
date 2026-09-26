@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "独立篇_五环外的浓雾",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 2,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      8,
+      10,
+      12,
+      14
+    ],
+    "climax_frame": 19,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json",
+    "recent5_evidence_note": "meta/recent5-review.json 与 meta/recent5-semantic-review.json 均已验证；对已注册近期样本 semantic similarity=0，mechanism veto=false。",
+    "four_locks_note": "保守计 2 把明确不同：母题逻辑=伪圣地诱捕/跪拜触发金铙；闭环方式=识破假终点后主动用旧钢管撬出外界通缝并继续前行。越界者与人物关系不强行计入差异。",
+    "task_closed_note": "开篇现实任务（大雾绕路、找方向并确认所谓终点）得到明确结果：小雷音寺是假终点；陷阱事件也从完全封闭推进到撬出真实通外界的金属缝。保留的是异常来源未知，不依赖下一篇补全本篇核心任务。",
+    "competing_explanations_note": "A：高台非人者就是借小雷音寺设局的黄眉；B：未知非人实体/现象借西游符号寄生在人造烂尾仿古寺壳中。湿金漆、玻璃纤维、柴油机支持人造外壳，巨铙异常证明外壳内另有不可解释机制。"
+  },
+  "visual": {},
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "pending",
+    "continuity": "pending",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "review_schema_version": 2,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  },
+  "character": {
+    "finalize": {
+      "character": {
+        "visible_cast": [
+          "P01 玄奘",
+          "P02 悟空",
+          "P03 八戒"
+        ],
+        "relationship": "一路同行多年的伙伴",
+        "continuity_rule": "可见角色身份稳定；服装/头饰/角色妆面轮廓以用户明确指定的86版《西游记》经典视觉为上位参考；不复制具体演员脸。"
+      },
+      "identity": {
+        "P01": "玄奘：参考86版经典唐僧造型语言，朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦；不复制演员脸。",
+        "P02": "悟空：参考86版经典孙悟空造型语言，金色紧箍、黄褐/金棕战衣、红色束带、虎皮纹腰裙/护胯、深色绑腿靴；保留本集旧钢管；不复制演员脸。",
+        "P03": "八戒：参考86版经典猪八戒造型语言，黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带、宽松裤和布靴；保留天语手机/保温杯；不复制演员脸。"
+      },
+      "pov": {
+        "character_id": "P01",
+        "person": "first_person",
+        "capture_rule": "拍摄仍按2010北京北郊旧数码相机现实语法；经典造型是人物视觉参考，不把画面做成电视剧截图或棚拍。"
+      },
+      "appearance": {
+        "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+        "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+        "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+      }
+    }
+  }
+}

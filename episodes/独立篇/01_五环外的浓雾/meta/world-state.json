@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "derived_from_preimage_authority": true,
+  "initial_state": {
+    "time": "night",
+    "location": "santana_cabin",
+    "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+    "characters": {
+      "P01": {
+        "gender": "male",
+        "age": 27,
+        "build": "清瘦普通青年体型",
+        "hair": "剃度后的极短青茬",
+        "clothing_anchor": "旧百衲衣外罩军绿色棉大衣，深色棉裤，磨旧布鞋",
+        "device_anchor": "2009年前后的银色卡片数码相机，黑色腕带磨损",
+        "status": "present"
+      },
+      "P02": {
+        "gender": "male",
+        "age": 26,
+        "build": "精瘦结实体型",
+        "hair": "短硬黑发，鬓角略长，额头戴暗金色窄箍",
+        "clothing_anchor": "泛黄旧棕皮夹克，深灰工装裤，旧运动鞋",
+        "status": "present"
+      },
+      "P03": {
+        "gender": "male",
+        "age": 25,
+        "build": "偏壮普通青年体型",
+        "hair": "短圆寸",
+        "clothing_anchor": "暗红色旧棉服，黑色长裤，厚底旅游鞋",
+        "device_anchor": "掉漆的天语直板手机和旧保温杯",
+        "status": "present"
+      }
+    },
+    "recorder": {
+      "photographer_id": "P01",
+      "active_device": "2009年前后的银色卡片数码相机，黑色腕带磨损"
+    },
+    "props": {},
+    "anomaly": {
+      "phase": "ordinary"
+    }
+  },
+  "frames": {
+    "01": {
+      "delta": {
+        "time": "night",
+        "location": "santana_cabin",
+        "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "八戒举相机拍三人合照，悟空扶方向盘，玄奘捻念珠"
+    },
+    "02": {
+      "delta": {
+        "time": "night",
+        "location": "santana_front_console",
+        "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "八戒把无信号地图递给玄奘看"
+    },
+    "03": {
+      "delta": {
+        "time": "night",
+        "location": "fog_road_gate",
+        "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+        "anomaly": {
+          "phase": "discovery"
+        }
+      },
+      "story_event": "悟空刹车，三人望向前方"
+    },
+    "04": {
+      "delta": {
+        "time": "night",
+        "location": "gate_exterior",
+        "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+        "anomaly": {
+          "phase": "discovery"
+        }
+      },
+      "story_event": "玄奘举相机，悟空走到牌坊下查看"
+    },
+    "05": {
+      "delta": {
+        "time": "night",
+        "location": "gate_inner_column",
+        "weather": "浓雾中的北京北郊道路、泥地与烂尾仿古牌坊",
+        "anomaly": {
+          "phase": "discovery"
+        }
+      },
+      "story_event": "悟空让玄奘先别进，给他看指尖金粉"
+    },
+    "06": {
+      "delta": {
+        "time": "night",
+        "location": "main_hall_threshold",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "discovery"
+        }
+      },
+      "story_event": "玄奘脱鞋进入，悟空仍站在门边观察"
+    },
+    "07": {
+      "delta": {
+        "time": "night",
+        "location": "arhat_row_detail",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "玄奘用相机拍下未干金漆和玻璃纤维"
+    },
+    "08": {
+      "delta": {
+        "time": "night",
+        "location": "monk_aisle",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "玄奘压低相机抓拍袖口瞬间"
+    },
+    "09": {
+      "delta": {
+        "time": "night",
+        "location": "hall_mid_left",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "沙弥做请跪手势，玄奘看向跪垫，悟空站着不拜"
+    },
+    "10": {
+      "delta": {
+        "time": "night",
+        "location": "hall_mid_right_low",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "causal_contradiction"
+        }
+      },
+      "story_event": "玄奘把念珠绕到手腕并主动跪下；膝盖压实瞬间双铙无人触碰即低鸣、撑开，悟空随后砸地喊黄眉"
+    },
+    "11": {
+      "delta": {
+        "time": "night",
+        "location": "platform_left_front",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "悟空砸地喊出黄眉，高台慈悲脸塌成非人凶相，僧众给持续膨胀的铜铙让位"
+    },
+    "12": {
+      "delta": {
+        "time": "night",
+        "location": "hall_rear_upward",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "spatial_contradiction"
+        }
+      },
+      "story_event": "悟空拽玄奘侧撤，八戒向门口跑"
+    },
+    "13": {
+      "delta": {
+        "time": "night",
+        "location": "hall_side_fall",
+        "weather": "烂尾仿古寺大殿内部，断电前由廉价射灯和柴油设备维持照明与温度",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "玄奘跌坐，相机倾斜抓到断电瞬间"
+    },
+    "14": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_inside_wall",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "玄奘摸索确认四周全是封闭金属"
+    },
+    "15": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_inside_right",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "玄奘贴壁听外面动静并向悟空确认"
+    },
+    "16": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_inside_corner",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "悟空靠壁坐下点火，示意玄奘别慌"
+    },
+    "17": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_inside_low_side",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "悟空把判断说出口，玄奘沉默"
+    },
+    "18": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_inside_hands",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "玄奘不再争辩，只把念珠握紧"
+    },
+    "19": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_seam_left",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "悟空撬缝，玄奘替他照明"
+    },
+    "20": {
+      "delta": {
+        "time": "night",
+        "location": "cymbal_inside_final",
+        "weather": "金铙合拢后的封闭冷铜空间，同一晚连续发生",
+        "anomaly": {
+          "phase": "payoff"
+        }
+      },
+      "story_event": "悟空再次发力，玄奘收好念珠准备继续"
+    }
+  }
+}

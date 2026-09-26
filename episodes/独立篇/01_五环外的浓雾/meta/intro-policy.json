@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "selected_family": "year_action",
+  "reference": "2008年，我和几个朋友去了XXX。",
+  "variants": [],
+  "rule": "年份可具体也可由 Story 决定；后半句必须结合真实人物关系和地点自然改写。",
+  "recent5_families": [],
+  "title_policy": {
+    "generate": true,
+    "count": 1,
+    "usage": "internal_candidate_only",
+    "required_for_publish_ready": false,
+    "default_include_in_delivery": false,
+    "default_include_in_intro": false
+  },
+  "final_text_must_be_natural": true,
+  "template_is_reference_not_literal_output": true
+}

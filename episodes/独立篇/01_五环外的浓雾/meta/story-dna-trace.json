@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-25T14:14:59+08:00",
+  "authority": {
+    "episode_state_mutated": false,
+    "source": "Story Lock + story-gates"
+  },
+  "story_core": null,
+  "emotional_goal": null,
+  "character_relationship": null,
+  "reversal_point": null,
+  "required_frames": [],
+  "forbidden_deviation": [],
+  "frame_mapping": {
+    "01": {
+      "story_goal": "hook",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "02": {
+      "story_goal": "hook",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "03": {
+      "story_goal": "hook",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "04": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "05": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "06": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "07": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "08": {
+      "story_goal": "escalation",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "09": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "10": {
+      "story_goal": "escalation",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "11": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "12": {
+      "story_goal": "escalation",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "13": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "14": {
+      "story_goal": "escalation",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "15": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "16": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "17": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "18": {
+      "story_goal": null,
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": false
+    },
+    "19": {
+      "story_goal": "climax",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    },
+    "20": {
+      "story_goal": "payoff",
+      "emotional_goal": null,
+      "reversal_contribution": null,
+      "required": true
+    }
+  }
+}

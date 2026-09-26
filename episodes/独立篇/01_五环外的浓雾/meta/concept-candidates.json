@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "creative_doctrine": "概念不要克制，镜头必须真实；真实性约束怎么拍，不限制发生什么。",
+  "candidates": [
+    {
+      "id": "C01",
+      "title": "五环外的浓雾｜跪拜触发铜铙",
+      "one_line_hook": "玄奘在五环外假雷音寺一跪，两面没人碰的铜铙立刻自己低鸣长大，最终把他和悟空扣进黑暗里。",
+      "concept_class": "ritual-triggered counterfeit sacred-site trap",
+      "anomaly_ceiling": {
+        "initial": "烂尾仿古景区里湿金漆、柴油热风炮与不自然沙弥暴露伪圣地",
+        "middle": "玄奘膝盖压实跪垫后双铙无接触低鸣并自行撑开",
+        "climax": "数米巨铙合拢、断电封闭两人，最后只能靠旧钢管撬出一线天光"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "浓雾中车灯照出烂尾别墅群前的‘小雷音寺’牌坊",
+          "why_stop": "现实北京北郊与巨大宗教牌坊的冲突一眼可读"
+        },
+        "mid": {
+          "visual": "玄奘膝盖刚压实磨亮跪垫，旁边两面无人触碰的红布铜铙同时撑开",
+          "why_stop": "动作—异常回应在一个画面内直接成立"
+        },
+        "climax": {
+          "visual": "黑暗巨铙内部，悟空用旧钢管撬缝，玄奘用手电照着，一线冷灰天光切进铜壁",
+          "why_stop": "规模、压迫与人物主动逃生同时成立"
+        }
+      },
+      "discussion_question": "如果你一路相信的终点被证明只是人为搭出的陷阱，你还会继续往前走吗？"
+    },
+    {
+      "id": "C02",
+      "title": "雾中收费站只收记忆",
+      "one_line_hook": "三人误入一座废弃收费站，收费员不要钱，只让每个人交出一段最不愿忘掉的记忆才能放行。",
+      "concept_class": "memory-toll infrastructure anomaly",
+      "anomaly_ceiling": {
+        "initial": "荒废收费站却有一条窗口亮灯",
+        "middle": "交出记忆后同行者逐渐忘记彼此共同经历",
+        "climax": "整条高速变成由被收走记忆拼成的发光路面"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "浓雾高速口，废弃收费站只有一个窗口亮着橘灯",
+          "why_stop": "熟悉公共设施在无人环境中出现单点活性"
+        },
+        "mid": {
+          "visual": "收费员手里不是钞票而是一卷卷像胶片的记忆片段",
+          "why_stop": "抽象记忆被视觉实体化"
+        },
+        "climax": {
+          "visual": "高速路面铺满三人过去生活的发光影像，车辆像驶在自己记忆上",
+          "why_stop": "世界级视觉反转强"
+        }
+      },
+      "discussion_question": "忘掉一段最重要的过去换取继续前进，还是原地留下？"
+    },
+    {
+      "id": "C03",
+      "title": "烂尾佛城每晚向北京长一环",
+      "one_line_hook": "五环外一片烂尾仿古城每到午夜就向外新增一圈街区，第二天地图却完全不承认它存在。",
+      "concept_class": "expanding impossible urban geography",
+      "anomaly_ceiling": {
+        "initial": "烂尾楼群深处出现地图上不存在的完整街区",
+        "middle": "新增街区复制北京熟悉建筑但比例错位",
+        "climax": "整座假城像年轮一样在雾中向外扩张，包住真实道路"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "雾中烂尾城后方浮出一整圈不该存在的灯火",
+          "why_stop": "城市规模不可能增长一眼成立"
+        },
+        "mid": {
+          "visual": "复制的公交站、商场和塔楼全被压缩在错误尺度里",
+          "why_stop": "熟悉城市元素被空间规则扭曲"
+        },
+        "climax": {
+          "visual": "多重环状城市从地平线层层隆起，真实五环被吞进中心",
+          "why_stop": "A5级世界规则崩坏"
+        }
+      },
+      "discussion_question": "如果城市会偷偷长出地图上不存在的新环线，谁才有权定义‘真实北京’？"
+    },
+    {
+      "id": "C04",
+      "title": "金身罗汉每天多一尊",
+      "one_line_hook": "玄奘发现寺里十八罗汉每天多一尊，而新增的那尊总长着前一天来访者的脸。",
+      "concept_class": "identity assimilation sculpture anomaly",
+      "anomaly_ceiling": {
+        "initial": "十八罗汉里出现一张熟悉面孔",
+        "middle": "新塑像开始复制来访者的衣着与随身物",
+        "climax": "整座大殿变成成百上千尊正在完成的人像金身"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "成排金身中有一尊明显穿着现代棉服、脸像真实年轻人",
+          "why_stop": "古典塑像与现代人物身份冲突极强"
+        },
+        "mid": {
+          "visual": "半完成金身从腿部往上复制八戒的棉服褶皱和手机",
+          "why_stop": "身份被物质化吞噬过程可视化"
+        },
+        "climax": {
+          "visual": "大殿尽头无数新金身在黑暗中逐排亮起，全部是近期来访者",
+          "why_stop": "规模升级与身份恐惧兼具"
+        }
+      },
+      "discussion_question": "如果每个来过的人最终都变成一尊供人膜拜的像，那些像还算‘人’吗？"
+    },
+    {
+      "id": "C05",
+      "title": "雾里佛塔倒着下沉",
+      "one_line_hook": "他们在雾里看见一座佛塔不是从地上升起，而是从天空一层层倒着沉进荒地。",
+      "concept_class": "inverted celestial architecture intrusion",
+      "anomaly_ceiling": {
+        "initial": "云层里先露出倒悬塔尖",
+        "middle": "整座倒塔缓慢穿过雾层，塔身内部有人影逆重力行走",
+        "climax": "倒塔落地时整片荒地的重力方向被翻转"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "浓雾上空露出倒悬佛塔尖，像从天花板垂下来",
+          "why_stop": "不可能空间方向无需文字即可理解"
+        },
+        "mid": {
+          "visual": "塔窗内人物头朝地面上方行走，而地面三人正常站立",
+          "why_stop": "双重重力规则可视化清晰"
+        },
+        "climax": {
+          "visual": "倒塔触地瞬间汽车、碎砖与人物全部开始向天空坠落",
+          "why_stop": "A5级视觉爆点"
+        }
+      },
+      "discussion_question": "如果‘天上’和‘地上’只是方向规则，哪边才算真实世界？"
+    },
+    {
+      "id": "C06",
+      "title": "庙里所有声音都晚十秒回来",
+      "one_line_hook": "寺里说出的每句话都会在十秒后从另一个方向重新响起，而且第二遍会多出一句没人说过的话。",
+      "concept_class": "delayed echo predictive anomaly",
+      "anomaly_ceiling": {
+        "initial": "脚步和说话出现固定十秒延迟回声",
+        "middle": "回声开始预告接下来即将发生的动作",
+        "climax": "整座大殿被未来十秒的声音提前淹没，人只能在已听见的后果里行动"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "空大殿里三人回头看向完全相反的声源方向",
+          "why_stop": "正常空间与声源方向错位"
+        },
+        "mid": {
+          "visual": "他们还没碰倒香炉，回声里却先传来碎裂声",
+          "why_stop": "未来因果被声音提前暴露"
+        },
+        "climax": {
+          "visual": "人物在混乱中捂耳，画面周围以文字化声源标记显示几十个未来事件同时逼近",
+          "why_stop": "信息压迫与因果错乱强"
+        }
+      },
+      "discussion_question": "如果你先听见自己十秒后的决定，还能算自由选择吗？"
+    },
+    {
+      "id": "C07",
+      "title": "荒草地里埋着一座透明灵山",
+      "one_line_hook": "悟空用钢管戳破一层薄土，地下竟露出完整透明山体，整座‘灵山’被埋在北京五环外的荒草地下面。",
+      "concept_class": "buried transparent sacred-world reveal",
+      "anomaly_ceiling": {
+        "initial": "土层裂缝下出现不自然的透明岩体",
+        "middle": "地下透明山体内能看见远距离寺院、道路和移动人影",
+        "climax": "整片荒地塌陷后露出覆盖数公里的地下透明世界"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "普通荒草地裂开细缝，缝下不是泥土而是发光透明山体",
+          "why_stop": "地表现实与地下宏大世界对撞"
+        },
+        "mid": {
+          "visual": "人物趴在透明地面上看见脚下深处另一座完整寺院",
+          "why_stop": "空间层级奇观直接可读"
+        },
+        "climax": {
+          "visual": "荒地大面积剥落，数公里地下灵山像玻璃模型暴露在雾中",
+          "why_stop": "世界尺度A5视觉"
+        }
+      },
+      "discussion_question": "如果真正的‘圣地’一直被埋在城市边缘地下，它究竟是被保护还是被遗忘？"
+    },
+    {
+      "id": "C08",
+      "title": "旧数码相机拍到不存在的第四个人",
+      "one_line_hook": "八戒用旧卡片机给三人拍合照，每张照片里却都固定多出一个站得越来越近的第四个人。",
+      "concept_class": "photographic identity approach anomaly",
+      "anomaly_ceiling": {
+        "initial": "合照里出现远处模糊第四人",
+        "middle": "第四人在连续照片里逐帧靠近且开始模仿三人的姿势",
+        "climax": "最后一张照片里第四人站到镜头位置，现实中相机却没人拿着"
+      },
+      "viral_frames": {
+        "cover": {
+          "visual": "三人车内自拍，后窗雾里站着一个现实中没人看见的第四人",
+          "why_stop": "经典合照异常但关系清晰"
+        },
+        "mid": {
+          "visual": "连续三张照片并排，第四人从远处到贴近车门",
+          "why_stop": "时间递进无需解释即可读"
+        },
+        "climax": {
+          "visual": "最后一张照片视角变成第四人在拍三人，而现实相机悬空落地",
+          "why_stop": "视角夺取形成强反转"
+        }
+      },
+      "discussion_question": "如果照片里的第四个人最终接管了拍摄者的位置，那是谁一直在记录这段旅程？"
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "rules": {
+    "delete_frame_test": true,
+    "max_frames_without_strong_progress": 5,
+    "max_repeated_visual_without_new_information": 2
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "车内普通世界锚：八戒从副驾转身，举玄奘的银色卡片机拍三人车内合照；悟空扶方向盘，玄奘裹军大衣捻念珠。挡风玻璃结霜，大雾压在车外。"
+    },
+    {
+      "frame": "02",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "导航失灵：从后排越过八戒肩头拍天语手机：地图停在灰白盲区；前挡风玻璃只剩雨刮刮出的两道浑浊视野。"
+    },
+    {
+      "frame": "03",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "雾里牌坊出现：车灯切开浓雾，远处巨大仿古牌坊只露出上半部，黑底金字“小雷音寺”从雾里浮出。"
+    },
+    {
+      "frame": "04",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "烂尾景区与寺牌冲突：三人下车，广角里牌坊后不是寺院山门，而是一排烂尾别墅、拆字墙和泥路；金瓦只在车灯下发冷光。"
+    },
+    {
+      "frame": "05",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "气味先拆穿圣地：悟空贴近牌坊侧墙嗅到生漆和柴油，手指蹭下没干透的金粉；玄奘刚推开寺门。"
+    },
+    {
+      "frame": "06",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_SPACE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "廉价大殿现实证据：从防盗门框内拍大殿：抛光砖、柴油热风炮、发电机、成排金身罗汉和过亮射灯同时入画，玄奘在前景脱鞋。"
+    },
+    {
+      "frame": "07",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "未干金漆露出玻璃纤维：托塔罗汉袍角特写：亮金油漆往下淌，边缘露出灰色玻璃纤维和粗糙接缝。"
+    },
+    {
+      "frame": "08",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "沙弥袖口里的黑毛爪：一名低头沙弥从队列旁经过，宽袖滑开半寸，露出黑毛手背和尖长指甲；裤脚后还有一截毛尾掠过。"
+    },
+    {
+      "frame": "09",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "跪垫与铜铙规则铺垫：高台铜铙、磨亮圆形跪垫与请跪手势同时入画，建立后续动作回应前提。"
+    },
+    {
+      "frame": "10",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "玄奘主动下跪触发铜铙：膝盖压实跪垫瞬间，无人触碰的双铙立刻低鸣并撑开；悟空点名发生在回应之后。"
+    },
+    {
+      "frame": "11",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "悟空识破并点名后，假佛非人身份暴露，僧众为持续膨胀的铜铙让开空间。"
+    },
+    {
+      "frame": "12",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": true,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "ANOMALY_ESCALATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "铜铙迎风暴涨：两面黄铜铙离开黄眉双手后在半空迅速变成数米高金属巨幕，吊灯与人形成明确尺度参照。"
+    },
+    {
+      "frame": "13",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "金属巨响与断电：双铙从两侧合拢的瞬间，顶灯玻璃碎裂，发电机熄火，画面只剩最后一束歪斜暖光和飞散碎屑。"
+    },
+    {
+      "frame": "14",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_EVIDENCE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "被困在机加工铜壁里：小手电扫过近在眼前的厚铜壁：表面不是神话纹样，而是清楚的机床切削纹；玄奘的手贴在冰冷金属上。"
+    },
+    {
+      "frame": "15",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_INFORMATION",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "墙外同伴与行李被拖走：玄奘把耳朵贴在铜壁上，画面侧边是震动的念珠；墙外传来八戒叫骂、悟净砸门和行李被拖拽的摩擦声。"
+    },
+    {
+      "frame": "16",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": true,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "打火机照出悟空疲惫的脸：悟空点着半截烟，橘色打火机只照亮他的脸、暗金窄箍和钢管一小段，身后仍全黑。"
+    },
+    {
+      "frame": "17",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "REVERSAL",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "悟空说这里根本没有雷音寺：近景里烟雾撞上铜壁又回卷，悟空抱紧包蛇皮袋的钢管，说“五环里头建高楼，留给咱们走的只剩这片荒草地”。"
+    },
+    {
+      "frame": "18",
+      "necessity": {
+        "causal_loss": false,
+        "evidence_loss": false,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "NEW_CHARACTER_STATE",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "念珠与眼泪：玄奘双手死死攥住磨亮的红酸枝念珠，一滴泪落在手背；铜壁上只有将熄的橘光。"
+    },
+    {
+      "frame": "19",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": false
+      },
+      "progress_type": "NEW_CAUSALITY",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "钢管寻找金铙接缝：悟空把钢管尖端塞进两片铜壁最细的接缝，玄奘用小手电照着；接缝被撬出一条发白的细线。"
+    },
+    {
+      "frame": "20",
+      "necessity": {
+        "causal_loss": true,
+        "evidence_loss": true,
+        "suspense_loss": false,
+        "spatial_orientation_loss": false,
+        "emotional_state_change_loss": true
+      },
+      "progress_type": "PAYOFF",
+      "same_visual_as_previous": false,
+      "new_verifiable_information": true,
+      "note": "还得往前走：细缝透进外面冷灰色的天光，照到钢管、金箍和念珠；两人还没脱困，但悟空重新握紧钢管，玄奘把念珠绕回手腕。"
+    }
+  ]
+}
