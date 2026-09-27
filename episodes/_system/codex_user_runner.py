@@ -170,6 +170,8 @@ class CodexUserRunnerTimeout(CodexUserRunnerError, subprocess.TimeoutExpired):
         self.timeout = timeout
         self.output = None
         self.stderr = None
+        self.returncode = 124
+        self.remote = {"timed_out": True, "returncode": 124}
         self.detail = detail or f"Codex task exceeded {timeout}s"
         RuntimeError.__init__(self, f"{self.code}: {self.detail}")
 
@@ -1321,13 +1323,17 @@ def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResul
     if status == 401:
         raise CodexUserRunnerAuthFailed("CODEX_USER_RUNNER_AUTH_FAILED", "runner rejected the local token")
     if status == 504:
-        raise CodexUserRunnerTimeout(task.argv, effective, str(body.get("detail") or ""))
+        exc = CodexUserRunnerTimeout(task.argv, effective, str(body.get("detail") or ""))
+        exc.remote = {**exc.remote, **dict(body.get("evidence") or {}), "timed_out": True, "returncode": 124}
+        raise exc
     if status != 200 or not body.get("ok"):
         code = str(body.get("code") or "CODEX_EXEC_FAILED")
         detail = str(body.get("detail") or f"HTTP {status}")
         raise CodexUserRunnerError(code, detail)
     if body.get("timed_out"):
-        raise CodexUserRunnerTimeout(task.argv, effective, str(body.get("evidence") or ""))
+        exc = CodexUserRunnerTimeout(task.argv, effective, str(body.get("detail") or ""))
+        exc.remote = {**exc.remote, **dict(body.get("evidence") or {}), "timed_out": True, "returncode": 124}
+        raise exc
     output = base64.b64decode(body.get("output_base64") or "")
     return ExecResult(returncode=int(body.get("returncode") or 0), output=output, remote=body.get("evidence") or {})
 
@@ -1417,6 +1423,7 @@ def run_codex(
     """
     command = pin_windows_sandbox([str(x) for x in argv])
     if not bridge_required():
+        started = time.monotonic()
         kwargs = {
             "input": input,
             "stdout": stdout,
@@ -1437,7 +1444,28 @@ def run_codex(
                 kwargs[key] = value
         if env is not None:
             kwargs["env"] = env
-        return subprocess.run(command, **kwargs)
+        try:
+            completed = subprocess.run(command, **kwargs)
+        except subprocess.TimeoutExpired as exc:
+            exc.remote = {
+                "elapsed_seconds": round(time.monotonic() - started, 2),
+                "timed_out": True,
+                "returncode": 124,
+                "task_type": str(task_type),
+                "transport": "direct_codex_user_runner",
+            }
+            raise
+        # Preserve a runner-owned receipt for callers that need trustworthy
+        # timing. This is measured around the actual Codex process, not host
+        # preparation/handshake time.
+        completed.remote = {
+            "elapsed_seconds": round(time.monotonic() - started, 2),
+            "timed_out": False,
+            "returncode": int(completed.returncode),
+            "task_type": str(task_type),
+            "transport": "direct_codex_user_runner",
+        }
+        return completed
     payload = input if input is not None else stdin_text
     # Normalize cmd.exe/python wrappers on the caller side before crossing the
     # loopback bridge. This keeps older already-running user-mode runners from
@@ -1460,6 +1488,7 @@ def run_codex(
     else:
         _write_output(stdout, result.output, text=text if text is not None else not isinstance(stdout, (bytes, bytearray)))
     completed = subprocess.CompletedProcess(command, result.returncode, captured, None)
+    completed.remote = dict(result.remote or {})
     if check and result.returncode != 0:
         raise subprocess.CalledProcessError(result.returncode, command, captured)
     return completed

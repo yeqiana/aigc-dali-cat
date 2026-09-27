@@ -96,6 +96,7 @@ def model_execution(
         "independent_task": True,
         "real_model_execution": True,
         "wall_seconds": float(elapsed) if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool) else None,
+        "elapsed_seconds": float(elapsed) if isinstance(elapsed, (int, float)) and not isinstance(elapsed, bool) else None,
         "input_tokens": parsed["input_tokens"],
         "output_tokens": parsed["output_tokens"],
         "cached_input_tokens": parsed["cached_input_tokens"],

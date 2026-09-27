@@ -393,6 +393,8 @@ def _request_fingerprint(
     sources: list[dict],
     candidate_path: str,
     source_bindings: dict | None = None,
+    host_execution: str = "workspace_provider",
+    request_metadata: dict | None = None,
 ) -> str:
     payload = {
         "review_kind": kind,
@@ -404,6 +406,9 @@ def _request_fingerprint(
     }
     if source_bindings is not None:
         payload["source_bindings"] = source_bindings
+    if host_execution != "workspace_provider" or request_metadata:
+        payload["host_execution"] = host_execution
+        payload["request_metadata"] = request_metadata or {}
     raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -418,6 +423,8 @@ def prepare(
     source_paths: list[Path],
     candidate_path: Path,
     source_bindings: dict | None = None,
+    host_execution: str = "workspace_provider",
+    request_metadata: dict | None = None,
 ) -> dict:
     base = runtime_provenance.normalize_base_runtime(runtime)
     if base != NEW_REVIEW_RUNTIME:
@@ -425,6 +432,12 @@ def prepare(
             "new product reviews require WORK runtime; workspace access is supplied "
             "by the configured provider, and legacy WEB/local CODEX review routes are disabled"
         )
+    host_execution = str(host_execution or "workspace_provider")
+    if host_execution not in {"workspace_provider", "codex_user_runner_shadow"}:
+        raise ProductReviewError(f"unsupported product review host execution: {host_execution}")
+    if host_execution == "codex_user_runner_shadow" and kind != "story-semantic-critic-shadow":
+        raise ProductReviewError("Codex user-runner execution is restricted to Story Semantic Critic shadow")
+    metadata = dict(request_metadata or {})
     sources = []
     for path in source_paths:
         p = path.resolve()
@@ -450,6 +463,8 @@ def prepare(
         sources=sources,
         candidate_path=candidate_rel,
         source_bindings=source_bindings,
+        host_execution=host_execution,
+        request_metadata=metadata,
     )
     request_id = f"{kind}-a{attempt}-{fingerprint[:16]}"
     workspace = workspace_provider.current()
@@ -471,7 +486,8 @@ def prepare(
             "fresh_product_review_turn_required": True,
             "source_access": "read_only",
             "candidate_write_scope": "candidate_path_only",
-            "local_codex_review_allowed": False,
+            "local_codex_review_allowed": host_execution == "codex_user_runner_shadow",
+            "host_execution": host_execution,
         },
         "attempt": attempt,
         "source_files": sources,
@@ -482,12 +498,14 @@ def prepare(
             "Run this as a fresh adversarial WORK_ISOLATED review turn when an isolated turn is available.",
             f"Use the configured {workspace.provider_id} Workspace Provider as the repository access path.",
             "Workspace Provider access does not grant state, gate, or release authority.",
-            "Do not spawn local Codex for text/governance review.",
+            ("Run the bounded decision-only shadow through codex_user_runner; do not execute canonical review." if host_execution == "codex_user_runner_shadow" else "Do not spawn local Codex for text/governance review."),
             "Do not modify source files.",
             "Write only the requested candidate JSON to candidate_path.",
             "Do not claim PASS if any hard check fails.",
         ],
         "prompt": prompt,
+        "host_execution": host_execution,
+        "request_metadata": metadata,
     }
     if source_bindings is not None:
         req["source_bindings"] = source_bindings
@@ -565,7 +583,13 @@ def finalize_candidate(
             raise ProductReviewError("review contract workspace_provider mismatch")
         if contract.get("webcodex_allowed") is not workspace.is_webcodex:
             raise ProductReviewError("review contract WebCodex capability mismatch")
-        if contract.get("local_codex_review_allowed") is not False:
+        allowed_local_shadow = (
+            kind == "story-semantic-critic-shadow"
+            and req.get("host_execution") == "codex_user_runner_shadow"
+            and contract.get("host_execution") == "codex_user_runner_shadow"
+            and contract.get("local_codex_review_allowed") is True
+        )
+        if contract.get("local_codex_review_allowed") is not False and not allowed_local_shadow:
             raise ProductReviewError("local Codex review must be disabled")
     if req.get("review_kind") != kind:
         raise ProductReviewError("review kind mismatch")

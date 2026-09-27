@@ -43,6 +43,7 @@ def test_turn_completed_usage_and_runner_receipt_form_complete_telemetry():
         result, provider="codex", model="default", authority_capsule_read_once=True
     )
     assert row["wall_seconds"] == 12.5
+    assert row["elapsed_seconds"] == 12.5
     assert row["input_tokens"] == 100
     assert row["output_tokens"] == 30
     assert row["repeated_reads"] == 0

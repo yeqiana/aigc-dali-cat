@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "kind": "p3_story_semantic_real_smoke_episode_candidates",
+  "generated_at": "2026-09-27T14:44:46+00:00",
+  "persistence_status": "AVAILABLE",
+  "persistence_error": null,
+  "candidates": [
+    {
+      "episode": "episodes/09_旧物怪谈/04_瓶中世界",
+      "state": "PUBLISH_READY",
+      "review_decision": "PASS",
+      "story_sha_match": true,
+      "storyboard_sha_match": true,
+      "safe_read_only_state": false,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+      "state": "PUBLISH_READY",
+      "review_decision": "PASS",
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": false,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/10_山难伪纪录片/01_鳌太线_热汤",
+      "state": "PUBLISH_READY",
+      "review_decision": "PASS",
+      "story_sha_match": true,
+      "storyboard_sha_match": true,
+      "safe_read_only_state": false,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/10_彼此的天上/01_不存在的夜行路",
+      "state": "IDEA_LOCKED",
+      "review_decision": null,
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": true,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/10_彼此的天上/02_玻璃另一边的手",
+      "state": "VISUAL_CALIBRATED",
+      "review_decision": "PASS",
+      "story_sha_match": true,
+      "storyboard_sha_match": true,
+      "safe_read_only_state": false,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
+      "state": "PUBLISH_READY",
+      "review_decision": "PASS",
+      "story_sha_match": true,
+      "storyboard_sha_match": true,
+      "safe_read_only_state": false,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_惊魂",
+      "state": "IDEA_LOCKED",
+      "review_decision": null,
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": true,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/埋儿那天_娘把我拦住了",
+      "state": "IDEA_LOCKED",
+      "review_decision": null,
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": true,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/天界普通女生的一天",
+      "state": "STORYBOARD_LOCKED",
+      "review_decision": "PASS",
+      "story_sha_match": true,
+      "storyboard_sha_match": true,
+      "safe_read_only_state": true,
+      "eligible": true
+    },
+    {
+      "episode": "episodes/尸解仙",
+      "state": "IDEA_LOCKED",
+      "review_decision": null,
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": true,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/江南卖花姑娘的一天",
+      "state": "IDEA_LOCKED",
+      "review_decision": null,
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": true,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/独立篇/01_五环外的浓雾",
+      "state": "STORYBOARD_LOCKED",
+      "review_decision": "PASS",
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": true,
+      "eligible": false
+    },
+    {
+      "episode": "episodes/误入桃花源",
+      "state": "PUBLISH_READY",
+      "review_decision": "PASS",
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "safe_read_only_state": false,
+      "eligible": false
+    }
+  ],
+  "selected": "episodes/天界普通女生的一天",
+  "image_generation_invoked": false
+}

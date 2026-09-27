@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "fixture_only": true,
+  "model_execution": false,
+  "critic_invoked": false,
+  "telemetry_complete": false,
+  "decision": "ACCEPT_CANDIDATE",
+  "shadow_decision": "ACCEPT_CANDIDATE",
+  "existing_review_decision": "ACCEPT_CANDIDATE",
+  "decision_equivalent": true,
+  "shadow_is_advisory": true,
+  "gate_pass": false,
+  "authority_write": false,
+  "episode_transition": false,
+  "reflection": {
+    "action": "REVIEW_COMPLETE_ADVISORY",
+    "critic_attempt": 1,
+    "max_review_attempts": 2,
+    "auto_repairs_used": 0,
+    "max_auto_repairs": 1,
+    "repair_invoked": false,
+    "gate_pass": false,
+    "episode_transition": false
+  },
+  "repair_invoked": false,
+  "schema_version": 1,
+  "kind": "p3_story_semantic_critic_shadow_fixture_smoke",
+  "generated_at": "2026-09-27T05:48:12+00:00",
+  "decision_schema": "episodes/_system/agents/critic_decision.schema.json",
+  "decision_schema_sha256": "17bc95caf3881653866d69a29420fc79f8c6629b0b7dd0f7699f22eccffe4816",
+  "note": "Synthetic fixture only; no real Critic model, Story Review, Episode Authority, Gate, or Episode state was changed."
+}

@@ -73,6 +73,14 @@ class CodexCriticRunnerTests(unittest.TestCase):
         effort_flag = cmd[cmd.index("-c") + 1]
         self.assertEqual(effort_flag, 'model_reasoning_effort="medium"')
 
+    def test_output_schema_is_native_codex_flag(self):
+        schema = self.root / "decision.schema.json"
+        cmd = runner.build_command(
+            codex=Path("codex.exe"), root=self.root, output_schema=schema,
+        )
+        self.assertIn("--output-schema", cmd)
+        self.assertEqual(cmd[cmd.index("--output-schema") + 1], str(schema))
+
     def test_launch_writes_log_and_returns_rc(self):
         target = self.root / "out.json"
         log = self.root / "meta" / "attempt-1.jsonl"

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StoryOS decision-only Critic shadow result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "issue_codes", "severity", "repair_scope", "evidence"],
+  "properties": {
+    "decision": {
+      "type": "string",
+      "enum": ["ACCEPT_CANDIDATE", "REPAIR", "NEEDS_USER", "BLOCK"]
+    },
+    "issue_codes": {"type": "array", "items": {"type": "string"}},
+    "severity": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH"]},
+    "repair_scope": {"type": "array", "items": {"type": "string"}},
+    "evidence": {"type": "array", "items": {"type": "string"}}
+  }
+}

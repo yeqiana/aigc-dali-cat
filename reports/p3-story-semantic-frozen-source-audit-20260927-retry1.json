@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "kind": "p3_story_semantic_frozen_source_audit",
+  "generated_at": "2026-09-27T14:44:41+00:00",
+  "episode": "episodes/独立篇/01_五环外的浓雾",
+  "episode_state": "STORYBOARD_LOCKED",
+  "persistence_status": "AVAILABLE",
+  "runtime_env_loaded_keys": [
+    "STORYOS_EPISODE_META_STORE_MODE",
+    "STORYOS_HOT_STATE_MODE",
+    "STORYOS_MYSQL_DB",
+    "STORYOS_MYSQL_HOST",
+    "STORYOS_MYSQL_PORT",
+    "STORYOS_MYSQL_PWD",
+    "STORYOS_MYSQL_USER",
+    "STORYOS_REDIS_DB",
+    "STORYOS_REDIS_HOST",
+    "STORYOS_REDIS_PORT",
+    "STORYOS_RUNTIME_STORE_MODE"
+  ],
+  "review_export_path": "episodes/独立篇/01_五环外的浓雾/meta/runtime/review-exports/story-semantic.json",
+  "review_record_authority_sha256_before": "917fa6854c22852a904150568aa4a98a3257478cfcd121eb68ffcef1f0334d5a",
+  "review_story_sha256": "2b86f4da4ecce6c40ea98c33b8e5b86a3eaa4d2508e11685d62597caa1b5aeed",
+  "current_story_sha256": "169247a39ddb1b1e32a36bf0de2289d9bd56281fc74e81d3d9c0db205fb76fc1",
+  "story_match": false,
+  "review_storyboard_sha256": "ba55a67cfa0d7232d762dadb683ae4a451eaefc54ebe28edef4e4d17de35ac04",
+  "current_storyboard_sha256": "67e3c18b4bbffaf0517156761162d395ef8a2b5c3047677cbb868100abb0afc0",
+  "storyboard_match": false,
+  "recovered_story": {
+    "found": false,
+    "origin": null,
+    "path": null,
+    "sha256": null,
+    "exact_match": false,
+    "git_commit": null
+  },
+  "recovered_storyboard": {
+    "found": true,
+    "origin": "git_exact_blob",
+    "path": "episodes/独立篇/01_五环外的浓雾/docs/03_壹·五环外的浓雾_20张正式分镜_V1.1.md",
+    "sha256": "ba55a67cfa0d7232d762dadb683ae4a451eaefc54ebe28edef4e4d17de35ac04",
+    "exact_match": true,
+    "git_commit": "5000e82294930bc01dd39913a7cd13ddf73214b8"
+  },
+  "source_set_status": "PARTIALLY_RECOVERABLE",
+  "search_scopes": [
+    "current_episode_files",
+    "review_export",
+    "product_review_requests_and_host_requests",
+    "review_record_persistence",
+    "story_review_candidates",
+    "runtime_contracts",
+    "release_manifest_history",
+    "reports_and_archives",
+    "registered_worktrees",
+    "git_path_history_and_exact_blobs",
+    "local_storyos_runtime_snapshots"
+  ],
+  "canonical_files_modified": false,
+  "review_modified": false,
+  "episode_state_modified": false,
+  "image_generation_invoked": false
+}

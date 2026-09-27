@@ -472,6 +472,44 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
     return rc
 
 
+def schedule_critic_shadow(
+    ep: Path, *, attempt: int, story: Path, storyboard: Path, sources: list[Path],
+    canonical_source_files: list[dict] | None = None,
+) -> dict:
+    """Schedule the advisory Critic beside, never inside, canonical Story Review."""
+    import story_semantic_critic_adapter as critic_shadow
+
+    config = critic_shadow.adapter_config()
+    if config.get("shadow_enabled") is not True:
+        return {"enabled": False, "scheduled": False}
+    if config.get("production_enabled") is True:
+        raise RuntimeError("Critic shadow/production overlap; refusing Story Review dispatch")
+    prompt = critic_shadow.build_decision_prompt(
+        attempt=attempt,
+        story_text=story.read_text(encoding="utf-8-sig"),
+        storyboard_text=storyboard.read_text(encoding="utf-8-sig"),
+        rubric_text="\n\n".join(path.read_text(encoding="utf-8-sig") for path in sources[2:]),
+    )
+    if canonical_source_files is not None:
+        frozen = {str(row.get("path")): str(row.get("sha256")).lower()
+                  for row in canonical_source_files if isinstance(row, dict)}
+        for source in sources:
+            relative = source.resolve().relative_to(ROOT.resolve()).as_posix()
+            if frozen.get(relative) != sha256_file(source).lower():
+                raise RuntimeError(f"Critic shadow source differs from canonical review request: {relative}")
+    shadow_request = critic_shadow.prepare_shadow_request(
+        ep, attempt=attempt, prompt=prompt, story_path=story,
+        storyboard_path=storyboard, rubric_paths=sources[2:],
+    )
+    return {
+        "enabled": True,
+        "scheduled": isinstance(shadow_request, dict),
+        "request_id": (shadow_request or {}).get("request_id"),
+        "request_path": (shadow_request or {}).get("request_path"),
+        "candidate_authority": "runtime_evidence_only",
+    }
+
+
 def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("review_critic")
@@ -502,6 +540,17 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
             source_paths=sources,
             candidate_path=candidate,
         )
+        shadow_schedule = {"enabled": False, "scheduled": False}
+        try:
+            shadow_schedule = schedule_critic_shadow(
+                ep, attempt=attempt, story=story, storyboard=storyboard, sources=sources,
+                canonical_source_files=request.get("source_files"),
+            )
+        except Exception as exc:
+            # Shadow scheduling is observable but cannot change the canonical
+            # Story Review decision or candidate lifecycle.
+            shadow_schedule["error"] = f"{type(exc).__name__}: {exc}"
+        request["critic_shadow_schedule"] = shadow_schedule
         print(json.dumps(request, ensure_ascii=False, indent=2))
         return product_review_adapter.HOST_ACTION_REQUIRED_RC
 

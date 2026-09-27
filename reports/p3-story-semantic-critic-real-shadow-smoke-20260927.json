@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "kind": "p3_story_semantic_critic_real_shadow_smoke",
+  "generated_at": "2026-09-27T08:37:53+00:00",
+  "status": "FAILED",
+  "failure_class": "SOURCE_STALE",
+  "failure": true,
+  "failure_detail": "frozen Story SHA differs from canonical Story Review",
+  "timeout": false,
+  "runner_receipt": {},
+  "real_model_execution": false,
+  "telemetry_complete": false,
+  "image_generation_invoked": false,
+  "blockers": [
+    "REAL_SHADOW_SMOKE_FAILED"
+  ]
+}

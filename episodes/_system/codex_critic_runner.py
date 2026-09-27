@@ -38,6 +38,8 @@ class LaunchResult:
     returncode: int
     log_path: Path
     log_text: str
+    output: bytes = b""
+    remote: dict | None = None
 
 
 def resolve_codex(raw):
@@ -83,6 +85,7 @@ def build_command(
     reasoning_effort=None,
     reasoning_effort_literal=None,
     output_path=None,
+    output_schema=None,
     extra=None,
 ):
     """Assemble one isolated Codex exec invocation.
@@ -102,6 +105,8 @@ def build_command(
     elif reasoning_effort:
         cmd += ["-c", f'model_reasoning_effort="{reasoning_effort}"']
     cmd += ["-s", resolve_sandbox(sandbox), "-C", str(root), "--json"]
+    if output_schema is not None:
+        cmd += ["--output-schema", str(output_schema)]
     if output_path is not None:
         cmd += ["-o", str(output_path)]
     for attachment in attachments or []:
@@ -117,6 +122,7 @@ def launch(
     root,
     timeout,
     output_path=None,
+    output_schema=None,
     attachments=None,
     model=None,
     reasoning_effort=None,
@@ -141,6 +147,7 @@ def launch(
         reasoning_effort=reasoning_effort,
         reasoning_effort_literal=reasoning_effort_literal,
         output_path=output_path,
+        output_schema=output_schema,
         extra=extra,
     )
     with resolved_log.open("w", encoding="utf-8", newline="\n") as handle:
@@ -157,8 +164,10 @@ def launch(
             task_type="critic",
         )
     log_text = resolved_log.read_text(encoding="utf-8-sig", errors="replace")
+    remote = dict(getattr(done, "remote", {}) or {})
     return LaunchResult(returncode=done.returncode, log_path=resolved_log,
-                        log_text=log_text)
+                        log_text=log_text, output=log_text.encode("utf-8"),
+                        remote=remote or None)
 
 
 def parse_json_text(text):
