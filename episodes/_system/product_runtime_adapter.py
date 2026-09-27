@@ -240,6 +240,14 @@ def _world_shadow_runtime_dependencies():
     return comparator, persistence, adapter, runtime_cls
 
 
+def _visual_shadow_runtime_dependencies():
+    import agent_shadow_compare as comparator
+    import preimage_execution_persistence as persistence
+    from agents import visual_narrative_prepare_adapter as adapter
+    from platform.agent.runtime import AgentRuntime as runtime_cls
+    return comparator, persistence, adapter, runtime_cls
+
+
 def world_prepare_host_candidate(task: dict, produced: dict) -> tuple[dict | None, list[str], dict | None]:
     """Host-side Candidate envelope and deterministic verification for World output."""
     payload = produced.get("payload") if isinstance(produced, dict) else None
@@ -256,6 +264,33 @@ def world_prepare_host_candidate(task: dict, produced: dict) -> tuple[dict | Non
         semantic = comparator.compare_world_prepare_semantics(task, candidate)
         if semantic.get("pass") is not True:
             errors.extend(semantic.get("errors") or ["World semantic obligations failed"])
+    return (candidate if not errors else None), errors, semantic
+
+
+def visual_narrative_host_candidate(task: dict, produced: dict) -> tuple[dict | None, list[str], dict | None]:
+    """Host-side Visual Narrative Candidate envelope; never writes canonical paths."""
+    payload = produced.get("payload") if isinstance(produced, dict) else None
+    telemetry = produced.get("model_execution") if isinstance(produced, dict) else None
+    if not isinstance(payload, dict):
+        return None, [str((produced or {}).get("failure_reason") or "Visual Narrative producer returned no payload")], None
+    comparator, _persistence, _adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+    obligations = comparator.visual_semantic_obligations(task).get("scopes") or {}
+    if set(payload) != set(task.get("authority_scope") or ()):
+        return None, ["Visual Narrative output scope set differs from the frozen contract"], None
+    payload = {
+        scope: {"frozen_contract": obligations.get(scope) or {}, "proposal": payload[scope].get("proposal")}
+        for scope in task.get("authority_scope") or ()
+        if isinstance(payload.get(scope), dict)
+    }
+    candidate = preimage_task_contract.candidate_template(task, payload)
+    if isinstance(telemetry, dict):
+        candidate["model_execution"] = dict(telemetry)
+    errors = preimage_task_contract.verify_candidate(candidate, task)
+    semantic = None
+    if not errors:
+        semantic = comparator.compare_visual_narrative_semantics(task, candidate)
+        if semantic.get("pass") is not True:
+            errors.extend(semantic.get("errors") or ["Visual Narrative semantic obligations failed"])
     return (candidate if not errors else None), errors, semantic
 
 
@@ -294,6 +329,16 @@ def world_prepare_production_enabled() -> bool:
     ) is True
 
 
+def visual_narrative_prepare_shadow_enabled() -> bool:
+    cfg = storyos_config.load_config()
+    return storyos_config.get_path(cfg, "agent_runtime.adapters.visual_narrative_prepare.shadow_enabled", False) is True
+
+
+def visual_narrative_prepare_production_enabled() -> bool:
+    cfg = storyos_config.load_config()
+    return storyos_config.get_path(cfg, "agent_runtime.adapters.visual_narrative_prepare.production_enabled", False) is True
+
+
 def _character_live_execution_id(task: dict) -> str:
     raw = f"{task.get('task_id')}|{task.get('snapshot_id')}|character-live-v1"
     return "exec_live_" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:32]
@@ -307,6 +352,16 @@ def _character_shadow_execution_id(task: dict) -> str:
 def _world_shadow_execution_id(task: dict) -> str:
     raw = f"{task.get('task_id')}|{task.get('snapshot_id')}|world-shadow-v1"
     return "exec_world_shadow_" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
+
+
+def _visual_shadow_execution_id(task: dict, attempt: int = 1) -> str:
+    raw = f"{task.get('task_id')}|{task.get('snapshot_id')}|visual-narrative-shadow-v1|attempt:{int(attempt)}"
+    return "exec_visual_shadow_" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
+
+
+def _visual_live_execution_id(task: dict) -> str:
+    raw = f"{task.get('task_id')}|{task.get('snapshot_id')}|visual-narrative-live-v1"
+    return "exec_visual_live_" + hashlib.sha256(raw.encode("utf-8")).hexdigest()[:24]
 
 
 def build_request(
@@ -349,6 +404,10 @@ def build_request(
             ep, requests, runtime=runtime, mode=mode, resume=resume, source=source
         )
         shadow_requests.extend(world_shadow_requests)
+        visual_shadow_requests = build_preimage_visual_shadow_requests(
+            ep, requests, runtime=runtime, mode=mode, resume=resume, source=source
+        )
+        shadow_requests.extend(visual_shadow_requests)
         if shadow_requests:
             response["shadow_requests"] = shadow_requests
             response["shadow_host_task_count"] = len(shadow_requests)
@@ -489,6 +548,38 @@ def build_preimage_requests(ep: Path, *, runtime: str, mode: str, resume: bool, 
                 "Do not write shared authority directly.",
                 *data["instructions"],
             ]
+        if task["task_type"] == "VISUAL_NARRATIVE_PREPARE" and visual_narrative_prepare_production_enabled():
+            shot_review_path = ep / "meta/shot-progression-review.json"
+            shot_review = story_json.read_json(shot_review_path, default={}) if shot_review_path.is_file() else {}
+            if not isinstance(shot_review, dict) or shot_review.get("status") != "LOCKED":
+                # Adapter preconditions are not met in legacy/partial fixtures or an
+                # Episode without a frozen shot review. Keep the existing producer
+                # available through the configured fallback boundary.
+                data["agent_fallback_active"] = True
+                data["agent_fallback_reason"] = "VISUAL_FROZEN_SHOT_REVIEW_UNAVAILABLE"
+                data["legacy_fallback_on_technical"] = True
+            else:
+                from agents import visual_narrative_prepare_model_producer
+                _comparator, _persistence, visual_adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+                task = visual_narrative_prepare_model_producer.freeze_task(ep, task)
+                data["task"] = task
+                execution_id = _visual_live_execution_id(task)
+                envelope = visual_adapter.build_execution(
+                    task, attempt=1, shadow=False, execution_id=execution_id,
+                    routing_decision={"executor": runtime, "provider": workspace.provider_id,
+                                      "reason": "visual_narrative_prepare_production"},
+                )
+                data["agent_adapter"] = "VISUAL_NARRATIVE_PREPARE_AGENT"
+                data["agent_execution"] = envelope.to_dict()
+                data["legacy_fallback_on_technical"] = True
+                data["host_contract"]["agent_candidate_required"] = True
+                data["host_contract"]["model_execution_telemetry_required"] = True
+                data["instructions"] = [
+                    "Execute this canonical VISUAL_NARRATIVE_PREPARE through VisualNarrativePrepareAgentAdapter and the existing Platform AgentRuntime.",
+                    "Use the bounded read-only producer with the frozen authority capsule. Return one Candidate; the Host constructs its envelope and attaches real execution telemetry.",
+                    "The existing verifier, PREIMAGE barrier, and authority_commit remain authoritative. Do not write shared authority, Episode state, Gate, or image assets directly.",
+                    *data["instructions"],
+                ]
         stored=_persist_request(ep,data,category="preimage")
         preimage_task_contract.update_task_state(ep,task,"HOST_ACTION_REQUIRED",request_id=stored["request_id"])
         episode_performance.safe_begin_named_span(ep,f"HOST_ACTION_PREIMAGE_{task['task_type']}",source=source,
@@ -640,6 +731,68 @@ def build_preimage_world_shadow_requests(
     return out
 
 
+def build_preimage_visual_shadow_requests(
+    ep: Path, legacy_requests: list[dict], *, runtime: str, mode: str, resume: bool, source: str,
+) -> list[dict]:
+    """Create Visual Narrative candidate-only requests in the separate shadow domain."""
+    if not visual_narrative_prepare_shadow_enabled() or visual_narrative_prepare_production_enabled():
+        return []
+    _comparator, _persistence, visual_adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+    from agents import visual_narrative_prepare_model_producer
+    workspace = workspace_provider.current()
+    out = []
+    for legacy in legacy_requests:
+        task = legacy.get("task") or {}
+        if task.get("task_type") != "VISUAL_NARRATIVE_PREPARE":
+            continue
+        visual_source = ep / "meta/shot-progression-review.json"
+        if not visual_source.is_file():
+            # Legacy request creation remains available on protocol-only fixtures
+            # and pre-lock workspaces; there is no valid frozen shadow input yet.
+            continue
+        task = visual_narrative_prepare_model_producer.freeze_task(ep, task)
+        prior = [row for row in host_request_persistence.list_all(ep)
+                 if _visual_shadow_request_matches_task(row, task)]
+        prior.sort(key=lambda row: int(((row.get("agent_execution") or {}).get("attempt") or 1)))
+        last = prior[-1] if prior else None
+        attempt = int(((last or {}).get("agent_execution") or {}).get("attempt") or 0) + (
+            1 if last is None or last.get("status") == "FAILED" else 0
+        )
+        attempt = max(1, attempt)
+        execution_id = _visual_shadow_execution_id(task, attempt)
+        envelope = visual_adapter.build_execution(
+            task, attempt=attempt, shadow=True, execution_id=execution_id,
+            routing_decision={"executor": runtime, "provider": workspace.provider_id,
+                              "reason": "visual_narrative_prepare_shadow"},
+        )
+        data = {
+            "runtime": runtime, "status": "HOST_ACTION_REQUIRED",
+            "source": f"{source}:visual_narrative_shadow:attempt-{attempt}",
+            "episode": ep.resolve().relative_to(ROOT.resolve()).as_posix(),
+            "episode_state": episode_state(ep), "execution_mode": mode, "resume": bool(resume),
+            "next_step": "PREIMAGE_VISUAL_NARRATIVE_SHADOW", "shadow": True,
+            "shadow_kind": "VISUAL_NARRATIVE_PREPARE_AGENT", "legacy_request_id": legacy.get("request_id"),
+            "task": task, "snapshot_id": task["snapshot_id"], "agent_execution": envelope.to_dict(),
+            "target_contract": "agent_shadow_candidate_only_no_file_write",
+            "host_contract": {
+                "stage_authority": "meta/episode-state.json", "must_not_claim_pass_without_evidence": True,
+                "must_not_write_shared_authority": True, "must_not_write_legacy_candidate": True,
+                "candidate_return_required": True, "execution_start_handshake_required": True,
+                "dispatch_group": "PREIMAGE_VISUAL_AGENT_SHADOW", "independent_parallelizable": True,
+                "not_canonical_preimage_concurrency": True, **workspace.contract_fields(),
+            },
+            "instructions": [
+                "Execute only VISUAL_NARRATIVE_PREPARE through the existing Platform AgentRuntime and adapter using this frozen capsule.",
+                "Return a Candidate only. Do not write the legacy Candidate, Authority, Story Gates, Episode state, Production Ledger, images, or current Host Request pointer.",
+                "Start with product_runtime_adapter.py start-preimage-visual-shadow and finalize through complete-preimage-visual-shadow.",
+                "Use the registered legacy PREIMAGE_VISUAL_NARRATIVE request as the control; this request is shadow evidence only.",
+                "Do not use tools. Telemetry comes from codex_execution_telemetry and the user-runner receipt; never estimate missing fields.",
+            ],
+        }
+        out.append(_persist_request(ep, data, category="preimage-visual-shadow", set_current=False))
+    return out
+
+
 def _world_shadow_request_matches_task(request: dict, task: dict) -> bool:
     shadow_task = request.get("task") or {}
     return (
@@ -648,6 +801,14 @@ def _world_shadow_request_matches_task(request: dict, task: dict) -> bool:
         and shadow_task.get("task_id") == task.get("task_id")
         and shadow_task.get("snapshot_id") == task.get("snapshot_id")
     )
+
+
+def _visual_shadow_request_matches_task(request: dict, task: dict) -> bool:
+    shadow_task = request.get("task") or {}
+    return (request.get("shadow") is True
+            and request.get("shadow_kind") == "VISUAL_NARRATIVE_PREPARE_AGENT"
+            and shadow_task.get("task_id") == task.get("task_id")
+            and shadow_task.get("snapshot_id") == task.get("snapshot_id"))
 
 
 def reconcile_world_prepare_shadow(ep: Path, task: dict) -> dict | None:
@@ -677,6 +838,34 @@ def reconcile_world_prepare_shadow(ep: Path, task: dict) -> dict | None:
                 comparison_status="COMPARED",
                 execution_evidence=dict(latest.get("model_execution_evidence") or {}),
             )
+        except ValueError:
+            pass
+    return comparison
+
+
+def reconcile_visual_narrative_shadow(ep: Path, task: dict) -> dict | None:
+    comparator, persistence, _adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+    legacy_candidate = preimage_task_contract.read_candidate(ep, task)
+    if not isinstance(legacy_candidate, dict):
+        return None
+    latest = next((row for row in host_request_persistence.list_all(ep)
+                   if _visual_shadow_request_matches_task(row, task)
+                   and isinstance(row.get("shadow_candidate"), dict)), None)
+    if latest is None:
+        return None
+    comparison_task = latest.get("task") or task
+    comparison = comparator.compare_preimage_candidates(comparison_task, legacy_candidate, latest["shadow_candidate"])
+    latest["shadow_comparison"] = comparison
+    latest["comparison_status"] = "COMPARED"
+    latest["comparison_updated_at"] = execution_now()
+    host_request_persistence.save(ep, latest)
+    meta = latest.get("agent_execution") or {}
+    execution_id = str(meta.get("execution_id") or "")
+    if execution_id:
+        try:
+            persistence.mark_shadow_completed(ep, snapshot_id=task["snapshot_id"], task_id=task["task_id"],
+                execution_id=execution_id, candidate_sha256=_stable_hash(latest["shadow_candidate"]),
+                comparison_status="COMPARED", execution_evidence=dict(latest.get("model_execution_evidence") or {}))
         except ValueError:
             pass
     return comparison
@@ -995,6 +1184,94 @@ def complete_preimage_world_shadow_task(ep: Path, request_id: str, candidate: di
     return request
 
 
+def mark_preimage_visual_shadow_running(ep: Path, request_id: str, *, worker_id: str) -> dict:
+    _comparator, persistence, _adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+    worker_id = str(worker_id or "").strip()
+    if not worker_id:
+        raise ValueError("worker_id is required")
+    request = host_request_persistence.load(ep, request_id)
+    if request is None:
+        raise FileNotFoundError(f"Visual Narrative shadow request missing: {request_id}")
+    if request.get("shadow") is not True or request.get("shadow_kind") != "VISUAL_NARRATIVE_PREPARE_AGENT":
+        raise ValueError("not a Visual Narrative shadow request")
+    if request.get("status") not in {"HOST_ACTION_REQUIRED", "RUNNING"}:
+        raise ValueError(f"Visual Narrative shadow request is terminal: {request.get('status')}")
+    existing_worker = str(request.get("worker_id") or "").strip()
+    if request.get("status") == "RUNNING" and existing_worker and existing_worker != worker_id:
+        raise RuntimeError(f"PREIMAGE_VISUAL_SHADOW_ALREADY_RUNNING: worker={existing_worker}")
+    task = request["task"]
+    meta = request.get("agent_execution") or {}
+    record = persistence.begin_execution(ep, snapshot_id=task["snapshot_id"], task_id=task["task_id"],
+        execution_id=str(meta.get("execution_id") or ""), attempt=int(meta.get("attempt") or 1),
+        idempotency_key=str(meta.get("idempotency_key") or ""), shadow=True, trace_id=meta.get("trace_id"))
+    if record.get("status") not in {"ACTIVE", "CANDIDATE_READY"}:
+        raise RuntimeError(f"PREIMAGE_VISUAL_SHADOW_NOT_RUNNABLE: {record.get('status')}")
+    request.update({"status": "RUNNING", "started_at": str(request.get("started_at") or execution_now()),
+                    "worker_id": worker_id, "execution_record_status": record.get("status")})
+    host_request_persistence.save(ep, request)
+    episode_performance.safe_begin_named_span(ep, "HOST_ACTION_PREIMAGE_VISUAL_NARRATIVE_SHADOW",
+        source="visual_narrative_shadow", metadata={"request_id": request_id, "execution_id": meta.get("execution_id")})
+    return request
+
+
+def complete_preimage_visual_shadow_task(ep: Path, request_id: str, candidate: dict) -> dict:
+    comparator, persistence, visual_adapter, AgentRuntime = _visual_shadow_runtime_dependencies()
+    request = host_request_persistence.load(ep, request_id)
+    if request is None:
+        raise FileNotFoundError(f"Visual Narrative shadow request missing: {request_id}")
+    if request.get("shadow") is not True or request.get("shadow_kind") != "VISUAL_NARRATIVE_PREPARE_AGENT":
+        raise ValueError("not a Visual Narrative shadow request")
+    if request.get("status") == "FINALIZED" and isinstance(request.get("shadow_candidate"), dict):
+        if _stable_hash(request["shadow_candidate"]) != _stable_hash(candidate):
+            raise ValueError("PREIMAGE_VISUAL_SHADOW_ALREADY_FINALIZED_DIFFERENT_CANDIDATE")
+        return request
+    if request.get("status") != "RUNNING" or not request.get("worker_id"):
+        raise ValueError("PREIMAGE_VISUAL_SHADOW_EXECUTION_START_REQUIRED")
+    task = request["task"]
+    from agents import visual_narrative_prepare_model_producer as producer
+    if not producer.frozen_sources_unchanged(ep, task):
+        raise ValueError("PREIMAGE_VISUAL_SHADOW_FROZEN_SOURCE_CHANGED")
+    meta = request.get("agent_execution") or {}
+    execution_id = str(meta.get("execution_id") or "")
+    envelope = visual_adapter.build_execution(task, attempt=int(meta.get("attempt") or 1), shadow=True,
+        execution_id=execution_id, routing_decision=meta.get("routing_decision") or {})
+    runtime = AgentRuntime()
+    visual_adapter.register_skill(runtime, lambda _input, _context: candidate)
+    result = runtime.execute(envelope.plan)
+    shadow_candidate = visual_adapter.extract_candidate(result)
+    errors = visual_adapter.validate_candidate(shadow_candidate, task)
+    execution_evidence = preimage_task_contract.model_execution_evidence(shadow_candidate)
+    semantic = comparator.compare_visual_narrative_semantics(task, shadow_candidate)
+    if semantic.get("pass") is not True:
+        errors.extend(semantic.get("errors") or ["Visual Narrative semantic obligations failed"])
+    if errors:
+        persistence.mark_shadow_failed(ep, snapshot_id=task["snapshot_id"], task_id=task["task_id"],
+            execution_id=execution_id, reason="; ".join(errors))
+        request.update({"status": "FAILED", "finished_at": execution_now(), "candidate_errors": errors,
+                        "model_execution_evidence": execution_evidence, "visual_semantic_comparison": semantic})
+        host_request_persistence.save(ep, request)
+        episode_performance.safe_end_named_span(ep, "HOST_ACTION_PREIMAGE_VISUAL_NARRATIVE_SHADOW",
+            status="FAILED", metadata={"request_id": request_id})
+        return request
+    record = persistence.find_execution(ep, task["snapshot_id"], task["task_id"], execution_id)
+    if record and record.get("status") == "ACTIVE":
+        persistence.mark_candidate_ready(ep, snapshot_id=task["snapshot_id"], task_id=task["task_id"],
+                                         execution_id=execution_id)
+    request.update({"status": "FINALIZED", "finalized_at": execution_now(), "finished_at": execution_now(),
+                    "shadow_candidate": shadow_candidate, "comparison_status": "WAITING_FOR_LEGACY",
+                    "model_execution_evidence": execution_evidence, "visual_semantic_comparison": semantic})
+    host_request_persistence.save(ep, request)
+    comparison = reconcile_visual_narrative_shadow(ep, task)
+    if comparison is not None:
+        request = host_request_persistence.load(ep, request_id) or request
+    persistence.mark_shadow_completed(ep, snapshot_id=task["snapshot_id"], task_id=task["task_id"],
+        execution_id=execution_id, candidate_sha256=_stable_hash(shadow_candidate),
+        comparison_status=request.get("comparison_status"), execution_evidence=execution_evidence)
+    episode_performance.safe_end_named_span(ep, "HOST_ACTION_PREIMAGE_VISUAL_NARRATIVE_SHADOW",
+        status="PASS", metadata={"request_id": request_id, "comparison_status": request.get("comparison_status")})
+    return request
+
+
 def fail_preimage_world_shadow_task(ep: Path, request_id: str, produced: dict, *, reason: str) -> dict:
     """Persist real producer failure/timeout evidence and close the shadow attempt."""
     _comparator, persistence, _adapter, _runtime_cls = _world_shadow_runtime_dependencies()
@@ -1119,6 +1396,20 @@ def world_prepare_shadow_metrics(ep: Path) -> dict:
     }
 
 
+def visual_narrative_shadow_metrics(ep: Path) -> dict:
+    requests = [row for row in host_request_persistence.list_all(ep)
+                if row.get("shadow_kind") == "VISUAL_NARRATIVE_PREPARE_AGENT"]
+    return {
+        "kind": "visual_narrative_agent_shadow_metrics",
+        "shadow_request_count": len(requests),
+        "finalized": sum(row.get("status") == "FINALIZED" for row in requests),
+        "failed": sum(row.get("status") == "FAILED" for row in requests),
+        "compared": sum(row.get("comparison_status") == "COMPARED" for row in requests),
+        "canonical_preimage_concurrency_included": False,
+        "authority_write": False,
+    }
+
+
 def mark_preimage_task_running(ep: Path, request_id: str, *, worker_id: str) -> dict:
     """Claim one PREIMAGE Host request for real execution.
 
@@ -1145,7 +1436,7 @@ def mark_preimage_task_running(ep: Path, request_id: str, *, worker_id: str) -> 
         raise RuntimeError(f"PREIMAGE_HOST_REQUEST_ALREADY_RUNNING: worker={existing_worker}")
     started_at = str(request.get("started_at") or execution_now())
     request.update({"status": "RUNNING", "started_at": started_at, "worker_id": worker_id})
-    if request.get("agent_adapter") == "CHARACTER_FINALIZE_AGENT":
+    if request.get("agent_adapter") in {"CHARACTER_FINALIZE_AGENT", "VISUAL_NARRATIVE_PREPARE_AGENT"}:
         _comparator, preimage_execution_persistence, _adapter, _runtime_cls = _shadow_runtime_dependencies()
         execution_meta = request.get("agent_execution") or {}
         record = preimage_execution_persistence.begin_execution(
@@ -1253,7 +1544,9 @@ def preimage_execution_metrics(ep: Path) -> dict:
 def _live_agent_execution_contexts(ep: Path, snapshot_id: str) -> list[dict]:
     contexts=[]
     for row in host_request_persistence.list_all(ep):
-        if row.get("shadow") is True or row.get("agent_adapter") != "CHARACTER_FINALIZE_AGENT":
+        if row.get("shadow") is True or row.get("agent_adapter") not in {
+            "CHARACTER_FINALIZE_AGENT", "VISUAL_NARRATIVE_PREPARE_AGENT"
+        }:
             continue
         task=row.get("task") or {}
         if task.get("snapshot_id") != snapshot_id or row.get("status") != "FINALIZED":
@@ -1262,7 +1555,7 @@ def _live_agent_execution_contexts(ep: Path, snapshot_id: str) -> list[dict]:
             continue
         meta=row.get("agent_execution") or {}
         if not meta.get("execution_id") or not meta.get("idempotency_key"):
-            raise RuntimeError("live Character Agent request missing execution identity")
+            raise RuntimeError("live Agent request missing execution identity")
         contexts.append({
             "task_id": task.get("task_id"),
             "execution_id": meta.get("execution_id"),
@@ -1282,15 +1575,29 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
     task=request.get("task") or {}
     if not task or not str(request.get("next_step") or "").startswith("PREIMAGE_"):
         raise ValueError("not a PREIMAGE task request")
+    if request.get("status") == "FINALIZED":
+        existing = _read_json(Path(ep) / str(task.get("candidate_output") or ""))
+        if existing and _stable_hash(existing) == _stable_hash(candidate):
+            return request
+        raise ValueError("PREIMAGE_HOST_COMPLETION_ALREADY_FINALIZED_DIFFERENT_CANDIDATE")
     if (request.get("host_contract") or {}).get("execution_start_handshake_required"):
         if request.get("status") != "RUNNING" or not request.get("started_at") or not request.get("worker_id"):
             raise ValueError("PREIMAGE_HOST_EXECUTION_START_REQUIRED")
-    agent_live = request.get("agent_adapter") == "CHARACTER_FINALIZE_AGENT"
+    adapter_code = request.get("agent_adapter")
+    agent_live = adapter_code in {"CHARACTER_FINALIZE_AGENT", "VISUAL_NARRATIVE_PREPARE_AGENT"}
+    live_semantic_errors: list[str] = []
     if agent_live:
-        _comparator, preimage_execution_persistence, character_finalize_adapter, AgentRuntime = _shadow_runtime_dependencies()
+        if adapter_code == "CHARACTER_FINALIZE_AGENT":
+            _comparator, preimage_execution_persistence, live_adapter, AgentRuntime = _shadow_runtime_dependencies()
+        else:
+            _comparator, preimage_execution_persistence, live_adapter, AgentRuntime = _visual_shadow_runtime_dependencies()
         execution_meta = request.get("agent_execution") or {}
         try:
-            envelope = character_finalize_adapter.build_execution(
+            if adapter_code == "VISUAL_NARRATIVE_PREPARE_AGENT":
+                from agents import visual_narrative_prepare_model_producer as visual_producer
+                if not visual_producer.frozen_sources_unchanged(ep, task):
+                    raise ValueError("VISUAL_NARRATIVE_FROZEN_SOURCE_CHANGED")
+            envelope = live_adapter.build_execution(
                 task,
                 attempt=int(execution_meta.get("attempt") or 1),
                 shadow=False,
@@ -1298,9 +1605,13 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
                 routing_decision=execution_meta.get("routing_decision") or {},
             )
             runtime = AgentRuntime()
-            character_finalize_adapter.register_skill(runtime, lambda _input, _context: candidate)
+            live_adapter.register_skill(runtime, lambda _input, _context: candidate)
             result = runtime.execute(envelope.plan)
-            candidate = character_finalize_adapter.extract_candidate(result)
+            candidate = live_adapter.extract_candidate(result)
+            if adapter_code == "VISUAL_NARRATIVE_PREPARE_AGENT":
+                semantic = _comparator.compare_visual_narrative_semantics(task, candidate)
+                if semantic.get("pass") is not True:
+                    live_semantic_errors.extend(semantic.get("errors") or ["Visual semantic obligations failed"])
         except Exception as exc:
             try:
                 preimage_execution_persistence.mark_execution_failed(
@@ -1318,7 +1629,18 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
             request["agent_fallback_active"] = True
             request["agent_fallback_reason"] = f"{type(exc).__name__}: {exc}"
             host_request_persistence.save(ep, request)
-    errors=preimage_task_contract.write_candidate(ep,task,candidate)
+    if adapter_code == "VISUAL_NARRATIVE_PREPARE_AGENT" and request.get("agent_fallback_active") is not True:
+        errors = preimage_task_contract.verify_candidate(candidate, task)
+        if not errors:
+            _comparator, _persistence, _adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+            semantic = _comparator.compare_visual_narrative_semantics(task, candidate)
+            if semantic.get("pass") is not True:
+                errors.extend(semantic.get("errors") or ["Visual semantic obligations failed"])
+        errors.extend(live_semantic_errors)
+        if not errors:
+            errors = preimage_task_contract.write_candidate(ep, task, candidate)
+    else:
+        errors=preimage_task_contract.write_candidate(ep,task,candidate)
     model_execution_evidence=preimage_task_contract.model_execution_evidence(candidate)
     if errors:
         if agent_live and request.get("agent_fallback_active") is not True:
@@ -1375,6 +1697,11 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
         world_shadow_comparison = reconcile_world_prepare_shadow(ep, task)
         if world_shadow_comparison is not None:
             request["shadow_comparison"] = world_shadow_comparison
+            host_request_persistence.save(ep, request)
+    if task.get("task_type") == "VISUAL_NARRATIVE_PREPARE":
+        visual_shadow_comparison = reconcile_visual_narrative_shadow(ep, task)
+        if visual_shadow_comparison is not None:
+            request["shadow_comparison"] = visual_shadow_comparison
             host_request_persistence.save(ep, request)
     episode_performance.safe_end_named_span(ep,f"HOST_ACTION_PREIMAGE_{task['task_type']}",status="PASS",metadata={"request_id":request_id})
     # The fourth independently finalized candidate releases only the serial
@@ -1487,7 +1814,7 @@ def main() -> int:
     p = sub.add_parser("complete-preimage", help="finalize one validated PREIMAGE host candidate through the canonical adapter")
     p.add_argument("episode_dir")
     p.add_argument("--request-id", required=True)
-    p.add_argument("--candidate", required=True, help="candidate JSON path, absolute or episode-relative")
+    p.add_argument("--candidate", default=None, help="candidate JSON path; omitted for Visual production lets Host run the bounded producer")
     p = sub.add_parser("start-preimage", help="claim one PREIMAGE Host request for actual execution")
     p.add_argument("episode_dir")
     p.add_argument("--request-id", required=True)
@@ -1509,11 +1836,21 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--request-id", required=True)
     p.add_argument("--worker-id", required=True)
+    p = sub.add_parser("complete-preimage-visual-shadow", help="finalize one Visual Narrative Agent shadow candidate")
+    p.add_argument("episode_dir")
+    p.add_argument("--request-id", required=True)
+    p.add_argument("--candidate", default=None, help="optional prepared Candidate; omitted runs the read-only real model producer")
+    p = sub.add_parser("start-preimage-visual-shadow", help="claim one Visual Narrative Agent shadow request")
+    p.add_argument("episode_dir")
+    p.add_argument("--request-id", required=True)
+    p.add_argument("--worker-id", required=True)
     p = sub.add_parser("preimage-metrics", help="show observed PREIMAGE Host execution concurrency")
     p.add_argument("episode_dir")
     p = sub.add_parser("preimage-shadow-metrics", help="show Character Finalize Agent shadow comparison metrics")
     p.add_argument("episode_dir")
     p = sub.add_parser("preimage-world-shadow-metrics", help="show World Prepare Agent shadow metrics")
+    p.add_argument("episode_dir")
+    p = sub.add_parser("preimage-visual-shadow-metrics", help="show Visual Narrative Agent shadow metrics")
     p.add_argument("episode_dir")
     sub.add_parser("self-test")
     args = ap.parse_args()
@@ -1526,6 +1863,8 @@ def main() -> int:
         print_request(mark_preimage_shadow_running(ep, args.request_id, worker_id=args.worker_id)); return 0
     if args.cmd == "start-preimage-world-shadow":
         print_request(mark_preimage_world_shadow_running(ep, args.request_id, worker_id=args.worker_id)); return 0
+    if args.cmd == "start-preimage-visual-shadow":
+        print_request(mark_preimage_visual_shadow_running(ep, args.request_id, worker_id=args.worker_id)); return 0
     if args.cmd == "complete-preimage-shadow":
         raw = Path(args.candidate)
         candidate_path = raw.resolve() if raw.is_absolute() else (ep / raw).resolve()
@@ -1560,15 +1899,64 @@ def main() -> int:
         result = complete_preimage_world_shadow_task(ep, args.request_id, candidate)
         print_request(result)
         return 0 if result.get("status") == "FINALIZED" else 2
+    if args.cmd == "complete-preimage-visual-shadow":
+        request = host_request_persistence.load(ep, args.request_id)
+        if request is None:
+            raise FileNotFoundError(f"Visual Narrative shadow request missing: {args.request_id}")
+        if args.candidate:
+            raw = Path(args.candidate)
+            candidate_path = raw.resolve() if raw.is_absolute() else (ep / raw).resolve()
+            candidate = _read_json(candidate_path)
+        else:
+            from agents import visual_narrative_prepare_model_producer
+            produced = visual_narrative_prepare_model_producer.run(ep, request["task"], role="agent_shadow")
+            candidate, errors, semantic = visual_narrative_host_candidate(request["task"], produced)
+            if errors or candidate is None:
+                _comparator, persistence, _adapter, _runtime_cls = _visual_shadow_runtime_dependencies()
+                meta = request.get("agent_execution") or {}
+                execution_id = str(meta.get("execution_id") or "")
+                persistence.mark_shadow_failed(ep, snapshot_id=request["task"]["snapshot_id"],
+                    task_id=request["task"]["task_id"], execution_id=execution_id,
+                    reason="; ".join(errors or [str(produced.get("failure_reason") or "Visual producer failed")]))
+                request.update({"status": "FAILED", "finished_at": execution_now(),
+                    "candidate_errors": errors, "failure_reason": produced.get("failure_reason"),
+                    "model_execution_telemetry": produced.get("model_execution"),
+                    "model_execution_evidence": preimage_task_contract.model_execution_evidence(
+                        {"model_execution": produced.get("model_execution")})})
+                host_request_persistence.save(ep, request)
+                print_request(request)
+                return 3
+            produced["semantic"] = semantic
+            produced["candidate"] = candidate
+            request["model_execution_telemetry"] = produced.get("model_execution")
+            host_request_persistence.save(ep, request)
+        result = complete_preimage_visual_shadow_task(ep, args.request_id, candidate)
+        print_request(result)
+        return 0 if result.get("status") == "FINALIZED" else 2
     if args.cmd == "preimage-metrics":
         print_request(preimage_execution_metrics(ep)); return 0
     if args.cmd == "preimage-shadow-metrics":
         print_request(character_shadow_metrics(ep)); return 0
     if args.cmd == "preimage-world-shadow-metrics":
         print_request(world_prepare_shadow_metrics(ep)); return 0
-    raw = Path(args.candidate)
-    candidate_path = raw.resolve() if raw.is_absolute() else (ep / raw).resolve()
-    candidate = _read_json(candidate_path)
+    if args.cmd == "preimage-visual-shadow-metrics":
+        print_request(visual_narrative_shadow_metrics(ep)); return 0
+    if args.candidate:
+        raw = Path(args.candidate)
+        candidate_path = raw.resolve() if raw.is_absolute() else (ep / raw).resolve()
+        candidate = _read_json(candidate_path)
+    else:
+        request = host_request_persistence.load(ep, args.request_id)
+        if request is None or request.get("agent_adapter") != "VISUAL_NARRATIVE_PREPARE_AGENT":
+            raise ValueError("--candidate is required except for live Visual Narrative Agent production")
+        from agents import visual_narrative_prepare_model_producer as producer
+        produced = producer.run(ep, request["task"], role="agent_production")
+        candidate, errors, semantic = visual_narrative_host_candidate(request["task"], produced)
+        if errors or candidate is None:
+            raise ValueError("Visual Narrative producer failed closed: " + "; ".join(errors or [str(produced.get("failure_reason"))]))
+        request["model_execution_telemetry"] = produced.get("model_execution")
+        request["visual_semantic_comparison"] = semantic
+        host_request_persistence.save(ep, request)
     result = complete_preimage_task(ep, args.request_id, candidate)
     print_request(result)
     return 0 if result.get("status") == "FINALIZED" else 2

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "p2_visual_narrative_production_cutover_record",
+  "generated_at": "2026-09-27T13:28:34+08:00",
+  "status": "PRODUCTION_ENABLED",
+  "production_cutover_performed": true,
+  "pre_cutover_gate_path": "reports/p2-visual-narrative-pre-cutover-gate-retry1-20260927.json",
+  "pre_cutover_gate_sha256": "9ae26c9e3fb2153ccd1ca2b7016643bd5b2b1f36c356c0c0c670e5181cafad61",
+  "pre_cutover_gate_generated_at": "2026-09-27T05:16:28+00:00",
+  "shadow_smoke_path": "reports/p2-visual-narrative-shadow-smoke-retry3-20260927.json",
+  "shadow_smoke_sha256": "6fab4aca0e8069bfe896403c26aaae760f78e01fb4d32ff9d642d7c7d9212ebf",
+  "paired_benchmark_path": "reports/p2-visual-narrative-paired-benchmark-schema-v2-20260927.json",
+  "paired_benchmark_sha256": "ad71ff33de518ac9a4b712f8766db14671928e0d79dca67cc106c9a05605f7ee",
+  "production_smoke_path": "reports/p2-visual-narrative-production-cutover-smoke-retry1-20260927.json",
+  "production_smoke_sha256": "3919e9c15c0f453b4fe31e1f4e7f1f3ff378cdc05623284124994f6459c6bf99",
+  "production_smoke_generated_at": "2026-09-27T13:28:34+08:00",
+  "previous_config": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "new_config": {
+    "shadow_enabled": false,
+    "production_enabled": true,
+    "legacy_fallback_on_technical": true
+  },
+  "rollback_config": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "head": "da4454fa770e1c72aae9f6618618531e21683c80",
+  "cutover_timestamp": "2026-09-27T13:28:34+08:00",
+  "checks": {
+    "gate_ready": true,
+    "gate_sha_unchanged": true,
+    "source_hashes_unchanged": true,
+    "production_smoke_pass": true,
+    "authority_receipt_committed": true,
+    "legacy_fallback_not_used": true
+  }
+}

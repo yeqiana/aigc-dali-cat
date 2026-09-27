@@ -1,0 +1,705 @@
+{
+  "schema_version": 1,
+  "kind": "p2_visual_narrative_real_episode_shadow_smoke",
+  "generated_at": "2026-09-27T04:14:58.187113+00:00",
+  "episode": "episodes/独立篇/01_五环外的浓雾",
+  "status": "PASS",
+  "shadow_request_id": "preimage-visual-shadow-26d592aea553f487",
+  "execution_id": "exec_visual_shadow_8d5469996caaf67e8e124519",
+  "attempt": 4,
+  "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+  "checks": {
+    "candidate_parse": true,
+    "candidate_valid": true,
+    "semantic_pass": true,
+    "shadow_only": true,
+    "allowed_tools_empty": true,
+    "telemetry_complete": true,
+    "model_execution": true,
+    "failure_false": true,
+    "timeout_false": true,
+    "authority_zero_regression": true,
+    "episode_state_unchanged": true,
+    "current_host_pointer_unchanged": true,
+    "canonical_task_state_unchanged": true,
+    "canonical_preimage_not_started": true,
+    "image_generation_not_invoked": true
+  },
+  "semantic": {
+    "pass": true,
+    "errors": [],
+    "obligations": {
+      "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+      "capsule_sha256": "5205ded21f9cc3623570eda766b89aeb92a28d8f94c92d4588a42a72b2642045",
+      "required_scope": [
+        "visual.narrative_core",
+        "visual.shot_progression",
+        "visual.capture_grammar"
+      ],
+      "scopes": {
+        "visual.narrative_core": {
+          "hook_frames": [
+            1,
+            2,
+            3
+          ],
+          "escalation_frames": [
+            8,
+            10,
+            12,
+            14
+          ],
+          "climax_frame": 19,
+          "payoff_frame": 20,
+          "competing_explanations": 2,
+          "task_closed": true
+        },
+        "visual.shot_progression": {
+          "frames": [
+            {
+              "frame": "01",
+              "action": "八戒举相机拍三人合照，悟空扶方向盘，玄奘捻念珠",
+              "visual_function": "建立同行关系与2010年旧车现实基线",
+              "capture_purpose": "私人旅途留档",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "santana_cabin",
+              "shot_scale": "medium",
+              "scene_position_id": "car_rear_right_selfie_01",
+              "anomaly_logic_stage": "ordinary",
+              "human_action_stage": "ordinary",
+              "human_present": true,
+              "emotion": {
+                "state": "relaxed",
+                "intensity": 1,
+                "trigger": "只是大雾绕路",
+                "response_sync": "shared_but_unsynchronized"
+              },
+              "interaction": {
+                "type": "group_selfie",
+                "actor": "P03",
+                "target": "P01/P02/P03",
+                "action": "举相机拍下车内合照",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "02",
+              "action": "八戒把无信号地图递给玄奘看",
+              "visual_function": "交代迷路因果和旧设备年代",
+              "capture_purpose": "记录导航失灵",
+              "pov_mode": "pov_camera",
+              "location_zone": "santana_front_console",
+              "shot_scale": "close",
+              "scene_position_id": "car_over_shoulder_phone_02",
+              "anomaly_logic_stage": "ordinary",
+              "human_action_stage": "ordinary",
+              "human_present": true,
+              "emotion": {
+                "state": "ordinary",
+                "intensity": 1,
+                "trigger": "导航无信号",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "show_phone",
+                "actor": "P03",
+                "target": "P01",
+                "action": "把无信号地图递给玄奘看",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "03",
+              "action": "悟空刹车，三人望向前方",
+              "visual_function": "第一次可拍异常地点证据",
+              "capture_purpose": "证明不是单纯迷路",
+              "pov_mode": "pov_camera",
+              "location_zone": "fog_road_gate",
+              "shot_scale": "extreme_wide",
+              "scene_position_id": "road_windshield_gate_03",
+              "anomaly_logic_stage": "discovery",
+              "human_action_stage": "notice",
+              "human_present": true,
+              "emotion": {
+                "state": "curious",
+                "intensity": 1,
+                "trigger": "雾里突然出现大型牌坊",
+                "response_sync": "shared_but_unsynchronized"
+              },
+              "interaction": {
+                "type": "point_out",
+                "actor": "P02",
+                "target": "P01/P03",
+                "action": "指向雾中的牌坊",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "04",
+              "action": "玄奘举相机，悟空走到牌坊下查看",
+              "visual_function": "建立小雷音寺位于烂尾区的空间矛盾",
+              "capture_purpose": "记录地点全貌",
+              "pov_mode": "pov_camera",
+              "location_zone": "gate_exterior",
+              "shot_scale": "wide",
+              "scene_position_id": "mud_road_gate_right_04",
+              "anomaly_logic_stage": "discovery",
+              "human_action_stage": "move",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 2,
+                "trigger": "寺牌和烂尾区明显不相称",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "05",
+              "action": "悟空让玄奘先别进，给他看指尖金粉",
+              "visual_function": "把怀疑变成触摸得到的现实证据",
+              "capture_purpose": "记录悟空的验证动作",
+              "pov_mode": "pov_camera",
+              "location_zone": "gate_inner_column",
+              "shot_scale": "close",
+              "scene_position_id": "gate_column_gold_finger_05",
+              "anomaly_logic_stage": "discovery",
+              "human_action_stage": "verify",
+              "human_present": true,
+              "emotion": {
+                "state": "alert",
+                "intensity": 2,
+                "trigger": "生漆和柴油味与寺庙不符",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "point_out",
+                "actor": "P02",
+                "target": "P01",
+                "action": "把沾到的湿金粉举给玄奘看",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "06",
+              "action": "玄奘脱鞋进入，悟空仍站在门边观察",
+              "visual_function": "把寺庙表象拆成廉价临时搭建空间",
+              "capture_purpose": "记录内部布局",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "main_hall_threshold",
+              "shot_scale": "wide",
+              "scene_position_id": "hall_doorframe_wide_06",
+              "anomaly_logic_stage": "discovery",
+              "human_action_stage": "observe",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 2,
+                "trigger": "热风炮和发电机暴露临建感",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "07",
+              "action": "玄奘用相机拍下未干金漆和玻璃纤维",
+              "visual_function": "确认至少一部分“神圣”布景是临时仿造",
+              "capture_purpose": "留下可复核材质证据",
+              "pov_mode": "pov_camera",
+              "location_zone": "arhat_row_detail",
+              "shot_scale": "detail",
+              "scene_position_id": "arhat_gold_drip_detail_07",
+              "anomaly_logic_stage": "confirmation",
+              "human_action_stage": "verify",
+              "human_present": true,
+              "emotion": {
+                "state": "alert",
+                "intensity": 2,
+                "trigger": "金漆下露出玻璃纤维",
+                "response_sync": "single_subject"
+              },
+              "interaction": {
+                "type": "point_out",
+                "actor": "P01",
+                "target": "P02/P03",
+                "action": "指给同伴看金漆下的玻璃纤维",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "08",
+              "action": "玄奘压低相机抓拍袖口瞬间",
+              "visual_function": "第一次无法用廉价布景解释的生物异常",
+              "capture_purpose": "抓住短暂可见证据",
+              "pov_mode": "pov_camera",
+              "location_zone": "monk_aisle",
+              "shot_scale": "close",
+              "scene_position_id": "monk_sleeve_claw_08",
+              "anomaly_logic_stage": "confirmation",
+              "human_action_stage": "notice",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 3,
+                "trigger": "袖口露出非人的黑毛爪",
+                "response_sync": "single_subject"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "09",
+              "action": "沙弥做请跪手势，玄奘看向跪垫，悟空站着不拜",
+              "visual_function": "提前建立跪垫作为主动动作触发位置，并把铜铙放进同一因果画面",
+              "capture_purpose": "记录触发规则的可见铺垫",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "hall_mid_left",
+              "shot_scale": "wide",
+              "scene_position_id": "hall_platform_standoff_09",
+              "anomaly_logic_stage": "confirmation",
+              "human_action_stage": "observe",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 2,
+                "trigger": "高台人物和僧众都不自然",
+                "response_sync": "shared_but_unsynchronized"
+              },
+              "interaction": {
+                "type": "shared_attention",
+                "actor": "P02",
+                "target": "P01",
+                "action": "悟空挡在玄奘前面示意先别跪",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "10",
+              "action": "玄奘把念珠绕到手腕并主动跪下；膝盖压实瞬间双铙无人触碰即低鸣、撑开，悟空随后砸地喊黄眉",
+              "visual_function": "建立主角主动下跪→铜铙即时异常回应→陷阱启动的直接动作回应链",
+              "capture_purpose": "记录主角触发动作与异常即时反馈",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "hall_mid_right_low",
+              "shot_scale": "medium",
+              "scene_position_id": "steel_pipe_floor_reaction_10",
+              "anomaly_logic_stage": "causal_contradiction",
+              "human_action_stage": "act",
+              "human_present": true,
+              "emotion": {
+                "state": "alert",
+                "intensity": 3,
+                "trigger": "自己的膝盖刚压实跪垫，双铙就在无人触碰时同时低鸣撑开",
+                "response_sync": "single_subject"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "11",
+              "action": "悟空砸地喊出黄眉，高台慈悲脸塌成非人凶相，僧众给持续膨胀的铜铙让位",
+              "visual_function": "把悟空的点名从异常触发器改为识破后的身份翻转",
+              "capture_purpose": "记录识破、身份暴露与陷阱持续扩张",
+              "pov_mode": "pov_camera",
+              "location_zone": "platform_left_front",
+              "shot_scale": "close",
+              "scene_position_id": "huangmei_face_reveal_11",
+              "anomaly_logic_stage": "reversal",
+              "human_action_stage": "move",
+              "human_present": true,
+              "emotion": {
+                "state": "urgent",
+                "intensity": 3,
+                "trigger": "假佛露出非人面貌",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "talk",
+                "actor": "P02",
+                "target": "P01/高台人物",
+                "action": "悟空喊出黄眉身份并让玄奘后退",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "12",
+              "action": "悟空拽玄奘侧撤，八戒向门口跑",
+              "visual_function": "异常从伪装升级为空间尺度违背",
+              "capture_purpose": "记录尺度变化与人物应对",
+              "pov_mode": "pov_camera",
+              "location_zone": "hall_rear_upward",
+              "shot_scale": "extreme_wide",
+              "scene_position_id": "cymbal_growth_scale_12",
+              "anomaly_logic_stage": "spatial_contradiction",
+              "human_action_stage": "move",
+              "human_present": true,
+              "emotion": {
+                "state": "urgent",
+                "intensity": 4,
+                "trigger": "铜铙在眼前扩大到不可能尺度",
+                "response_sync": "shared_but_unsynchronized"
+              },
+              "interaction": {
+                "type": "touch_support",
+                "actor": "P02",
+                "target": "P01",
+                "action": "抓住玄奘肩膀把他往侧面拖",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "13",
+              "action": "玄奘跌坐，相机倾斜抓到断电瞬间",
+              "visual_function": "把金铙动作与全殿断电/封闭建立即时因果",
+              "capture_purpose": "记录高潮动作结果",
+              "pov_mode": "pov_camera",
+              "location_zone": "hall_side_fall",
+              "shot_scale": "wide",
+              "scene_position_id": "cymbal_clap_blackout_13",
+              "anomaly_logic_stage": "human_consequence",
+              "human_action_stage": "fail",
+              "human_present": true,
+              "emotion": {
+                "state": "urgent",
+                "intensity": 4,
+                "trigger": "铜铙合拢并砸碎照明",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "14",
+              "action": "玄奘摸索确认四周全是封闭金属",
+              "visual_function": "把超自然困境再次拉回可触摸的工业现实感",
+              "capture_purpose": "记录封闭空间材质",
+              "pov_mode": "pov_camera",
+              "location_zone": "cymbal_inside_wall",
+              "shot_scale": "detail",
+              "scene_position_id": "copper_toolmark_hand_14",
+              "anomaly_logic_stage": "human_consequence",
+              "human_action_stage": "verify",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 3,
+                "trigger": "确认自己被完全封在厚铜壁里",
+                "response_sync": "single_subject"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "15",
+              "action": "玄奘贴壁听外面动静并向悟空确认",
+              "visual_function": "把看不见的外部损失转成角色可知的信息",
+              "capture_purpose": "记录受困后的信息来源",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "cymbal_inside_right",
+              "shot_scale": "close",
+              "scene_position_id": "ear_to_copper_15",
+              "anomaly_logic_stage": "human_consequence",
+              "human_action_stage": "discuss",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 3,
+                "trigger": "听到同伴在外面受困、行李被抢",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "talk",
+                "actor": "P01",
+                "target": "P02",
+                "action": "低声问悟空外面发生了什么",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "16",
+              "action": "悟空靠壁坐下点火，示意玄奘别慌",
+              "visual_function": "高潮后第一次从逃跑转向适应与判断",
+              "capture_purpose": "记录同伴状态变化",
+              "pov_mode": "pov_camera",
+              "location_zone": "cymbal_inside_corner",
+              "shot_scale": "medium",
+              "scene_position_id": "lighter_wukong_16",
+              "anomaly_logic_stage": "human_consequence",
+              "human_action_stage": "adapt",
+              "human_present": true,
+              "emotion": {
+                "state": "alert",
+                "intensity": 2,
+                "trigger": "暂时无法破开铜壁",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "talk",
+                "actor": "P02",
+                "target": "P01",
+                "action": "告诉玄奘先别怕，等找到缝再动手",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "17",
+              "action": "悟空把判断说出口，玄奘沉默",
+              "visual_function": "把外在骗局反转成玄奘的信念危机",
+              "capture_purpose": "记录关键对话时的真实状态",
+              "pov_mode": "pov_camera",
+              "location_zone": "cymbal_inside_low_side",
+              "shot_scale": "close",
+              "scene_position_id": "smoke_returns_wall_17",
+              "anomaly_logic_stage": "reversal",
+              "human_action_stage": "discuss",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 2,
+                "trigger": "悟空否定玄奘一直寻找的目的地",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "none",
+                "actor": "",
+                "target": "",
+                "action": "",
+                "meaningful": false
+              },
+              "new_information": true
+            },
+            {
+              "frame": "18",
+              "action": "玄奘不再争辩，只把念珠握紧",
+              "visual_function": "让信念受损成为可见人物状态而不是旁白结论",
+              "capture_purpose": "记录身体反应",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "cymbal_inside_hands",
+              "shot_scale": "detail",
+              "scene_position_id": "beads_teardrop_18",
+              "anomaly_logic_stage": "human_consequence",
+              "human_action_stage": "adapt",
+              "human_present": true,
+              "emotion": {
+                "state": "uneasy",
+                "intensity": 3,
+                "trigger": "一路信念被现实骗局击穿",
+                "response_sync": "single_subject"
+              },
+              "interaction": {
+                "type": "touch_support",
+                "actor": "P02",
+                "target": "P01",
+                "action": "悟空把手按在玄奘肩上片刻",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "19",
+              "action": "悟空撬缝，玄奘替他照明",
+              "visual_function": "人物从被困转入可验证的主动逃生",
+              "capture_purpose": "记录动作是否产生结果",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "cymbal_seam_left",
+              "shot_scale": "medium",
+              "scene_position_id": "steel_pipe_seam_19",
+              "anomaly_logic_stage": "reversal",
+              "human_action_stage": "act",
+              "human_present": true,
+              "emotion": {
+                "state": "alert",
+                "intensity": 2,
+                "trigger": "接缝第一次出现可利用的位移",
+                "response_sync": "asynchronous"
+              },
+              "interaction": {
+                "type": "other",
+                "actor": "P01/P02",
+                "target": "铜壁接缝",
+                "action": "玄奘照明，悟空同步撬动钢管",
+                "meaningful": true
+              },
+              "new_information": true
+            },
+            {
+              "frame": "20",
+              "action": "悟空再次发力，玄奘收好念珠准备继续",
+              "visual_function": "兑现“不是找到终点，而是继续走”的结尾",
+              "capture_purpose": "留下现实残留与可回看光缝",
+              "pov_mode": "companion_holding_pov_camera",
+              "location_zone": "cymbal_inside_final",
+              "shot_scale": "wide",
+              "scene_position_id": "final_seam_two_people_20",
+              "anomaly_logic_stage": "payoff",
+              "human_action_stage": "adapt",
+              "human_present": true,
+              "emotion": {
+                "state": "alert",
+                "intensity": 2,
+                "trigger": "铜缝出现微弱外光，确认仍有行动空间",
+                "response_sync": "shared_but_unsynchronized"
+              },
+              "interaction": {
+                "type": "talk",
+                "actor": "P02",
+                "target": "P01",
+                "action": "说等撬开后还得继续往前走",
+                "meaningful": true
+              },
+              "new_information": true
+            }
+          ]
+        },
+        "visual.capture_grammar": {
+          "schema_version": 3,
+          "genre_family": "suspense_strange",
+          "anomaly_applicable": true,
+          "interaction_applicable": true,
+          "rules": {
+            "max_identical_setup_consecutive": 2,
+            "min_unique_setups_in_5_frames": 3,
+            "frame10_requires_new_question_or_evidence": true,
+            "scale_only_escalation_is_not_enough": true,
+            "max_passive_human_frames_after_confirmation": 2,
+            "emotion_intensity_range": [
+              0,
+              4
+            ],
+            "emotion_trigger_required_at_intensity_gte": 2,
+            "synchronized_theatrical_reaction_forbidden": true,
+            "max_consecutive_urgent_frames": 2,
+            "min_meaningful_interaction_per_5_human_frames": 1,
+            "max_meaningful_interaction_ratio": 0.75,
+            "opening_social_natural_interaction_required": true,
+            "require_large_and_small_scene": true,
+            "exact_scene_position_reuse_forbidden": true,
+            "min_cinematic_reference_frames": 2,
+            "practical_lighting_required": true,
+            "suspense_genre_requires_concealed_anomaly": true
+          }
+        }
+      },
+      "source_sha256": {
+        "story_gates": "065450f753c660bffc412218807a8d6bec495188d5e00d206a526d7e7ca2ee59",
+        "shot_progression_review": "f37c7e9770a1b86df7117d9618e6610b6511e979b53a6d25f9a36a5b4ad7810b"
+      }
+    },
+    "mode": "deterministic_frozen_visual_obligations"
+  },
+  "candidate_errors": [],
+  "failure_reason": null,
+  "telemetry": {
+    "real_model_execution": true,
+    "wall_seconds": 33.2,
+    "elapsed_seconds": 33.2,
+    "input_tokens": 34350,
+    "cached_input_tokens": 0,
+    "output_tokens": 453,
+    "reasoning_output_tokens": 115,
+    "repeated_reads": 0,
+    "repeated_reads_scope": "frozen_authority_capsule",
+    "failure": false,
+    "timeout": false,
+    "returncode": 0,
+    "provider": "codex_cli_subscription",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "tool_free": true,
+    "usage_event_count": 1,
+    "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt",
+    "complete": true,
+    "errors": []
+  },
+  "authority_sha256_before": {
+    "owned_scopes": {
+      "character.finalize": "008aa841cc3336e13006ca780b0b79c3f44626e7814e656d5216e0e616dc7b8f",
+      "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    "character_contract": "b2aaa1c82b79c606037b29b67207a7feb4a9cd4e08479bbd098a66d3ce5aa190",
+    "character_visual_contract": "788c69dd6395436d121f16a628fda04d5ac6b3cf37ba3b2cf236496129c8947a",
+    "story_semantic_review": "917fa6854c22852a904150568aa4a98a3257478cfcd121eb68ffcef1f0334d5a",
+    "world_identity": null,
+    "runtime_request_preimage": "1be30f7513ed2d9364d31f7ac202ecd2b6a4bf82feeba1c95b86cc00ff29077a",
+    "story_lock": "5d384431cd945f205471e59f2e8730f9942728c60c9325ef4a5e1b1565fc1048",
+    "visual_profile": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+  },
+  "authority_sha256_after": {
+    "owned_scopes": {
+      "character.finalize": "008aa841cc3336e13006ca780b0b79c3f44626e7814e656d5216e0e616dc7b8f",
+      "visual.environment_contract": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.frame_directives": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_identity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.world_state": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.temporal_continuity": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.wardrobe": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.narrative_core": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.shot_progression": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "visual.capture_grammar": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+    },
+    "character_contract": "b2aaa1c82b79c606037b29b67207a7feb4a9cd4e08479bbd098a66d3ce5aa190",
+    "character_visual_contract": "788c69dd6395436d121f16a628fda04d5ac6b3cf37ba3b2cf236496129c8947a",
+    "story_semantic_review": "917fa6854c22852a904150568aa4a98a3257478cfcd121eb68ffcef1f0334d5a",
+    "world_identity": null,
+    "runtime_request_preimage": "1be30f7513ed2d9364d31f7ac202ecd2b6a4bf82feeba1c95b86cc00ff29077a",
+    "story_lock": "5d384431cd945f205471e59f2e8730f9942728c60c9325ef4a5e1b1565fc1048",
+    "visual_profile": "7a4de65bad3ff9e659cb595af64cc5e2c4eb23a7b0de88959f20c74a11cff25f"
+  },
+  "note": "Runtime evidence only; no canonical candidate, authority, gate, episode stage, ledger, or image was written.",
+  "image_generation_invoked": false
+}

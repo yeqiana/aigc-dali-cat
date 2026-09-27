@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "p2_visual_narrative_pre_cutover_gate",
+  "generated_at": "2026-09-27T05:15:40+00:00",
+  "status": "BLOCKED",
+  "immutable": true,
+  "production_cutover_performed": false,
+  "checks": {
+    "p0_commit_gate": true,
+    "character_production_health": true,
+    "storyos_config_valid": true,
+    "world_no_go_state_preserved": true,
+    "visual_shadow_enabled": true,
+    "visual_production_disabled": true,
+    "legacy_fallback_available": true,
+    "real_shadow_smoke_pass": true,
+    "candidate_parse": true,
+    "candidate_valid": true,
+    "semantic_pass": true,
+    "real_model_telemetry_complete": true,
+    "no_failure_timeout": true,
+    "current_host_pointer_unchanged": true,
+    "image_generation_not_invoked": true,
+    "episode_state_storyboard_locked": false,
+    "minimum_five_valid_pairs": true,
+    "paired_semantic_equivalence": true,
+    "paired_authority_zero_regression": true,
+    "fixed_provider_model_reasoning": true,
+    "wall_regression_within_5pct": true,
+    "token_regression_within_10pct": true,
+    "measurable_value": true,
+    "speed_value_ge_10pct": true,
+    "benchmark_no_failure_timeout": true,
+    "benchmark_telemetry_complete": true
+  },
+  "blockers": [
+    "EPISODE_STATE_STORYBOARD_LOCKED"
+  ],
+  "adapter_state_at_gate": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "world_adapter_state": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "benchmark_medians": {
+    "median_legacy_wall_seconds": 94.67,
+    "median_agent_wall_seconds": 29.58,
+    "median_legacy_total_tokens": 34613.0,
+    "median_agent_total_tokens": 34850.0,
+    "wall_regression_fraction": -0.6875462131615084,
+    "token_regression_fraction": 0.006847138358420324
+  },
+  "source_evidence": {
+    "p0": {
+      "path": "reports/p0-agent-acceptance-20260926.json",
+      "sha256": "f9a8ca90cc1fce3d46f544d56ae30f1aca31aa8fcdecf337dc88b5ce708b8d15"
+    },
+    "character_cutover": {
+      "path": "reports/p1-character-production-cutover-20260926.json",
+      "sha256": "2bcb75ddf78085442933b220930e266dea0c285435a8b5674af9e75067fe3b83"
+    },
+    "character_health": {
+      "path": "reports/p1-character-post-cutover-health-20260926.json",
+      "sha256": "41f219fec3a4794c0a5d3b88f8c270df52e89b4c4d17ff0e0f25ca1568e7a56c"
+    },
+    "world_gate": {
+      "path": "reports/p2-world-pre-cutover-gate-v2-20260927.json",
+      "sha256": "48d9c10e2c2a6bce2fbfb06378c83521fd0c54a7a5a1b88c6d76703b7ebf84fe"
+    },
+    "world_value_probe": {
+      "path": "reports/p2-world-value-probe-20260927.json",
+      "sha256": "4c53c2bf025ec656e32e0b528434e101dd1427c838bddf1de04f7298862d48b3"
+    },
+    "visual_smoke": {
+      "path": "reports/p2-visual-narrative-shadow-smoke-retry3-20260927.json",
+      "sha256": "6fab4aca0e8069bfe896403c26aaae760f78e01fb4d32ff9d642d7c7d9212ebf"
+    },
+    "visual_benchmark": {
+      "path": "reports/p2-visual-narrative-paired-benchmark-schema-v2-20260927.json",
+      "sha256": "ad71ff33de518ac9a4b712f8766db14671928e0d79dca67cc106c9a05605f7ee"
+    }
+  },
+  "git_head": "da4454fa770e1c72aae9f6618618531e21683c80",
+  "note": "Read-only fail-closed gate; never mutates config, authority, candidates, episode state, or invokes a model/image provider."
+}

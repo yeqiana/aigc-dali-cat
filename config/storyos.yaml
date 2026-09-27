@@ -243,6 +243,19 @@ agent_runtime:
       # P2 starts Shadow-first; canonical WORLD_PREPARE remains legacy until its own cutover gate passes.
       shadow_enabled: true
       production_enabled: false
+      legacy_fallback_on_technical: true
+    visual_narrative_prepare:
+      shadow_enabled: false
+      production_enabled: true
+      legacy_fallback_on_technical: true
+    story_semantic_critic:
+      # P3 starts with a decision-only shadow request; existing Story Review remains authoritative.
+      shadow_enabled: true
+      production_enabled: false
+      legacy_fallback_on_technical: true
+      bounded_reflection:
+        max_review_attempts: 2
+        max_auto_repairs: 1
 
 runtime:
   # 当前整体 Runtime = WORK：Story、前期资产、门禁与发布由产品运行时执行。

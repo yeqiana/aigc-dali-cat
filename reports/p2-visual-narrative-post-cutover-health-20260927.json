@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "kind": "p2_visual_narrative_post_cutover_health",
+  "generated_at": "2026-09-27T05:30:48+00:00",
+  "status": "PASS",
+  "checks": {
+    "config_valid": true,
+    "production_flags_healthy": true,
+    "pre_cutover_gate_immutable_ready": true,
+    "pre_cutover_gate_sha_unchanged": true,
+    "cutover_record_success": true,
+    "record_references_gate": true,
+    "record_references_smoke": true,
+    "production_smoke_pass": true,
+    "canonical_receipt_committed": true,
+    "legacy_fallback_available_and_unused": true,
+    "authority_zero_regression_during_validation": true,
+    "character_production_health_unchanged": true,
+    "world_no_go_unchanged": true,
+    "episode_state_unchanged": true,
+    "image_generation_not_invoked": true
+  },
+  "blockers": [],
+  "adapter_state": {
+    "shadow_enabled": false,
+    "production_enabled": true,
+    "legacy_fallback_on_technical": true
+  },
+  "world_adapter_state": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "episode_state": "STORYBOARD_LOCKED",
+  "image_generation_invoked": false,
+  "evidence": {
+    "pre_cutover_gate": {
+      "path": "reports/p2-visual-narrative-pre-cutover-gate-retry1-20260927.json",
+      "sha256": "9ae26c9e3fb2153ccd1ca2b7016643bd5b2b1f36c356c0c0c670e5181cafad61"
+    },
+    "production_cutover_record": {
+      "path": "reports/p2-visual-narrative-production-cutover-retry1-20260927.json",
+      "sha256": "b81a1f8dcd8e3615105bc4c2de74499775b4be5242f615f5d054d84c8ef0a0ee"
+    },
+    "production_smoke": {
+      "path": "reports/p2-visual-narrative-production-cutover-smoke-retry1-20260927.json",
+      "sha256": "3919e9c15c0f453b4fe31e1f4e7f1f3ff378cdc05623284124994f6459c6bf99"
+    },
+    "character_health": {
+      "path": "reports/p1-character-post-cutover-health-20260926.json",
+      "sha256": "41f219fec3a4794c0a5d3b88f8c270df52e89b4c4d17ff0e0f25ca1568e7a56c"
+    },
+    "world_gate": {
+      "path": "reports/p2-world-pre-cutover-gate-v2-20260927.json",
+      "sha256": "48d9c10e2c2a6bce2fbfb06378c83521fd0c54a7a5a1b88c6d76703b7ebf84fe"
+    },
+    "world_value_probe": {
+      "path": "reports/p2-world-value-probe-20260927.json",
+      "sha256": "4c53c2bf025ec656e32e0b528434e101dd1427c838bddf1de04f7298862d48b3"
+    }
+  },
+  "note": "shadow_enabled=false is the expected Production state; health evidence is separate from immutable pre-cutover Gate."
+}

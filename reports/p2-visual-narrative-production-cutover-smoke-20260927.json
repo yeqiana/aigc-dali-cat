@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "kind": "p2_visual_narrative_production_cutover_smoke",
+  "generated_at": "2026-09-27T13:25:44+08:00",
+  "production_enabled": false,
+  "shadow_enabled": true,
+  "pass": false,
+  "failure": "RuntimeError: production smoke requires four canonical requests and zero shadow requests",
+  "rollback_status": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "image_generation_invoked": false
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "p2_visual_narrative_production_cutover_record",
+  "generated_at": "2026-09-27T13:25:44+08:00",
+  "status": "ROLLED_BACK_AFTER_SMOKE_FAILURE",
+  "production_cutover_performed": false,
+  "failure": "RuntimeError: production smoke requires four canonical requests and zero shadow requests",
+  "rollback_config": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "adapter_state_after_rollback": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "pre_cutover_gate_path": "reports/p2-visual-narrative-pre-cutover-gate-retry1-20260927.json",
+  "pre_cutover_gate_sha256": "9ae26c9e3fb2153ccd1ca2b7016643bd5b2b1f36c356c0c0c670e5181cafad61",
+  "smoke_path": "reports/p2-visual-narrative-production-cutover-smoke-20260927.json"
+}

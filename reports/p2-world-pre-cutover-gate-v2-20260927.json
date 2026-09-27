@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "kind": "p2_world_pre_cutover_gate_v2",
+  "generated_at": "2026-09-27T02:57:47.280925+00:00",
+  "status": "BLOCKED",
+  "production_cutover_performed": false,
+  "checks": {
+    "p0_commit_gate": true,
+    "world_shadow_enabled": true,
+    "world_production_disabled": true,
+    "legacy_fallback_available": true,
+    "world_real_model_shadow_smoke": true,
+    "candidate_valid_and_semantic": true,
+    "real_model_telemetry_complete": true,
+    "no_failure_timeout": true,
+    "minimum_five_valid_pairs": true,
+    "paired_performance_safety": true,
+    "authority_zero_regression": true,
+    "measurable_value": false,
+    "speed_value_ge_10pct": false,
+    "token_value_ge_20pct": false,
+    "quality_value_evidence": false,
+    "recovery_value_evidence": false
+  },
+  "value_probe": {
+    "quality_value_evidence": false,
+    "recovery_value_evidence": false,
+    "measurable_value_evidence": false
+  },
+  "blockers": [
+    "WORLD_NO_MEASURABLE_AGENT_VALUE"
+  ],
+  "adapter_state": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  },
+  "paired_benchmark_medians": {
+    "legacy_wall_seconds": 95.92,
+    "agent_wall_seconds": 94.72,
+    "legacy_input_tokens": 43275.0,
+    "agent_input_tokens": 47752.0,
+    "legacy_total_tokens": 47489,
+    "agent_total_tokens": 51980,
+    "wall_regression_fraction": -0.012510425354462118,
+    "token_regression_fraction": 0.09456926867274529
+  },
+  "evidence": {
+    "baseline_gate": "reports/p2-world-pre-cutover-gate-20260926.json",
+    "value_probe": "reports/p2-world-value-probe-20260927.json",
+    "paired_benchmark": "reports/p2-world-paired-benchmark-20260926.json",
+    "shadow_smoke": "reports/p2-world-real-model-shadow-smoke-20260926.json"
+  },
+  "note": "Gate v2 incorporates one bounded Quality/Recovery probe. Safety/performance checks remain as recorded; no benchmark values or thresholds changed."
+}

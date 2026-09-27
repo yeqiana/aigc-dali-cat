@@ -208,6 +208,72 @@ def world_semantic_equivalence(task: dict, legacy: dict, shadow: dict) -> dict:
     }
 
 
+VISUAL_SCOPES = (
+    "visual.narrative_core",
+    "visual.shot_progression",
+    "visual.capture_grammar",
+)
+
+
+def visual_semantic_obligations(task: dict) -> dict:
+    """Return the Visual Narrative contract frozen by the Host capsule."""
+    capsule = ((task.get("input_contract") or {}).get("visual_narrative_capsule") or {})
+    return {
+        "snapshot_id": task.get("snapshot_id"),
+        "capsule_sha256": capsule.get("capsule_sha256"),
+        "required_scope": list(task.get("authority_scope") or ()),
+        "scopes": (capsule.get("obligations") or {}).get("scopes") or {},
+        "source_sha256": capsule.get("source_sha256") or {},
+    }
+
+
+def compare_visual_narrative_semantics(task: dict, candidate: dict) -> dict:
+    """Check required Visual scopes and preserve frozen Story/shot obligations."""
+    obligations = visual_semantic_obligations(task)
+    errors: list[str] = []
+    required = list(task.get("authority_scope") or ())
+    if required != list(VISUAL_SCOPES):
+        errors.append("VISUAL_NARRATIVE_PREPARE authority scope differs from the canonical task contract")
+    if set(obligations["scopes"]) != set(required):
+        errors.append("frozen Visual obligations do not cover every required scope")
+    payload = candidate.get("payload") if isinstance(candidate, dict) else None
+    payload = payload if isinstance(payload, dict) else {}
+    for scope in required:
+        expected = obligations["scopes"].get(scope)
+        actual = payload.get(scope)
+        if not isinstance(expected, dict) or not expected:
+            errors.append(f"frozen Visual obligation missing: {scope}")
+            continue
+        if not isinstance(actual, dict) or not actual:
+            errors.append(f"candidate scope missing applicable content: {scope}")
+            continue
+        if "frozen_contract" in actual:
+            if actual.get("frozen_contract") != expected:
+                errors.append(f"{scope}.frozen_contract differs from frozen authority")
+            if not isinstance(actual.get("proposal"), dict) or not actual.get("proposal"):
+                errors.append(f"{scope}.proposal must be a non-empty object")
+        else:
+            # Legacy control may return its established payload shape directly.
+            errors.extend(_preserves_frozen(expected, actual, scope))
+    return {
+        "pass": not errors,
+        "errors": errors,
+        "obligations": obligations,
+        "mode": "deterministic_frozen_visual_obligations",
+    }
+
+
+def visual_semantic_equivalence(task: dict, legacy: dict, shadow: dict) -> dict:
+    legacy_result = compare_visual_narrative_semantics(task, legacy)
+    shadow_result = compare_visual_narrative_semantics(task, shadow)
+    return {
+        "semantic_equivalent": bool(legacy_result["pass"] and shadow_result["pass"]),
+        "legacy": legacy_result,
+        "shadow": shadow_result,
+        "mode": "both_candidates_satisfy_same_frozen_visual_obligations",
+    }
+
+
 def compare_preimage_candidates(task: dict, legacy: dict, shadow: dict) -> dict:
     legacy_errors = preimage_task_contract.verify_candidate(legacy or {}, task)
     shadow_errors = preimage_task_contract.verify_candidate(shadow or {}, task)
@@ -226,6 +292,8 @@ def compare_preimage_candidates(task: dict, legacy: dict, shadow: dict) -> dict:
         semantic = character_semantic_equivalence(task, legacy, shadow)
     elif task.get("task_type") == "WORLD_PREPARE" and not legacy_errors and not shadow_errors:
         semantic = world_semantic_equivalence(task, legacy, shadow)
+    elif task.get("task_type") == "VISUAL_NARRATIVE_PREPARE" and not legacy_errors and not shadow_errors:
+        semantic = visual_semantic_equivalence(task, legacy, shadow)
     return {
         "schema_version": 1,
         "task_id": task.get("task_id"),

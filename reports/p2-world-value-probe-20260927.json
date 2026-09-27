@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "p2_world_value_probe",
+  "generated_at": "2026-09-27T02:57:47.280925+00:00",
+  "baseline_evidence": {
+    "shadow_smoke": "reports/p2-world-real-model-shadow-smoke-20260926.json",
+    "paired_benchmark": "reports/p2-world-paired-benchmark-20260926.json",
+    "pre_cutover_gate": "reports/p2-world-pre-cutover-gate-20260926.json",
+    "original_evidence_immutable": true,
+    "attempted_pairs": 6,
+    "valid_pairs": 5,
+    "telemetry_complete": true,
+    "semantic_equivalent": true,
+    "authority_zero_regression": true,
+    "safety_checks": {
+      "minimum_valid_runs": true,
+      "telemetry_complete": true,
+      "all_valid_runs_semantic_equivalent": true,
+      "no_failure_timeout": true,
+      "authority_zero_regression": true,
+      "fixed_provider_model": true,
+      "wall_regression_within_5pct": true,
+      "token_regression_within_10pct": true
+    }
+  },
+  "quality": {
+    "basis": "same deterministic World verifier and frozen semantic comparator; all 6 already-produced pairs, no model rerun",
+    "legacy_quality_errors": 1,
+    "agent_quality_errors": 0,
+    "legacy_quality_warnings": 0,
+    "agent_quality_warnings": 0,
+    "paired_candidate_count": 6,
+    "stable_agent_advantage": false,
+    "quality_value_evidence": false,
+    "reason": "Agent had zero errors in all 6 stored results; Legacy had one temporal-continuity violation in one attempted pair. The isolated Legacy failure is not a stable paired quality improvement."
+  },
+  "recovery": {
+    "same_fault_comparison_available": false,
+    "agent_specific_recovery_advantage_observed": false,
+    "model_reexecution_count": null,
+    "duplicate_candidate_mutation": null,
+    "manual_recovery_required": null,
+    "resume_success": null,
+    "duplicate_dispatch_rejected": null,
+    "recovery_wall_seconds": null,
+    "recovery_value_evidence": false,
+    "reason": "Existing recovery evidence exercises shared AgentRuntime/P0 infrastructure; no matched Legacy-vs-Agent fault-injection evidence shows an adapter-specific benefit."
+  },
+  "measurable_value_evidence": false,
+  "final_decision": "WORLD_PRODUCTION_NO_GO",
+  "blockers": [
+    "NO_MEASURABLE_AGENT_VALUE"
+  ],
+  "flags_preserved": {
+    "shadow_enabled": true,
+    "production_enabled": false
+  },
+  "note": "Bounded Quality and Recovery probe only. Speed and token conclusions are carried forward unchanged; original reports were not modified."
+}

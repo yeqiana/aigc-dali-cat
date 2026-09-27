@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StoryOS Visual Narrative Agent payload",
+  "type": "object",
+  "required": [
+    "visual.narrative_core",
+    "visual.shot_progression",
+    "visual.capture_grammar"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "visual.narrative_core": {
+      "type": "object",
+      "required": ["proposal"],
+      "additionalProperties": false,
+      "properties": {
+        "proposal": {
+          "type": "object",
+          "required": ["summary", "anchors"],
+          "additionalProperties": false,
+          "properties": {
+            "summary": { "type": "string" },
+            "anchors": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "visual.shot_progression": {
+      "type": "object",
+      "required": ["proposal"],
+      "additionalProperties": false,
+      "properties": {
+        "proposal": {
+          "type": "object",
+          "required": ["summary", "anchors"],
+          "additionalProperties": false,
+          "properties": {
+            "summary": { "type": "string" },
+            "anchors": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "visual.capture_grammar": {
+      "type": "object",
+      "required": ["proposal"],
+      "additionalProperties": false,
+      "properties": {
+        "proposal": {
+          "type": "object",
+          "required": ["summary", "anchors"],
+          "additionalProperties": false,
+          "properties": {
+            "summary": { "type": "string" },
+            "anchors": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    }
+  }
+}
