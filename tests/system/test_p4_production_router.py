@@ -131,6 +131,26 @@ class P4ProductionRouterTests(unittest.TestCase):
         self.assertEqual(result["dispatch"][0]["node_id"], "p4-owner-check")
         self.assertTrue(runtime_router.capability_router_config()["shadow_enabled"])
 
+    def test_dispatch_consumer_gate_is_derived_from_actual_execution_path(self):
+        audit = impl.audit_dispatch_consumer()
+        self.assertFalse(audit["consumer_present"])
+        self.assertTrue(audit["checks"]["advisory_target_producer_present"])
+        self.assertTrue(audit["checks"]["runtime_dag_uses_runtime_scheduler"])
+        self.assertFalse(audit["checks"]["runtime_dag_consumes_effective_target"])
+        self.assertFalse(audit["checks"]["executor_accepts_effective_target"])
+        self.assertIn("runtime_dag_consumes_effective_target", audit["missing_handoffs"])
+        self.assertTrue(any(row["path"].endswith("/codex_critic_runner.py")
+                            for row in audit["source_files"].values()))
+
+    def test_implementation_gate_keeps_real_dispatch_consumer_blocker(self):
+        gate = impl.build_implementation_gate(regression={
+            "focused_pass": True, "broad_pass": True,
+        })
+        self.assertFalse(gate["mandatory_checks"]["adapter_dispatch_consumer_present"])
+        self.assertIn("adapter_dispatch_consumer_present", gate["blockers"])
+        self.assertEqual(gate["p4_status"], "CUTOVER_IMPLEMENTATION_BLOCKED")
+        self.assertFalse(gate["production_enabled"])
+
     def test_canary_dry_run_never_dispatches(self):
         result = impl.production_canary_dry_run()
         self.assertGreaterEqual(result["case_count"], 10)
