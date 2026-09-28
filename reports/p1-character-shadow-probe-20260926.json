@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "p1_character_finalize_shadow_probe_result",
+  "generated_at": "2026-09-26T12:58:26+08:00",
+  "source_episode": "episodes/独立篇/01_五环外的浓雾",
+  "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+  "candidate_path": ".storyos/tmp/p1-character-shadow-candidate.json",
+  "candidate_sha256": "c95b2da4133f8a8062636a6183e7d735b757ba4bcb831bad51f6b5d8739610b4",
+  "verifier_errors": [],
+  "comparison": {
+    "schema_version": 1,
+    "task_id": "preimage-character_finalize-f51a1adbb917",
+    "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+    "comparison_mode": "deterministic_first",
+    "legacy_valid": true,
+    "shadow_valid": true,
+    "legacy_errors": [],
+    "shadow_errors": [],
+    "required_scope_coverage": {
+      "legacy": [
+        "character.finalize"
+      ],
+      "shadow": [
+        "character.finalize"
+      ],
+      "required": [
+        "character.finalize"
+      ]
+    },
+    "payload_sha256": {
+      "legacy": "2bbbf67bc96bd15897c2bcae3f38c19c029d5a86c1caffbdb1d05b7533b11ac2",
+      "shadow": "696b32e73fa8593adb3e0bf92137cb49bfd44219bb158624867b4556f5ad1087"
+    },
+    "structural_equal": false,
+    "domain_semantic": {
+      "semantic_equivalent": true,
+      "legacy": {
+        "pass": true,
+        "errors": [],
+        "obligations": {
+          "cast_ids": [
+            "P01",
+            "P02",
+            "P03"
+          ],
+          "names": {
+            "P01": "玄奘",
+            "P02": "悟空",
+            "P03": "八戒"
+          },
+          "appearance_anchors": {
+            "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+            "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+            "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+          },
+          "pov_character_id": "P01",
+          "pov_person": "first_person"
+        },
+        "mode": "deterministic_frozen_character_obligations"
+      },
+      "shadow": {
+        "pass": true,
+        "errors": [],
+        "obligations": {
+          "cast_ids": [
+            "P01",
+            "P02",
+            "P03"
+          ],
+          "names": {
+            "P01": "玄奘",
+            "P02": "悟空",
+            "P03": "八戒"
+          },
+          "appearance_anchors": {
+            "P01": "86版经典唐僧造型语言：朱红/大红袈裟、杏黄/米黄僧衣、红金僧帽/毗卢帽、念珠；清瘦克制；不复制演员真人脸。",
+            "P02": "86版经典孙悟空造型语言：金色紧箍、黄褐/金棕战衣、红色系束带、虎皮纹腰裙/护胯、深色绑腿靴；允许经典角色化妆轮廓，不复制演员真人脸。",
+            "P03": "86版经典猪八戒造型语言：黑色软帽/僧帽、青灰/灰蓝宽松长衫、深色腰带与布靴；允许经典角色化妆轮廓，不复制演员真人脸。"
+          },
+          "pov_character_id": "P01",
+          "pov_person": "first_person"
+        },
+        "mode": "deterministic_frozen_character_obligations"
+      },
+      "mode": "both_candidates_satisfy_same_frozen_character_obligations"
+    },
+    "needs_semantic_review": false,
+    "canonical_side_effect": false
+  },
+  "source_authority_unchanged": true,
+  "source_fingerprint_after_validation": {
+    "episode_state": "STORYBOARD_LOCKED",
+    "story_gates_sha256": "5d047934586aefbe9e6327562863b7be8d9b0afb26bc4b29e1e94ef746b4697e",
+    "character_contract_sha256": "b2aaa1c82b79c606037b29b67207a7feb4a9cd4e08479bbd098a66d3ce5aa190",
+    "character_visual_contract_sha256": "788c69dd6395436d121f16a628fda04d5ac6b3cf37ba3b2cf236496129c8947a"
+  },
+  "production_cutover_allowed": false,
+  "note": "This probe measures real-authority shadow compatibility only. It is not a production cutover and does not mutate Episode authority."
+}

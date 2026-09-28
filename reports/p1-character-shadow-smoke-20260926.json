@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "p1_character_finalize_shadow_enabled_smoke",
+  "shadow_config_enabled": true,
+  "canonical_request_count": 4,
+  "shadow_request_count": 1,
+  "current_pointer_is_shadow": false,
+  "shadow_wrote_legacy_candidate_before_legacy": false,
+  "authority_sha_before": "3c5f026a2c8fd2c487d32a17bd330fd02e6f99e68245a2eb27d087d0238acd46",
+  "authority_sha_after": "3c5f026a2c8fd2c487d32a17bd330fd02e6f99e68245a2eb27d087d0238acd46",
+  "authority_unchanged": true,
+  "shadow_execution_status": "SHADOW_COMPLETED",
+  "shadow_execution_eligible": false,
+  "comparison": {
+    "structural_equal": true,
+    "needs_semantic_review": false,
+    "canonical_side_effect": false
+  },
+  "canonical_preimage_metrics": {
+    "snapshot_id": "d3c5d21cd4488079123c2c2f038f8aa5173c1a175b67e39d60febf558a710cdd",
+    "authority_snapshot_id": "d3c5d21cd4488079123c2c2f038f8aa5173c1a175b67e39d60febf558a710cdd",
+    "snapshot_scope": "current_authority_snapshot",
+    "requested": 4,
+    "started": 1,
+    "finished": 1,
+    "inflight_now": 0,
+    "peak_observed_concurrency": 1,
+    "unmeasured_requests": 3,
+    "measurement": "host_execution_intervals_only"
+  },
+  "shadow_metrics": {
+    "schema_version": 1,
+    "kind": "character_finalize_agent_shadow_metrics",
+    "requested": 1,
+    "started": 1,
+    "finalized": 1,
+    "failed": 0,
+    "compared": 1,
+    "structural_equal": 1,
+    "needs_semantic_review": 0,
+    "median_wall_seconds": 0.020264,
+    "min_wall_seconds": 0.020264,
+    "max_wall_seconds": 0.020264,
+    "canonical_side_effect": false,
+    "included_in_preimage_concurrency_metric": false
+  },
+  "protocol_shadow_wall_seconds": 0.03971,
+  "not_production_model_latency": true
+}

@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "p1_preimage_production_legacy_baseline",
+  "generated_at": "2026-09-26T12:49:03+08:00",
+  "source_episode": "episodes/独立篇/01_五环外的浓雾",
+  "source_store": "mysql_host_request_persistence",
+  "real_host_execution_intervals": true,
+  "task_count": 4,
+  "tasks": [
+    {
+      "task_type": "CHARACTER_FINALIZE",
+      "request_id": "preimage-fc9958af09157a45",
+      "worker_id": "webcodex-86style-1",
+      "started_at": "2026-09-25T23:05:32.629455+08:00",
+      "finished_at": "2026-09-25T23:05:32.828283+08:00",
+      "wall_seconds": 0.198828,
+      "status": "FINALIZED",
+      "model_execution": {},
+      "token_evidence_complete": false,
+      "repeated_read_evidence_present": false,
+      "timeout_evidence_present": false,
+      "failure_evidence_present": false
+    },
+    {
+      "task_type": "ENVIRONMENT_PREPARE",
+      "request_id": "preimage-14423e1dac178230",
+      "worker_id": "webcodex-86style-2",
+      "started_at": "2026-09-25T23:05:34.062131+08:00",
+      "finished_at": "2026-09-25T23:05:34.269567+08:00",
+      "wall_seconds": 0.207436,
+      "status": "FINALIZED",
+      "model_execution": {},
+      "token_evidence_complete": false,
+      "repeated_read_evidence_present": false,
+      "timeout_evidence_present": false,
+      "failure_evidence_present": false
+    },
+    {
+      "task_type": "VISUAL_NARRATIVE_PREPARE",
+      "request_id": "preimage-b14e2c1cac51b1c8",
+      "worker_id": "webcodex-86style-4",
+      "started_at": "2026-09-25T23:05:36.784448+08:00",
+      "finished_at": "2026-09-25T23:05:36.981378+08:00",
+      "wall_seconds": 0.19693,
+      "status": "FINALIZED",
+      "model_execution": {},
+      "token_evidence_complete": false,
+      "repeated_read_evidence_present": false,
+      "timeout_evidence_present": false,
+      "failure_evidence_present": false
+    },
+    {
+      "task_type": "WORLD_PREPARE",
+      "request_id": "preimage-ca79660bb06bfb0a",
+      "worker_id": "webcodex-86style-3",
+      "started_at": "2026-09-25T23:05:35.421954+08:00",
+      "finished_at": "2026-09-25T23:05:35.626962+08:00",
+      "wall_seconds": 0.205008,
+      "status": "FINALIZED",
+      "model_execution": {},
+      "token_evidence_complete": false,
+      "repeated_read_evidence_present": false,
+      "timeout_evidence_present": false,
+      "failure_evidence_present": false
+    }
+  ],
+  "parallel_wall_seconds": 4.351923,
+  "resource_seconds": 0.808202,
+  "serial_equivalent_seconds": 0.808202,
+  "observed_parallel_speedup": 0.1857,
+  "all_pass": true,
+  "token_evidence_complete": false,
+  "repeated_read_evidence_complete": false,
+  "timeout_evidence_complete": false,
+  "failure_evidence_complete": false,
+  "note": "Host request handshakes are retained as execution facts. Model wall/token/read/failure/timeout evidence is never inferred. This audit is fail-closed for P1 cutover.",
+  "audited_at": "2026-09-26T13:02:23+08:00",
+  "host_action_span_evidence": {
+    "CHARACTER_FINALIZE": {
+      "named_span": "HOST_ACTION_PREIMAGE_CHARACTER_FINALIZE",
+      "host_action_span_seconds": 53.659,
+      "host_handshake_seconds": 0.198828,
+      "handshake_to_span_ratio": 0.003705398907918523
+    },
+    "ENVIRONMENT_PREPARE": {
+      "named_span": "HOST_ACTION_PREIMAGE_ENVIRONMENT_PREPARE",
+      "host_action_span_seconds": 54.628,
+      "host_handshake_seconds": 0.207436,
+      "handshake_to_span_ratio": 0.0037972468331258697
+    },
+    "VISUAL_NARRATIVE_PREPARE": {
+      "named_span": "HOST_ACTION_PREIMAGE_VISUAL_NARRATIVE_PREPARE",
+      "host_action_span_seconds": 56.595,
+      "host_handshake_seconds": 0.19693,
+      "handshake_to_span_ratio": 0.0034796360102482553
+    },
+    "WORLD_PREPARE": {
+      "named_span": "HOST_ACTION_PREIMAGE_WORLD_PREPARE",
+      "host_action_span_seconds": 55.618,
+      "host_handshake_seconds": 0.205008,
+      "handshake_to_span_ratio": 0.003686000934949117
+    }
+  },
+  "model_wall_trusted": false,
+  "performance_baseline_eligible": false,
+  "measurement_warning": "Legacy start-preimage handshakes occurred near finalize and cover only a small fraction of HOST_ACTION spans; handshake wall must not be used as model wall."
+}

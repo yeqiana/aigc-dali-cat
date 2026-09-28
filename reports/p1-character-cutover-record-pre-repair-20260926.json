@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "p1_character_production_cutover_record",
+  "status": "PRODUCTION_ENABLED",
+  "checks": {
+    "cutover_gate_ready": true,
+    "paired_benchmark_pass": true,
+    "paired_authority_zero_regression": true,
+    "production_enabled": true,
+    "shadow_disabled": true,
+    "production_smoke_pass": true,
+    "receipt_committed": true,
+    "legacy_fallback_not_used": true
+  },
+  "evidence": {
+    "cutover_gate": "reports/p1-character-cutover-gate-20260926.json",
+    "paired_benchmark": "reports/p1-character-paired-benchmark-20260926.json",
+    "production_smoke": "reports/p1-character-production-cutover-smoke-20260926.json"
+  },
+  "rollback": {
+    "production_enabled": false,
+    "shadow_enabled": true,
+    "legacy_fallback_preserved": true
+  },
+  "production_cutover_performed": true
+}
