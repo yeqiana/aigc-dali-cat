@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_real_smoke_candidates",
+  "generated_at": "2026-09-28T06:46:13.552498+00:00",
+  "read_only": true,
+  "model_invoked": false,
+  "canonical_review_invoked": false,
+  "episode_files_modified": false,
+  "authority_modified": false,
+  "production_ledger_modified": false,
+  "image_generation_invoked": false,
+  "candidate_count": 5,
+  "eligible_count": 0,
+  "candidates": [
+    {
+      "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+      "canonical_review_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": true,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "ValueError: frame 15 has no reviewable production asset: status='NEEDS_USER'"
+      ]
+    },
+    {
+      "episode": "episodes/10_山难伪纪录片/01_鳌太线_热汤",
+      "canonical_review_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": true,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "ValueError: frame 01 approved.path missing: episodes/10_山难伪纪录片/01_鳌太线_热汤/media/approved/01.png"
+      ]
+    },
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
+      "canonical_review_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 20,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "frame 01 generation frame_contract_sha256 stale",
+        "frame 02 generation frame_contract_sha256 stale",
+        "frame 03 generation frame_contract_sha256 stale",
+        "frame 04 generation frame_contract_sha256 stale",
+        "frame 05 generation frame_contract_sha256 stale",
+        "frame 06 generation frame_contract_sha256 stale",
+        "frame 07 generation frame_contract_sha256 stale",
+        "frame 08 generation frame_contract_sha256 stale",
+        "EXISTING_FINAL_SEMANTIC_REVIEW_NOT_PASS",
+        "CURRENT_REVIEWABLE_SET_DIFFERS_FROM_CANONICAL_REVIEW"
+      ]
+    },
+    {
+      "episode": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区",
+      "canonical_review_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": true,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "ValueError: frame 01 approved.path missing: episodes/10_彼此的天上/03_雾中的另一座生活区/media/approved/01.png"
+      ]
+    },
+    {
+      "episode": "episodes/误入桃花源",
+      "canonical_review_path": "episodes/误入桃花源/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 20,
+      "source_sha_bound": true,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "frame semantic summary is not PASS",
+        "frame semantic summary issue_codes not empty: ['STORY_BEAT_NOT_VISIBLE', 'KEY_PROP_DRIFT', 'CAPTION_DEPENDENCY', 'POV_ILLEGAL', 'GHOST_CAMERA', 'CAMERA_OWNER_UNRESOLVED', 'UNEXPLAINED_THIRD_PERSON', 'MOMENT_RESULT_ONLY', 'SHOT_GRAMMAR_REPEAT', 'FRAME_SCENE_MISMATCH', 'ANOMALY_UNREADABLE', 'ACTUAL_INFORMATION_GAIN_MISSING', 'NARRATIVE_REDUNDANCY', 'WEATHER_PHYSICS_MISMATCH', 'LIGHTING_DESIGN_MISMATCH', 'WARDROBE_DRIFT', 'SCREEN_CONTENT_PHYSICS_BROKEN', 'VISUAL_MEMORY_BROKEN', 'SHOT_SCALE_MISMATCH', 'WORLD_IDENTITY_DRIFT', 'CULTURAL_CONTEXT_DRIFT', 'IDENTITY_DRIFT', 'CHARACTER_APPEARANCE_DRIFT', 'UNPLANNED_RECORDER', 'ANOMALY_CONCEALMENT_MISSING', 'ANOMALY_SCALE_UNDERDELIVERED', 'SCALE_REFERENCE_MISSING', 'TEMPORAL_CONTRADICTION']",
+        "frame 01 checks.scene_storyboard_fidelity must be true",
+        "frame 01 checks.story_beat_fidelity must be true",
+        "frame 01 checks.key_prop_fidelity must be true",
+        "frame 01 checks.wardrobe_continuity must be true",
+        "frame 01 checks.caption_image_support must be true",
+        "frame 01 checks.narrative_evidence_gain must be true",
+        "EXISTING_FINAL_SEMANTIC_REVIEW_NOT_PASS"
+      ]
+    }
+  ]
+}

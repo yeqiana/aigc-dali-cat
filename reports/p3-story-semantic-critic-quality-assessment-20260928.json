@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "kind": "p3_story_semantic_critic_quality_assessment",
+  "generated_at": "2026-09-27T17:12:03+00:00",
+  "source_benchmark": {
+    "path": "reports/p3-story-semantic-critic-paired-benchmark-20260928.json",
+    "sha256": "42935e90cd91d2209b586b241163da3d8a5556853c2d3be87069b9ad47b2b65f"
+  },
+  "attempted_pairs": 5,
+  "valid_pairs": 5,
+  "sample_count": 5,
+  "real_episode_samples": 1,
+  "fixture_samples": 4,
+  "label_counts": {
+    "PASS": 3,
+    "FAIL": 2
+  },
+  "decision_disagreements": 3,
+  "false_accept_count": 0,
+  "false_reject_count": 2,
+  "issue_precision": null,
+  "issue_recall": null,
+  "repair_scope_precision": null,
+  "issue_metric_limitation": "Critic issue_codes have no controlled mapping to regression dimensions; no precision/recall is claimed.",
+  "false_accept_value": false,
+  "false_reject_value": false,
+  "repair_value": false,
+  "quality_value": false,
+  "quality_reason": "One real historical canonical review disagrees with Critic, and two passing fixtures are false-rejected. Fixture reference labels are not canonical Existing Review outputs, so no comparative quality improvement is established.",
+  "median_wall_seconds": 56.69,
+  "median_total_tokens": 48464,
+  "added_wall_seconds": 284.52,
+  "added_total_tokens": 247977,
+  "bounded_reflection": {
+    "max_review_attempts": 2,
+    "max_auto_repairs": 1,
+    "repairs_invoked": 0
+  },
+  "authority_zero_regression": true,
+  "telemetry_complete": true,
+  "request_evidence_complete": true,
+  "production_decision": "NO_GO",
+  "decision": "BENCHMARK_COMPLETE_VALUE_NOT_ESTABLISHED",
+  "image_generation_invoked": false,
+  "episode_transition": false,
+  "samples": [
+    {
+      "sample_id": "real-canonical-02_玻璃另一边的手",
+      "sample_type": "real_episode",
+      "reference_label": "PASS",
+      "reference_source": "historical_canonical_review_not_independent_ground_truth",
+      "critic_decision": "REPAIR",
+      "critic_issue_codes": [
+        "MIXED_MODE_MOTIF_CARRIER_GAP"
+      ],
+      "candidate_repair_scope": [
+        "Storyboard anomaly progression: mixed-mode Zayn motif recurrence across distinct carriers and added inference"
+      ],
+      "decision_equivalent": false,
+      "wall_seconds": 63.41,
+      "input_tokens": 53306,
+      "cached_input_tokens": 0,
+      "output_tokens": 855,
+      "reasoning_output_tokens": 737,
+      "total_tokens": 54161,
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "high",
+      "request_id": "story-semantic-critic-shadow-a1-b639729a2f3857d4",
+      "request_sha256": "23e1519ccea18fea2127fcbe28b25d465754a7d6a891cc2d7b9ac9e27e0152d2",
+      "candidate_sha256": "4032b0a5077f3070b4de09cf112725e5e6bae56ca9f02032eb45c6603cd3d701",
+      "checks": {
+        "source_sha_match": true,
+        "request_snapshot_sha_match": true,
+        "request_snapshot_has_shadow_scope": true,
+        "candidate_sha_match": true,
+        "candidate_schema_valid": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "no_authority_or_gate_mutation": true,
+        "no_repair_or_image": true,
+        "canonical_review_not_rerun": true
+      },
+      "pass": true
+    },
+    {
+      "sample_id": "fail_causal_order",
+      "sample_type": "fixture",
+      "reference_label": "FAIL",
+      "reference_source": "deterministic_regression_fixture",
+      "critic_decision": "REPAIR",
+      "critic_issue_codes": [
+        "ACTION_RESPONSE_ORDER_BROKEN",
+        "VISUAL_CAUSALITY_WEAK"
+      ],
+      "candidate_repair_scope": [
+        "Establish the boundary warning before Bo crosses the rope.",
+        "Make the trail disappearance or bell a direct, visible response to the crossing, with a consequence that forces action.",
+        "Resolve how the group responds to the rule and how they avoid repeating the effect."
+      ],
+      "decision_equivalent": true,
+      "wall_seconds": 55.39,
+      "input_tokens": 48046,
+      "cached_input_tokens": 0,
+      "output_tokens": 285,
+      "reasoning_output_tokens": 142,
+      "total_tokens": 48331,
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "high",
+      "request_id": "story-semantic-critic-shadow-a1-18b8554542198040",
+      "request_sha256": "77050fbbdc8959f7a05ef6e31305296c2435edd1169d6030659c9e542faa39ab",
+      "candidate_sha256": "a097ee5c2b6f2e27ef052c16b3183fd66d8de73c273b7eee0d579c8f7e3eac7c",
+      "checks": {
+        "source_sha_match": true,
+        "request_snapshot_sha_match": true,
+        "request_snapshot_has_shadow_scope": true,
+        "candidate_sha_match": true,
+        "candidate_schema_valid": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "no_authority_or_gate_mutation": true,
+        "no_repair_or_image": true,
+        "canonical_review_not_rerun": true
+      },
+      "pass": true
+    },
+    {
+      "sample_id": "fail_payoff",
+      "sample_type": "fixture",
+      "reference_label": "FAIL",
+      "reference_source": "deterministic_regression_fixture",
+      "critic_decision": "REPAIR",
+      "critic_issue_codes": [
+        "ANOMALY_MECHANISM_MISSING",
+        "ACTION_RESPONSE_CHAIN_WEAK",
+        "CLIMAX_PAYOFF_MISSING",
+        "ENDING_PAYOFF_MISSING"
+      ],
+      "candidate_repair_scope": [
+        "建立镜中车站异常的前置证据与统一机制",
+        "补出触发动作、异常直接回应及可见后果",
+        "让高潮兑现选择、代价或不可逆后果",
+        "为结尾补上事件结果并回扣至少三项前文事实"
+      ],
+      "decision_equivalent": true,
+      "wall_seconds": 56.69,
+      "input_tokens": 48055,
+      "cached_input_tokens": 0,
+      "output_tokens": 305,
+      "reasoning_output_tokens": 74,
+      "total_tokens": 48360,
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "high",
+      "request_id": "story-semantic-critic-shadow-a1-28a43ee1866d9cc8",
+      "request_sha256": "b153dedab2f62e015a3b8e23eeee1dbfb3ee59d62fb0ba6570bd566cb304c556",
+      "candidate_sha256": "43d8d2fa5e024397bcf70114cdfdfc65f48844807e1b120f5b5a1876f0672b5e",
+      "checks": {
+        "source_sha_match": true,
+        "request_snapshot_sha_match": true,
+        "request_snapshot_has_shadow_scope": true,
+        "candidate_sha_match": true,
+        "candidate_schema_valid": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "no_authority_or_gate_mutation": true,
+        "no_repair_or_image": true,
+        "canonical_review_not_rerun": true
+      },
+      "pass": true
+    },
+    {
+      "sample_id": "pass_anomaly",
+      "sample_type": "fixture",
+      "reference_label": "PASS",
+      "reference_source": "deterministic_regression_fixture",
+      "critic_decision": "REPAIR",
+      "critic_issue_codes": [
+        "MECHANISM_CONSISTENCY",
+        "ACTION_RESPONSE_CHAIN_WEAK"
+      ],
+      "candidate_repair_scope": [
+        "Clarify whether the bell responds to a person crossing the boundary or to any object crossing it; align storyboard 02–04 with that rule.",
+        "Make the bell’s response to An’s action and the friend’s return follow from the established mechanism."
+      ],
+      "decision_equivalent": false,
+      "wall_seconds": 59.92,
+      "input_tokens": 48086,
+      "cached_input_tokens": 0,
+      "output_tokens": 378,
+      "reasoning_output_tokens": 227,
+      "total_tokens": 48464,
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "high",
+      "request_id": "story-semantic-critic-shadow-a1-2e8cd57e96e06010",
+      "request_sha256": "a16948d749102a005c8b9550f796e212e3c60efdf0719681de311a691b42a8ba",
+      "candidate_sha256": "922406976b4d95272a61c9cf3d7a0b7a591f12b665740891323e638aa8ef54aa",
+      "checks": {
+        "source_sha_match": true,
+        "request_snapshot_sha_match": true,
+        "request_snapshot_has_shadow_scope": true,
+        "candidate_sha_match": true,
+        "candidate_schema_valid": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "no_authority_or_gate_mutation": true,
+        "no_repair_or_image": true,
+        "canonical_review_not_rerun": true
+      },
+      "pass": true
+    },
+    {
+      "sample_id": "pass_ordinary",
+      "sample_type": "fixture",
+      "reference_label": "PASS",
+      "reference_source": "deterministic_regression_fixture",
+      "critic_decision": "REPAIR",
+      "critic_issue_codes": [
+        "CAUSAL_CONTINUITY"
+      ],
+      "candidate_repair_scope": [
+        "Clarify whether Mei left the lunch card on the desk or placed it in the lost-property box."
+      ],
+      "decision_equivalent": false,
+      "wall_seconds": 49.11,
+      "input_tokens": 48158,
+      "cached_input_tokens": 0,
+      "output_tokens": 503,
+      "reasoning_output_tokens": 410,
+      "total_tokens": 48661,
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "high",
+      "request_id": "story-semantic-critic-shadow-a1-799ba82a799b64bf",
+      "request_sha256": "53fc5094205079a5984e935eecc42ceaa2d3dcaabb6c7d20ec13404fbf7bafd1",
+      "candidate_sha256": "1a49ec225443fce67ed05a7d60618b798279d77cf7e85c8138715bea1a39fca0",
+      "checks": {
+        "source_sha_match": true,
+        "request_snapshot_sha_match": true,
+        "request_snapshot_has_shadow_scope": true,
+        "candidate_sha_match": true,
+        "candidate_schema_valid": true,
+        "telemetry_complete": true,
+        "no_failure_timeout": true,
+        "no_authority_or_gate_mutation": true,
+        "no_repair_or_image": true,
+        "canonical_review_not_rerun": true
+      },
+      "pass": true
+    }
+  ]
+}
