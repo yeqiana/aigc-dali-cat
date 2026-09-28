@@ -1,0 +1,55 @@
+{
+  "fresh_evidence_count": 0,
+  "generated_at": "2026-09-28T12:37:03.487074+00:00",
+  "health_ttl_seconds": 300,
+  "immutable": true,
+  "kind": "p4_capability_router_health_audit",
+  "llm_probe_used": false,
+  "provider_count": 3,
+  "providers": [
+    {
+      "capability_evidence": "workspace_provider contract: model host-selected; reasoning not exposed; telemetry not exposed by transport",
+      "evidence_age_seconds": null,
+      "evidence_sha256": null,
+      "expires_at": null,
+      "fresh": false,
+      "llm_probe_used": false,
+      "model": "host-managed",
+      "observed_at": null,
+      "provider": "WORK",
+      "reason": "no reliable execution/availability evidence within 300-second TTL",
+      "source": "no fresh deterministic execution evidence",
+      "status": "UNKNOWN"
+    },
+    {
+      "capability_evidence": "codex_user_runner receipt/config: model and reasoning_effort=high declared",
+      "evidence_age_seconds": 6015.526,
+      "evidence_sha256": "e0100477d6d9dffc54dd7aae0350b22fec8d4968ca7de43d9f4be554d9c47ed9",
+      "expires_at": "2026-09-28T11:01:47.818899+00:00",
+      "fresh": false,
+      "llm_probe_used": false,
+      "model": "gpt-6-luna",
+      "observed_at": "2026-09-28T10:56:47.818899+00:00",
+      "provider": "codex_user_runner",
+      "reason": "no reliable execution/availability evidence within 300-second TTL",
+      "source": "reports\\p3-final-semantic-critic-real-shadow-smoke-retry2-20260928.json",
+      "status": "UNKNOWN"
+    },
+    {
+      "capability_evidence": "image.model configuration and subscription image producer; no generation health probe performed",
+      "evidence_age_seconds": null,
+      "evidence_sha256": null,
+      "expires_at": null,
+      "fresh": false,
+      "llm_probe_used": false,
+      "model": "gpt-image-2.5-flare",
+      "observed_at": null,
+      "provider": "codex_cli_subscription",
+      "reason": "no reliable execution/availability evidence within 300-second TTL",
+      "source": "no fresh deterministic execution evidence",
+      "status": "UNKNOWN"
+    }
+  ],
+  "schema_version": 1,
+  "unknown_count": 3
+}

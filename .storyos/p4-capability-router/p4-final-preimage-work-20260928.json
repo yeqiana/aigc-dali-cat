@@ -1,0 +1,102 @@
+{
+  "actual_dispatch_unchanged": true,
+  "comparison": {
+    "actual_dispatch": {
+      "model": null,
+      "provider": "WORK",
+      "runtime": "WORK"
+    },
+    "actual_dispatch_unchanged": true,
+    "capability_match": true,
+    "fallback_needed": false,
+    "health_match": true,
+    "legacy_model": null,
+    "legacy_provider": "WORK",
+    "legacy_runtime": "WORK",
+    "proposed_model": null,
+    "proposed_provider": "WORK",
+    "proposed_runtime": "WORK",
+    "reason": "preferred capability match",
+    "request_id": "p4-final-preimage-work-20260928",
+    "route_equivalent": true,
+    "would_select": {
+      "model": null,
+      "provider": "WORK"
+    }
+  },
+  "comparison_sha256": "f5268833ddfc2dfa082375425d7cee1179ea695300828e10226b18fdff8e6425",
+  "decision": {
+    "authority_writes": 0,
+    "candidate_count": 3,
+    "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+    "fallback_depth": 0,
+    "fallback_from": null,
+    "fallback_used": false,
+    "forbidden_capabilities_clear": true,
+    "health_evidence": {
+      "expires_at": "",
+      "model": "host-managed",
+      "observed_at": "",
+      "provider": "WORK",
+      "reason": "no unexpired health evidence",
+      "source": "none",
+      "status": "UNKNOWN",
+      "ttl_seconds": 300
+    },
+    "health_lookup_ms": 0.0628,
+    "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [
+      "schema_output"
+    ],
+    "matched_required_capabilities": [
+      "structured_output",
+      "text_input"
+    ],
+    "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+    "registry_lookup_ms": 0.0008,
+    "rejected_candidates": [],
+    "request_id": "p4-final-preimage-work-20260928",
+    "resolve_wall_ms": 0.2714,
+    "selected_model": null,
+    "selected_provider": "WORK",
+    "selected_runtime": "WORK",
+    "selection_reason": "preferred capability match",
+    "status": "ROUTE",
+    "task_type": "critic"
+  },
+  "decision_sha256": "25267fb1f19457f79a82d8b765050e20151b7a898855dae57990ea20766da6ec",
+  "kind": "p4_capability_router_shadow",
+  "request": {
+    "agent": "preimage-semantic-critic-shadow-critic",
+    "cost_class": "subscription",
+    "execution_domain": "P4_SHADOW_SMOKE:preimage-semantic-critic-shadow",
+    "fallback_allowed": true,
+    "forbidden_capabilities": [
+      "image_generation",
+      "write_tools"
+    ],
+    "latency_class": "interactive",
+    "multimodal_required": false,
+    "optional_capabilities": [
+      "schema_output",
+      "cached_input"
+    ],
+    "preferred_model": null,
+    "preferred_provider": "WORK",
+    "reasoning_requirement": null,
+    "request_id": "p4-final-preimage-work-20260928",
+    "required_capabilities": [
+      "text_input",
+      "structured_output"
+    ],
+    "stage": "P4_SHADOW_SMOKE",
+    "task_type": "critic",
+    "tools_allowed": false
+  },
+  "request_sha256": "68e35ed71e2f1b9300f94f6d407e83d3b4b0ca7335fb4327b7eb72ff8eda2a9d",
+  "schema_version": 1
+}

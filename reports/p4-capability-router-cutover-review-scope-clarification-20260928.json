@@ -1,0 +1,38 @@
+{
+  "actual_cutover_performed": false,
+  "clarifies_report": {
+    "path": "reports/p4-capability-router-cutover-review-20260928.json",
+    "sha256": "e1f415915c8665ff9c5f6e10c3dd5c26edc88ee19ecb7b047d9b72d69b5ff8d5"
+  },
+  "finding": {
+    "evidence_paths": [
+      "episodes/_system/capability_router.py",
+      "episodes/_system/runtime_router.py",
+      "config/storyos.yaml"
+    ],
+    "p4_config_key_present": false,
+    "production_dispatch_branch_implemented": false,
+    "production_flag_current_source": "episodes/_system/capability_router.py module constant PRODUCTION_ENABLED",
+    "review_interpretation": "The main report rollback_contract_pass=true means the future single-switch rollback design has been frozen; it does not assert the P4 production flag is currently config-backed or production dispatch is implemented.",
+    "runtime_router_facade": "runtime_router.capability_router_config returns module constants; it does not read a P4 YAML key"
+  },
+  "frozen_future_rollback_contract": {
+    "asset_regeneration_required": false,
+    "authority_state_created": false,
+    "database_migration_required": false,
+    "episode_reset_required": false,
+    "implementation_required_before_actual_cutover": true,
+    "rollback_effect": "Immediately select the unchanged legacy provider/model/runtime at the existing Scheduler dispatch boundary; discard advisory route output for actual dispatch.",
+    "rollback_value": false,
+    "single_config_key": "runtime.capability_router.production_enabled"
+  },
+  "generated_at": "2026-09-28T12:58:30+00:00",
+  "immutable": true,
+  "kind": "p4_capability_router_cutover_review_scope_clarification",
+  "p4_status_unchanged": "CUTOVER_APPROVED_AWAITING_USER_AUTHORIZATION",
+  "production_enabled": false,
+  "review_decision_unchanged": "APPROVED_WITH_CONDITIONS",
+  "schema_version": 1,
+  "shadow_enabled": true,
+  "user_authorization_required": true
+}

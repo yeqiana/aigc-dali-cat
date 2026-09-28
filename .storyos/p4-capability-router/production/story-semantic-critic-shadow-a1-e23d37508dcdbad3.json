@@ -1,0 +1,100 @@
+{
+  "actual_dispatch_changed": false,
+  "decision": {
+    "actual_dispatch_changed": false,
+    "authority_writes": 0,
+    "config_sha256": "e09a08cccefe6d6349ce0da2d87cc665eecd02de00b7bb5faaba8918ef4d06c9",
+    "effective_action": "FALLBACK",
+    "effective_route": {
+      "model": "fixture-model",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "fallback_used": true,
+    "forbidden_capabilities": [
+      "image_generation",
+      "write_tools"
+    ],
+    "health_evidence": {
+      "expires_at": "2026-09-28T13:45:21+00:00",
+      "model": "host-managed",
+      "observed_at": "2026-09-28T13:40:21+00:00",
+      "provider": "WORK",
+      "reason": "injected",
+      "source": "fixture",
+      "status": "UNAVAILABLE",
+      "ttl_seconds": 300
+    },
+    "health_observed_at": "2026-09-28T13:40:21+00:00",
+    "health_snapshot_sha256": "234d948d1eeab10d103882cf73317e660f6a5fc51d56a3e19c2b571f6213281a",
+    "health_status": "UNAVAILABLE",
+    "health_ttl_seconds": 300,
+    "legacy_route": {
+      "model": null,
+      "provider": "WORK",
+      "runtime": "WORK"
+    },
+    "llm_calls": 0,
+    "missing_legacy_capabilities": [],
+    "network_calls": 0,
+    "no_route": false,
+    "optional_capabilities": [
+      "cached_input",
+      "high_reasoning",
+      "schema_output"
+    ],
+    "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+    "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+    "production_enabled": true,
+    "reason": "legacy route is capability-invalid or UNAVAILABLE; selected fresh HEALTHY fallback",
+    "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+    "rejected_candidates": [],
+    "request_id": "story-semantic-critic-shadow-a1-e23d37508dcdbad3",
+    "required_capabilities": [
+      "structured_output",
+      "text_input"
+    ],
+    "resolve_wall_ms": 0.2928,
+    "router_proposal": {
+      "model": "fixture-model",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "supported_task": true,
+    "task_type": "story_semantic_critic",
+    "warning": null
+  },
+  "decision_sha256": "0206fb2aa1667249e2e897fd4cd0f6c1178415c07ba5d2cbf82a16ab34f09d46",
+  "kind": "p4_capability_router_production_decision",
+  "request": {
+    "agent": "story-semantic-critic-shadow-critic",
+    "cost_class": "subscription",
+    "execution_domain": "STORY:story-semantic-critic-shadow",
+    "fallback_allowed": true,
+    "forbidden_capabilities": [
+      "image_generation",
+      "write_tools"
+    ],
+    "latency_class": "interactive",
+    "multimodal_required": false,
+    "optional_capabilities": [
+      "schema_output",
+      "cached_input",
+      "high_reasoning"
+    ],
+    "preferred_model": null,
+    "preferred_provider": "WORK",
+    "reasoning_requirement": null,
+    "request_id": "story-semantic-critic-shadow-a1-e23d37508dcdbad3",
+    "required_capabilities": [
+      "text_input",
+      "structured_output"
+    ],
+    "stage": "STORY",
+    "task_type": "story_semantic_critic",
+    "tools_allowed": false
+  },
+  "request_sha256": "c4af123f7e58e373541987ff4c23ac705a2ec640bc33a1ecb6373b6a67ffee05",
+  "scheduler_dispatch_required": true,
+  "schema_version": 1
+}

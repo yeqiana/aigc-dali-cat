@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "p4_capability_router_authority_path_audit",
+  "generated_at": "2026-09-28",
+  "read_only": true,
+  "implementation_started": false,
+  "current_runtime_router": {
+    "path": "episodes/_system/runtime_router.py",
+    "role": "Global preferred/effective WORK|WEB|CODEX selection; explicit STORY_OS_RUNTIME override; WebCodex-health-to-Codex fallback; emits capability facts."
+  },
+  "task_to_provider_model_selection": {
+    "task_entry_mapping": "config/agent_runtime/router.json routes request intent to workflow entry steps; it does not choose per-task provider/model.",
+    "workflow_execution": "episodes/_system/runtime_dag.py owns DAG dispatch and invokes existing scheduler and adapters.",
+    "task_adapter_selection": "episodes/_system/product_runtime_adapter.py branches by task type and existing adapter flags; review/model settings are read from existing runtime config or task-specific producers.",
+    "finding": "No unified task-level capability-based provider/model router currently exists."
+  },
+  "capability_and_health_representation": {
+    "global_runtime_facts": "runtime_router.capabilities()",
+    "cached_episode_capabilities": "episodes/_system/runtime_capability_cache.py stores runtime capability evidence with configured TTL; not a new authority/state machine.",
+    "provider_profiles": "config/providers/index.json and episodes/_system/provider_capability.py describe image-provider capabilities and receipt constraints.",
+    "workspace_health": "workspace_provider/WebCodex availability evidence is consulted by runtime_router.",
+    "adapter_flags": "config/storyos.yaml agent_runtime.adapters contains per-adapter shadow/production/fallback flags."
+  },
+  "fallback_locations": [
+    "runtime_router.py: effective runtime may use Codex CLI if configured WebCodex provider is unavailable and Codex fallback is enabled; explicit runtime override takes precedence.",
+    "product_runtime_adapter.py: adapter-specific technical fallback flags preserve existing legacy paths.",
+    "image provider runtime: image API to Codex image execution fallback is separate from authoring/runtime task routing.",
+    "runtime_failure_strategy.py and runtime_dag.py: execution failure recovery/next action remains under existing DAG/runtime owner."
+  ],
+  "scheduler_owner": {
+    "path": "episodes/_system/runtime_dag.py",
+    "scheduler": "episodes/_system/runtime_scheduler.py",
+    "authority": "Runtime DAG remains the only workflow runnable owner; runtime_scheduler computes dependency/resource allocations and does not create a second runtime or commit authority. Image work remains delegated to image_scheduler."
+  },
+  "candidate_insertion_point": {
+    "location": "Extend existing runtime_router decision evidence and runtime_dag/product_runtime_adapter dispatch with a shadow-only task capability suggestion. Keep Runtime DAG as sole runnable owner; shadow proposal cannot replace selected executor or mutate episode/authority.",
+    "target_design_source": "Architecture document P4 Task Capability Router section and health TTL section."
+  },
+  "not_found": [
+    "No current task-level required/optional/forbidden capability router with dynamic health TTL and shadow-vs-legacy comparison was found.",
+    "No second router service/daemon/scheduler should be introduced."
+  ],
+  "source_files": [
+    {
+      "path": "episodes/_system/runtime_router.py",
+      "sha256": "7fca0df26922295c6567b06247095274d3eac0b94cca4b608189ced9e9e6efa4"
+    },
+    {
+      "path": "episodes/_system/runtime_dag.py",
+      "sha256": "fbf1b8d7e496125b3edae920c45fd4966ea64961838bcc75ff371d2a8522391a"
+    },
+    {
+      "path": "episodes/_system/runtime_scheduler.py",
+      "sha256": "89d80daf1f61a5e87d0dad892a90e787eea09d4b57458d6314292868ca5f879d"
+    },
+    {
+      "path": "episodes/_system/product_runtime_adapter.py",
+      "sha256": "0a919543ec2a8a35a2931d83c876873fa4ba55288cac5877660811d01c247f09"
+    },
+    {
+      "path": "episodes/_system/runtime_capability_cache.py",
+      "sha256": "c122afcefe628e2e711533e012441c9af423a17fcc391826a6bf91b46e31b18c"
+    },
+    {
+      "path": "episodes/_system/provider_capability.py",
+      "sha256": "14433a7c218e8e011f42ac8d66d36ddb95381d64a690b987aacef7030b16a4c7"
+    },
+    {
+      "path": "config/agent_runtime/router.json",
+      "sha256": "cc65538669bfd5a7559134a4e8a5f073e9d27f1b02b91f1f552d782e0a055d0b"
+    },
+    {
+      "path": "config/providers/index.json",
+      "sha256": "e89f9934fc49a8f5cf7f926b3adcf4a18fd2bb44d6aa4b3b54884ba61d17e33f"
+    },
+    {
+      "path": "config/storyos.yaml",
+      "sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a"
+    },
+    {
+      "path": "docs/architecture/Story_OS_多模式编排与子Agent改造最终实施测试验收方案_V1.1_20260926.md",
+      "sha256": "2fad81a4aa6343a1d6493f8b143506213242d9105d9890ab82702cb7ad1ece24"
+    }
+  ],
+  "p3_closure_report": {
+    "path": "reports/p3-critic-phase-closure-20260928.json",
+    "sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347"
+  },
+  "no_episode_modified": true,
+  "no_config_modified": true,
+  "image_generation_invoked": false,
+  "production_cutover_performed": false
+}

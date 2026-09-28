@@ -1,0 +1,22 @@
+{
+  "assertion": "DEGRADED for 300 seconds, source=injected_execution_telemetry, reason=429 Too Many Requests",
+  "canonical_429_observation": {
+    "expires_at": "2026-09-28T12:05:00+00:00",
+    "model": "gpt-6-luna",
+    "observed_at": "2026-09-28T12:00:00+00:00",
+    "provider": "codex_user_runner",
+    "reason": "429 Too Many Requests",
+    "source": "injected_execution_telemetry",
+    "status": "DEGRADED",
+    "ttl_seconds": 300
+  },
+  "clarifies": "reports/p4-capability-router-failure-injection-20260928.json",
+  "gate_effect": "no change; 429_degraded_pass is true and the individual 429 record satisfies the expected status and TTL",
+  "generated_at": "2026-09-28",
+  "immutable": true,
+  "issue": "summary field 429_health reflects the shared cache after later 5xx and timeout injections; use technical_failures[429] for the isolated 429 observation",
+  "kind": "p4_capability_router_failure_injection_clarification",
+  "original_report_sha256": "494b51e0f3eb41d44ce22df9901e6727ed4d1116b4cf1cf06e8ff54820afe8e7",
+  "pre_cutover_gate_sha256": "3b04fa2be3a59c13bf9a12587059f90e28573e368e9bd52861c436146d88ac4d",
+  "schema_version": 1
+}\n

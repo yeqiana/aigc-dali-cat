@@ -1,0 +1,802 @@
+{
+  "actual_dispatch_changed": false,
+  "authority_writes": 0,
+  "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+  "case_count": 8,
+  "cases": [
+    {
+      "actual_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "story_legacy_work",
+      "injected_health": {},
+      "legacy_route": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "outcome": "KEEP_LEGACY",
+      "reason": "Legacy WORK satisfies reviewed hard capabilities; UNKNOWN is non-triggering.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [
+          "high_reasoning"
+        ],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "story_legacy_work",
+        "required_capabilities": [
+          "text_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 0,
+        "fallback_from": null,
+        "fallback_used": false,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "",
+          "model": "host-managed",
+          "observed_at": "",
+          "provider": "WORK",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.0591,
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [],
+        "matched_required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0005,
+        "rejected_candidates": [],
+        "request_id": "story_legacy_work",
+        "resolve_wall_ms": 0.2061,
+        "selected_model": null,
+        "selected_provider": "WORK",
+        "selected_runtime": "WORK",
+        "selection_reason": "preferred capability match",
+        "status": "ROUTE",
+        "task_type": "critic"
+      },
+      "would_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "preimage_legacy_work",
+      "injected_health": {},
+      "legacy_route": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "outcome": "KEEP_LEGACY",
+      "reason": "PREIMAGE requires text and structured output only.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "preimage_legacy_work",
+        "required_capabilities": [
+          "text_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 0,
+        "fallback_from": null,
+        "fallback_used": false,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "",
+          "model": "host-managed",
+          "observed_at": "",
+          "provider": "WORK",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.0287,
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [],
+        "matched_required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0004,
+        "rejected_candidates": [],
+        "request_id": "preimage_legacy_work",
+        "resolve_wall_ms": 0.1261,
+        "selected_model": null,
+        "selected_provider": "WORK",
+        "selected_runtime": "WORK",
+        "selection_reason": "preferred capability match",
+        "status": "ROUTE",
+        "task_type": "critic"
+      },
+      "would_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "final_legacy_codex",
+      "injected_health": {},
+      "legacy_route": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "outcome": "KEEP_LEGACY",
+      "reason": "Final requires image input and structured output; Codex health remains UNKNOWN, so retain legacy.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [
+          "high_reasoning"
+        ],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": null,
+        "request_id": "final_legacy_codex",
+        "required_capabilities": [
+          "text_input",
+          "image_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 0,
+        "fallback_from": null,
+        "fallback_used": false,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "",
+          "model": "gpt-6-luna",
+          "observed_at": "",
+          "provider": "codex_user_runner",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.0227,
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [
+          "high_reasoning"
+        ],
+        "matched_required_capabilities": [
+          "image_input",
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0002,
+        "rejected_candidates": [],
+        "request_id": "final_legacy_codex",
+        "resolve_wall_ms": 0.1123,
+        "selected_model": "gpt-6-luna",
+        "selected_provider": "codex_user_runner",
+        "selected_runtime": "CODEX",
+        "selection_reason": "preferred capability match",
+        "status": "ROUTE",
+        "task_type": "critic"
+      },
+      "would_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "work_unknown",
+      "injected_health": {},
+      "legacy_route": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "outcome": "KEEP_LEGACY",
+      "reason": "UNKNOWN health does not trigger a provider switch.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [
+          "high_reasoning"
+        ],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "work_unknown",
+        "required_capabilities": [
+          "text_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 0,
+        "fallback_from": null,
+        "fallback_used": false,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "",
+          "model": "host-managed",
+          "observed_at": "",
+          "provider": "WORK",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.02,
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [],
+        "matched_required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0001,
+        "rejected_candidates": [],
+        "request_id": "work_unknown",
+        "resolve_wall_ms": 0.1063,
+        "selected_model": null,
+        "selected_provider": "WORK",
+        "selected_runtime": "WORK",
+        "selection_reason": "preferred capability match",
+        "status": "ROUTE",
+        "task_type": "critic"
+      },
+      "would_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "codex_unknown",
+      "injected_health": {},
+      "legacy_route": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "outcome": "KEEP_LEGACY",
+      "reason": "UNKNOWN health does not trigger a provider switch.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [
+          "high_reasoning"
+        ],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": null,
+        "request_id": "codex_unknown",
+        "required_capabilities": [
+          "text_input",
+          "image_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 0,
+        "fallback_from": null,
+        "fallback_used": false,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "",
+          "model": "gpt-6-luna",
+          "observed_at": "",
+          "provider": "codex_user_runner",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.0199,
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [
+          "high_reasoning"
+        ],
+        "matched_required_capabilities": [
+          "image_input",
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0002,
+        "rejected_candidates": [],
+        "request_id": "codex_unknown",
+        "resolve_wall_ms": 0.1027,
+        "selected_model": "gpt-6-luna",
+        "selected_provider": "codex_user_runner",
+        "selected_runtime": "CODEX",
+        "selection_reason": "preferred capability match",
+        "status": "ROUTE",
+        "task_type": "critic"
+      },
+      "would_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "429_degraded",
+      "injected_health": {
+        "WORK": "HEALTHY",
+        "codex_user_runner": "DEGRADED"
+      },
+      "legacy_route": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "outcome": "FALLBACK",
+      "reason": "Injected technical degradation with a capability-equivalent fresh HEALTHY WORK fallback.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": null,
+        "request_id": "429_degraded",
+        "required_capabilities": [
+          "text_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 2,
+        "fallback_from": "codex_user_runner",
+        "fallback_used": true,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "2026-09-28T13:01:13+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:56:13+00:00",
+          "provider": "WORK",
+          "reason": "cutover review frozen fixture",
+          "source": "p4_cutover_dry_run_fixture",
+          "status": "HEALTHY",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.0277,
+        "health_snapshot_sha256": "b373493e78cf64ce2af544dcf3bf2c315fb496e16f51431d848f661a41dc9589",
+        "health_status": "HEALTHY",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [],
+        "matched_required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0002,
+        "rejected_candidates": [
+          {
+            "health_status": "DEGRADED",
+            "model": "gpt-6-luna",
+            "provider": "codex_user_runner",
+            "reasons": [
+              "provider_unhealthy"
+            ]
+          },
+          {
+            "missing": [
+              "structured_output",
+              "text_input"
+            ],
+            "model": "gpt-image-2.5-flare",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability"
+            ]
+          }
+        ],
+        "request_id": "429_degraded",
+        "resolve_wall_ms": 0.1515,
+        "selected_model": null,
+        "selected_provider": "WORK",
+        "selected_runtime": "WORK",
+        "selection_reason": "bounded capability-safe fallback",
+        "status": "ROUTE",
+        "task_type": "text_generation"
+      },
+      "would_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "provider_unavailable",
+      "injected_health": {
+        "WORK": "UNAVAILABLE",
+        "codex_user_runner": "HEALTHY"
+      },
+      "legacy_route": {
+        "model": null,
+        "provider": "WORK",
+        "runtime": "WORK"
+      },
+      "outcome": "FALLBACK",
+      "reason": "Injected unavailable legacy provider with a fresh HEALTHY capability match.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "provider_unavailable",
+        "required_capabilities": [
+          "text_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 2,
+        "fallback_from": "WORK",
+        "fallback_used": true,
+        "forbidden_capabilities_clear": true,
+        "health_evidence": {
+          "expires_at": "2026-09-28T13:01:13+00:00",
+          "model": "gpt-6-luna",
+          "observed_at": "2026-09-28T12:56:13+00:00",
+          "provider": "codex_user_runner",
+          "reason": "cutover review frozen fixture",
+          "source": "p4_cutover_dry_run_fixture",
+          "status": "HEALTHY",
+          "ttl_seconds": 300
+        },
+        "health_lookup_ms": 0.0241,
+        "health_snapshot_sha256": "1a25f12fa3d7cff6ad72c647bacb1f5fb6c700e39a173207fb419bf99c3e774b",
+        "health_status": "HEALTHY",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [],
+        "matched_required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0002,
+        "rejected_candidates": [
+          {
+            "health_status": "UNAVAILABLE",
+            "model": null,
+            "provider": "WORK",
+            "reasons": [
+              "provider_unhealthy"
+            ]
+          },
+          {
+            "missing": [
+              "structured_output",
+              "text_input"
+            ],
+            "model": "gpt-image-2.5-flare",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability"
+            ]
+          }
+        ],
+        "request_id": "provider_unavailable",
+        "resolve_wall_ms": 0.1293,
+        "selected_model": "gpt-6-luna",
+        "selected_provider": "codex_user_runner",
+        "selected_runtime": "CODEX",
+        "selection_reason": "bounded capability-safe fallback",
+        "status": "ROUTE",
+        "task_type": "text_generation"
+      },
+      "would_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      }
+    },
+    {
+      "actual_dispatch": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "actual_dispatch_changed": false,
+      "case_id": "no_route",
+      "injected_health": {
+        "WORK": "UNAVAILABLE",
+        "codex_cli_subscription": "UNAVAILABLE",
+        "codex_user_runner": "UNAVAILABLE"
+      },
+      "legacy_route": {
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "runtime": "CODEX"
+      },
+      "outcome": "NO_ROUTE",
+      "reason": "All candidates either lack required image input or are unavailable/forbidden.",
+      "request": {
+        "agent": "cutover-review",
+        "cost_class": "subscription",
+        "execution_domain": "P4 cutover dry-run",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "interactive",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": null,
+        "request_id": "no_route",
+        "required_capabilities": [
+          "text_input",
+          "image_input",
+          "structured_output"
+        ],
+        "stage": "critic",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "router_decision": {
+        "authority_writes": 0,
+        "candidate_count": 3,
+        "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+        "capability_registry_version": "p4-capability-registry-v1",
+        "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+        "fallback_depth": 3,
+        "fallback_from": null,
+        "fallback_used": false,
+        "forbidden_capabilities_clear": false,
+        "health_evidence": null,
+        "health_lookup_ms": 0.0225,
+        "health_snapshot_sha256": "4e1f5862eaf45fdb58efd8a4661b4182a2d75f75bbb6e627956fe14dc50029da",
+        "health_status": "UNKNOWN",
+        "llm_calls": 0,
+        "matched_optional_capabilities": [],
+        "matched_required_capabilities": [],
+        "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+        "registry_lookup_ms": 0.0002,
+        "rejected_candidates": [
+          {
+            "health_status": "UNAVAILABLE",
+            "model": "gpt-6-luna",
+            "provider": "codex_user_runner",
+            "reasons": [
+              "provider_unhealthy"
+            ]
+          },
+          {
+            "missing": [
+              "image_input"
+            ],
+            "model": null,
+            "provider": "WORK",
+            "reasons": [
+              "missing_required_capability"
+            ]
+          },
+          {
+            "missing": [
+              "image_input",
+              "structured_output",
+              "text_input"
+            ],
+            "model": "gpt-image-2.5-flare",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability"
+            ]
+          }
+        ],
+        "request_id": "no_route",
+        "resolve_wall_ms": 0.1304,
+        "selected_model": null,
+        "selected_provider": null,
+        "selected_runtime": null,
+        "selection_reason": "no eligible candidate",
+        "status": "NO_ROUTE",
+        "task_type": "critic"
+      },
+      "would_dispatch": null
+    }
+  ],
+  "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+  "degraded_fallback": 1,
+  "dispatch_invoked": false,
+  "generated_at": "2026-09-28T12:56:13+00:00",
+  "health_ttl_seconds": 300,
+  "immutable": true,
+  "kind": "p4_capability_router_cutover_dry_run",
+  "llm_calls": 0,
+  "mode": "production decision dry-run only",
+  "policy_sha256": "3b74e9a63318aa10bc8c18d1e5478673f63879ff0b22e561222a89183419ee13",
+  "production_enabled": false,
+  "schema_version": 1,
+  "shadow_enabled": true,
+  "unavailable_fallback": 1,
+  "unknown_keeps_legacy": 2,
+  "would_fallback": 2,
+  "would_keep_legacy": 5,
+  "would_no_route": 1
+}

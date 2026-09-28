@@ -1,0 +1,302 @@
+{
+  "429_degraded_pass": true,
+  "429_health": {
+    "expires_at": "2026-09-28T12:05:00+00:00",
+    "model": "gpt-6-luna",
+    "observed_at": "2026-09-28T12:00:00+00:00",
+    "provider": "codex_user_runner",
+    "reason": "runner timeout",
+    "source": "injected_execution_telemetry",
+    "status": "DEGRADED",
+    "ttl_seconds": 300
+  },
+  "authority_writes": 0,
+  "case_count": 9,
+  "cycle_decision": {
+    "authority_writes": 0,
+    "candidate_count": 8,
+    "capability_registry_sha256": "338dcac487987795c017bd5a42df2cc34e88268c2bd7ee4991f6efdf688319b9",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+    "fallback_depth": 1,
+    "fallback_from": null,
+    "fallback_used": false,
+    "forbidden_capabilities_clear": false,
+    "health_evidence": null,
+    "health_lookup_ms": 0.0167,
+    "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [],
+    "matched_required_capabilities": [],
+    "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+    "registry_lookup_ms": 0.0002,
+    "rejected_candidates": [
+      {
+        "missing": [
+          "text_input"
+        ],
+        "model": "duplicate",
+        "provider": "WORK",
+        "reasons": [
+          "missing_required_capability"
+        ]
+      }
+    ],
+    "request_id": "injected-cycle",
+    "resolve_wall_ms": 0.161,
+    "selected_model": null,
+    "selected_provider": null,
+    "selected_runtime": null,
+    "selection_reason": "no eligible candidate",
+    "status": "NO_ROUTE",
+    "task_type": "text_generation"
+  },
+  "cycle_protection_pass": true,
+  "expired_health": {
+    "expires_at": "2026-09-28T12:05:00+00:00",
+    "model": "host-managed",
+    "observed_at": "2026-09-28T12:00:00+00:00",
+    "provider": "WORK",
+    "reason": "health evidence expired",
+    "source": "injected_execution_telemetry",
+    "status": "UNKNOWN",
+    "ttl_seconds": 300
+  },
+  "fallback_decision": {
+    "authority_writes": 0,
+    "candidate_count": 3,
+    "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+    "fallback_depth": 2,
+    "fallback_from": "codex_user_runner",
+    "fallback_used": true,
+    "forbidden_capabilities_clear": true,
+    "health_evidence": {
+      "expires_at": "",
+      "model": "host-managed",
+      "observed_at": "",
+      "provider": "WORK",
+      "reason": "no unexpired health evidence",
+      "source": "none",
+      "status": "UNKNOWN",
+      "ttl_seconds": 300
+    },
+    "health_lookup_ms": 0.0469,
+    "health_snapshot_sha256": "6f796c42b3d767f52ee85f95adf216d5a62ecce0f65b42392224fe1c7462c3bb",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [],
+    "matched_required_capabilities": [
+      "text_input"
+    ],
+    "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+    "registry_lookup_ms": 0.0003,
+    "rejected_candidates": [
+      {
+        "health_status": "DEGRADED",
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "reasons": [
+          "provider_unhealthy"
+        ]
+      },
+      {
+        "missing": [
+          "text_input"
+        ],
+        "model": "gpt-image-2.5-flare",
+        "provider": "codex_cli_subscription",
+        "reasons": [
+          "missing_required_capability"
+        ]
+      }
+    ],
+    "request_id": "injected-degraded-fallback",
+    "resolve_wall_ms": 0.2074,
+    "selected_model": null,
+    "selected_provider": "WORK",
+    "selected_runtime": "WORK",
+    "selection_reason": "bounded capability-safe fallback",
+    "status": "ROUTE",
+    "task_type": "text_generation"
+  },
+  "fallback_pass": true,
+  "generated_at": "2026-09-28T12:37:03.487074+00:00",
+  "immutable": true,
+  "kind": "p4_capability_router_failure_injection",
+  "llm_calls": 0,
+  "no_route_decision": {
+    "authority_writes": 0,
+    "candidate_count": 3,
+    "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+    "fallback_depth": 3,
+    "fallback_from": null,
+    "fallback_used": false,
+    "forbidden_capabilities_clear": false,
+    "health_evidence": null,
+    "health_lookup_ms": 0.0233,
+    "health_snapshot_sha256": "86c772582d13d5431e2d9a3a237726514f9b4e633075553b10e8997954d6f5ed",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [],
+    "matched_required_capabilities": [],
+    "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+    "registry_lookup_ms": 0.0001,
+    "rejected_candidates": [
+      {
+        "health_status": "UNAVAILABLE",
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "reasons": [
+          "provider_unhealthy"
+        ]
+      },
+      {
+        "missing": [
+          "high_reasoning",
+          "image_input"
+        ],
+        "model": null,
+        "provider": "WORK",
+        "reasons": [
+          "missing_required_capability"
+        ]
+      },
+      {
+        "missing": [
+          "high_reasoning",
+          "image_input",
+          "structured_output",
+          "text_input"
+        ],
+        "model": "gpt-image-2.5-flare",
+        "provider": "codex_cli_subscription",
+        "reasons": [
+          "missing_required_capability"
+        ]
+      }
+    ],
+    "request_id": "injected-no-route-final",
+    "resolve_wall_ms": 0.1347,
+    "selected_model": null,
+    "selected_provider": null,
+    "selected_runtime": null,
+    "selection_reason": "no eligible candidate",
+    "status": "NO_ROUTE",
+    "task_type": "multimodal_review"
+  },
+  "no_route_pass": true,
+  "provider_unavailable_decision": {
+    "authority_writes": 0,
+    "candidate_count": 3,
+    "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+    "fallback_depth": 2,
+    "fallback_from": "WORK",
+    "fallback_used": true,
+    "forbidden_capabilities_clear": true,
+    "health_evidence": {
+      "expires_at": "",
+      "model": "gpt-6-luna",
+      "observed_at": "",
+      "provider": "codex_user_runner",
+      "reason": "no unexpired health evidence",
+      "source": "none",
+      "status": "UNKNOWN",
+      "ttl_seconds": 300
+    },
+    "health_lookup_ms": 0.0261,
+    "health_snapshot_sha256": "db83fbaa3bdebaaf2657fa11f9a5e1f1a3dea95ec8f8fee0029998adb294c802",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [],
+    "matched_required_capabilities": [
+      "text_input"
+    ],
+    "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+    "registry_lookup_ms": 0.0002,
+    "rejected_candidates": [
+      {
+        "health_status": "UNAVAILABLE",
+        "model": null,
+        "provider": "WORK",
+        "reasons": [
+          "provider_unhealthy"
+        ]
+      },
+      {
+        "missing": [
+          "text_input"
+        ],
+        "model": "gpt-image-2.5-flare",
+        "provider": "codex_cli_subscription",
+        "reasons": [
+          "missing_required_capability"
+        ]
+      }
+    ],
+    "request_id": "injected-unavailable",
+    "resolve_wall_ms": 0.1491,
+    "selected_model": "gpt-6-luna",
+    "selected_provider": "codex_user_runner",
+    "selected_runtime": "CODEX",
+    "selection_reason": "bounded capability-safe fallback",
+    "status": "ROUTE",
+    "task_type": "text_generation"
+  },
+  "provider_unavailable_pass": true,
+  "recovery": {
+    "health_snapshot_sha_after": "38067325ae27c75788a999c1f9046711ec6b0f60ed23c45a71dcae4001268fa4",
+    "health_snapshot_sha_before": "6f796c42b3d767f52ee85f95adf216d5a62ecce0f65b42392224fe1c7462c3bb",
+    "record": {
+      "expires_at": "2026-09-28T12:05:10+00:00",
+      "model": "gpt-6-luna",
+      "observed_at": "2026-09-28T12:00:10+00:00",
+      "provider": "codex_user_runner",
+      "reason": "injected retry success",
+      "source": "injected_execution_telemetry",
+      "status": "HEALTHY",
+      "ttl_seconds": 300
+    }
+  },
+  "schema_version": 1,
+  "success_recovery_pass": true,
+  "technical_failures": {
+    "429": {
+      "expires_at": "2026-09-28T12:05:00+00:00",
+      "model": "gpt-6-luna",
+      "observed_at": "2026-09-28T12:00:00+00:00",
+      "provider": "codex_user_runner",
+      "reason": "429 Too Many Requests",
+      "source": "injected_execution_telemetry",
+      "status": "DEGRADED",
+      "ttl_seconds": 300
+    },
+    "5xx": {
+      "expires_at": "2026-09-28T12:05:00+00:00",
+      "model": "gpt-6-luna",
+      "observed_at": "2026-09-28T12:00:00+00:00",
+      "provider": "codex_user_runner",
+      "reason": "503 upstream failure",
+      "source": "injected_execution_telemetry",
+      "status": "DEGRADED",
+      "ttl_seconds": 300
+    },
+    "timeout": {
+      "expires_at": "2026-09-28T12:05:00+00:00",
+      "model": "gpt-6-luna",
+      "observed_at": "2026-09-28T12:00:00+00:00",
+      "provider": "codex_user_runner",
+      "reason": "runner timeout",
+      "source": "injected_execution_telemetry",
+      "status": "DEGRADED",
+      "ttl_seconds": 300
+    }
+  },
+  "ttl_expiry_pass": true
+}

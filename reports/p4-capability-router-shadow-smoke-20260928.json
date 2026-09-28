@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "kind": "p4_capability_router_shadow_smoke",
+  "generated_at": "2026-09-28",
+  "immutable": true,
+  "router_mode": "SHADOW",
+  "production_enabled": false,
+  "smoke_status": "PASS",
+  "supported_task_types": [
+    "critic",
+    "text_generation",
+    "multimodal_review"
+  ],
+  "provider_count": 3,
+  "model_count": 3,
+  "capability_registry_sha": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+  "policy_sha": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+  "config_sha": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+  "health_ttl_seconds": 300,
+  "live_health": {
+    "status": "UNKNOWN",
+    "evidence": "no fresh runner receipt or runtime health record was present; deterministic TTL fixtures passed"
+  },
+  "fixture_count": 8,
+  "fixture_matrix": {
+    "A_text_structured_to_text_capable_provider": "PASS",
+    "B_final_multimodal_to_image_input_provider": "PASS",
+    "C_missing_required_capability_rejected": "PASS",
+    "D_forbidden_capability_rejected": "PASS",
+    "E_unhealthy_preference_falls_back": "PASS",
+    "F_expired_health_becomes_unknown": "PASS",
+    "G_all_candidates_unavailable_no_route": "PASS",
+    "H_fallback_cycle_bounded": "PASS"
+  },
+  "shadow_route_count": 3,
+  "route_equivalent_count": 2,
+  "route_divergence_count": 1,
+  "fallback_cases": 1,
+  "no_route_cases": 0,
+  "shadow_routes": [
+    {
+      "request_id": "p4-final-final-codex-20260928",
+      "legacy_provider": "codex_user_runner",
+      "proposed_provider": "codex_user_runner",
+      "route_equivalent": true,
+      "fallback_used": false,
+      "evidence_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\.storyos\\p4-capability-router\\p4-final-final-codex-20260928.json",
+      "request_sha256": "cd2e3b20a520981634569ccc85c0883777ca7666618904a52d8f3684a9a39381",
+      "decision_sha256": "aceaf1b58d1abb1c111d1188b8a058338547d59660390f0c753db907e92890f0",
+      "comparison_sha256": "6c1aaaf963a0b943afae40ded730856531e502d1b701beac94c9efb6be762897",
+      "evidence_sha256": "3b239bef7c417e4c3e6600752a504e103cd054e581e0caa84107c6f8152f0e11"
+    },
+    {
+      "request_id": "p4-final-preimage-work-20260928",
+      "legacy_provider": "WORK",
+      "proposed_provider": "WORK",
+      "route_equivalent": true,
+      "fallback_used": false,
+      "evidence_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\.storyos\\p4-capability-router\\p4-final-preimage-work-20260928.json",
+      "request_sha256": "68e35ed71e2f1b9300f94f6d407e83d3b4b0ca7335fb4327b7eb72ff8eda2a9d",
+      "decision_sha256": "25267fb1f19457f79a82d8b765050e20151b7a898855dae57990ea20766da6ec",
+      "comparison_sha256": "f5268833ddfc2dfa082375425d7cee1179ea695300828e10226b18fdff8e6425",
+      "evidence_sha256": "c767d40e6d3c714252877c17534676f8b7e450fc6d17247fe23ff507045ff1f5"
+    },
+    {
+      "request_id": "p4-final-story-work-20260928",
+      "legacy_provider": "WORK",
+      "proposed_provider": "codex_user_runner",
+      "route_equivalent": false,
+      "fallback_used": true,
+      "evidence_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\.storyos\\p4-capability-router\\p4-final-story-work-20260928.json",
+      "request_sha256": "fd777d59a1f99e643604d6fe468a621cfe5865095e47c00e4fe4dc01efe25bca",
+      "decision_sha256": "8903069e516eed4e9f51bc64b46aa15fb07e3393fb20fbba19862d66ff22b7b1",
+      "comparison_sha256": "771504c7605bdcdc450cff412dfac6db9489210cd0c02ccd37aa646830d1b657",
+      "evidence_sha256": "be38c189a44e04eedd18b5036797fa63406f128db263f0a5ea3190d9bee2b2c5"
+    }
+  ],
+  "resolve_median_ms": 0.0953,
+  "resolve_max_ms": 0.2018,
+  "llm_calls": 0,
+  "authority_writes": 0,
+  "actual_legacy_dispatch_unchanged": true,
+  "image_generation_invoked": false,
+  "episode_state_modified": false,
+  "ready_for_cutover_review": false
+}

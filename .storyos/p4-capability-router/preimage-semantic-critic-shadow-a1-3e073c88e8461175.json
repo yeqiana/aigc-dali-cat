@@ -1,0 +1,102 @@
+{
+  "actual_dispatch_unchanged": true,
+  "comparison": {
+    "actual_dispatch": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "actual_dispatch_unchanged": true,
+    "capability_match": true,
+    "fallback_needed": false,
+    "health_match": true,
+    "legacy_model": "gpt-6-luna",
+    "legacy_provider": "codex_user_runner",
+    "legacy_runtime": "CODEX",
+    "proposed_model": "gpt-6-luna",
+    "proposed_provider": "codex_user_runner",
+    "proposed_runtime": "CODEX",
+    "reason": "preferred capability match",
+    "request_id": "preimage-semantic-critic-shadow-a1-3e073c88e8461175",
+    "route_equivalent": true,
+    "would_select": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner"
+    }
+  },
+  "comparison_sha256": "9650432570ebbc590de913918f93491a4ffc7898cec9c65f566b0687113d41cc",
+  "decision": {
+    "authority_writes": 0,
+    "candidate_count": 3,
+    "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "e09a08cccefe6d6349ce0da2d87cc665eecd02de00b7bb5faaba8918ef4d06c9",
+    "fallback_depth": 0,
+    "fallback_from": null,
+    "fallback_used": false,
+    "forbidden_capabilities_clear": true,
+    "health_evidence": {
+      "expires_at": "",
+      "model": "gpt-6-luna",
+      "observed_at": "",
+      "provider": "codex_user_runner",
+      "reason": "no unexpired health evidence",
+      "source": "none",
+      "status": "UNKNOWN",
+      "ttl_seconds": 300
+    },
+    "health_lookup_ms": 0.0603,
+    "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [
+      "schema_output"
+    ],
+    "matched_required_capabilities": [
+      "structured_output",
+      "text_input"
+    ],
+    "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+    "registry_lookup_ms": 5.3712,
+    "rejected_candidates": [],
+    "request_id": "preimage-semantic-critic-shadow-a1-3e073c88e8461175",
+    "resolve_wall_ms": 5.7059,
+    "selected_model": "gpt-6-luna",
+    "selected_provider": "codex_user_runner",
+    "selected_runtime": "CODEX",
+    "selection_reason": "preferred capability match",
+    "status": "ROUTE",
+    "task_type": "preimage_semantic_critic"
+  },
+  "decision_sha256": "2c191a744019a982c758c1600a1b66421208b1e777c4c72970eb786c27db859f",
+  "kind": "p4_capability_router_shadow",
+  "request": {
+    "agent": "preimage-semantic-critic-shadow-critic",
+    "cost_class": "subscription",
+    "execution_domain": "preimage-semantic-critic-shadow:preimage-semantic-critic-shadow",
+    "fallback_allowed": true,
+    "forbidden_capabilities": [
+      "image_generation",
+      "write_tools"
+    ],
+    "latency_class": "interactive",
+    "multimodal_required": false,
+    "optional_capabilities": [
+      "schema_output",
+      "cached_input"
+    ],
+    "preferred_model": "gpt-6-luna",
+    "preferred_provider": "codex_user_runner",
+    "reasoning_requirement": null,
+    "request_id": "preimage-semantic-critic-shadow-a1-3e073c88e8461175",
+    "required_capabilities": [
+      "text_input",
+      "structured_output"
+    ],
+    "stage": "preimage-semantic-critic-shadow",
+    "task_type": "preimage_semantic_critic",
+    "tools_allowed": false
+  },
+  "request_sha256": "a7255869cfb41ec63492108788a7fb81794f63f0ede89f0b0357fe9401ffdee8",
+  "schema_version": 1
+}

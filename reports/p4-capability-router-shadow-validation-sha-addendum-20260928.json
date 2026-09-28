@@ -1,0 +1,19 @@
+{
+  "gate_input_sha256": {
+    "failure_injection_sha256": "39f2a44a277dd65121add9e71b7a0f36e6fb514b78c3f50b603370b5616275ed",
+    "health_audit_sha256": "f06378cd522fdbf67fc96fe344967d3e81203bb2b31b8be06adfffeb8388ceeb",
+    "implementation_report_sha256": "a8e9cb4f07406aa5f58b34cca82bdeff177950dc8526679981ef41f62cce753d",
+    "p3_closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "paired_comparison_sha256": "fb79ae1cdd78c61044bcbabf1078158e05b71c9d1d0c267d4825fda6e2604534",
+    "performance_sha256": "a6ecd3f1cb9bef9fb2ae18a27176645a9ffb88e4b1e2e3913fe384583ae16216",
+    "regression_sha256": "44009dda75d8ca79aa629b33a1c009e72defb6dc871219a79e29405e2ebfdd29",
+    "shadow_smoke_report_sha256": "432db8395e98ae5857b024932f5491ec7048490afc4297cfce5d9df7d2b7802e"
+  },
+  "generated_at": "2026-09-28",
+  "immutable": true,
+  "kind": "p4_capability_router_validation_sha_addendum",
+  "pre_cutover_gate_sha256": "3b04fa2be3a59c13bf9a12587059f90e28573e368e9bd52861c436146d88ac4d",
+  "schema_version": 1,
+  "supplements": "reports/p4-capability-router-shadow-validation-20260928.json",
+  "validation_report_sha256": "2973023d6a07fee3d427c6e31b42d85cdf805eff1d96a987b6f9c8d7c269efb5"
+}\n

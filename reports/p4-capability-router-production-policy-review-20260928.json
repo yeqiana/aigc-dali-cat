@@ -1,0 +1,103 @@
+{
+  "cutover_scope": [
+    "story_semantic_critic",
+    "preimage_semantic_critic",
+    "final_semantic_critic"
+  ],
+  "degraded_behavior": "Use a capability-equivalent fresh HEALTHY fallback when present; otherwise preserve the current route decision and hand technical recovery to existing runtime_failure_strategy/Runtime DAG. Router does not retry.",
+  "excluded_scope": [
+    "image_generation",
+    "character",
+    "world",
+    "visual_production",
+    "release",
+    "delivery"
+  ],
+  "fallback_behavior": {
+    "bounded": true,
+    "cycle_protection": "visited provider/model/runtime set; no revisits",
+    "deterministic": true,
+    "max_depth": 3,
+    "requires_capability_equivalence": true,
+    "requires_fresh_healthy_target": true
+  },
+  "final_policy_review": {
+    "evidence": "Final Critic requires frozen visual attachments and schema output; adapter uses configured model/reasoning selectors without an explicit high-only assertion.",
+    "high_reasoning_required": false,
+    "required_capabilities": [
+      "text_input",
+      "image_input",
+      "structured_output"
+    ]
+  },
+  "generated_at": "2026-09-28T12:56:13+00:00",
+  "immutable": true,
+  "implementation_alignment_note": "This report freezes the future production contract. The current shadow request mapper still records high_reasoning for Story/Final shadow comparison; production remains disabled. Any later enabling change must reconcile that shadow-only mapping with this reviewed task policy before dispatch.",
+  "kind": "p4_capability_router_production_policy_review",
+  "mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+  "no_route_behavior": "Fail closed; no random provider, no capability relaxation, no dispatch/retry in Router; return the decision to Runtime Scheduler / existing failure strategy.",
+  "preimage_policy_review": {
+    "evidence": "PREIMAGE adapter reads configured model/reasoning effort as execution selectors; request contract does not impose image input or high reasoning.",
+    "high_reasoning_required": false,
+    "image_input_required": false,
+    "required_capabilities": [
+      "text_input",
+      "structured_output"
+    ]
+  },
+  "production_enabled": false,
+  "router_dispatch_rights": false,
+  "scheduler_owner": {
+    "dispatch_owner": "Runtime Scheduler via existing DAG/adapter path",
+    "scheduler_calculation": "episodes/_system/runtime_scheduler.py",
+    "workflow_runnable_owner": "episodes/_system/runtime_dag.py"
+  },
+  "schema_version": 1,
+  "shadow_enabled": true,
+  "story_divergence_resolution": {
+    "classification": "LEGACY_ROUTE_UNDER_SPECIFIED",
+    "evidence": [
+      {
+        "finding": "WORK is configured; no model or reasoning effort is declared.",
+        "source": "config/storyos.yaml runtime.review.text"
+      },
+      {
+        "finding": "host-managed=true; model usage telemetry is not exposed by workspace transport.",
+        "source": "workspace_provider.py WebCodex contract"
+      },
+      {
+        "finding": "deterministic capability selection and capability-safe fallback; no high_reasoning mandate for Story Critic.",
+        "source": "architecture P4 routing_policy"
+      },
+      {
+        "finding": "reads active model/reasoning_effort and requires them to be present, but does not require the value high.",
+        "source": "story_semantic_critic_adapter.execute_shadow_request"
+      },
+      {
+        "finding": "Codex shadow execution used high; this is execution evidence for that run, not a normative WORK capability contract.",
+        "source": "P3 Story benchmark report"
+      }
+    ],
+    "legacy_provider": "WORK",
+    "optional_capabilities": [
+      "high_reasoning"
+    ],
+    "production_behavior": "Keep WORK when required text/structured capabilities are satisfied and health is not UNAVAILABLE; no switch solely because effective health is UNKNOWN. If WORK is actually unavailable, use only fresh HEALTHY valid fallback, otherwise NO_ROUTE.",
+    "proposed_provider_in_shadow": "codex_user_runner",
+    "required_capabilities_for_production": [
+      "text_input",
+      "structured_output"
+    ],
+    "work_high_reasoning_proven": false
+  },
+  "story_high_reasoning_classification": "BENCHMARK_EXECUTION_CHOICE_NOT_HARD_REQUIREMENT",
+  "story_high_reasoning_required": false,
+  "supported_task_types": [
+    "story_semantic_critic",
+    "preimage_semantic_critic",
+    "final_semantic_critic"
+  ],
+  "unavailable_behavior": "Select only a capability-valid fresh HEALTHY fallback; otherwise NO_ROUTE.",
+  "unknown_health_behavior": "Keep the legacy route when its hard capabilities are satisfied; do not treat UNKNOWN as unavailable. If legacy is capability-invalid and no fresh HEALTHY valid fallback exists, return NO_ROUTE to Runtime Scheduler policy.",
+  "wildcard_task_types": false
+}

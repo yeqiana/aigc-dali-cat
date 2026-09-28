@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "kind": "p4_preimplementation_regression_triage",
+  "generated_at": "2026-09-28",
+  "immutable": true,
+  "implementation_started": false,
+  "requested_test_path": "tests/system/test_v261_product_runtime_first.py",
+  "requested_test_path_exists": false,
+  "executed_test_path": "episodes/_system/test_v261_product_runtime_first.py",
+  "execution_command": "python -X utf8 episodes/_system/test_v261_product_runtime_first.py",
+  "baseline": {
+    "tests_run": 40,
+    "passed": 32,
+    "failed_assertions": 6,
+    "errors": 2,
+    "failed_total": 8,
+    "head": "d57b5ba2971de7368f1146ee5403af48f4a83cfc",
+    "tracked_diff_before_triage": "empty",
+    "origin_divergence": "0/0"
+  },
+  "root_cause_summary": [
+    "Seven failures/errors came from non-isolated temporary fixtures: they wrote JSON files under episodes/_tests but the active episode_meta_store/runtime review persistence uses configured MySQL authority, so production readers correctly did not see those file-only fixtures.",
+    "One runtime expectation depended on host availability: with WebCodex host evidence absent and a Codex CLI installed, HEAD applies the existing deterministic CODEX fallback, while the test assumed WORK without mocking the host environment."
+  ],
+  "p3_commit_relation": {
+    "p3_closure_status": "ENGINEERING_EVALUATION_COMPLETE",
+    "p3_closure_modified": false,
+    "p3_touched_runtime_router": false,
+    "p3_touched_runtime_scheduler": false,
+    "p3_touched_runtime_dag": false,
+    "p3_touched_product_runtime_adapter": true,
+    "failure_paths_changed_by_p3": false,
+    "related_prior_changes": [
+      {
+        "commit": "f27910ba",
+        "date": "2026-09-17",
+        "area": "episode metadata persistence migrated to MySQL/Redis repositories"
+      },
+      {
+        "commit": "120f8133",
+        "date": "2026-09-26",
+        "area": "WORK/WebCodex unavailable fallback to configured Codex CLI"
+      }
+    ]
+  },
+  "failures": [
+    {
+      "name": "test_default_runtime_is_work",
+      "assertion": "runtime == WORK",
+      "actual": "CODEX",
+      "expected": "WORK",
+      "involved_modules": ["runtime_router.py", "workspace_provider.py", "storage_config-independent host detection"],
+      "head_behavior_matches_code": true,
+      "category": "ENVIRONMENT_DEPENDENT",
+      "cause": "The test did not isolate WebCodex availability or Codex CLI presence. Commit 120f8133 enables deterministic CODEX fallback when the configured WebCodex workspace is unavailable and Codex CLI is installed.",
+      "p3_related": false
+    },
+    {
+      "name": "test_legacy_visual_review_work_branch_never_calls_codex",
+      "assertion": "request_path(..., attempt=1).is_file() is true",
+      "actual": false,
+      "expected": true,
+      "involved_modules": ["visual_review_legacy.py", "product_review_adapter.py", "runtime_review_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "The test asserted a local JSON file while the configured episode-meta persistence backend is MySQL; the fixture did not select JSON test mode or query the persistence facade.",
+      "p3_related": false
+    },
+    {
+      "name": "test_pending_story_review_outranks_stale_preimage_handoff",
+      "assertion": "derived[action] == PRODUCT_REVIEW",
+      "actual": "REPAIR_STATE",
+      "expected": "PRODUCT_REVIEW",
+      "involved_modules": ["next_action.py", "product_runtime_adapter.py", "episode_state_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "The fixture wrote episode-state.json directly, but active episode metadata authority is MySQL and no corresponding temporary Episode row was seeded.",
+      "p3_related": false
+    },
+    {
+      "name": "test_preimage_verify_host_request_reconciles_from_valid_handoff",
+      "assertion": "reconciled['status'] == FINALIZED",
+      "actual": "TypeError because reconciled is None",
+      "expected": "FINALIZED request",
+      "involved_modules": ["product_runtime_adapter.py", "host_request_persistence.py", "episode_state_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "The fixture wrote current/history request JSON directly while the active request/metadata persistence path reads MySQL-backed state; the temporary fixture was not isolated to JSON compatibility mode.",
+      "p3_related": false
+    },
+    {
+      "name": "test_second_attempt_guard_resolves_legacy_alias_only",
+      "assertion": "attempt-1 request file can be renamed to legacy alias",
+      "actual": "FileNotFoundError for attempt-1 JSON path",
+      "expected": "file rename succeeds",
+      "involved_modules": ["product_review_adapter.py", "runtime_review_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "Review persistence is MySQL-backed under the active config, so prepare() does not materialize the attempt request file expected by this file-manipulation fixture.",
+      "p3_related": false
+    },
+    {
+      "name": "test_redundant_story_review_residue_is_suppressed_and_reported",
+      "assertion": "len(residue) == 1",
+      "actual": 0,
+      "expected": 1,
+      "involved_modules": ["next_action.py", "product_review_adapter.py", "runtime_review_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "The test manually wrote request residue files, but the active MySQL review persistence reader enumerates repository records rather than these unregistered temporary JSON files.",
+      "p3_related": false
+    },
+    {
+      "name": "test_stale_frame_contract_index_routes_to_deterministic_recompile",
+      "assertion": "(step, target) == (PREIMAGE_FRAME_CONTRACT_COMPILE, null)",
+      "actual": "(READ_EPISODE_STATE, null)",
+      "expected": "(PREIMAGE_FRAME_CONTRACT_COMPILE, null)",
+      "involved_modules": ["product_runtime_adapter.py", "episode_state_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "next_host_step reads episode stage from the configured MySQL metadata authority, but this fixture only created a local JSON stage file.",
+      "p3_related": false
+    },
+    {
+      "name": "test_stale_preimage_committed_snapshot_routes_back_to_task_set",
+      "assertion": "(step, target) == (PREIMAGE_TASK_SET, null)",
+      "actual": "(READ_EPISODE_STATE, null)",
+      "expected": "(PREIMAGE_TASK_SET, null)",
+      "involved_modules": ["product_runtime_adapter.py", "episode_state_persistence.py"],
+      "head_behavior_matches_code": true,
+      "category": "TEST_FIXTURE_ISOLATION_BUG",
+      "cause": "next_host_step did not observe the fixture's local STORYBOARD_LOCKED file because the active Episode stage authority is MySQL.",
+      "p3_related": false
+    }
+  ],
+  "production_regressions_found": 0,
+  "authority_writes_performed": 0,
+  "episode_state_modified": false,
+  "runtime_evidence_deleted": false
+}

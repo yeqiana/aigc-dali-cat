@@ -1,0 +1,106 @@
+{
+  "actual_dispatch_unchanged": true,
+  "comparison": {
+    "actual_dispatch": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "actual_dispatch_unchanged": true,
+    "capability_match": true,
+    "fallback_needed": false,
+    "health_match": true,
+    "legacy_model": "gpt-6-luna",
+    "legacy_provider": "codex_user_runner",
+    "legacy_runtime": "CODEX",
+    "proposed_model": "gpt-6-luna",
+    "proposed_provider": "codex_user_runner",
+    "proposed_runtime": "CODEX",
+    "reason": "preferred capability match",
+    "request_id": "p4-smoke-final-codex-20260928",
+    "route_equivalent": true,
+    "would_select": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner"
+    }
+  },
+  "comparison_sha256": "b0744120e6534c8093a0deccdca4e0b15a6e2eee152ed6b181d0f8003014d4db",
+  "decision": {
+    "authority_writes": 0,
+    "candidate_count": 3,
+    "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+    "capability_registry_version": "p4-capability-registry-v1",
+    "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+    "fallback_depth": 0,
+    "fallback_from": null,
+    "fallback_used": false,
+    "forbidden_capabilities_clear": true,
+    "health_evidence": {
+      "expires_at": "",
+      "model": "gpt-6-luna",
+      "observed_at": "",
+      "provider": "codex_user_runner",
+      "reason": "no unexpired health evidence",
+      "source": "none",
+      "status": "UNKNOWN",
+      "ttl_seconds": 300
+    },
+    "health_lookup_ms": 0.0388,
+    "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "health_status": "UNKNOWN",
+    "llm_calls": 0,
+    "matched_optional_capabilities": [
+      "schema_output"
+    ],
+    "matched_required_capabilities": [
+      "high_reasoning",
+      "image_input",
+      "structured_output",
+      "text_input"
+    ],
+    "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+    "registry_lookup_ms": 0.0003,
+    "rejected_candidates": [],
+    "request_id": "p4-smoke-final-codex-20260928",
+    "resolve_wall_ms": 0.1687,
+    "selected_model": "gpt-6-luna",
+    "selected_provider": "codex_user_runner",
+    "selected_runtime": "CODEX",
+    "selection_reason": "preferred capability match",
+    "status": "ROUTE",
+    "task_type": "multimodal_review"
+  },
+  "decision_sha256": "722930f5e1774882b59b787c6955ca64eaf9b556694826f1660b6f0b860448d4",
+  "kind": "p4_capability_router_shadow",
+  "request": {
+    "agent": "final-semantic-critic-shadow-critic",
+    "cost_class": "subscription",
+    "execution_domain": "P4_SHADOW_SMOKE:final-semantic-critic-shadow",
+    "fallback_allowed": true,
+    "forbidden_capabilities": [
+      "image_generation",
+      "write_tools"
+    ],
+    "latency_class": "interactive",
+    "multimodal_required": true,
+    "optional_capabilities": [
+      "schema_output",
+      "cached_input"
+    ],
+    "preferred_model": "gpt-6-luna",
+    "preferred_provider": "codex_user_runner",
+    "reasoning_requirement": "high",
+    "request_id": "p4-smoke-final-codex-20260928",
+    "required_capabilities": [
+      "text_input",
+      "structured_output",
+      "high_reasoning",
+      "image_input"
+    ],
+    "stage": "P4_SHADOW_SMOKE",
+    "task_type": "multimodal_review",
+    "tools_allowed": false
+  },
+  "request_sha256": "23b5f0e0ce79fc3f3b0928d540a6f4736d82d61115ba48a7d2db51c0d69f2b70",
+  "schema_version": 1
+}

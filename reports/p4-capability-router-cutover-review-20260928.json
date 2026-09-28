@@ -1,0 +1,364 @@
+{
+  "auto_cutover": false,
+  "blockers": [],
+  "conditions": [
+    "USER_AUTHORIZATION_REQUIRED",
+    "FRESH_PROVIDER_HEALTH_RECHECK_AT_CUTOVER"
+  ],
+  "decision": "APPROVED_WITH_CONDITIONS",
+  "dry_run_summary": {
+    "actual_dispatch_changed": false,
+    "case_count": 8,
+    "degraded_fallback": 1,
+    "unavailable_fallback": 1,
+    "unknown_keeps_legacy": 2,
+    "would_fallback": 2,
+    "would_keep_legacy": 5,
+    "would_no_route": 1
+  },
+  "evidence_consistency": {
+    "additional_physical_records_vs_formal_summary": 3,
+    "current_physical_route_divergent": 2,
+    "current_physical_route_equivalent": 12,
+    "current_physical_route_evidence_count": 14,
+    "failure_429_clarification": {
+      "actual_original_report_sha256": "494b51e0f3eb41d44ce22df9901e6727ed4d1116b4cf1cf06e8ff54820afe8e7",
+      "isolated_429_record": {
+        "expires_at": "2026-09-28T12:05:00+00:00",
+        "model": "gpt-6-luna",
+        "observed_at": "2026-09-28T12:00:00+00:00",
+        "provider": "codex_user_runner",
+        "reason": "429 Too Many Requests",
+        "source": "injected_execution_telemetry",
+        "status": "DEGRADED",
+        "ttl_seconds": 300
+      },
+      "raw_original_report_sha256": "494b51e0f3eb41d44ce22df9901e6727ed4d1116b4cf1cf06e8ff54820afe8e7",
+      "validated": true
+    },
+    "formal_runtime_shadow_count_in_implementation_report": 11,
+    "formal_runtime_shadow_divergent": 2,
+    "formal_runtime_shadow_equivalent": 9,
+    "gate_inputs": {
+      "failure_injection_sha256": "39f2a44a277dd65121add9e71b7a0f36e6fb514b78c3f50b603370b5616275ed",
+      "health_audit_sha256": "f06378cd522fdbf67fc96fe344967d3e81203bb2b31b8be06adfffeb8388ceeb",
+      "implementation_report_sha256": "a8e9cb4f07406aa5f58b34cca82bdeff177950dc8526679981ef41f62cce753d",
+      "p3_closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+      "paired_comparison_sha256": "fb79ae1cdd78c61044bcbabf1078158e05b71c9d1d0c267d4825fda6e2604534",
+      "performance_sha256": "a6ecd3f1cb9bef9fb2ae18a27176645a9ffb88e4b1e2e3913fe384583ae16216",
+      "regression_sha256": "44009dda75d8ca79aa629b33a1c009e72defb6dc871219a79e29405e2ebfdd29",
+      "shadow_smoke_report_sha256": "432db8395e98ae5857b024932f5491ec7048490afc4297cfce5d9df7d2b7802e"
+    },
+    "gate_source_checks": {
+      "base_policy_sha_matches_implementation": true,
+      "every_paired_policy_binding_recomputes": true,
+      "failure_canonical_sha_matches_gate": true,
+      "failure_clarification_source_sha_matches": true,
+      "gate_inputs_match_validation_addendum": true,
+      "gate_sha_matches_validation_addendum": true,
+      "health_canonical_sha_matches_gate": true,
+      "implementation_sha_matches_gate": true,
+      "p3_closure_sha_matches_gate": true,
+      "paired_canonical_sha_matches_gate": true,
+      "performance_canonical_sha_matches_gate": true,
+      "registry_sha_matches_implementation_and_pairs": true,
+      "regression_canonical_sha_matches_gate": true,
+      "shadow_smoke_sha_matches_gate": true,
+      "validation_sha_matches_addendum": true
+    },
+    "paired_route_divergent": 9,
+    "paired_route_equivalent": 7,
+    "paired_route_pairs": 16,
+    "paired_route_valid": 16,
+    "paired_unexplained_divergent": 0,
+    "parse_notes": [
+      {
+        "files": [
+          "reports/p4-capability-router-shadow-validation-sha-addendum-20260928.json",
+          "reports/p4-capability-router-failure-injection-clarification-20260928.json"
+        ],
+        "finding": "Both immutable sources contain a trailing literal \\n after valid JSON. Parsing removed only that exact two-byte suffix in memory; raw bytes and referenced SHA values were not modified.",
+        "kind": "source_json_literal_suffix"
+      }
+    ],
+    "physical_records_all_sha_valid": true,
+    "route_evidence_records": [
+      {
+        "path": ".storyos/p4-capability-router/p4-final-final-codex-20260928.json",
+        "request_id": "p4-final-final-codex-20260928",
+        "route_equivalent": true,
+        "sha256": "3b239bef7c417e4c3e6600752a504e103cd054e581e0caa84107c6f8152f0e11",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/p4-final-preimage-work-20260928.json",
+        "request_id": "p4-final-preimage-work-20260928",
+        "route_equivalent": true,
+        "sha256": "c767d40e6d3c714252877c17534676f8b7e450fc6d17247fe23ff507045ff1f5",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/p4-final-story-work-20260928.json",
+        "request_id": "p4-final-story-work-20260928",
+        "route_equivalent": false,
+        "sha256": "be38c189a44e04eedd18b5036797fa63406f128db263f0a5ea3190d9bee2b2c5",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/p4-smoke-final-codex-20260928.json",
+        "request_id": "p4-smoke-final-codex-20260928",
+        "route_equivalent": true,
+        "sha256": "50dea73ca5b65efcf444c27ba8dbc610eb4858f263ea8eb1393a2642e2dc67c2",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/p4-smoke-preimage-work-20260928.json",
+        "request_id": "p4-smoke-preimage-work-20260928",
+        "route_equivalent": true,
+        "sha256": "2d424aff3161d91e955184a4fea16c06f50bb560bce78b19b8deda125a7c3441",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/p4-smoke-story-work-20260928.json",
+        "request_id": "p4-smoke-story-work-20260928",
+        "route_equivalent": false,
+        "sha256": "b00e1a2541e3bb39be06097d2e6f5d43d5ec1a4a677046d5210e26567217d898",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-2cd13e21838e1bd4.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-2cd13e21838e1bd4",
+        "route_equivalent": true,
+        "sha256": "30e4754728e6cbeedc6948dd83898708119d5e44be7ae896c240b33596ad7908",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-45c3f689f45302fd.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-45c3f689f45302fd",
+        "route_equivalent": true,
+        "sha256": "6606c99be249f1a359a1b803694b0de9de3f387cf2bbe1a968dcc3e0668233d8",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-46063d8f24d45f28.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-46063d8f24d45f28",
+        "route_equivalent": true,
+        "sha256": "8aa28319876ac2d014902c8b1206c31ac266ab3e124b0a9cd5662daa17967423",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-52d25e8b5bf3e458.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-52d25e8b5bf3e458",
+        "route_equivalent": true,
+        "sha256": "b6887ff5276063f5164d93c5a804e952de72f24b5cdc8d4e8e73f7d245915eec",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-541ac4f3795f9fc9.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-541ac4f3795f9fc9",
+        "route_equivalent": true,
+        "sha256": "87b0a7ab13844c7da3555e9e470616dd59dee632ba42295a57e0bb3c14ac56bf",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-a412f922b35911f6.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-a412f922b35911f6",
+        "route_equivalent": true,
+        "sha256": "63ebecb55fcf3fe88ffe99fc7430042758a07e9406814a13baae006dc482455a",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-c2d62de724c768f1.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-c2d62de724c768f1",
+        "route_equivalent": true,
+        "sha256": "217ae9b83495f53042c89465d552bc60a55bd5e71407ea57a0ee92457960e525",
+        "validated": true
+      },
+      {
+        "path": ".storyos/p4-capability-router/preimage-semantic-critic-shadow-a1-c89ffeec471c0b49.json",
+        "request_id": "preimage-semantic-critic-shadow-a1-c89ffeec471c0b49",
+        "route_equivalent": true,
+        "sha256": "ef6c637f85b8b4669577d2062a30dbc9438f03c8d087ef9ce6bd9ea6ad1cd8d1",
+        "validated": true
+      }
+    ]
+  },
+  "fresh_health_summary": {
+    "fresh_effective_health_count": 0,
+    "model_statuses": {
+      "WORK": "UNKNOWN",
+      "codex_cli_subscription": "UNKNOWN",
+      "codex_user_runner": "UNKNOWN"
+    },
+    "unknown_effective_health_count": 3
+  },
+  "generated_at": "2026-09-28T12:56:13+00:00",
+  "git": {
+    "committed": false,
+    "divergence": "0/0",
+    "head": "d57b5ba2971de7368f1146ee5403af48f4a83cfc",
+    "origin": "d57b5ba2971de7368f1146ee5403af48f4a83cfc",
+    "pushed": false
+  },
+  "immutable": true,
+  "kind": "p4_capability_router_cutover_review",
+  "mandatory_checks": {
+    "429_clarification_verified": true,
+    "Episode_unchanged": true,
+    "P3_closure_unchanged": true,
+    "authority_writes_zero": true,
+    "cutover_scope_bounded": true,
+    "determinism_pass": true,
+    "failure_injection_pass": true,
+    "health_ttl_pass": true,
+    "image_generation_false": true,
+    "legacy_dispatch_unchanged": true,
+    "llm_calls_zero": true,
+    "no_route_pass": true,
+    "paired_comparison_valid": true,
+    "performance_pass": true,
+    "pre_cutover_gate_ready": true,
+    "production_enabled_false": true,
+    "production_policy_frozen": true,
+    "rollback_contract_pass": true,
+    "router_dispatch_rights_false": true,
+    "scheduler_owner_unchanged": true,
+    "shadow_evidence_consistency_pass": true,
+    "success_recovery_pass": true,
+    "unexplained_divergence_zero": true
+  },
+  "mandatory_checks_pass": true,
+  "no_episode_transition": true,
+  "no_image_generation": true,
+  "no_provider_request": true,
+  "p4_previous_status": "READY_FOR_CUTOVER_REVIEW",
+  "p4_status": "CUTOVER_APPROVED_AWAITING_USER_AUTHORIZATION",
+  "p5_guardian_entered": false,
+  "production_enabled": false,
+  "ready_for_cutover_review": true,
+  "reports": {
+    "cutover_dry_run": {
+      "path": "reports/p4-capability-router-cutover-dry-run-20260928.json",
+      "sha256": "1490e4c3253621c33a1681b4d7ad5efc35c85dcc8909c46bcf5376b7a8a69433"
+    },
+    "failure_injection": {
+      "path": "reports/p4-capability-router-failure-injection-20260928.json",
+      "sha256": "494b51e0f3eb41d44ce22df9901e6727ed4d1116b4cf1cf06e8ff54820afe8e7"
+    },
+    "failure_injection_clarification": {
+      "path": "reports/p4-capability-router-failure-injection-clarification-20260928.json",
+      "sha256": "c408517f4b03a62152062d1610a84b03e9b779af91878ead2d2defe73d2e6726"
+    },
+    "fresh_health": {
+      "path": "reports/p4-capability-router-fresh-health-review-20260928.json",
+      "sha256": "583cfb4fe86015ab831e9c0434103586fffe007e00c9a1eb814537974ef37d58"
+    },
+    "p3_closure": {
+      "path": "reports/p3-critic-phase-closure-20260928.json",
+      "sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347"
+    },
+    "paired_route_comparison": {
+      "path": "reports/p4-capability-router-paired-route-comparison-20260928.json",
+      "sha256": "6c4f25d47e8672ed48a3ff31a904e826066b6cb6cc307cf614816251edfaf3b0"
+    },
+    "pre_cutover_gate": {
+      "path": "reports/p4-capability-router-pre-cutover-gate-20260928.json",
+      "sha256": "3b04fa2be3a59c13bf9a12587059f90e28573e368e9bd52861c436146d88ac4d"
+    },
+    "prior_health_audit": {
+      "path": "reports/p4-capability-router-health-audit-20260928.json",
+      "sha256": "3fe68724922a2f75524c4ad8bdce4b64ba13bc7d79b16c9e0916043f26cb9480"
+    },
+    "production_policy": {
+      "path": "reports/p4-capability-router-production-policy-review-20260928.json",
+      "sha256": "3b74e9a63318aa10bc8c18d1e5478673f63879ff0b22e561222a89183419ee13"
+    },
+    "shadow_implementation": {
+      "path": "reports/p4-capability-router-shadow-implementation-20260928.json",
+      "sha256": "a8e9cb4f07406aa5f58b34cca82bdeff177950dc8526679981ef41f62cce753d"
+    },
+    "shadow_validation": {
+      "path": "reports/p4-capability-router-shadow-validation-20260928.json",
+      "sha256": "2973023d6a07fee3d427c6e31b42d85cdf805eff1d96a987b6f9c8d7c269efb5"
+    }
+  },
+  "router_mode": "SHADOW",
+  "safety_contract": {
+    "effects_forbidden": [
+      "task_DAG",
+      "task_ordering",
+      "Episode_state",
+      "Gate",
+      "Ledger",
+      "Canonical_Candidate",
+      "lock",
+      "promotion",
+      "release"
+    ],
+    "first_cutover_scope": [
+      "story_semantic_critic",
+      "preimage_semantic_critic",
+      "final_semantic_critic"
+    ],
+    "rollback": "single switch production_enabled=false restores legacy dispatch immediately; no DB migration, Episode reset, or asset regeneration; router stores no authority state",
+    "route_effects_allowed": [
+      "selected_provider",
+      "selected_model",
+      "selected_execution_runtime"
+    ],
+    "router_dispatch_rights": false,
+    "runtime_dag_owner": "episodes/_system/runtime_dag.py",
+    "runtime_scheduler_owner": "episodes/_system/runtime_scheduler.py"
+  },
+  "schema_version": 1,
+  "shadow_enabled": true,
+  "status": "APPROVED_WITH_CONDITIONS",
+  "story_divergence_policy": {
+    "classification": "LEGACY_ROUTE_UNDER_SPECIFIED",
+    "evidence": [
+      {
+        "finding": "WORK is configured; no model or reasoning effort is declared.",
+        "source": "config/storyos.yaml runtime.review.text"
+      },
+      {
+        "finding": "host-managed=true; model usage telemetry is not exposed by workspace transport.",
+        "source": "workspace_provider.py WebCodex contract"
+      },
+      {
+        "finding": "deterministic capability selection and capability-safe fallback; no high_reasoning mandate for Story Critic.",
+        "source": "architecture P4 routing_policy"
+      },
+      {
+        "finding": "reads active model/reasoning_effort and requires them to be present, but does not require the value high.",
+        "source": "story_semantic_critic_adapter.execute_shadow_request"
+      },
+      {
+        "finding": "Codex shadow execution used high; this is execution evidence for that run, not a normative WORK capability contract.",
+        "source": "P3 Story benchmark report"
+      }
+    ],
+    "legacy_provider": "WORK",
+    "optional_capabilities": [
+      "high_reasoning"
+    ],
+    "production_behavior": "Keep WORK when required text/structured capabilities are satisfied and health is not UNAVAILABLE; no switch solely because effective health is UNKNOWN. If WORK is actually unavailable, use only fresh HEALTHY valid fallback, otherwise NO_ROUTE.",
+    "proposed_provider_in_shadow": "codex_user_runner",
+    "required_capabilities_for_production": [
+      "text_input",
+      "structured_output"
+    ],
+    "work_high_reasoning_proven": false
+  },
+  "test_summary": {
+    "command_selection": "15 targeted system test modules including v261 and Story/PREIMAGE/Final Critic plus runtime DAG and P4 suites",
+    "failed": 0,
+    "git_diff_check": true,
+    "passed": 190,
+    "py_compile": true,
+    "pytest_startup_note": "Repository platform package shadows stdlib platform when launched from repository root; tests were rerun from parent with stdlib platform loaded and repository platform namespace path added in-memory. No repository source changes for this workaround."
+  },
+  "user_authorization_required": true,
+  "warnings": [
+    "REAL_PROVIDER_HEALTH_CURRENTLY_UNKNOWN"
+  ]
+}

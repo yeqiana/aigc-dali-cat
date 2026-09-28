@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "kind": "p4_capability_router_shadow_implementation",
+  "generated_at": "2026-09-28",
+  "immutable": true,
+  "phase": "P4 Capability Router",
+  "router_mode": "SHADOW",
+  "production_enabled": false,
+  "p4_status": "SHADOW_READY",
+  "ready_for_cutover_review": false,
+  "production_cutover_performed": false,
+  "p5_guardian_entered": false,
+  "supported_task_types": [
+    "critic",
+    "text_generation",
+    "multimodal_review"
+  ],
+  "provider_count": 3,
+  "model_count": 3,
+  "capability_registry_sha": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+  "policy_sha": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+  "config_sha": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+  "health_ttl_seconds": 300,
+  "health_statuses": [
+    "HEALTHY",
+    "DEGRADED",
+    "UNAVAILABLE",
+    "UNKNOWN"
+  ],
+  "stale_health_behavior": "expired record resolves to UNKNOWN; no LLM probe",
+  "failure_taxonomy_source": "episodes/_system/runtime_failure_strategy.py",
+  "fixture_count": 8,
+  "shadow_smoke_route_count": 3,
+  "shadow_route_count": 11,
+  "route_equivalent_count": 9,
+  "route_divergence_count": 2,
+  "fallback_cases": {
+    "shadow_observations": 2,
+    "fixture_unhealthy_preference": 1,
+    "next_review": "paired route comparison and controlled failure injection"
+  },
+  "no_route_cases": {
+    "shadow_observations": 0,
+    "fixture_missing_required": 1,
+    "fixture_forbidden_capability": 1,
+    "fixture_all_unavailable": 1,
+    "fixture_cycle_bounded": 1
+  },
+  "route_evidence_directory": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\.storyos\\p4-capability-router",
+  "resolve_median_ms": 0.0953,
+  "resolve_max_ms": 0.2018,
+  "llm_calls": 0,
+  "authority_writes": 0,
+  "scheduler_owner_unchanged": true,
+  "integration_point": "product_review_adapter.prepare after scheduled critic request construction; advisory evidence only",
+  "runtime_dag_changed": false,
+  "runtime_scheduler_changed": false,
+  "global_runtime_selection_changed": false,
+  "actual_legacy_dispatch_unchanged": true,
+  "regression": {
+    "requested_test_path": "tests/system/test_v261_product_runtime_first.py",
+    "requested_test_path_exists": false,
+    "executed_legacy_test_path": "episodes/_system/test_v261_product_runtime_first.py",
+    "preimplementation_baseline": {
+      "total": 40,
+      "passed": 32,
+      "failed": 8
+    },
+    "preimplementation_triage_path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\reports\\p4-preimplementation-regression-triage-20260928.json",
+    "preimplementation_triage_sha256": "569b4b5cc4d22d49b3bbe11ab696b8ddab427d9679474569ce6204680e4a2320",
+    "failure_categories": {
+      "REAL_PRODUCTION_REGRESSION": 0,
+      "STALE_TEST_EXPECTATION": 0,
+      "TEST_FIXTURE_ISOLATION_BUG": 7,
+      "RUNTIME_RESIDUE_CONTAMINATION": 0,
+      "ENVIRONMENT_DEPENDENT": 1,
+      "UNRELATED_PREEXISTING_FAILURE": 0
+    },
+    "fixed_legacy_suite": {
+      "total": 40,
+      "passed": 40,
+      "failed": 0
+    },
+    "focused_suite": {
+      "passed": 137,
+      "failed": 0
+    },
+    "capability_router_suite": {
+      "passed": 20,
+      "failed": 0
+    },
+    "additional_environment_isolation": {
+      "test": "test_config_consumer_contract.EffectiveConfigTests.test_the_snapshot_value_agrees_with_the_router_that_decides",
+      "category": "ENVIRONMENT_DEPENDENT",
+      "result": "isolated WebCodex availability and passed"
+    },
+    "py_compile": true,
+    "config_validate": true,
+    "git_diff_check": true
+  },
+  "p3_closure": {
+    "path": "D:\\workspace\\YeQianWorkSpace\\yeqian\\storyOS\\reports\\p3-critic-phase-closure-20260928.json",
+    "sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "phase_status": "ENGINEERING_EVALUATION_COMPLETE",
+    "modified": false,
+    "story": "CLOSED_NO_GO_BENCHMARK_COMPLETE_VALUE_NOT_ESTABLISHED",
+    "preimage": "CONDITIONAL_CUTOVER_REVIEW_REAL_PRODUCTION_EVIDENCE_PENDING",
+    "final": "REAL_SHADOW_PASS_BENCHMARK_NOT_ELIGIBLE_INDEPENDENT_VISUAL_GROUND_TRUTH_INSUFFICIENT"
+  },
+  "episodes": {
+    "five_rings_state": "STORYBOARD_LOCKED",
+    "five_rings_state_source": "unchanged P3 closure report; this checkout has no episode-state.json for this episode",
+    "taohuayuan_authoritative_state": "PUBLISH_READY",
+    "taohuayuan_local_export_state": "STORYBOARD_LOCKED",
+    "taohuayuan_mirror_drift": true,
+    "state_modified": false
+  },
+  "image_generation_invoked": false,
+  "git": {
+    "head": "d57b5ba2971de7368f1146ee5403af48f4a83cfc",
+    "origin": "d57b5ba2971de7368f1146ee5403af48f4a83cfc",
+    "divergence": "0/0",
+    "committed": false,
+    "pushed": false
+  },
+  "decision": "P4_SHADOW_READY; keep production disabled and perform the outstanding paired route comparison, live health/failure exercise, and pre-cutover Gate in a later turn.",
+  "report_revision": 2,
+  "supersedes_sha256": "dc3b4d37edf6d7d740440f0519b0fcbb3918a072a18812d5b90aeb5f8c7aff25",
+  "workspace_changes": [
+    "episodes/_system/capability_router.py (new)",
+    "episodes/_system/runtime_router.py",
+    "episodes/_system/product_review_adapter.py",
+    "episodes/_system/test_v261_product_runtime_first.py",
+    "tests/system/test_capability_router.py (new)",
+    "tests/system/test_config_consumer_contract.py",
+    "reports/p4-preimplementation-regression-triage-20260928.json (new)",
+    "reports/p4-capability-router-shadow-smoke-20260928.json (new)",
+    "reports/p4-capability-router-shadow-implementation-20260928.json (new)",
+    "reports/p4-capability-router-shadow-implementation-20260928.json (final evidence count revision)"
+  ]
+}

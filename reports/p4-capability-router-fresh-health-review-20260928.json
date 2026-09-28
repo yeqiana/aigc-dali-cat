@@ -1,0 +1,142 @@
+{
+  "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+  "fresh_effective_health_count": 0,
+  "generated_at": "2026-09-28T12:56:13+00:00",
+  "health_ttl_seconds": 300,
+  "image_probe_used": false,
+  "immutable": true,
+  "kind": "p4_capability_router_fresh_health_review",
+  "llm_probe_used": false,
+  "network_probe_used": false,
+  "providers": [
+    {
+      "capability_evidence": {
+        "capabilities": [
+          "read_only_mode",
+          "schema_output",
+          "structured_output",
+          "text_input"
+        ],
+        "execution_runtime": "WORK",
+        "model": null,
+        "provider": "WORK",
+        "reasoning_levels": [],
+        "schema_output": true,
+        "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+        "subscription_available": null,
+        "telemetry": true
+      },
+      "checks": {
+        "model_probe_used": false,
+        "webcodex_host_marker_detected": false,
+        "workspace_contract_resolved": true
+      },
+      "effective_health": "UNKNOWN",
+      "evidence_source": [
+        "runtime_router.webcodex_available environment/path-marker check",
+        "workspace_provider.current configuration contract"
+      ],
+      "expires_at": "2026-09-28T13:01:13+00:00",
+      "fresh": true,
+      "fresh_effective_health": false,
+      "model": "host-managed",
+      "model_status": "UNKNOWN",
+      "observed_at": "2026-09-28T12:56:13+00:00",
+      "provider": "WORK",
+      "reason": "WORK host model is dynamically selected; workspace transport does not expose model execution telemetry. No host marker was detected in this process.",
+      "runtime_status": "AVAILABLE",
+      "transport_status": "UNKNOWN",
+      "ttl_seconds": 300
+    },
+    {
+      "capability_evidence": {
+        "capabilities": [
+          "high_reasoning",
+          "image_input",
+          "read_only_mode",
+          "schema_output",
+          "structured_output",
+          "text_input",
+          "tool_use"
+        ],
+        "execution_runtime": "CODEX",
+        "model": "gpt-6-luna",
+        "provider": "codex_user_runner",
+        "reasoning_levels": [
+          "high"
+        ],
+        "schema_output": true,
+        "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+        "subscription_available": null,
+        "telemetry": true
+      },
+      "checks": {
+        "auth_file_present": true,
+        "executable_resolved": true,
+        "model_config_present": true,
+        "network_or_model_request_made": false,
+        "runner_endpoint_present": true,
+        "runner_process_alive": true
+      },
+      "effective_health": "UNKNOWN",
+      "evidence_source": [
+        "codex_user_runner.resolve_codex filesystem resolution",
+        "existing runner endpoint PID/port metadata",
+        "existing config.toml model selectors",
+        "auth.json presence metadata only"
+      ],
+      "expires_at": "2026-09-28T13:01:13+00:00",
+      "fresh": true,
+      "fresh_effective_health": false,
+      "model": "gpt-6-luna",
+      "model_status": "UNKNOWN",
+      "observed_at": "2026-09-28T12:56:13+00:00",
+      "provider": "codex_user_runner",
+      "reason": "CLI, model configuration and runner process resolve locally; no model execution probe was made, so model/effective health remains UNKNOWN.",
+      "runtime_status": "AVAILABLE",
+      "transport_status": "AVAILABLE",
+      "ttl_seconds": 300
+    },
+    {
+      "capability_evidence": {
+        "capabilities": [
+          "image_generation"
+        ],
+        "execution_runtime": "CODEX",
+        "model": "gpt-image-2.5-flare",
+        "provider": "codex_cli_subscription",
+        "reasoning_levels": [],
+        "schema_output": false,
+        "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+        "subscription_available": null,
+        "telemetry": true
+      },
+      "checks": {
+        "cli_resolved": true,
+        "image_model_configured": true,
+        "image_probe_used": false,
+        "image_runtime_configured": true
+      },
+      "effective_health": "UNKNOWN",
+      "evidence_source": [
+        "runtime_router._codex_cli_path binary resolution",
+        "config/storyos.yaml image model/runtime resolution",
+        "episodes/_system/codex_subscription_image.py configured execution path"
+      ],
+      "expires_at": "2026-09-28T13:01:13+00:00",
+      "fresh": true,
+      "fresh_effective_health": false,
+      "model": "gpt-image-2.5-flare",
+      "model_status": "UNKNOWN",
+      "observed_at": "2026-09-28T12:56:13+00:00",
+      "provider": "codex_cli_subscription",
+      "reason": "CLI binary and image execution configuration resolve locally; image/model execution was not probed.",
+      "runtime_status": "AVAILABLE",
+      "transport_status": "AVAILABLE",
+      "ttl_seconds": 300
+    }
+  ],
+  "registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+  "schema_version": 1,
+  "unknown_effective_health_count": 3
+}

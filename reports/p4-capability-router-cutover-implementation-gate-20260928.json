@@ -1,0 +1,979 @@
+{
+  "authority_writes": 0,
+  "blocker_details": [
+    {
+      "check": "adapter_dispatch_consumer_present",
+      "reason": "The production branch emits effective_execution_target from the Critic request adapter, but no Runtime DAG/Scheduler execution adapter was found consuming it to select the actual provider/model. Existing Codex paths are decision-only shadows. A real production dispatch branch is therefore not verified."
+    }
+  ],
+  "blockers": [
+    "adapter_dispatch_consumer_present"
+  ],
+  "canary": {
+    "actual_dispatch_changed": false,
+    "all_cases_pass": true,
+    "authority_writes": 0,
+    "bypass": 1,
+    "case_count": 11,
+    "cases": [
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "story_work_unknown",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "KEEP_LEGACY",
+        "effective_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "expected_action": "KEEP_LEGACY",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "",
+          "model": "host-managed",
+          "observed_at": "",
+          "provider": "WORK",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "",
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "legacy route contract is valid; health is UNKNOWN",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-story-unknown",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.3966,
+        "router_proposal": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "supported_task": true,
+        "task_type": "story_semantic_critic",
+        "warning": "LEGACY_HEALTH_UNKNOWN"
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "preimage_work_unknown",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "KEEP_LEGACY",
+        "effective_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "expected_action": "KEEP_LEGACY",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "",
+          "model": "host-managed",
+          "observed_at": "",
+          "provider": "WORK",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "",
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "legacy route contract is valid; health is UNKNOWN",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-preimage-unknown",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2879,
+        "router_proposal": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "supported_task": true,
+        "task_type": "preimage_semantic_critic",
+        "warning": "LEGACY_HEALTH_UNKNOWN"
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "final_codex_unknown",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "KEEP_LEGACY",
+        "effective_route": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "expected_action": "KEEP_LEGACY",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "",
+          "model": "fixture-model",
+          "observed_at": "",
+          "provider": "codex_user_runner",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "",
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "legacy route contract is valid; health is UNKNOWN",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-final-unknown",
+        "required_capabilities": [
+          "image_input",
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2772,
+        "router_proposal": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "supported_task": true,
+        "task_type": "final_semantic_critic",
+        "warning": "LEGACY_HEALTH_UNKNOWN"
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "work_unavailable_codex_healthy",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "FALLBACK",
+        "effective_route": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "expected_action": "FALLBACK",
+        "fallback_used": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "4449b81b872d046a9b28cc101141ec07799ea7657b645d9c8199fda3178d21bd",
+        "health_status": "UNAVAILABLE",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "legacy route is capability-invalid or UNAVAILABLE; selected fresh HEALTHY fallback",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-unavailable",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2845,
+        "router_proposal": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "supported_task": true,
+        "task_type": "story_semantic_critic",
+        "warning": null
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "work_degraded_codex_healthy",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "FALLBACK",
+        "effective_route": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "expected_action": "FALLBACK",
+        "fallback_used": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "DEGRADED",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "4e4bb4d9ca64d072ad34290bf9b64bc5874f35e675e0f0f0237cb878bba2f66d",
+        "health_status": "DEGRADED",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "legacy route is DEGRADED; selected fresh HEALTHY capability-safe fallback",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-degraded",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.24,
+        "router_proposal": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "supported_task": true,
+        "task_type": "story_semantic_critic",
+        "warning": null
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "work_degraded_codex_unknown",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "KEEP_LEGACY",
+        "effective_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "expected_action": "KEEP_LEGACY",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "DEGRADED",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "53880e80b081afcbb40be6d784f830acb603f4b99af7b8feff27c79e47006c02",
+        "health_status": "DEGRADED",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "legacy route is DEGRADED; no fresh HEALTHY fallback; defer to existing recovery",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [
+          {
+            "health_status": "UNKNOWN",
+            "model": "fixture-model",
+            "provider": "codex_user_runner",
+            "reasons": [
+              "fallback_requires_fresh_healthy"
+            ]
+          },
+          {
+            "health_status": "UNKNOWN",
+            "model": "fixture-image",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability",
+              "forbidden_capability_present",
+              "fallback_requires_fresh_healthy"
+            ]
+          }
+        ],
+        "request_id": "canary-degraded-unknown",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2191,
+        "router_proposal": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "supported_task": true,
+        "task_type": "story_semantic_critic",
+        "warning": "LEGACY_HEALTH_DEGRADED"
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "final_codex_unavailable_work_unknown",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "NO_ROUTE",
+        "effective_route": {
+          "model": null,
+          "provider": null,
+          "runtime": null
+        },
+        "expected_action": "NO_ROUTE",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "fixture-model",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "codex_user_runner",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "f05486f0a0144f62e30ccace5997e92087e01c0b6ff0e800e033495391a4163f",
+        "health_status": "UNAVAILABLE",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "fixture-model",
+          "provider": "codex_user_runner",
+          "runtime": "CODEX"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": true,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "no fresh HEALTHY route satisfies required and forbidden capabilities",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [
+          {
+            "health_status": "UNKNOWN",
+            "model": "host-managed",
+            "provider": "WORK",
+            "reasons": [
+              "missing_required_capability",
+              "fallback_requires_fresh_healthy"
+            ]
+          },
+          {
+            "health_status": "UNKNOWN",
+            "model": "fixture-image",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability",
+              "forbidden_capability_present",
+              "fallback_requires_fresh_healthy"
+            ]
+          }
+        ],
+        "request_id": "canary-no-route",
+        "required_capabilities": [
+          "image_input",
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2177,
+        "router_proposal": {
+          "model": null,
+          "provider": null,
+          "runtime": null
+        },
+        "supported_task": true,
+        "task_type": "final_semantic_critic",
+        "warning": null
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "expired_healthy_fallback",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "NO_ROUTE",
+        "effective_route": {
+          "model": null,
+          "provider": null,
+          "runtime": null
+        },
+        "expected_action": "NO_ROUTE",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "29c9f93c2c5f8602096d26db85ec0f878895c345904aa5cde4e395ac77ee74d9",
+        "health_status": "UNAVAILABLE",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": true,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "no fresh HEALTHY route satisfies required and forbidden capabilities",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [
+          {
+            "health_status": "UNKNOWN",
+            "model": "fixture-model",
+            "provider": "codex_user_runner",
+            "reasons": [
+              "fallback_requires_fresh_healthy"
+            ]
+          },
+          {
+            "health_status": "UNKNOWN",
+            "model": "fixture-image",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability",
+              "forbidden_capability_present",
+              "fallback_requires_fresh_healthy"
+            ]
+          }
+        ],
+        "request_id": "canary-expired-fallback",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2364,
+        "router_proposal": {
+          "model": null,
+          "provider": null,
+          "runtime": null
+        },
+        "supported_task": true,
+        "task_type": "story_semantic_critic",
+        "warning": null
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "required_missing",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "NO_ROUTE",
+        "effective_route": {
+          "model": null,
+          "provider": null,
+          "runtime": null
+        },
+        "expected_action": "NO_ROUTE",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "HEALTHY",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "45c2b9c74d98bc1724ea4f1561d47011120b906caa25f9ebfb50669104cf9717",
+        "health_status": "HEALTHY",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [
+          "capability_absent"
+        ],
+        "network_calls": 0,
+        "no_route": true,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "no fresh HEALTHY route satisfies required and forbidden capabilities",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [
+          {
+            "health_status": "HEALTHY",
+            "model": "fixture-model",
+            "provider": "codex_user_runner",
+            "reasons": [
+              "missing_required_capability"
+            ]
+          },
+          {
+            "health_status": "UNKNOWN",
+            "model": "fixture-image",
+            "provider": "codex_cli_subscription",
+            "reasons": [
+              "missing_required_capability",
+              "forbidden_capability_present",
+              "fallback_requires_fresh_healthy"
+            ]
+          }
+        ],
+        "request_id": "canary-required-missing",
+        "required_capabilities": [
+          "capability_absent",
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2282,
+        "router_proposal": {
+          "model": null,
+          "provider": null,
+          "runtime": null
+        },
+        "supported_task": true,
+        "task_type": "preimage_semantic_critic",
+        "warning": null
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "unsupported_task_bypass",
+        "config_sha256": "65936d56675c8d158e195b80784778e7a72372f1db81a296bf9831efa5e82e12",
+        "effective_action": "BYPASS_ROUTER_PRODUCTION",
+        "effective_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "expected_action": "BYPASS_ROUTER_PRODUCTION",
+        "fallback_used": false,
+        "forbidden_capabilities": [],
+        "health_evidence": {
+          "expires_at": "",
+          "model": "host-managed",
+          "observed_at": "",
+          "provider": "WORK",
+          "reason": "no unexpired health evidence",
+          "source": "none",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "",
+        "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "health_status": "UNKNOWN",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [
+          "image_generation"
+        ],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": true,
+        "reason": "task type is outside the production allowlist",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-unsupported",
+        "required_capabilities": [
+          "image_generation"
+        ],
+        "resolve_wall_ms": 0.196,
+        "router_proposal": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "supported_task": false,
+        "task_type": "image_generation",
+        "warning": null
+      },
+      {
+        "actual_dispatch_changed": false,
+        "authority_writes": 0,
+        "case": "production_disabled",
+        "config_sha256": "f6c3354a497d9847a109d33f788fdb642f4a6958080ca71b8796d418b12abf31",
+        "effective_action": "KEEP_LEGACY",
+        "effective_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "expected_action": "KEEP_LEGACY",
+        "fallback_used": false,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "health_evidence": {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "deterministic canary fixture",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        },
+        "health_observed_at": "2026-09-28T12:00:00+00:00",
+        "health_snapshot_sha256": "4449b81b872d046a9b28cc101141ec07799ea7657b645d9c8199fda3178d21bd",
+        "health_status": "UNAVAILABLE",
+        "health_ttl_seconds": 300,
+        "legacy_route": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "llm_calls": 0,
+        "missing_legacy_capabilities": [],
+        "network_calls": 0,
+        "no_route": false,
+        "optional_capabilities": [],
+        "passed": true,
+        "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+        "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+        "production_enabled": false,
+        "reason": "production flag is disabled",
+        "registry_sha256": "c0079252f4d7eea8898aaa0226af415d19172a882f6e2390ec5940515ba9b355",
+        "rejected_candidates": [],
+        "request_id": "canary-disabled",
+        "required_capabilities": [
+          "structured_output",
+          "text_input"
+        ],
+        "resolve_wall_ms": 0.2327,
+        "router_proposal": {
+          "model": "host-managed",
+          "provider": "WORK",
+          "runtime": "WORK"
+        },
+        "supported_task": true,
+        "task_type": "story_semantic_critic",
+        "warning": null
+      }
+    ],
+    "degraded_fallback": true,
+    "image_generation_invoked": false,
+    "llm_calls": 0,
+    "model_calls": 0,
+    "network_calls": 0,
+    "unavailable_fallback": true,
+    "unknown_keeps_legacy": true,
+    "would_fallback": 2,
+    "would_keep_legacy": 5,
+    "would_no_route": 3
+  },
+  "config_sha256": "e09a08cccefe6d6349ce0da2d87cc665eecd02de00b7bb5faaba8918ef4d06c9",
+  "gate": "P4_CUTOVER_IMPLEMENTATION",
+  "generated_at": "2026-09-28T13:41:18+00:00",
+  "head_sha": "1ccefedbe7b21237d7e81af109d2817187002500",
+  "health_review": {
+    "config_sha256": "826d5e8ccbbc6480c616fb6c213c76aa142c33352a0e97746d35d83eda260fe6",
+    "image_probe_used": false,
+    "llm_probe_used": false,
+    "network_calls": 0,
+    "observed_at": "2026-09-28T13:41:18+00:00",
+    "providers": [
+      {
+        "component_evidence_fresh": true,
+        "effective_health": "UNKNOWN",
+        "expires_at": "2026-09-28T13:46:18+00:00",
+        "fresh": false,
+        "health_evidence_source": null,
+        "image_probe_used": false,
+        "llm_probe_used": false,
+        "model": "host-managed",
+        "model_status": "UNKNOWN",
+        "observed_at": "2026-09-28T13:41:18+00:00",
+        "provider": "WORK",
+        "runtime_status": "AVAILABLE",
+        "source": "config/storyos.yaml:runtime.workspace",
+        "transport_status": "CONFIGURED",
+        "ttl_seconds": 300
+      },
+      {
+        "component_evidence_fresh": true,
+        "effective_health": "UNKNOWN",
+        "expires_at": "2026-09-28T13:46:18+00:00",
+        "fresh": false,
+        "health_evidence_source": null,
+        "image_probe_used": false,
+        "llm_probe_used": false,
+        "model": "gpt-6-luna",
+        "model_status": "UNKNOWN",
+        "observed_at": "2026-09-28T13:41:18+00:00",
+        "provider": "codex_user_runner",
+        "runtime_status": "AVAILABLE",
+        "source": "codex executable resolution + existing Codex model selector configuration",
+        "transport_status": "UNKNOWN",
+        "ttl_seconds": 300
+      },
+      {
+        "component_evidence_fresh": true,
+        "effective_health": "UNKNOWN",
+        "expires_at": "2026-09-28T13:46:18+00:00",
+        "fresh": false,
+        "health_evidence_source": null,
+        "image_probe_used": false,
+        "llm_probe_used": false,
+        "model": "gpt-image-2.5-flare",
+        "model_status": "UNKNOWN",
+        "observed_at": "2026-09-28T13:41:18+00:00",
+        "provider": "codex_cli_subscription",
+        "runtime_status": "AVAILABLE",
+        "source": "codex executable resolution + config/storyos.yaml:image.model",
+        "transport_status": "UNKNOWN",
+        "ttl_seconds": 300
+      }
+    ]
+  },
+  "health_review_sha256": "dab50e5406e12b5d415076e313033f06c29dd7a423aceaa9a287996325ee120f",
+  "immutable": true,
+  "implementation_boundary": {
+    "commit_performed": false,
+    "episode_transition_performed": false,
+    "image_generation_invoked": false,
+    "p5_guardian_entered": false,
+    "production_enabled": false,
+    "push_performed": false,
+    "real_provider_dispatch_performed": false,
+    "shadow_enabled": true
+  },
+  "llm_calls": 0,
+  "mandatory_checks": {
+    "adapter_dispatch_consumer_present": false,
+    "authority_writes_zero": true,
+    "broad_regression_pass": true,
+    "canary_no_real_dispatch": true,
+    "degraded_fresh_healthy_fallback_pass": true,
+    "effective_config_binding_pass": true,
+    "episode_unchanged": true,
+    "expired_health_not_used_as_fallback": true,
+    "focused_regression_pass": true,
+    "image_generation_false": true,
+    "legacy_preferred_policy_pass": true,
+    "llm_calls_zero": true,
+    "network_calls_zero": true,
+    "no_route_fail_closed": true,
+    "production_default_false": true,
+    "production_disabled_zero_behavior_regression": true,
+    "production_enabled_false": true,
+    "router_no_dispatch_rights": true,
+    "scheduler_owner_unchanged": true,
+    "shadow_core_shared_with_production": true,
+    "single_flag_rollback_pass": true,
+    "supported_task_allowlist_pass": true,
+    "unavailable_fresh_healthy_fallback_pass": true,
+    "unknown_keeps_legacy_pass": true,
+    "unknown_not_used_as_fallback": true,
+    "unsupported_task_bypass": true,
+    "yaml_flag_implemented": true
+  },
+  "mandatory_checks_pass": false,
+  "network_calls": 0,
+  "origin_sha": "1ccefedbe7b21237d7e81af109d2817187002500",
+  "p3_closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+  "p3_closure_unchanged": true,
+  "p3_phase_status": "ENGINEERING_EVALUATION_COMPLETE",
+  "p4_status": "CUTOVER_IMPLEMENTATION_BLOCKED",
+  "policy_mode": "LEGACY_PREFERRED_CAPABILITY_GUARDED",
+  "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
+  "previous_p4_status": "CUTOVER_APPROVED_AWAITING_USER_AUTHORIZATION",
+  "production_enabled": false,
+  "registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+  "regression": {
+    "broad_failed": 0,
+    "broad_pass": true,
+    "broad_passed": 219,
+    "broad_subtests": 9,
+    "focused_failed": 0,
+    "focused_pass": true,
+    "focused_test_count": 78,
+    "v261_pass": true,
+    "v261_passed": 40,
+    "v261_subtests": 6
+  },
+  "rollback": {
+    "authority_state_created": false,
+    "disabled_action": "KEEP_LEGACY",
+    "disabled_provider": "WORK",
+    "enabled_action": "FALLBACK",
+    "single_flag_restores_legacy": true
+  },
+  "runtime_dispatch_audit": {
+    "actual_provider_dispatch_consumer_verified": false,
+    "evidence": [
+      "All three Critic integration entry points are prepare_shadow_request paths.",
+      "codex_user_runner_shadow is explicitly restricted to decision-only Critic shadows.",
+      "Runtime DAG/Scheduler source contains no consumer of effective_execution_target or capability_route_decision.",
+      "Production integration therefore returns an advisory target but cannot prove real provider/model dispatch."
+    ],
+    "gate_effect": "BLOCKED: production task-level target is not yet consumed by a verified execution adapter.",
+    "route_decision_emitted_by_existing_adapter": true,
+    "scheduler_owner_unchanged": true
+  },
+  "schema_version": 1,
+  "shadow_enabled": true,
+  "source_artifact_hashes": {
+    "config/storyos.yaml": "e09a08cccefe6d6349ce0da2d87cc665eecd02de00b7bb5faaba8918ef4d06c9",
+    "episodes/_system/capability_router.py": "00fe493fe64471178c970497ccf682d8928489a20bc353177ef1b0e55c9a075d",
+    "episodes/_system/p4_capability_router_implementation.py": "092bd0aa8eb9bc24c7bdc8cccc870236b4c39e3ac4d45d72b62989a2fae5169b",
+    "episodes/_system/product_review_adapter.py": "24367afc89eed991f045b921845034174d66742fc06bd362ba0c4aff8bbc5b27",
+    "episodes/_system/runtime_router.py": "165e2fbd4507d0b3b8fa13a3f268144e593dd60346f7dc648629fdbf9f420c67"
+  },
+  "source_reports": {
+    "reports/p3-critic-phase-closure-20260928.json": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "reports/p4-capability-router-cutover-dry-run-20260928.json": "1490e4c3253621c33a1681b4d7ad5efc35c85dcc8909c46bcf5376b7a8a69433",
+    "reports/p4-capability-router-cutover-review-20260928.json": "e1f415915c8665ff9c5f6e10c3dd5c26edc88ee19ecb7b047d9b72d69b5ff8d5",
+    "reports/p4-capability-router-failure-injection-20260928.json": "494b51e0f3eb41d44ce22df9901e6727ed4d1116b4cf1cf06e8ff54820afe8e7",
+    "reports/p4-capability-router-failure-injection-clarification-20260928.json": "c408517f4b03a62152062d1610a84b03e9b779af91878ead2d2defe73d2e6726",
+    "reports/p4-capability-router-fresh-health-review-20260928.json": "583cfb4fe86015ab831e9c0434103586fffe007e00c9a1eb814537974ef37d58",
+    "reports/p4-capability-router-paired-route-comparison-20260928.json": "6c4f25d47e8672ed48a3ff31a904e826066b6cb6cc307cf614816251edfaf3b0",
+    "reports/p4-capability-router-pre-cutover-gate-20260928.json": "3b04fa2be3a59c13bf9a12587059f90e28573e368e9bd52861c436146d88ac4d",
+    "reports/p4-capability-router-production-policy-review-20260928.json": "3b74e9a63318aa10bc8c18d1e5478673f63879ff0b22e561222a89183419ee13"
+  },
+  "status": "BLOCKED",
+  "supported_task_types": [
+    "story_semantic_critic",
+    "preimage_semantic_critic",
+    "final_semantic_critic"
+  ]
+}

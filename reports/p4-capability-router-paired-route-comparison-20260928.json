@@ -1,0 +1,2129 @@
+{
+  "attempted_pairs": 16,
+  "authority_writes": 0,
+  "capability_registry_sha": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+  "config_sha": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+  "divergent_count": 9,
+  "equivalent_count": 7,
+  "expected_divergence_count": 9,
+  "fallback_count": 5,
+  "generated_at": "2026-09-28T12:37:03.487074+00:00",
+  "immutable": true,
+  "kind": "p4_capability_router_paired_route_comparison",
+  "llm_calls": 0,
+  "max_resolve_ms": 0.2673,
+  "median_resolve_ms": 0.11105,
+  "no_route_count": 4,
+  "policy_sha": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+  "samples": [
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "LEGACY_ROUTE_UNDER_SPECIFIED",
+      "fallback_used": true,
+      "forbidden_capabilities": [
+        "image_generation",
+        "write_tools"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "5046b58887a2b294e0b5c8d668e7e3148a60051ad6d2c7572e977d6adbe53701",
+      "optional_capabilities": [
+        "schema_output"
+      ],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [
+        {
+          "missing": [
+            "high_reasoning"
+          ],
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        },
+        {
+          "missing": [
+            "high_reasoning",
+            "structured_output",
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "081215d8d3a4742413a8c8c51b4008582638c3be0e56cddb32c4def3e2ebaff0",
+      "required_capabilities": [
+        "text_input",
+        "structured_output",
+        "high_reasoning"
+      ],
+      "resolve_wall_ms": 0.2673,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "story_critic_work_to_codex",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [
+          "schema_output"
+        ],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": "high",
+        "request_id": "story_critic_work_to_codex",
+        "required_capabilities": [
+          "text_input",
+          "structured_output",
+          "high_reasoning"
+        ],
+        "stage": "P4",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "sample_id": "story_critic_work_to_codex",
+      "selection_reason": "bounded capability-safe fallback",
+      "task_type": "critic"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation",
+        "write_tools"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-6-luna",
+      "legacy_provider": "codex_user_runner",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "a04de123e61b7f52d231e63276d0726be195290adaf19c4f203ea4724e5d7521",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [],
+      "request_sha256": "403255a4e6fd828310c306a380a332bf0f0e6362227de72b057f926dee23152e",
+      "required_capabilities": [
+        "text_input",
+        "structured_output",
+        "high_reasoning"
+      ],
+      "resolve_wall_ms": 0.132,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "story_critic_codex",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": "high",
+        "request_id": "story_critic_codex",
+        "required_capabilities": [
+          "text_input",
+          "structured_output",
+          "high_reasoning"
+        ],
+        "stage": "P4",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "sample_id": "story_critic_codex",
+      "selection_reason": "preferred capability match",
+      "task_type": "critic"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation",
+        "write_tools"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "4b5c4acc454118d7ee8ce52af8f379405046c76bc70ead62d675092d7389ac49",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": "WORK",
+      "proposed_runtime": "WORK",
+      "rejected_candidates": [],
+      "request_sha256": "64cec12ad626c3f3b71c472ea2d7fb544bf15ac0323b79222ff628d91c2a3ad8",
+      "required_capabilities": [
+        "text_input",
+        "structured_output"
+      ],
+      "resolve_wall_ms": 0.1113,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "preimage_critic_work",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "preimage_critic_work",
+        "required_capabilities": [
+          "text_input",
+          "structured_output"
+        ],
+        "stage": "P4",
+        "task_type": "critic",
+        "tools_allowed": false
+      },
+      "sample_id": "preimage_critic_work",
+      "selection_reason": "preferred capability match",
+      "task_type": "critic"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation",
+        "write_tools"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-6-luna",
+      "legacy_provider": "codex_user_runner",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "734750bd42b87795866e9c8bb8708882d293ab22b884c5d930864e09f2d2cbf9",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [],
+      "request_sha256": "2ce95dae829054d0091b93c67ee5bf5e3cf5c70bb2083a8fe14a9dad1a7453f8",
+      "required_capabilities": [
+        "text_input",
+        "image_input",
+        "structured_output",
+        "high_reasoning"
+      ],
+      "resolve_wall_ms": 0.1062,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "final_critic_multimodal",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": true,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": "high",
+        "request_id": "final_critic_multimodal",
+        "required_capabilities": [
+          "text_input",
+          "image_input",
+          "structured_output",
+          "high_reasoning"
+        ],
+        "stage": "P4",
+        "task_type": "multimodal_review",
+        "tools_allowed": false
+      },
+      "sample_id": "final_critic_multimodal",
+      "selection_reason": "preferred capability match",
+      "task_type": "multimodal_review"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "3ef7ffe954a048e604eca060cb19b5faad79d202af446315dd32d112b9e51ed6",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": "WORK",
+      "proposed_runtime": "WORK",
+      "rejected_candidates": [],
+      "request_sha256": "9e4fe2745319445620d922ad0da0bdcca4fa5d4f0e091881c7dfba9aade7bcaf",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1071,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "ordinary_text_work",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "ordinary_text_work",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "ordinary_text_work",
+      "selection_reason": "preferred capability match",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-6-luna",
+      "legacy_provider": "codex_user_runner",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "6bd220ac15ae90f30f0aa45b3fcf784ead0ef6f850b0d91b0b1c0fc6f30b6a6b",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [],
+      "request_sha256": "39bbbe0baeeefc8e3d0cb90b64d879c059af18b8891794868e222762c51ca3f1",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1043,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "ordinary_text_codex",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": null,
+        "request_id": "ordinary_text_codex",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "ordinary_text_codex",
+      "selection_reason": "preferred capability match",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation",
+        "write_tools"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-6-luna",
+      "legacy_provider": "codex_user_runner",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "89590aaabd91db5e5a7afe8c3f686f0f0bbabdb42ebd0880c6d3219779b9bc19",
+      "optional_capabilities": [
+        "schema_output"
+      ],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [],
+      "request_sha256": "dfa14a1532000f08bda9bab892a4fa4191c7baf8512250c11700fdb01d249d52",
+      "required_capabilities": [
+        "text_input",
+        "image_input",
+        "structured_output",
+        "high_reasoning"
+      ],
+      "resolve_wall_ms": 0.1012,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "multimodal_review_codex",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": true,
+        "optional_capabilities": [
+          "schema_output"
+        ],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": "high",
+        "request_id": "multimodal_review_codex",
+        "required_capabilities": [
+          "text_input",
+          "image_input",
+          "structured_output",
+          "high_reasoning"
+        ],
+        "stage": "P4",
+        "task_type": "multimodal_review",
+        "tools_allowed": false
+      },
+      "sample_id": "multimodal_review_codex",
+      "selection_reason": "preferred capability match",
+      "task_type": "multimodal_review"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "HEALTH_DRIVEN_FALLBACK",
+      "fallback_used": true,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "frozen fixture: unavailable",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        }
+      ],
+      "health_snapshot_sha256": "e1d93c785f75a28cf553142dbfb27a9b66b6ad160953dce00821b7cb3e859690",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "cd2b577c63e3ecfcfb3952cf1fd9390599fb2f05b0648466c6208862e35400f4",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [
+        {
+          "health_status": "UNAVAILABLE",
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "provider_unhealthy"
+          ]
+        },
+        {
+          "missing": [
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "36b35055d3f34ca881f3ba47bfb9659d98bd2e0946c5f338eabfad0757ecb27c",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1236,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "provider_unavailable",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "provider_unavailable",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "provider_unavailable",
+      "selection_reason": "bounded capability-safe fallback",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "HEALTH_DRIVEN_FALLBACK",
+      "fallback_used": true,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "gpt-6-luna",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "codex_user_runner",
+          "reason": "frozen fixture: degraded",
+          "source": "injected_health_fixture",
+          "status": "DEGRADED",
+          "ttl_seconds": 300
+        }
+      ],
+      "health_snapshot_sha256": "c59b592a16296dec6ea2cb24ad4ac925fd4294e50fd56a61879e02b7bbfd619e",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-6-luna",
+      "legacy_provider": "codex_user_runner",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "ff963075b593060e20c4a1186cf3ae629fcbb71039156e99208b8c91d1905e73",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": "WORK",
+      "proposed_runtime": "WORK",
+      "rejected_candidates": [
+        {
+          "health_status": "DEGRADED",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasons": [
+            "provider_unhealthy"
+          ]
+        },
+        {
+          "missing": [
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "7befab44ed7344c8dc991bad6a440f8fad042d9e2a510826526f8d97770b08db",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1151,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "preferred_provider_degraded",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": null,
+        "request_id": "preferred_provider_degraded",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "preferred_provider_degraded",
+      "selection_reason": "bounded capability-safe fallback",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": null,
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "health evidence expired",
+          "source": "injected_health_fixture",
+          "status": "UNKNOWN",
+          "ttl_seconds": 300
+        }
+      ],
+      "health_snapshot_sha256": "b61abad06c8d21c58b15584bb591346bbe4ad129d9708297691115ccbd7255de",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "5ae99cc45d4d4ea34cd149d16f9bce1b12caea031f5738bd65b36eb2cf02b9ea",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": "WORK",
+      "proposed_runtime": "WORK",
+      "rejected_candidates": [],
+      "request_sha256": "6706f421963330bde1dca77370cd1799eaa1b53ba26cb77f29aa1d252ccba542",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1266,
+      "route_equivalent": true,
+      "route_request": {
+        "agent": "expired_health_unknown",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "expired_health_unknown",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "expired_health_unknown",
+      "selection_reason": "preferred capability match",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "EXPECTED_POLICY_IMPROVEMENT",
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "ba4df64b0dbff1824b1227cfe8005c8c88c9c10964d35bd16a5b608e57d0cafa",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": null,
+      "proposed_runtime": null,
+      "rejected_candidates": [
+        {
+          "missing": [
+            "p4_fixture_missing_capability"
+          ],
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        },
+        {
+          "missing": [
+            "p4_fixture_missing_capability"
+          ],
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        },
+        {
+          "missing": [
+            "p4_fixture_missing_capability",
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "84c9a7029761d5812501df7cdbb528f03fa173587e202b809da4a4518aba6dde",
+      "required_capabilities": [
+        "text_input",
+        "p4_fixture_missing_capability"
+      ],
+      "resolve_wall_ms": 0.0984,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "required_capability_missing",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "required_capability_missing",
+        "required_capabilities": [
+          "text_input",
+          "p4_fixture_missing_capability"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "required_capability_missing",
+      "selection_reason": "no eligible candidate",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": [
+        "WORK",
+        "codex_user_runner"
+      ],
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "EXPECTED_POLICY_IMPROVEMENT",
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation",
+        "structured_output"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-image-2.5-flare",
+      "legacy_provider": "codex_cli_subscription",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "779652b6b342dc894cc1c0c5bef3e9d2f8d943dcc004afc046ffb98bffad32dd",
+      "optional_capabilities": [],
+      "policy_sha256": "87ff5f3dfcb87f38675b16543d2474c38391d520fa93422f62307e88ad42b8ed",
+      "proposed_model": null,
+      "proposed_provider": null,
+      "proposed_runtime": null,
+      "rejected_candidates": [
+        {
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "policy_disallowed"
+          ]
+        },
+        {
+          "model": null,
+          "present": [
+            "structured_output"
+          ],
+          "provider": "WORK",
+          "reasons": [
+            "forbidden_capability_present"
+          ]
+        },
+        {
+          "model": "gpt-6-luna",
+          "present": [
+            "structured_output"
+          ],
+          "provider": "codex_user_runner",
+          "reasons": [
+            "forbidden_capability_present"
+          ]
+        }
+      ],
+      "request_sha256": "27df61a0b4fed800918aa87d9c89fdbff48a11a5219e1a10682e71a022f63542",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.0957,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "forbidden_capability_conflict",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "structured_output"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-image-2.5-flare",
+        "preferred_provider": "codex_cli_subscription",
+        "reasoning_requirement": null,
+        "request_id": "forbidden_capability_conflict",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "forbidden_capability_conflict",
+      "selection_reason": "no eligible candidate",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "EXPECTED_POLICY_IMPROVEMENT",
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "frozen fixture: unavailable",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        },
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "gpt-6-luna",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "codex_user_runner",
+          "reason": "frozen fixture: unavailable",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        }
+      ],
+      "health_snapshot_sha256": "86c772582d13d5431e2d9a3a237726514f9b4e633075553b10e8997954d6f5ed",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "832a8c9c637304040db3ac5eb1f9746e2bbddebe36559312819c8d7a03a0162d",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": null,
+      "proposed_runtime": null,
+      "rejected_candidates": [
+        {
+          "health_status": "UNAVAILABLE",
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "provider_unhealthy"
+          ]
+        },
+        {
+          "health_status": "UNAVAILABLE",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasons": [
+            "provider_unhealthy"
+          ]
+        },
+        {
+          "missing": [
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "41878489b29b4a12fb305323735e384aafd6024b311fd5d1362f0c881e795986",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1205,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "all_candidates_unavailable",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "all_candidates_unavailable",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "all_candidates_unavailable",
+      "selection_reason": "no eligible candidate",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "EXPECTED_POLICY_IMPROVEMENT",
+      "fallback_used": false,
+      "forbidden_capabilities": [
+        "image_generation",
+        "write_tools"
+      ],
+      "health_snapshot": [
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "gpt-6-luna",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "codex_user_runner",
+          "reason": "frozen fixture: unavailable",
+          "source": "injected_health_fixture",
+          "status": "UNAVAILABLE",
+          "ttl_seconds": 300
+        }
+      ],
+      "health_snapshot_sha256": "322e43dbb0f55894b4bc8298a599dce3a3df8f5d9af80c813ce35d6580dfe381",
+      "health_status": "UNKNOWN",
+      "legacy_model": "gpt-6-luna",
+      "legacy_provider": "codex_user_runner",
+      "legacy_runtime": "CODEX",
+      "llm_calls": 0,
+      "logical_decision_sha256": "7392ff908bda1d451c737fc157e15f3adaea8aebd6dc7d4faad028e1a142c856",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": null,
+      "proposed_provider": null,
+      "proposed_runtime": null,
+      "rejected_candidates": [
+        {
+          "health_status": "UNAVAILABLE",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasons": [
+            "provider_unhealthy"
+          ]
+        },
+        {
+          "missing": [
+            "high_reasoning",
+            "image_input"
+          ],
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        },
+        {
+          "missing": [
+            "high_reasoning",
+            "image_input",
+            "structured_output",
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "40a412d855c845896d35864ad88c03ae2b91e6ba6c7086943ad06d70973f171a",
+      "required_capabilities": [
+        "text_input",
+        "image_input",
+        "structured_output",
+        "high_reasoning"
+      ],
+      "resolve_wall_ms": 0.1108,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "final_image_input_unavailable",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation",
+          "write_tools"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": true,
+        "optional_capabilities": [],
+        "preferred_model": "gpt-6-luna",
+        "preferred_provider": "codex_user_runner",
+        "reasoning_requirement": "high",
+        "request_id": "final_image_input_unavailable",
+        "required_capabilities": [
+          "text_input",
+          "image_input",
+          "structured_output",
+          "high_reasoning"
+        ],
+        "stage": "P4",
+        "task_type": "multimodal_review",
+        "tools_allowed": false
+      },
+      "sample_id": "final_image_input_unavailable",
+      "selection_reason": "no eligible candidate",
+      "task_type": "multimodal_review"
+    },
+    {
+      "allowed_providers": null,
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "HEALTH_DRIVEN_FALLBACK",
+      "fallback_used": true,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [
+        {
+          "expires_at": "2026-09-28T12:05:00+00:00",
+          "model": "host-managed",
+          "observed_at": "2026-09-28T12:00:00+00:00",
+          "provider": "WORK",
+          "reason": "frozen fixture: degraded",
+          "source": "injected_health_fixture",
+          "status": "DEGRADED",
+          "ttl_seconds": 300
+        }
+      ],
+      "health_snapshot_sha256": "ef9b35734721f7915c8cc4fc2fded30025a128cfe9033cc5e071830684067f40",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "16f48472d363567bf0246f9c1e9554a91c8a7562563d434ecc2dbf94102bd135",
+      "optional_capabilities": [],
+      "policy_sha256": "a40e6f94f383a8e259281dbf84b26e82bf29c91fdf953982b0e456e1cef052d9",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [
+        {
+          "health_status": "DEGRADED",
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "provider_unhealthy"
+          ]
+        },
+        {
+          "missing": [
+            "text_input"
+          ],
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "missing_required_capability"
+          ]
+        }
+      ],
+      "request_sha256": "5d97ebb14b6a9c6dcaa4525eda0338a7a30cdc93f660b50618a3c37848d34490",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1115,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "preference_fallback_work_unhealthy",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "preference_fallback_work_unhealthy",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "preference_fallback_work_unhealthy",
+      "selection_reason": "bounded capability-safe fallback",
+      "task_type": "text_generation"
+    },
+    {
+      "allowed_providers": [
+        "codex_user_runner"
+      ],
+      "authority_writes": 0,
+      "capability_registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
+      "capability_registry_snapshot": [
+        {
+          "capabilities": [
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input"
+          ],
+          "execution_runtime": "WORK",
+          "model": null,
+          "provider": "WORK",
+          "reasoning_levels": [],
+          "schema_output": true,
+          "source": "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "image_generation"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasoning_levels": [],
+          "schema_output": false,
+          "source": "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+          "subscription_available": null,
+          "telemetry": true
+        },
+        {
+          "capabilities": [
+            "high_reasoning",
+            "image_input",
+            "read_only_mode",
+            "schema_output",
+            "structured_output",
+            "text_input",
+            "tool_use"
+          ],
+          "execution_runtime": "CODEX",
+          "model": "gpt-6-luna",
+          "provider": "codex_user_runner",
+          "reasoning_levels": [
+            "high"
+          ],
+          "schema_output": true,
+          "source": "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
+          "subscription_available": null,
+          "telemetry": true
+        }
+      ],
+      "config_sha256": "3043d5fd3b7c823266eb43ce2a2d81e4d4af652b47fe968ad213d85c2178bd0a",
+      "divergence_type": "EXPECTED_POLICY_IMPROVEMENT",
+      "fallback_used": true,
+      "forbidden_capabilities": [
+        "image_generation"
+      ],
+      "health_snapshot": [],
+      "health_snapshot_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "health_status": "UNKNOWN",
+      "legacy_model": null,
+      "legacy_provider": "WORK",
+      "legacy_runtime": "WORK",
+      "llm_calls": 0,
+      "logical_decision_sha256": "50bbd51eac33c9ef8ff43b95dd52cfea1001414f9b71ab52548bdc18fb340eeb",
+      "optional_capabilities": [],
+      "policy_sha256": "2104c79ea49dbc8f562c3bc7f2e5aada192b89c0e20844ec731419099fa9db2c",
+      "proposed_model": "gpt-6-luna",
+      "proposed_provider": "codex_user_runner",
+      "proposed_runtime": "CODEX",
+      "rejected_candidates": [
+        {
+          "model": null,
+          "provider": "WORK",
+          "reasons": [
+            "policy_disallowed"
+          ]
+        },
+        {
+          "model": "gpt-image-2.5-flare",
+          "provider": "codex_cli_subscription",
+          "reasons": [
+            "policy_disallowed"
+          ]
+        }
+      ],
+      "request_sha256": "4a24f3b61a49435bd80c53a49bbcbb60f0ddc054d64fda2c82a7cf4bd3af69dd",
+      "required_capabilities": [
+        "text_input"
+      ],
+      "resolve_wall_ms": 0.1007,
+      "route_equivalent": false,
+      "route_request": {
+        "agent": "policy_disallowed_provider",
+        "cost_class": "default",
+        "execution_domain": "P4 paired route validation",
+        "fallback_allowed": true,
+        "forbidden_capabilities": [
+          "image_generation"
+        ],
+        "latency_class": "normal",
+        "multimodal_required": false,
+        "optional_capabilities": [],
+        "preferred_model": null,
+        "preferred_provider": "WORK",
+        "reasoning_requirement": null,
+        "request_id": "policy_disallowed_provider",
+        "required_capabilities": [
+          "text_input"
+        ],
+        "stage": "P4",
+        "task_type": "text_generation",
+        "tools_allowed": false
+      },
+      "sample_id": "policy_disallowed_provider",
+      "selection_reason": "bounded capability-safe fallback",
+      "task_type": "text_generation"
+    }
+  ],
+  "schema_version": 1,
+  "story_work_to_codex": {
+    "blocking": false,
+    "classification": "LEGACY_ROUTE_UNDER_SPECIFIED",
+    "evidence": [
+      {
+        "finding": "runtime=WORK only; no model or reasoning_effort",
+        "source": "config/storyos.yaml:runtime.review.text"
+      },
+      {
+        "finding": "host_managed=true; usage_telemetry=not_exposed_by_workspace_transport",
+        "source": "episodes/_system/workspace_provider.py:PROVIDERS.webcodex"
+      },
+      {
+        "finding": "Codex user runner receipt declares model=gpt-6-luna and reasoning_effort=high; does not evidence WORK capability",
+        "source": "reports/p3-final-semantic-critic-real-shadow-smoke-retry2-20260928.json:model_execution"
+      }
+    ],
+    "legacy": {
+      "model": null,
+      "provider": "WORK",
+      "runtime": "WORK"
+    },
+    "proposed": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "required_capability": "high_reasoning",
+    "work_capability_proven": false
+  },
+  "unexplained_divergence_count": 0,
+  "valid_pairs": 16
+}
