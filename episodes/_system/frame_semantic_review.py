@@ -700,14 +700,15 @@ def _apply_candidate_gate(
             else:
                 plan.append(("pass", source, review, status))
             continue
-        if int(frame.get("content_repairs_used") or 0) >= repair_limit and status in {"ORIGINAL_READY", "REPAIR_READY", "PASSED", "LOCKED", "NEEDS_USER"}:
-            plan.append(("force_pass", source, review, status))
+        # A Final Semantic FAIL is authoritative review evidence, not the
+        # ordinary image-content critic's retry-exhaustion acceptance policy.
+        # Never force-pass a candidate that this review has just rejected.
+        if status in {"LOCKED", "PASSED"}:
+            plan.append(("escalate_needs_user", source, review, status))
+        elif status == "NEEDS_USER":
+            plan.append(("retain_needs_user", source, review, status))
         elif status in {"ORIGINAL_READY", "REPAIR_READY"}:
             plan.append(("review_failure", source, review, status))
-        elif status == "LOCKED" and int(frame.get("content_repairs_used") or 0) < repair_limit:
-            plan.append(("authorize_locked_repair", source, review, status))
-        elif status in {"LOCKED", "PASSED"}:
-            plan.append(("escalate_needs_user", source, review, status))
         else:
             preflight_errors.append(f"frame {key} cannot close FAIL from status={status}")
     if preflight_errors:
@@ -720,13 +721,11 @@ def _apply_candidate_gate(
     for operation, source, review, _status in [x for x in plan if x[0] != "pass"]:
         key = source["frame"]
         notes = "Final semantic critic candidate review: " + str(review.get("notes") or review.get("issue_codes") or "")
-        if operation == "force_pass":
-            production_ledger.force_pass_content_exhaustion(ep, key, notes[:500])
-            forced_frames.append(key)
-            continue
         failures.append(key)
         if operation == "escalate_needs_user":
             production_ledger.mark_review_needs_user(ep, key, reason=notes[:500])
+            continue
+        if operation == "retain_needs_user":
             continue
         if operation == "authorize_locked_repair":
             production_ledger.cmd_authorize_repair(SimpleNamespace(
@@ -734,18 +733,19 @@ def _apply_candidate_gate(
                 note=notes[:500], delegated_auto=True))
             continue
         production_ledger.cmd_review(SimpleNamespace(
-            episode_dir=str(ep), frame=key, decision="repair", notes=notes[:500]))
+            episode_dir=str(ep), frame=key, decision="repair", notes=notes[:500],
+            prevent_exhaustion_force_pass=True))
         status = str(_ledger_frame(ep, key).get("status") or "")
         if status == "CONTENT_FAILED":
             production_ledger.cmd_authorize_repair(SimpleNamespace(
                 episode_dir=str(ep), frame=key,
                 note=notes[:500], delegated_auto=True))
 
-    for operation, source, review, _status in [x for x in plan if x[0] in {"pass", "force_pass"}]:
+    for operation, source, review, _status in [x for x in plan if x[0] == "pass"]:
         key = source["frame"]
         status = str(_ledger_frame(ep, key).get("status") or "")
         notes = "Final semantic critic candidate review: " + str(review.get("notes") or review.get("issue_codes") or "")
-        if operation == "pass" and status in {"ORIGINAL_READY", "REPAIR_READY"}:
+        if status in {"ORIGINAL_READY", "REPAIR_READY"}:
             production_ledger.cmd_review(SimpleNamespace(
                 episode_dir=str(ep), frame=key, decision="pass", notes=notes[:500]))
             status = str(_ledger_frame(ep, key).get("status") or "")
@@ -753,7 +753,7 @@ def _apply_candidate_gate(
             production_ledger.cmd_promote(SimpleNamespace(episode_dir=str(ep), frame=key))
             production_ledger.cmd_lock(SimpleNamespace(
                 episode_dir=str(ep), frame=key,
-                reason=f"final semantic critic attempt {attempt} {'FORCED_PASS' if operation == 'force_pass' else 'PASS'}"))
+                reason=f"final semantic critic attempt {attempt} PASS"))
         elif status != "LOCKED":
             raise RuntimeError(f"frame {key} cannot close PASS from status={status}")
 

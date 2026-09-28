@@ -428,7 +428,10 @@ def cmd_review(args: argparse.Namespace) -> None:
         frame["status"] = "NEEDS_USER"
     data["updated_at"] = now_iso()
     save_json(path, data)
-    if decision == "repair" and frame["status"] == "NEEDS_USER" and frame.get("current_candidate"):
+    if (decision == "repair"
+            and frame["status"] == "NEEDS_USER"
+            and frame.get("current_candidate")
+            and not getattr(args, "prevent_exhaustion_force_pass", False)):
         # The user's standing continuity policy applies only after the frozen
         # content budget is spent and only to an existing, provenance-bound image.
         from production_ledger_manage import force_pass_content_exhaustion

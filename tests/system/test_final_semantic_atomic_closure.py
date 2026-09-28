@@ -6,6 +6,7 @@ import tempfile
 import threading
 import time
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 
@@ -16,6 +17,8 @@ if str(SYSTEM) not in sys.path:
 
 import frame_semantic_review
 import production_ledger
+import production_ledger_manage
+import production_ledger_run
 import vision_review_executor
 
 
@@ -117,6 +120,84 @@ def test_final_semantic_applies_failure_escalation_before_new_pass_lock():
     assert calls[1:] == ["review:03:pass", "promote:03", "lock:03"]
     assert state["12"] == "NEEDS_USER"
     assert state["03"] == "LOCKED"
+
+
+def test_final_semantic_failure_with_budget_remaining_authorizes_only_the_bounded_repair():
+    ledger = {
+        "policy": {"max_content_repairs_per_frame": 1},
+        "frames": {"03": {"status": "ORIGINAL_READY", "content_repairs_used": 0}},
+    }
+    review = {"frame": "03", "decision": "fail", "checks": {}, "issue_codes": ["KEY_PROP_DRIFT"]}
+    calls = []
+    with patch.object(frame_semantic_review, "validate_candidate_gate_rows", return_value=[]), \
+            patch.object(frame_semantic_review, "episode_contract_version", return_value="test"), \
+            patch.object(frame_semantic_review, "directing_v3_required", return_value=False), \
+            patch.object(frame_semantic_review, "read_json", return_value=ledger), \
+            patch.object(frame_semantic_review.production_ledger, "load_authority", return_value=ledger), \
+            patch.object(frame_semantic_review, "_ledger_frame", return_value={"status": "CONTENT_FAILED"}), \
+            patch.object(frame_semantic_review, "write_json"), \
+            patch.object(frame_semantic_review.production_ledger, "content_repair_limit", return_value=1), \
+            patch.object(frame_semantic_review.production_ledger, "cmd_review", side_effect=lambda args: calls.append(args)), \
+            patch.object(frame_semantic_review.production_ledger, "cmd_authorize_repair", side_effect=lambda args: calls.append(args)), \
+            patch.object(frame_semantic_review.production_ledger, "force_pass_content_exhaustion") as force_pass:
+        rc = frame_semantic_review._apply_candidate_gate(
+            Path("ep"), data={"frames": [review], "issue_codes": []},
+            reviewed=[{"frame": "03", "path_rel": "candidate/03.png", "sha256": "3" * 64}],
+            contexts={}, provenance={}, attempt=2)
+
+    assert rc == 2
+    assert len(calls) == 2
+    assert calls[0].decision == "repair"
+    assert calls[1].frame == "03"
+    assert calls[0].prevent_exhaustion_force_pass is True
+    force_pass.assert_not_called()
+
+
+def test_final_semantic_failure_at_exhausted_budget_keeps_ready_candidate_needs_user():
+    ledger = {
+        "policy": {"max_content_repairs_per_frame": 1},
+        "frames": {"12": {"status": "REPAIR_READY", "content_repairs_used": 1}},
+    }
+    review = {"frame": "12", "decision": "fail", "checks": {}, "issue_codes": ["KEY_PROP_DRIFT"]}
+    seen = []
+    with patch.object(frame_semantic_review, "validate_candidate_gate_rows", return_value=[]), \
+            patch.object(frame_semantic_review, "episode_contract_version", return_value="test"), \
+            patch.object(frame_semantic_review, "directing_v3_required", return_value=False), \
+            patch.object(frame_semantic_review, "read_json", return_value=ledger), \
+            patch.object(frame_semantic_review.production_ledger, "load_authority", return_value=ledger), \
+            patch.object(frame_semantic_review, "_ledger_frame", return_value={"status": "NEEDS_USER"}), \
+            patch.object(frame_semantic_review, "write_json"), \
+            patch.object(frame_semantic_review.production_ledger, "content_repair_limit", return_value=1), \
+            patch.object(frame_semantic_review.production_ledger, "cmd_review", side_effect=lambda args: seen.append(args)), \
+            patch.object(frame_semantic_review.production_ledger, "cmd_authorize_repair") as authorize, \
+            patch.object(frame_semantic_review.production_ledger, "force_pass_content_exhaustion") as force_pass:
+        rc = frame_semantic_review._apply_candidate_gate(
+            Path("ep"), data={"frames": [review], "issue_codes": []},
+            reviewed=[{"frame": "12", "path_rel": "candidate/12.png", "sha256": "c" * 64}],
+            contexts={}, provenance={}, attempt=2)
+
+    assert rc == 2
+    assert len(seen) == 1
+    assert seen[0].decision == "repair"
+    assert seen[0].prevent_exhaustion_force_pass is True
+    authorize.assert_not_called()
+    force_pass.assert_not_called()
+
+
+def test_ledger_review_can_preserve_needs_user_without_legacy_exhaustion_force_pass():
+    ledger = {"policy": {"max_content_repairs_per_frame": 1}, "frames": {
+        "12": {"status": "REPAIR_READY", "content_repairs_used": 1, "current_candidate": {"path": "candidate/12.png", "sha256": "c" * 64}}
+    }}
+    with patch.object(production_ledger_run, "episode_dir", return_value=Path("ep")), \
+            patch.object(production_ledger_run, "get_ledger", return_value=(Path("ledger"), ledger)), \
+            patch.object(production_ledger_run, "save_json"), \
+            patch.object(production_ledger_manage, "force_pass_content_exhaustion") as force_pass:
+        production_ledger_run.cmd_review(SimpleNamespace(
+            episode_dir="ep", frame="12", decision="repair", notes="final semantic failure",
+            prevent_exhaustion_force_pass=True))
+
+    assert ledger["frames"]["12"]["status"] == "NEEDS_USER"
+    force_pass.assert_not_called()
 
 
 def test_ordinary_patch_context_failure_never_mutates_target_ledger():
