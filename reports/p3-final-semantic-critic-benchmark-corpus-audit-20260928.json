@@ -1,0 +1,650 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_benchmark_corpus_audit",
+  "episodes_scanned": 5,
+  "historical_review_sets_scanned": 7,
+  "fixture_sets_scanned": 7,
+  "git_historical_review_paths": [
+    "\"episodes//345/244/251/347/225/214/346/231/256/351/200/232/344/272/272/347/232/204/344/270/200/345/244/251/meta/frame-semantic-candidate-attempt-1.json\"",
+    "\"episodes//345/244/251/347/225/214/346/231/256/351/200/232/344/272/272/347/232/204/344/270/200/345/244/251/meta/frame-semantic-candidate-attempt-2.json\"",
+    "\"episodes//345/244/251/347/225/214/346/231/256/351/200/232/344/272/272/347/232/204/344/270/200/345/244/251/meta/frame-semantic-review.json\"",
+    "\"episodes//350/257/257/345/205/245/346/241/203/350/212/261/346/272/220/meta/frame-semantic-candidate-attempt-2.json\"",
+    "\"episodes//350/257/257/345/205/245/346/241/203/350/212/261/346/272/220/meta/frame-semantic-review.json\"",
+    "\"episodes/09_/346/227/247/347/211/251/346/200/252/350/260/210/05_/345/251/232/347/244/274/345/211/215/345/244/234_/350/256/260/345/277/206/351/272/273/351/206/211/meta/frame-semantic-candidate-attempt-2.json\"",
+    "\"episodes/09_/346/227/247/347/211/251/346/200/252/350/260/210/05_/345/251/232/347/244/274/345/211/215/345/244/234_/350/256/260/345/277/206/351/272/273/351/206/211/meta/frame-semantic-review.json\"",
+    "\"episodes/10_/345/261/261/351/232/276/344/274/252/347/272/252/345/275/225/347/211/207/01_/351/263/214/345/244/252/347/272/277_/347/203/255/346/261/244/meta/frame-semantic-review.json\"",
+    "\"episodes/10_/345/275/274/346/255/244/347/232/204/345/244/251/344/270/212/03_/351/233/276/344/270/255/347/232/204/345/217/246/344/270/200/345/272/247/347/224/237/346/264/273/345/214/272/meta/frame-semantic-review.json\"",
+    "\"episodes/11_/344/273/262/345/244/217/345/244/234/346/203/212/351/255/202/01_/345/201/234/347/224/265/345/244/234/350/234/225/345/243/263/meta/frame-semantic-review.json\"",
+    "\"episodes/17_/347/213/256/351/251/274/345/262/255/01_/346/263/224/346/260/264/344/270/216/351/207/221/347/211/214/meta/frame-semantic-review.json\"",
+    "\"episodes/_archive/20260911_EP003_abandoned_/351/233/276/344/270/255/347/232/204/345/217/246/344/270/200/345/272/247/347/224/237/346/264/273/345/214/272/meta/frame-semantic-review.json\""
+  ],
+  "git_historical_visual_asset_paths": [],
+  "visual_asset_sets_found": 4,
+  "independent_ground_truth_sets": 0,
+  "eligible_frozen_visual_sets": 0,
+  "pass_label_count": 0,
+  "fail_label_count": 0,
+  "repair_label_count": 0,
+  "duplicate_source_sets_rejected": 0,
+  "model_derived_labels_rejected": 7,
+  "text_only_fixtures_rejected": 7,
+  "historical_review_findings": [
+    {
+      "sample_id": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-candidate-attempt-2.json",
+      "sample_type": "historical_review",
+      "episode": "09_旧物怪谈",
+      "review_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-candidate-attempt-2.json",
+      "review_sha256": "c116e2a193ec364d4d9addea47a15de39d08bde98e4cf81c7c3966a4b231abba",
+      "review_label": "FAIL",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 0,
+      "frame_sha_matches_found": 0,
+      "frame_sha_unrecoverable": 0,
+      "matched_frames": [],
+      "reasons": [
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "NO_VISUAL_ASSETS",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    },
+    {
+      "sample_id": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json",
+      "sample_type": "historical_review",
+      "episode": "09_旧物怪谈",
+      "review_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json",
+      "review_sha256": "ed027069b1696cc393e8e267a1490eb33e9a39c9632bc5f610913c9ea3d41b60",
+      "review_label": "PASS",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 20,
+      "frame_sha_matches_found": 20,
+      "frame_sha_unrecoverable": 0,
+      "matched_frames": [
+        {
+          "frame": "01",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/01-0d0b9814d146-a1.png",
+          "sha256": "cef5b7b929e12b720b6becdbfcded43d3b0f34d0a2f82070741097af5fd812f6"
+        },
+        {
+          "frame": "02",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/02-27228cb1d00a-a1.png",
+          "sha256": "1d54666bffe058a86595f2ca7c943ffb85d4a64f02a0e6105da98301f5e8bf76"
+        },
+        {
+          "frame": "03",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/03-e631da805486-a1.png",
+          "sha256": "10e5cfdcdd0f96d2829b25f254f8a6f78c6bbc0f76c370c5222fc26318f6157e"
+        },
+        {
+          "frame": "04",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/04-c6896ae27dfa-a1.png",
+          "sha256": "dbabdd5aa480645ec7b18e0989aa33d8a76137e32f4666410e915ff93dd06326"
+        },
+        {
+          "frame": "05",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/05-65286fe41789-a1.png",
+          "sha256": "b43c66ac373f1d206e15476f447bcde2a1ad6c6cc2ea40301e646066ac66e7bb"
+        },
+        {
+          "frame": "06",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/06-9bd499bada2e-a1.png",
+          "sha256": "3ec29035dfcd9b79175d5557b4b87c6a7762a3e680d7d47781c59cfeaef32e8b"
+        },
+        {
+          "frame": "07",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/07-5c78acef4e0b-a1.png",
+          "sha256": "e30531dbac44759d3878f2edaf6b445178ec7ffb03eec336713cf7c22f94962f"
+        },
+        {
+          "frame": "08",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/08-23bfa990b6d5-a1.png",
+          "sha256": "c85d271a917a790ccdda6a7f6e167d6945adae6d36858da4ad334d1ab74d6170"
+        },
+        {
+          "frame": "09",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/09-d2b7e4909510-a1.png",
+          "sha256": "fc3bd579aec2b5d1d1b5a65f82bd8e82a43d3b81b706333b672676b77de47ccf"
+        },
+        {
+          "frame": "10",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/10-45330cccab60-a1.png",
+          "sha256": "8e859b710d4330bb85c72103906d98c8352de50048e8203394c17a34827e341c"
+        },
+        {
+          "frame": "11",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/11-ea4953d784ef-a1.png",
+          "sha256": "4c178dc31a0a3bf56ccf732e5e4d8a87d1a9674d4bdfc74ca681053df25905a3"
+        },
+        {
+          "frame": "12",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/12-ef634aef4e89-a2.png",
+          "sha256": "946b643d1759ad662f8e9d362bba673925caa000c9fa9f5a3c982822a851a525"
+        },
+        {
+          "frame": "13",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/13-f4c8aa0413e0-a1.png",
+          "sha256": "ca45d70aae2e118d3d6bbbb9f606732be05a6305e224ee7e129690905048e00e"
+        },
+        {
+          "frame": "14",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/14-ad50f802f5bf-a1.png",
+          "sha256": "f686c92a24defba09809097fdd77524dcb1f9c1fea8ef058b012d98ff2ad6427"
+        },
+        {
+          "frame": "15",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/15-1e63d6ffb150-a1.png",
+          "sha256": "99050f3d25f8f4ce4c8dae83703f719a3a899bde97df654b2116fa8819e08c41"
+        },
+        {
+          "frame": "16",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/16-c4e1ff0c63ea-a1.png",
+          "sha256": "9582dc97b9d40b792ec57ecf89d9ae6d96fce340ac7cfd4830749ccfa77f4e92"
+        },
+        {
+          "frame": "17",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/17-100e40533e81-a1.png",
+          "sha256": "87b8f91849b438be84b13de86bb0da9005e142ffedb6e765e782237bededacb3"
+        },
+        {
+          "frame": "18",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/18-a7fa4eff8609-a1.png",
+          "sha256": "167f2b46f1ba5026deb2149ca35eebd0f03314e8d688232def5b26b4186cfbef"
+        },
+        {
+          "frame": "19",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/19-23639bde9217-a1.png",
+          "sha256": "406ca4c8d89a3fdff990cf43fd824d1c27823b5a3af05b1ab73823237d9513cd"
+        },
+        {
+          "frame": "20",
+          "path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/media/candidates/scheduled/20-1670206e74bf-a1.png",
+          "sha256": "177c430364c9b3dc0bf48029e7e28ee183cfe9be5495ea1c19e1485c986f0ffd"
+        }
+      ],
+      "reasons": [
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    },
+    {
+      "sample_id": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-review.json",
+      "sample_type": "historical_review",
+      "episode": "10_山难伪纪录片",
+      "review_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-review.json",
+      "review_sha256": "1b0c33d0df050e15611bffc5cf9b5fc3a01834f1c1ac1c642e657c22e2536f0e",
+      "review_label": "PASS",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 20,
+      "frame_sha_matches_found": 0,
+      "frame_sha_unrecoverable": 20,
+      "matched_frames": [],
+      "reasons": [
+        "FRAME_SHA_UNRECOVERABLE",
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    },
+    {
+      "sample_id": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-review.json",
+      "sample_type": "historical_review",
+      "episode": "11_仲夏夜惊魂",
+      "review_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-review.json",
+      "review_sha256": "4487ea3e5d547996fbf2e58cfa9c64ee824bc14da2a4d955986f289a2a79aa73",
+      "review_label": "FAIL",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 20,
+      "frame_sha_matches_found": 20,
+      "frame_sha_unrecoverable": 0,
+      "matched_frames": [
+        {
+          "frame": "01",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/01.png",
+          "sha256": "f42261c0fe90ebdcc1e194c5806738fed9fdd198efbc43933e58db95e3313dc8"
+        },
+        {
+          "frame": "02",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/02.png",
+          "sha256": "ee83a4ae884b00ac84d5b32c9d401a9a2aceff8023223f98b21ba63d1e12edde"
+        },
+        {
+          "frame": "03",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/03-c41ca3fbadf4-a1.png",
+          "sha256": "ee743f0f72d25a032365ea0910845dea3d616cb13df47d3d1bfb0462b8a416dd"
+        },
+        {
+          "frame": "04",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/04.png",
+          "sha256": "1b1ede78663220a4faad858ff1acd14967bf49db13db0c603676fa9f98a9eb1e"
+        },
+        {
+          "frame": "05",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/05.png",
+          "sha256": "652ee6e0dadc93f62d29f0181d3bf38692a323c108d30ef1f92f4dc4615ba3f3"
+        },
+        {
+          "frame": "06",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/06.png",
+          "sha256": "e9f33870eb38c7ee39c6b6abdf79ae1598fac5f14a56f984d18bee6ad8da4055"
+        },
+        {
+          "frame": "07",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/07.png",
+          "sha256": "e6e66403977cc41f94dc94fbf6975e056a45b6f97d3dd713473fb642af44bc83"
+        },
+        {
+          "frame": "08",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/08-60bc9c2e1e16-a1.png",
+          "sha256": "1929e3c795654aa7d71d674d57c4ae21127a49f259e7cc3043dd3c72e7f17dba"
+        },
+        {
+          "frame": "09",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/09.png",
+          "sha256": "1b7c89e980b6550bb52eaceca4fd6ed49ea4487aa2feb54c7e713daffbf264a0"
+        },
+        {
+          "frame": "10",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/10.png",
+          "sha256": "b5d984e99d8493f9c07b688090707e0c2982b9fb21fadf19986dabbef41ae72e"
+        },
+        {
+          "frame": "11",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/11.png",
+          "sha256": "697f50777c39cc04ae24dbb3bac94262f45a6fc9cf70a7f863c0818eccc8a01e"
+        },
+        {
+          "frame": "12",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/12.png",
+          "sha256": "5e7548b115a75c25d04b0b37cf259db93b8bea8097a92a0ca4b2d6abcf1160ff"
+        },
+        {
+          "frame": "13",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/13.png",
+          "sha256": "a067e0e83b6c06823766dc51579ec344c3800d27bd0ab64f50264ccabd8fdb9c"
+        },
+        {
+          "frame": "14",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/14.png",
+          "sha256": "3de374d91e72a47d6e351f00b6c6b09df276b62267bc212e3d06be15bef9707b"
+        },
+        {
+          "frame": "15",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/15.png",
+          "sha256": "9d008a5b66aee376c65e4a145c241d7eb90504b53d548650708316e9745bfbce"
+        },
+        {
+          "frame": "16",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/16.png",
+          "sha256": "562a8c0122e267e7243de410b43bc5474689286ad91900afaec3d4a440b1b384"
+        },
+        {
+          "frame": "17",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/17.png",
+          "sha256": "9f34d7ec9bc5a4604ec66cd38bf67b2e1cb3bbb7eeb723e9f9987b243568f2f1"
+        },
+        {
+          "frame": "18",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/candidates/scheduled/18-dd713d132413-a1.png",
+          "sha256": "1bc500012fea59570b278f70a00271ac1e23d4c160fef128a94faa86d43e90d5"
+        },
+        {
+          "frame": "19",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/19.png",
+          "sha256": "bc9af0af9fe39cf824652a377dcd64c4f0b17dcccab49d7a6b8c4f3c3ca4d488"
+        },
+        {
+          "frame": "20",
+          "path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/media/approved/20.png",
+          "sha256": "6a33e4d52ce22dffbf66563743e8f4faa89bc16ad16a2da7e2381cf562e9081a"
+        }
+      ],
+      "reasons": [
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    },
+    {
+      "sample_id": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/frame-semantic-review.json",
+      "sample_type": "historical_review",
+      "episode": "_archive",
+      "review_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/frame-semantic-review.json",
+      "review_sha256": "743eab990364772a9d2f25ebf143812699cda21503087ce642862e5883f8ad09",
+      "review_label": "PASS",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 20,
+      "frame_sha_matches_found": 20,
+      "frame_sha_unrecoverable": 0,
+      "matched_frames": [
+        {
+          "frame": "01",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/01.png",
+          "sha256": "3666919bd9f18e7232c977f11ab67ad7652ca1cb6fff478f8dc107eb98e160cc"
+        },
+        {
+          "frame": "02",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/02.png",
+          "sha256": "f8dad54e9b4cba926fe08928e2e7b84fe92234778b98c9e8872ce5ad3874e940"
+        },
+        {
+          "frame": "03",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/03.png",
+          "sha256": "01754866e6146ef74da5dbd7880eec49fcc21074039ac5579e954506c45b2d27"
+        },
+        {
+          "frame": "04",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/04.png",
+          "sha256": "ea91aff3a92e74d05991e3b3d99e2fc38e1d0669b0b1322ff311ba75021d1e0a"
+        },
+        {
+          "frame": "05",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/05.png",
+          "sha256": "0d42343407ae3c3df45f5cc3a6b5f980dd72d43fd62b3e1c5598063411536aff"
+        },
+        {
+          "frame": "06",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/06.png",
+          "sha256": "b1dc85c53ca220d6ddd87723dbc46a62a9a3cb864c0e08241998d8e52992a99a"
+        },
+        {
+          "frame": "07",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/07.png",
+          "sha256": "c1e45c81f3ca25bbb7b0446f9fcc18243f11cc7dd493420f4308091589156c1b"
+        },
+        {
+          "frame": "08",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/08.png",
+          "sha256": "6fe028c1761861d5c9a3d8b1518ed4026c6e299a95f15e9b0656b5f86e1643c4"
+        },
+        {
+          "frame": "09",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/09.png",
+          "sha256": "dbf60f3d8ae70ff8373c0a87f93ab21126a41eb79c4ca40335aea21e4f457fdd"
+        },
+        {
+          "frame": "10",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/10.png",
+          "sha256": "083763496d98a7b06c2b47fa933ace54b2731f6e8a1cc8ea568701394ed74380"
+        },
+        {
+          "frame": "11",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/11.png",
+          "sha256": "7d300149ec08ad158c4a7b87afb2f4245c85a646bee082b98fa11f4782a63325"
+        },
+        {
+          "frame": "12",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/12.png",
+          "sha256": "93862f0be8bdbde96a60436bc4261235fdfae99ce88c1836816792b665c5ebbe"
+        },
+        {
+          "frame": "13",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/13.png",
+          "sha256": "a0841585fcbbbfbe091a9b66d2038f79b77d35715600c3ab8ad26c42b29f3d63"
+        },
+        {
+          "frame": "14",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/14.png",
+          "sha256": "54c0c828b0d58b7eb1e0dc3a99de9e660811a63cbca51eedc6502bb2bf3e2fb1"
+        },
+        {
+          "frame": "15",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/15.png",
+          "sha256": "129aed42b908d2659598c5d1bc5778a2a8bf457a8c5fb0f1d48da18d516bb55a"
+        },
+        {
+          "frame": "16",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/16.png",
+          "sha256": "5e0ddd818dbe321085f3a0c203344672c365b7a82c05af47a23f4dc4b122fcd4"
+        },
+        {
+          "frame": "17",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/17.png",
+          "sha256": "6a3d2deeb59581e8b81e058e554b3b08a5f1d68bc7576c0e91af38b7ea0d97e7"
+        },
+        {
+          "frame": "18",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/18.png",
+          "sha256": "47cc8a688701146ff76efff3a8466637d5aa4e8dbcb76609a8f96f04bc302491"
+        },
+        {
+          "frame": "19",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/19.png",
+          "sha256": "5ee72e97858da506d77a6afc4ef21ff8d7d6735e01ecbb5364540fbcf01a0e28"
+        },
+        {
+          "frame": "20",
+          "path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/media/approved/20.png",
+          "sha256": "826e06b7d3c038687f79cad6962dc2ee1d49a967fb9959cb9b6dafffd8a68202"
+        }
+      ],
+      "reasons": [
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    },
+    {
+      "sample_id": "episodes/误入桃花源/meta/frame-semantic-candidate-attempt-2.json",
+      "sample_type": "historical_review",
+      "episode": "episodes",
+      "review_path": "episodes/误入桃花源/meta/frame-semantic-candidate-attempt-2.json",
+      "review_sha256": "0821bd594cbcc8da3917a6132752b6d06b6c8de3d6dbef2ecc63331766282c47",
+      "review_label": "FAIL",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 0,
+      "frame_sha_matches_found": 0,
+      "frame_sha_unrecoverable": 0,
+      "matched_frames": [],
+      "reasons": [
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "NO_VISUAL_ASSETS",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    },
+    {
+      "sample_id": "episodes/误入桃花源/meta/frame-semantic-review.json",
+      "sample_type": "historical_review",
+      "episode": "episodes",
+      "review_path": "episodes/误入桃花源/meta/frame-semantic-review.json",
+      "review_sha256": "7443e9a181608542d044c108fe2565d06131fb788fd17c29a5a8d8668b1b4890",
+      "review_label": "FAIL",
+      "ground_truth_independent": false,
+      "model_derived_label": true,
+      "frame_count": 20,
+      "frame_sha_matches_found": 20,
+      "frame_sha_unrecoverable": 0,
+      "matched_frames": [
+        {
+          "frame": "01",
+          "path": "episodes/误入桃花源/media/approved/01.png",
+          "sha256": "615b268fdb1d8d87b6151c064257bfa71a87a85a8eb03c1e519f70fe533431d4"
+        },
+        {
+          "frame": "02",
+          "path": "episodes/误入桃花源/media/approved/02.png",
+          "sha256": "1aa3334cb70cade22fb8022131981b740a18fe59fa4c58007e61f0c39ad3cbb1"
+        },
+        {
+          "frame": "03",
+          "path": "episodes/误入桃花源/media/approved/03.png",
+          "sha256": "5dfd2ab3e9ecc8b278968f4cff38a99a0f5dc4f049235535b41a7233c84200b2"
+        },
+        {
+          "frame": "04",
+          "path": "episodes/误入桃花源/media/approved/04.png",
+          "sha256": "6b8688390d6df76e07caeb0be8c80158abd247391c70493767699db249b2409d"
+        },
+        {
+          "frame": "05",
+          "path": "episodes/误入桃花源/media/approved/05.png",
+          "sha256": "7bed818faa1bb7f10425dc67ff47f9d2b0012b81c6b0ce5a98ddffedcc9f7b76"
+        },
+        {
+          "frame": "06",
+          "path": "episodes/误入桃花源/media/approved/06.png",
+          "sha256": "a69ab0e79390ece2382e6531c91cc15588570e321bff94aedc3b589e9a384358"
+        },
+        {
+          "frame": "07",
+          "path": "episodes/误入桃花源/media/approved/07.png",
+          "sha256": "6b63a26985ad325301c494dab258bbaffcc43fa838162027f43b4b6b742fa4c7"
+        },
+        {
+          "frame": "08",
+          "path": "episodes/误入桃花源/media/approved/08.png",
+          "sha256": "f13b5726b5509c290cf54ef78449c1da6e9b8c444efc1ba8a79ae37ecf212549"
+        },
+        {
+          "frame": "09",
+          "path": "episodes/误入桃花源/media/approved/09.png",
+          "sha256": "acee66bd2b88d370d4f8786bb9d8e3f84c19f9f0d0524fb036a821c85f74b457"
+        },
+        {
+          "frame": "10",
+          "path": "episodes/误入桃花源/media/approved/10.png",
+          "sha256": "110083e83a8046ef702e8328f4df766a2eea6ded5e952e20678dc29b6cd10c42"
+        },
+        {
+          "frame": "11",
+          "path": "episodes/误入桃花源/media/approved/11.png",
+          "sha256": "41598f680f80efd378dfd440e098c576cb2f5f9aa86c2ebd8a4accb7226580f6"
+        },
+        {
+          "frame": "12",
+          "path": "episodes/误入桃花源/media/approved/12.png",
+          "sha256": "091b2b7ace7337f88121699f00c2d18eb71d45a88f6d59b1f5bd2c8fdb12b94d"
+        },
+        {
+          "frame": "13",
+          "path": "episodes/误入桃花源/media/approved/13.png",
+          "sha256": "0773b41408ce8f5ee9ca6eb150148e442c63482d864ebc9d89ab349e08b8371c"
+        },
+        {
+          "frame": "14",
+          "path": "episodes/误入桃花源/media/approved/14.png",
+          "sha256": "a23b6e3806827a13b3bf2b3f189056dbe3c9eb8f7efccc611317c7df49d43519"
+        },
+        {
+          "frame": "15",
+          "path": "episodes/误入桃花源/media/approved/15.png",
+          "sha256": "f7715994a73b37d9a985076ab47a96e28d52af936a1fc319dd49eafc674f535b"
+        },
+        {
+          "frame": "16",
+          "path": "episodes/误入桃花源/media/approved/16.png",
+          "sha256": "a1536a60d3f398abdb60a23cbf5f176bf26d7a0210c56cfd80f3d4aff86c46b5"
+        },
+        {
+          "frame": "17",
+          "path": "episodes/误入桃花源/media/approved/17.png",
+          "sha256": "19af1931874be07c92580fa2ce21d14f49277960c7014cb19aa59b42fe78e225"
+        },
+        {
+          "frame": "18",
+          "path": "episodes/误入桃花源/media/approved/18.png",
+          "sha256": "1d6c7c8480a4de802afb2afdd61cf5d4861fc291d536edaed2d8f3157a16c7c9"
+        },
+        {
+          "frame": "19",
+          "path": "episodes/误入桃花源/media/approved/19.png",
+          "sha256": "df1a6c0e33167356db2905a930551c0227fd99609388ce8b2b9afbff3d9b5a02"
+        },
+        {
+          "frame": "20",
+          "path": "episodes/误入桃花源/media/approved/20.png",
+          "sha256": "3b53bf80a9813615bf46fdf50743035fee2c54549a5787eaf1ba55ef1320ed62"
+        }
+      ],
+      "reasons": [
+        "MODEL_REVIEW_ONLY_LABEL",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "SOURCE_BINDING_INCOMPLETE"
+      ]
+    }
+  ],
+  "fixture_rejections": [
+    {
+      "sample_id": "clean-pass",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    },
+    {
+      "sample_id": "identity-drift",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    },
+    {
+      "sample_id": "continuity-break",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    },
+    {
+      "sample_id": "world-conflict",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    },
+    {
+      "sample_id": "pov-conflict",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    },
+    {
+      "sample_id": "not-applicable-rule",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    },
+    {
+      "sample_id": "global-closure",
+      "reasons": [
+        "NO_VISUAL_ASSETS",
+        "NO_INDEPENDENT_GROUND_TRUTH",
+        "TEXT_ONLY_FIXTURE"
+      ]
+    }
+  ],
+  "other_independent_visual_label_records": [],
+  "manual_review_records_rejected": [
+    {
+      "path": "episodes/误入桃花源/release/production-review.md",
+      "reason": "ACCEPTANCE_OF_KNOWN_DEFECTS_NOT_INDEPENDENT_PER_SAMPLE_VISUAL_LABEL"
+    }
+  ],
+  "eligible": false,
+  "blockers": [
+    "LABELLED_FINAL_SEMANTIC_SAMPLE_SET_INSUFFICIENT",
+    "INDEPENDENT_VISUAL_GROUND_TRUTH_INSUFFICIENT"
+  ],
+  "audit_scope": {
+    "local_episode_reviews": 7,
+    "current_episode_images": 484,
+    "git_history_review_paths": 12,
+    "git_history_visual_asset_paths": 0,
+    "git_history_read_only": true
+  }
+}
