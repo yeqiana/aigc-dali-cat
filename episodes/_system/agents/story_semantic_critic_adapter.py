@@ -31,6 +31,7 @@ RUBRIC_PATHS = (
     ROOT / "standards/story_regressions/cases.json",
     ROOT / "standards/传播核与动作回应链规范_V1.0.md",
 )
+APPLICABILITY_REL = Path("meta/shot-progression-review.json")
 
 
 class CriticDecisionError(ValueError):
@@ -73,6 +74,53 @@ def validate_decision(payload: Any) -> dict[str, Any]:
     return {key: list(value) if isinstance(value, list) else value for key, value in payload.items()}
 
 
+def frozen_applicability_context(episode_dir: Path) -> dict[str, Any]:
+    """Read the canonical locked applicability contract; never infer it from prose."""
+    source = Path(episode_dir).resolve() / APPLICABILITY_REL
+    if not source.is_file():
+        raise CriticDecisionError("frozen Story applicability contract is missing")
+    try:
+        value = json.loads(source.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise CriticDecisionError("frozen Story applicability contract is invalid JSON") from exc
+    if not isinstance(value, dict) or value.get("status") != "LOCKED":
+        raise CriticDecisionError("frozen Story applicability contract is not LOCKED")
+    applicable = value.get("anomaly_applicable")
+    if type(applicable) is not bool:
+        raise CriticDecisionError("frozen Story applicability is missing a boolean anomaly_applicable")
+    reason = str(value.get("anomaly_exception_reason") or "").strip()
+    if applicable is False and not reason:
+        raise CriticDecisionError("non-anomaly applicability requires its locked exception reason")
+    try:
+        rel = source.relative_to(ROOT.resolve()).as_posix()
+    except ValueError as exc:
+        raise CriticDecisionError("frozen Story applicability source escapes repository") from exc
+    return {
+        "source_path": rel,
+        "source_sha256": sha256_file(source),
+        "status": "LOCKED",
+        "anomaly_applicable": applicable,
+        "anomaly_exception_reason": reason,
+    }
+
+
+def verify_applicability_context(context: Any) -> dict[str, Any]:
+    """Recheck the persisted contract binding before prompt construction/execution."""
+    if not isinstance(context, dict):
+        raise CriticDecisionError("frozen Story applicability context is missing")
+    source = (ROOT / str(context.get("source_path") or "")).resolve()
+    try:
+        source.relative_to(ROOT.resolve())
+    except ValueError as exc:
+        raise CriticDecisionError("frozen Story applicability source escapes repository") from exc
+    if not source.is_file() or sha256_file(source) != str(context.get("source_sha256") or ""):
+        raise CriticDecisionError("frozen Story applicability SHA drift")
+    actual = frozen_applicability_context(source.parent.parent)
+    if actual != context:
+        raise CriticDecisionError("frozen Story applicability context changed")
+    return actual
+
+
 def fixture_shadow_smoke() -> dict[str, Any]:
     """Run a deterministic synthetic comparison; this is not a real-model result."""
     shadow = {
@@ -108,9 +156,35 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _write_immutable_json(path: Path, payload: dict[str, Any]) -> str:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    encoded = (json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    try:
+        with path.open("xb") as handle:
+            handle.write(encoded)
+    except FileExistsError:
+        if path.read_bytes() != encoded:
+            raise CriticDecisionError(f"immutable Critic evidence already exists with different content: {path}")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def build_decision_prompt(*, attempt: int, story_text: str, storyboard_text: str,
-                          rubric_text: str) -> str:
+                          rubric_text: str, applicability: dict[str, Any]) -> str:
     """Build one frozen, decision-only input capsule for the Story Critic."""
+    applicability = verify_applicability_context(applicability)
+    if applicability["anomaly_applicable"]:
+        applicability_rules = """APPLICABILITY: the frozen contract says anomaly rules apply.
+- Enforce the supplied anomaly mechanism, trigger, direct response and consequence requirements.
+- Also check general story causality, continuity, payoff, and storyboard information gain.
+"""
+    else:
+        applicability_rules = """APPLICABILITY: the frozen contract says this is explicitly non-anomaly Story.
+- Do NOT require a core anomaly, abnormal response, anomaly trigger, or anomaly propagation_core.
+- Do NOT invent horror, mystery, investigation, paranormal behavior, or an abnormal response to satisfy generic rubric language.
+- Continue checking ordinary causal integrity: actions need plausible consequences; causal gaps and contradictions remain valid issues.
+- Apply general character motivation, continuity, structure, payoff, and storyboard information-gain checks where relevant.
+"""
+    applicability_record = json.dumps(applicability, ensure_ascii=False, sort_keys=True)
     return f"""You are the bounded Story Semantic Critic shadow for review attempt {attempt}.
 Evaluate only the frozen Story and Storyboard plus the supplied StoryOS rubric excerpts.
 Do not search the repository, call tools, rewrite the Story, or inspect producer scratch.
@@ -121,6 +195,12 @@ BLOCK for invalid/missing frozen input or an unresolvable contract problem.
 Evidence must be short, source-grounded observations. Do not expose chain-of-thought.
 Do not claim StoryOS Gate PASS. Do not write telemetry, receipt, execution, authority, or state fields.
 Do not propose changes outside repair_scope. A decision is advisory and cannot alter the existing review.
+
+<FROZEN_APPLICABILITY_CONTRACT source-sha256="{applicability['source_sha256']}">
+{applicability_record}
+</FROZEN_APPLICABILITY_CONTRACT>
+
+{applicability_rules}
 
 <FROZEN_STORY>
 {story_text}
@@ -228,10 +308,12 @@ def prepare_shadow_request(
     episode_dir: Path,
     *,
     attempt: int,
+    review_attempt: int | None = None,
     prompt: str,
     story_path: Path,
     storyboard_path: Path,
     rubric_paths: list[Path] | None = None,
+    applicability_context: dict[str, Any] | None = None,
 ) -> dict[str, Any] | None:
     """Freeze a decision-only isolated host request; shadow candidate is runtime evidence."""
     cfg = adapter_config()
@@ -241,6 +323,7 @@ def prepare_shadow_request(
         raise CriticDecisionError("Critic shadow cannot run while production is enabled")
     if not isinstance(prompt, str) or not prompt.strip():
         raise CriticDecisionError("shadow critic prompt is required")
+    context = verify_applicability_context(applicability_context)
     ep = Path(episode_dir).resolve()
     sources = [Path(story_path).resolve(), Path(storyboard_path).resolve(),
                *[Path(value).resolve() for value in (list(RUBRIC_PATHS) if rubric_paths is None else rubric_paths)]]
@@ -257,15 +340,18 @@ def prepare_shadow_request(
         "kind": REQUEST_KIND,
         "shadow_only": True,
         "candidate_authority": "runtime_evidence_only",
-        "review_attempt": attempt,
+        "review_attempt": int(review_attempt if review_attempt is not None else attempt),
         "critic_attempt": attempt,
         "source_sha256": hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode("utf-8")).hexdigest(),
         "story_sha256": story_hash,
         "storyboard_sha256": storyboard_hash,
         "decision_schema_sha256": sha256_file(SCHEMA_PATH),
         "execution_domain": "STORY_SEMANTIC_CRITIC_SHADOW",
+        "applicability_context": context,
     }
     candidate_path = ep / "meta/runtime/agent-shadow/story-semantic-critic" / f"attempt-{attempt}-decision.json"
+    snapshot_path = candidate_path.with_name(f"attempt-{attempt}-request-snapshot.json")
+    metadata["request_snapshot_path"] = snapshot_path.resolve().relative_to(ROOT.resolve()).as_posix()
     request = product_review_adapter.prepare(
         ep,
         kind=REQUEST_KIND,
@@ -280,6 +366,10 @@ def prepare_shadow_request(
     request["shadow_only"] = True
     request["candidate_authority"] = "runtime_evidence_only"
     request["critic_invoked"] = False
+    snapshot = {"schema_version": 1, "request": request}
+    snapshot_sha = _write_immutable_json(snapshot_path, snapshot)
+    request["request_snapshot_path"] = snapshot_path.resolve().relative_to(ROOT.resolve()).as_posix()
+    request["request_snapshot_sha256"] = snapshot_sha
     return request
 
 
@@ -387,6 +477,7 @@ def execute_shadow_request(
     episode_dir: Path,
     *,
     attempt: int,
+    review_attempt: int | None = None,
     timeout: int,
     existing_review: dict[str, Any],
 ) -> dict[str, Any]:
@@ -405,6 +496,28 @@ def execute_shadow_request(
     metadata = request.get("request_metadata") if isinstance(request.get("request_metadata"), dict) else {}
     if metadata.get("shadow_only") is not True or metadata.get("candidate_authority") != "runtime_evidence_only":
         raise CriticDecisionError("Critic shadow Host Request is missing advisory-only metadata")
+    applicability = verify_applicability_context(metadata.get("applicability_context"))
+    bound_review_attempt = int(review_attempt if review_attempt is not None else metadata.get("review_attempt") or 0)
+    if metadata.get("critic_attempt") != attempt or metadata.get("review_attempt") != bound_review_attempt:
+        raise CriticDecisionError("Critic Host Request attempt binding mismatch")
+    snapshot_rel = str(metadata.get("request_snapshot_path") or "")
+    snapshot_path = (ROOT / snapshot_rel).resolve()
+    try:
+        snapshot_path.relative_to(ROOT.resolve())
+    except ValueError as exc:
+        raise CriticDecisionError("Critic request evidence escapes repository") from exc
+    if not snapshot_path.is_file():
+        raise CriticDecisionError("immutable Critic request snapshot is missing")
+    try:
+        snapshot = json.loads(snapshot_path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise CriticDecisionError("immutable Critic request snapshot is invalid") from exc
+    frozen_request = snapshot.get("request") if isinstance(snapshot, dict) else None
+    if not isinstance(frozen_request, dict) or any(
+        frozen_request.get(key) != request.get(key)
+        for key in ("request_id", "request_fingerprint", "prompt_sha256", "source_files", "candidate_path")
+    ):
+        raise CriticDecisionError("Critic request differs from its immutable evidence snapshot")
     for row in request.get("source_files") or []:
         source = (ROOT / str(row.get("path") or "")).resolve()
         if not source.is_file() or sha256_file(source).lower() != str(row.get("sha256") or "").lower():
@@ -415,9 +528,14 @@ def execute_shadow_request(
     sources = [ROOT / str(row["path"]) for row in request.get("source_files") or []]
     story_text = sources[0].read_text(encoding="utf-8-sig")
     storyboard_text = sources[1].read_text(encoding="utf-8-sig")
-    rubric_text = "\n\n".join(path.read_text(encoding="utf-8-sig") for path in sources[2:])
+    applicability_path = str(applicability["source_path"])
+    rubric_text = "\n\n".join(
+        path.read_text(encoding="utf-8-sig") for path in sources[2:]
+        if path.resolve().relative_to(ROOT.resolve()).as_posix() != applicability_path
+    )
     prompt = build_decision_prompt(attempt=attempt, story_text=story_text,
-                                   storyboard_text=storyboard_text, rubric_text=rubric_text)
+                                   storyboard_text=storyboard_text, rubric_text=rubric_text,
+                                   applicability=applicability)
     model, effort = configured_cli_model()
     if not model or not effort:
         raise CriticDecisionError("active Codex model/reasoning effort is not observable")
@@ -454,14 +572,37 @@ def execute_shadow_request(
     )
     comparison = compare_with_existing_review(finalized["decision"], existing_review)
     existing_attempt = int((existing_review.get("revision_count") or 0) + 1)
-    if existing_attempt != attempt:
-        raise CriticDecisionError("Critic attempt does not match the frozen Existing Story Review")
+    if existing_attempt != bound_review_attempt:
+        raise CriticDecisionError("review_attempt does not match the frozen Existing Story Review")
     decision = finalized["decision"]
     reflection = bounded_reflection_step(decision["decision"], critic_attempt=attempt, auto_repairs_used=0)
+    telemetry_path = candidate.with_name(f"attempt-{attempt}-telemetry-evidence.json")
+    telemetry_evidence = {
+        "schema_version": 1,
+        "kind": "story_semantic_critic_shadow_telemetry_evidence",
+        "request_id": request.get("request_id"),
+        "request_snapshot_path": snapshot_rel,
+        "request_snapshot_sha256": sha256_file(snapshot_path),
+        "candidate_path": candidate.resolve().relative_to(ROOT).as_posix(),
+        "candidate_sha256": sha256_file(candidate),
+        "model_execution": telemetry,
+        "authority_write": False,
+        "gate_pass": False,
+        "episode_transition": False,
+    }
+    telemetry_sha = _write_immutable_json(telemetry_path, telemetry_evidence)
     return {
         "request_id": request.get("request_id"),
         "request_path": request_path.resolve().relative_to(ROOT).as_posix(),
         "candidate_path": candidate.resolve().relative_to(ROOT).as_posix(),
+        "candidate_sha256": sha256_file(candidate),
+        "request_snapshot_path": snapshot_rel,
+        "request_snapshot_sha256": sha256_file(snapshot_path),
+        "applicability_context": applicability,
+        "telemetry_evidence_path": log_path.resolve().relative_to(ROOT).as_posix(),
+        "telemetry_evidence_sha256": sha256_file(log_path) if log_path.is_file() else None,
+        "telemetry_receipt_evidence_path": telemetry_path.resolve().relative_to(ROOT).as_posix(),
+        "telemetry_receipt_evidence_sha256": telemetry_sha,
         "decision": decision,
         **comparison,
         "issue_disagreement": decision.get("issue_codes") != list(existing_review.get("issue_codes") or []),

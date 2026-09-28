@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.p3_story_semantic_critic_paired_benchmark import _collect_samples
+from scripts.p3_story_semantic_critic_paired_benchmark import _collect_samples, _eligible, _fixture_rows
 
 
 def test_prepare_collects_unique_sha_bound_historical_review_labels_without_execution(tmp_path):
@@ -47,3 +47,27 @@ def test_prepare_collects_unique_sha_bound_historical_review_labels_without_exec
     assert {row["review_label"] for row in selected} == {"PASS", "FAIL"}
     assert all(row["source_sha_consistent"] for row in selected)
     assert all(row["canonical_files_modified"] is False for row in selected)
+
+
+def test_fixture_sample_set_has_distinct_sources_and_pass_fail_diversity():
+    rows = _fixture_rows()
+    eligible, counts, blockers = _eligible(rows + [{
+        "sample_id": "real", "sample_type": "real_episode", "reference_label": "PASS",
+        "story_sha256": "real-story", "storyboard_sha256": "real-board",
+        "applicability_sha256": "real-applicability", "source_sha_consistent": True,
+    }])
+    assert len(rows) == 4
+    assert {row["reference_label"] for row in rows} == {"PASS", "FAIL"}
+    assert all(row["source_sha_consistent"] for row in rows)
+    assert eligible is True
+    assert counts == {"PASS": 3, "FAIL": 2}
+    assert blockers == []
+
+
+def test_sample_gate_rejects_pass_only_and_duplicate_source_sets():
+    row = {"reference_label": "PASS", "story_sha256": "s", "storyboard_sha256": "b",
+           "applicability_sha256": "a", "source_sha_consistent": True}
+    eligible, _, blockers = _eligible([dict(row, sample_id=str(index)) for index in range(5)])
+    assert eligible is False
+    assert "PASS_FAIL_LABEL_DIVERSITY_NOT_MET" in blockers
+    assert "SOURCE_SHA_MISSING_OR_DUPLICATE" in blockers

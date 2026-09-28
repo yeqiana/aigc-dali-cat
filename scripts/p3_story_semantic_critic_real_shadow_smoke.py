@@ -90,26 +90,28 @@ def run(episode_dir: Path) -> dict:
         source_blockers.append("STORYBOARD_SOURCE_SHA_STALE")
     if source_blockers:
         raise SourceSetValidationError(source_validation, source_blockers)
-    attempt = int(review_before.get("revision_count") or 0) + 1
+    review_attempt = int(review_before.get("revision_count") or 0) + 1
+    critic_attempt = 1
     review_export = ep / story_review.EXPORT_REL
     canonical_request_pointer = product_review_adapter.request_path(ep, "story-semantic")
     review_sha_before = story_review.review_authority_sha256(ep) or _sha(review_record_path)
     pointer_sha_before = _sha(canonical_request_pointer)
     state_fingerprint_before = json.dumps(state_before, ensure_ascii=False, sort_keys=True, default=str)
     source_paths = [story, storyboard, *critic.RUBRIC_PATHS]
-    canonical_req_path = product_review_adapter.request_path(ep, "story-semantic", attempt=attempt)
+    canonical_req_path = product_review_adapter.request_path(ep, "story-semantic", attempt=review_attempt)
     canonical_source_files = None
     if canonical_req_path.is_file():
         canonical_source_files = product_review_adapter._read_json(canonical_req_path).get("source_files")
     schedule = story_review.schedule_critic_shadow(
-        ep, attempt=attempt, story=story, storyboard=storyboard,
+        ep, attempt=critic_attempt, review_attempt=review_attempt, story=story, storyboard=storyboard,
         sources=source_paths, canonical_source_files=canonical_source_files,
     )
     if not schedule.get("scheduled"):
         raise RuntimeError(f"Critic Shadow Host Request was not scheduled: {schedule}")
 
     result = critic.execute_shadow_request(
-        ep, attempt=attempt, timeout=900, existing_review=review_before,
+        ep, attempt=critic_attempt, review_attempt=review_attempt,
+        timeout=900, existing_review=review_before,
     )
     state_after = episode_state_persistence.load(ep) or {}
     review_after, _ = _load_existing_canonical_review(ep)
@@ -124,8 +126,8 @@ def run(episode_dir: Path) -> dict:
         "kind": "p3_story_semantic_critic_real_shadow_smoke",
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "episode": ep.resolve().relative_to(ROOT).as_posix(),
-        "review_attempt": attempt,
-        "critic_attempt": attempt,
+        "review_attempt": review_attempt,
+        "critic_attempt": critic_attempt,
         "source_mode": "canonical_current",
         "review_bound_story_sha": review_before.get("story_sha256"),
         "actual_critic_story_sha": story_sha_before,
@@ -137,12 +139,21 @@ def run(episode_dir: Path) -> dict:
         "host_request_created": True,
         "host_request_id": result.get("request_id"),
         "host_request_path": result.get("request_path"),
+        "host_request_snapshot_path": result.get("request_snapshot_path"),
+        "host_request_snapshot_sha256": result.get("request_snapshot_sha256"),
         "candidate_path": result.get("candidate_path"),
+        "candidate_sha256": result.get("candidate_sha256"),
+        "applicability_context": result.get("applicability_context"),
+        "applicability_sha256": (result.get("applicability_context") or {}).get("source_sha256"),
         "candidate_created": True,
         "real_model_execution": bool(result.get("model_execution", {}).get("real_model_execution")),
         "critic_invoked": result.get("critic_invoked") is True,
         "telemetry_complete": result.get("telemetry_complete") is True,
         "model_execution": result.get("model_execution"),
+        "telemetry_evidence_path": result.get("telemetry_receipt_evidence_path"),
+        "telemetry_evidence_sha256": result.get("telemetry_receipt_evidence_sha256"),
+        "codex_jsonl_path": result.get("telemetry_evidence_path"),
+        "codex_jsonl_sha256": result.get("telemetry_evidence_sha256"),
         "decision_parse": True,
         "decision_schema_valid": result.get("decision_schema_valid") is True,
         "failure": result.get("model_execution", {}).get("failure"),

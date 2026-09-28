@@ -474,6 +474,7 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
 
 def schedule_critic_shadow(
     ep: Path, *, attempt: int, story: Path, storyboard: Path, sources: list[Path],
+    review_attempt: int | None = None,
     canonical_source_files: list[dict] | None = None,
 ) -> dict:
     """Schedule the advisory Critic beside, never inside, canonical Story Review."""
@@ -484,11 +485,14 @@ def schedule_critic_shadow(
         return {"enabled": False, "scheduled": False}
     if config.get("production_enabled") is True:
         raise RuntimeError("Critic shadow/production overlap; refusing Story Review dispatch")
+    applicability = critic_shadow.frozen_applicability_context(ep)
+    applicability_path = ep / critic_shadow.APPLICABILITY_REL
     prompt = critic_shadow.build_decision_prompt(
-        attempt=attempt,
+        attempt=int(review_attempt if review_attempt is not None else attempt),
         story_text=story.read_text(encoding="utf-8-sig"),
         storyboard_text=storyboard.read_text(encoding="utf-8-sig"),
         rubric_text="\n\n".join(path.read_text(encoding="utf-8-sig") for path in sources[2:]),
+        applicability=applicability,
     )
     if canonical_source_files is not None:
         frozen = {str(row.get("path")): str(row.get("sha256")).lower()
@@ -498,14 +502,19 @@ def schedule_critic_shadow(
             if frozen.get(relative) != sha256_file(source).lower():
                 raise RuntimeError(f"Critic shadow source differs from canonical review request: {relative}")
     shadow_request = critic_shadow.prepare_shadow_request(
-        ep, attempt=attempt, prompt=prompt, story_path=story,
-        storyboard_path=storyboard, rubric_paths=sources[2:],
+        ep, attempt=attempt, review_attempt=(review_attempt if review_attempt is not None else attempt),
+        prompt=prompt, story_path=story,
+        storyboard_path=storyboard, rubric_paths=[*sources[2:], applicability_path],
+        applicability_context=applicability,
     )
     return {
         "enabled": True,
         "scheduled": isinstance(shadow_request, dict),
-        "request_id": (shadow_request or {}).get("request_id"),
+            "request_id": (shadow_request or {}).get("request_id"),
         "request_path": (shadow_request or {}).get("request_path"),
+        "request_snapshot_path": (shadow_request or {}).get("request_snapshot_path"),
+        "request_snapshot_sha256": (shadow_request or {}).get("request_snapshot_sha256"),
+        "applicability_context": applicability,
         "candidate_authority": "runtime_evidence_only",
     }
 

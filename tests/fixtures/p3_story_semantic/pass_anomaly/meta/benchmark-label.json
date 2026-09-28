@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "label": "PASS",
+  "expected_decision": "ACCEPT_CANDIDATE",
+  "ground_truth_type": "deterministic_regression_fixture",
+  "oracle": "anomaly rule is tested, bounded response follows the rule, and the resolution pays off the established mechanism",
+  "expected_issue_dimensions": []
+}

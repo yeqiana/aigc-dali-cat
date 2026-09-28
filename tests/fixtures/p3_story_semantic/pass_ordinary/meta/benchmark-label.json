@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "label": "PASS",
+  "expected_decision": "ACCEPT_CANDIDATE",
+  "ground_truth_type": "deterministic_regression_fixture",
+  "oracle": "ordinary-life applicability contract plus explicit causal chain, resolved search, and reciprocal payoff",
+  "expected_issue_dimensions": []
+}

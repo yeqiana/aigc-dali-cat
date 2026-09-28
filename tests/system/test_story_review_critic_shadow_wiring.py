@@ -38,6 +38,13 @@ def test_existing_story_review_auto_schedules_separate_critic_shadow_request(mon
     monkeypatch.setattr(runtime_router, "detect", lambda: ("WORK", {}))
     monkeypatch.setattr(product_review_adapter, "prepare", canonical_prepare)
     monkeypatch.setattr(story_semantic_critic_adapter, "prepare_shadow_request", shadow_prepare)
+    monkeypatch.setattr(story_semantic_critic_adapter, "frozen_applicability_context", lambda _ep: {
+        "source_path": "episode/meta/shot-progression-review.json",
+        "source_sha256": "a" * 64,
+        "status": "LOCKED", "anomaly_applicable": False,
+        "anomaly_exception_reason": "fixture ordinary-life story",
+    })
+    monkeypatch.setattr(story_semantic_critic_adapter, "build_decision_prompt", lambda **_kwargs: "frozen critic prompt")
     monkeypatch.setattr(story_semantic_critic_adapter, "adapter_config", lambda: {
         "shadow_enabled": True, "production_enabled": False,
     })
@@ -52,6 +59,8 @@ def test_existing_story_review_auto_schedules_separate_critic_shadow_request(mon
     assert shadow_prepare.call_args.kwargs["attempt"] == 2
     assert shadow_prepare.call_args.kwargs["story_path"] == story
     assert shadow_prepare.call_args.kwargs["storyboard_path"] == board
+    assert shadow_prepare.call_args.kwargs["applicability_context"]["anomaly_applicable"] is False
+    assert shadow_prepare.call_args.kwargs["rubric_paths"][-1].name == "shot-progression-review.json"
     assert output["request_id"] == "canonical-story-review"
     assert output["critic_shadow_schedule"]["scheduled"] is True
     assert output["critic_shadow_schedule"]["request_id"] == "story-semantic-shadow-a2"

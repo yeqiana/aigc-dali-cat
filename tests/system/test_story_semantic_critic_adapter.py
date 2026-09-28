@@ -117,8 +117,19 @@ def test_bounded_reflection_caps_one_repair_and_two_reviews():
 
 
 def test_shadow_request_reuses_product_review_and_is_candidate_only(monkeypatch, tmp_path):
-    story = tmp_path / "story.md"
-    board = tmp_path / "storyboard.md"
+    monkeypatch.setattr(adapter, "ROOT", tmp_path)
+    monkeypatch.setattr(adapter, "SCHEMA_PATH", tmp_path / "critic-schema.json")
+    (tmp_path / "critic-schema.json").write_text("{}", encoding="utf-8")
+    episode = tmp_path / "episodes" / "episode"
+    contract_dir = episode / "meta"
+    contract_dir.mkdir(parents=True)
+    contract = contract_dir / "shot-progression-review.json"
+    contract.write_text(json.dumps({
+        "status": "LOCKED", "anomaly_applicable": False,
+        "anomaly_exception_reason": "ordinary-life fixture",
+    }), encoding="utf-8")
+    story = episode / "story.md"
+    board = episode / "storyboard.md"
     story.write_text("frozen story", encoding="utf-8")
     board.write_text("frozen storyboard", encoding="utf-8")
     monkeypatch.setattr(adapter, "adapter_config", lambda: {
@@ -129,12 +140,14 @@ def test_shadow_request_reuses_product_review_and_is_candidate_only(monkeypatch,
     prepare = Mock(return_value={"request_id": "fixture-request"})
     monkeypatch.setattr(adapter.product_review_adapter, "prepare", prepare)
     result = adapter.prepare_shadow_request(
-        tmp_path / "episode",
+        episode,
         attempt=1,
+        review_attempt=2,
         prompt="decision only",
         story_path=story,
         storyboard_path=board,
-        rubric_paths=[],
+        rubric_paths=[contract],
+        applicability_context=adapter.frozen_applicability_context(episode),
     )
     assert result["shadow_only"] is True
     assert result["candidate_authority"] == "runtime_evidence_only"
@@ -144,10 +157,18 @@ def test_shadow_request_reuses_product_review_and_is_candidate_only(monkeypatch,
     assert args["host_execution"] == "codex_user_runner_shadow"
     assert args["request_metadata"]["shadow_only"] is True
     assert args["request_metadata"]["candidate_authority"] == "runtime_evidence_only"
-    assert args["source_paths"] == [story, board]
+    assert args["request_metadata"]["applicability_context"]["anomaly_applicable"] is False
+    assert args["request_metadata"]["critic_attempt"] == 1
+    assert args["request_metadata"]["review_attempt"] == 2
+    assert args["source_paths"] == [story, board, contract]
     assert args["candidate_path"].as_posix().endswith(
         "meta/runtime/agent-shadow/story-semantic-critic/attempt-1-decision.json"
     )
+    assert result["request_snapshot_path"].endswith("attempt-1-request-snapshot.json")
+    snapshot_path = tmp_path / result["request_snapshot_path"]
+    snapshot_sha = adapter.sha256_file(snapshot_path)
+    assert result["request_snapshot_sha256"] == snapshot_sha
+    assert adapter.sha256_file(snapshot_path) == snapshot_sha
     assert "production" not in result
 
 
@@ -232,14 +253,69 @@ def test_missing_user_runner_receipt_fails_telemetry_closed():
 
 
 def test_decision_prompt_is_frozen_decision_only_and_schema_bound():
+    context = adapter.frozen_applicability_context(ROOT / "episodes/天界普通女生的一天")
     prompt = adapter.build_decision_prompt(
         attempt=2, story_text="FROZEN STORY", storyboard_text="FROZEN BOARD",
-        rubric_text="FROZEN RUBRIC",
+        rubric_text="FROZEN RUBRIC", applicability=context,
     )
     assert "FROZEN STORY" in prompt and "FROZEN BOARD" in prompt
     assert "Do not search the repository, call tools" in prompt
     assert "Return exactly one decision object" in prompt
     assert "Gate PASS" in prompt
+    assert "explicitly non-anomaly Story" in prompt
+    assert "Do NOT require a core anomaly" in prompt
+    assert "ordinary causal integrity" in prompt
+
+
+def test_non_anomaly_and_anomaly_applicability_select_different_frozen_rules(monkeypatch, tmp_path):
+    monkeypatch.setattr(adapter, "ROOT", tmp_path)
+    episode = tmp_path / "episode"
+    meta = episode / "meta"
+    meta.mkdir(parents=True)
+    path = meta / "shot-progression-review.json"
+    base = {"status": "LOCKED", "anomaly_applicable": False,
+            "anomaly_exception_reason": "explicit ordinary-life fixture"}
+    path.write_text(json.dumps(base), encoding="utf-8")
+    non_anomaly = adapter.frozen_applicability_context(episode)
+    prompt = adapter.build_decision_prompt(
+        attempt=1, story_text="", storyboard_text="", rubric_text="", applicability=non_anomaly,
+    )
+    assert "Do NOT require a core anomaly" in prompt
+    assert "causal gaps and contradictions remain valid issues" in prompt
+    assert "Enforce the supplied anomaly mechanism" not in prompt
+
+    path.write_text(json.dumps({"status": "LOCKED", "anomaly_applicable": True,
+                                "anomaly_exception_reason": ""}), encoding="utf-8")
+    anomaly = adapter.frozen_applicability_context(episode)
+    prompt = adapter.build_decision_prompt(
+        attempt=1, story_text="", storyboard_text="", rubric_text="", applicability=anomaly,
+    )
+    assert "Enforce the supplied anomaly mechanism" in prompt
+    assert "Do NOT require a core anomaly" not in prompt
+
+
+def test_applicability_missing_and_sha_drift_fail_closed(monkeypatch, tmp_path):
+    monkeypatch.setattr(adapter, "ROOT", tmp_path)
+    episode = tmp_path / "episode"
+    (episode / "meta").mkdir(parents=True)
+    try:
+        adapter.frozen_applicability_context(episode)
+    except adapter.CriticDecisionError as exc:
+        assert "missing" in str(exc)
+    else:
+        raise AssertionError("missing applicability must fail closed")
+    path = episode / "meta/shot-progression-review.json"
+    path.write_text(json.dumps({"status": "LOCKED", "anomaly_applicable": False,
+                                "anomaly_exception_reason": "explicit"}), encoding="utf-8")
+    context = adapter.frozen_applicability_context(episode)
+    path.write_text(json.dumps({"status": "LOCKED", "anomaly_applicable": True,
+                                "anomaly_exception_reason": ""}), encoding="utf-8")
+    try:
+        adapter.verify_applicability_context(context)
+    except adapter.CriticDecisionError as exc:
+        assert "SHA drift" in str(exc)
+    else:
+        raise AssertionError("applicability SHA drift must fail closed")
 
 
 def test_fixture_shadow_smoke_has_no_model_or_mutation_claims():
