@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "kind": "p4_capability_router_dispatch_consumer_audit",
+  "generated_at": "2026-09-28T14:11:06.311379+00:00",
+  "status": "BLOCKED",
+  "consumer_present": false,
+  "router_decision_only": true,
+  "runtime_scheduler_remains_dispatch_owner": true,
+  "runtime_dag_remains_workflow_owner": true,
+  "actual_dispatch_consumer_path": null,
+  "effective_execution_target_location": "product_review_adapter.prepare -> advisory request field",
+  "effective_execution_target_consumed_by": [],
+  "audit": {
+    "consumer_present": false,
+    "checks": {
+      "runtime_dag_uses_runtime_scheduler": true,
+      "runtime_dag_consumes_effective_target": false,
+      "runtime_scheduler_consumes_effective_target": false,
+      "executor_accepts_effective_target": false,
+      "story_adapter_passes_effective_target": false,
+      "preimage_adapter_passes_effective_target": false,
+      "final_adapter_passes_effective_target": false,
+      "advisory_target_producer_present": true
+    },
+    "missing_handoffs": [
+      "runtime_dag_consumes_effective_target",
+      "runtime_scheduler_consumes_effective_target",
+      "executor_accepts_effective_target",
+      "story_adapter_passes_effective_target",
+      "preimage_adapter_passes_effective_target",
+      "final_adapter_passes_effective_target"
+    ],
+    "call_path": [
+      "Runtime DAG calls Runtime Scheduler to plan DAG work.",
+      "Critic adapters prepare host requests; product_review_adapter writes effective_execution_target as advisory request evidence.",
+      "Runtime DAG and Runtime Scheduler do not consume effective_execution_target or capability_route_decision.",
+      "codex_critic_runner.launch has no execution-target selector; three local Critic launch callsites do not pass one."
+    ],
+    "source_files": {
+      "dag": {
+        "path": "episodes/_system/runtime_dag.py",
+        "sha256": "fbf1b8d7e496125b3edae920c45fd4966ea64961838bcc75ff371d2a8522391a"
+      },
+      "scheduler": {
+        "path": "episodes/_system/runtime_scheduler.py",
+        "sha256": "89d80daf1f61a5e87d0dad892a90e787eea09d4b57458d6314292868ca5f879d"
+      },
+      "product_review_adapter": {
+        "path": "episodes/_system/product_review_adapter.py",
+        "sha256": "24367afc89eed991f045b921845034174d66742fc06bd362ba0c4aff8bbc5b27"
+      },
+      "executor": {
+        "path": "episodes/_system/codex_critic_runner.py",
+        "sha256": "35fdfbfae179c1e7a5b02324ace27ceb3da8350fab6558eef7e2b888ddc42462"
+      },
+      "story_adapter": {
+        "path": "episodes/_system/agents/story_semantic_critic_adapter.py",
+        "sha256": "ea78056996e889d749f187d66bedc91231e811e320794c49db6fd99bb66fcc80"
+      },
+      "preimage_adapter": {
+        "path": "episodes/_system/agents/preimage_semantic_critic_adapter.py",
+        "sha256": "c0910dbdb41deff44159b9bcd58a97b3f1c07c11d86372687cf24d86156ee19e"
+      },
+      "final_adapter": {
+        "path": "episodes/_system/agents/final_semantic_critic_adapter.py",
+        "sha256": "d5b48422e69d524a2b8c06998e085f9f462ce50d59ea9d81e76564e9697f1812"
+      }
+    },
+    "dispatch_owner": "runtime_dag / runtime_scheduler",
+    "router_rights": "decision_only",
+    "decision": "BLOCKED_NO_VERIFIED_EXECUTION_CONSUMER"
+  },
+  "regression": {
+    "focused_command": "v261 + Capability Router + P4 validation/production + config contract + Runtime DAG + Story/PREIMAGE/Final Critic + Final Atomic Closure",
+    "focused_passed": 205,
+    "focused_failed": 0,
+    "focused_subtests": 6,
+    "focused_pass": true,
+    "broad_command": "pytest tests/system -q --tb=short",
+    "broad_passed": 1579,
+    "broad_failed": 4,
+    "broad_skipped": 1,
+    "broad_subtests": 98,
+    "broad_baseline_passed": 1577,
+    "broad_baseline_failed": 4,
+    "broad_baseline_skipped": 1,
+    "broad_new_failures": 0,
+    "broad_pass": true,
+    "broad_failure_ids": [
+      "tests/system/test_governance_convergence.py::EntryBehavior::test_batch_entry_refills_and_preserves_barrier",
+      "tests/system/test_governance_convergence.py::EntryBehavior::test_image_entry_refills_six",
+      "tests/system/test_observability_path_registry.py::ObservabilityPathRegistryTests::test_path_literals_only_in_registry_or_documented_exceptions",
+      "tests/system/test_timeout_policy_sweep.py::TimeoutPolicySweepTests::test_no_numeric_timeout_literals_outside_whitelist"
+    ],
+    "broad_baseline_failure_ids": [
+      "tests/system/test_governance_convergence.py::EntryBehavior::test_batch_entry_refills_and_preserves_barrier",
+      "tests/system/test_governance_convergence.py::EntryBehavior::test_image_entry_refills_six",
+      "tests/system/test_observability_path_registry.py::ObservabilityPathRegistryTests::test_path_literals_only_in_registry_or_documented_exceptions",
+      "tests/system/test_timeout_policy_sweep.py::TimeoutPolicySweepTests::test_no_numeric_timeout_literals_outside_whitelist"
+    ],
+    "image_generation_invoked": false,
+    "external_model_calls": 0,
+    "authority_writes": 0
+  },
+  "production_enabled": false,
+  "llm_calls": 0,
+  "model_calls": 0,
+  "network_calls": 0,
+  "image_generation_invoked": false,
+  "authority_writes": 0,
+  "episode_state_writes": 0
+}
