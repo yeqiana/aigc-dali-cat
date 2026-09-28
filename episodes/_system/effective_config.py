@@ -62,6 +62,12 @@ DIRECT = (
     ("workers_derived", "runtime.workers.derived"),
     ("preimage_parallel_enabled", "runtime.preimage_parallel_enabled"),
     ("max_inflight_images", "production.max_inflight_images"),
+    ("capability_router_shadow_enabled", "agent_runtime.task_capability_router.shadow_enabled"),
+    ("capability_router_production_enabled", "agent_runtime.task_capability_router.production_enabled"),
+    ("capability_router_health_ttl_seconds", "agent_runtime.task_capability_router.health_ttl_seconds"),
+    ("capability_router_max_fallback_depth", "agent_runtime.task_capability_router.max_fallback_depth"),
+    ("capability_router_policy_mode", "agent_runtime.task_capability_router.policy_mode"),
+    ("capability_router_supported_task_types", "agent_runtime.task_capability_router.supported_task_types"),
 )
 
 # W-97: only product rules belong in YAML. They retain env as a one-run override.

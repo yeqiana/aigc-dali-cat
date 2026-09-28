@@ -273,6 +273,18 @@ agent_runtime:
         max_review_attempts: 2
         max_auto_repairs: 1
 
+  # P4 task-level provider/model routing. Runtime DAG/Scheduler retains dispatch ownership.
+  task_capability_router:
+    shadow_enabled: true
+    production_enabled: false
+    health_ttl_seconds: 300
+    max_fallback_depth: 3
+    policy_mode: LEGACY_PREFERRED_CAPABILITY_GUARDED
+    supported_task_types:
+      - story_semantic_critic
+      - preimage_semantic_critic
+      - final_semantic_critic
+
 runtime:
   # 当前整体 Runtime = WORK：Story、前期资产、门禁与发布由产品运行时执行。
   # Codex 仅用于配置为 CODEX 的图片生成/返修与像素审查执行层。

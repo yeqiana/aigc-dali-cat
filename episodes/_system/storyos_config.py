@@ -272,6 +272,27 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("agent_runtime.adapters.final_semantic_critic.bounded_reflection.max_review_attempts must be 2")
             if reflection.get("max_auto_repairs") != 1:
                 errors.append("agent_runtime.adapters.final_semantic_critic.bounded_reflection.max_auto_repairs must be 1")
+    router = get_path(cfg, "agent_runtime.task_capability_router")
+    if not isinstance(router, dict):
+        errors.append("agent_runtime.task_capability_router must be a mapping")
+    else:
+        for key in ("shadow_enabled", "production_enabled"):
+            if not isinstance(router.get(key), bool):
+                errors.append(f"agent_runtime.task_capability_router.{key} must be a bool")
+        ttl = router.get("health_ttl_seconds")
+        if type(ttl) is not int or ttl <= 0:
+            errors.append("agent_runtime.task_capability_router.health_ttl_seconds must be a positive int")
+        depth = router.get("max_fallback_depth")
+        if type(depth) is not int or depth < 0:
+            errors.append("agent_runtime.task_capability_router.max_fallback_depth must be a non-negative int")
+        if router.get("policy_mode") != "LEGACY_PREFERRED_CAPABILITY_GUARDED":
+            errors.append("agent_runtime.task_capability_router.policy_mode is not supported")
+        allowed_tasks = {"story_semantic_critic", "preimage_semantic_critic", "final_semantic_critic"}
+        supported = router.get("supported_task_types")
+        if (not isinstance(supported, list) or not supported
+                or any(not isinstance(task, str) or task not in allowed_tasks for task in supported)
+                or len(supported) != len(set(supported))):
+            errors.append("agent_runtime.task_capability_router.supported_task_types must be a non-empty unique allowlist of registered Critic task types")
     preferred_runtime = str(get_path(cfg, "runtime.preferred_runtime", "")).upper()
     if preferred_runtime not in {"WORK", "WEB", "CODEX"}:
         errors.append("runtime.preferred_runtime must be WORK, WEB or CODEX")

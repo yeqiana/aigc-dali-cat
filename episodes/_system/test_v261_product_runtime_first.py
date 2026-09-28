@@ -39,9 +39,15 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.runtime = os.environ.get("STORY_OS_RUNTIME")
         self.image_runtime = os.environ.get("STORY_OS_IMAGE_RUNTIME")
         self.api_key = os.environ.get("OPENAI_API_KEY")
+        self.episode_meta_store_mode = os.environ.get("STORYOS_EPISODE_META_STORE_MODE")
+        self.hot_state_mode = os.environ.get("STORYOS_HOT_STATE_MODE")
         os.environ.pop("STORY_OS_RUNTIME", None)
         os.environ.pop("STORY_OS_IMAGE_RUNTIME", None)
         os.environ.pop("OPENAI_API_KEY", None)
+        # These fixtures create isolated temporary Episodes and assert on their
+        # JSON projections. Never route their reads/writes through production MySQL.
+        os.environ["STORYOS_EPISODE_META_STORE_MODE"] = "json"
+        os.environ["STORYOS_HOT_STATE_MODE"] = "file"
 
     def tearDown(self) -> None:
         if self.runtime is None:
@@ -56,6 +62,14 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             os.environ.pop("OPENAI_API_KEY", None)
         else:
             os.environ["OPENAI_API_KEY"] = self.api_key
+        if self.episode_meta_store_mode is None:
+            os.environ.pop("STORYOS_EPISODE_META_STORE_MODE", None)
+        else:
+            os.environ["STORYOS_EPISODE_META_STORE_MODE"] = self.episode_meta_store_mode
+        if self.hot_state_mode is None:
+            os.environ.pop("STORYOS_HOT_STATE_MODE", None)
+        else:
+            os.environ["STORYOS_HOT_STATE_MODE"] = self.hot_state_mode
 
     def temp_episode(self):
         base = ROOT / "episodes" / "_tests"
@@ -63,10 +77,13 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         return tempfile.TemporaryDirectory(prefix="v261-product-runtime-", dir=base)
 
     def test_default_runtime_is_work(self) -> None:
-        runtime, reason = runtime_router.detect()
+        # This contract test is about the configured default. Host health and
+        # Codex installation are covered by the separate explicit fallback cases.
+        with mock.patch.object(runtime_router, "webcodex_available", return_value=(True, "fixture")):
+            runtime, reason = runtime_router.detect()
+            caps = runtime_router.capabilities()
         self.assertEqual(runtime, "WORK")
         self.assertIn("preferred_runtime", reason)
-        caps = runtime_router.capabilities()
         self.assertEqual(caps["effective_runtime"], "WORK")
         self.assertFalse(caps["local_codex_spawn_allowed"])
         self.assertEqual(caps["image_execution_runtime"], "CODEX")

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import datetime as dt
 from pathlib import Path
 
@@ -515,6 +516,49 @@ def prepare(
     if source_bindings is not None:
         req["source_bindings"] = source_bindings
     req["deadline_at"] = _deadline_for(req["created_at"])
+    # When centrally enabled, attach the guarded task-level target to the
+    # existing host request. The router returns advice only; Runtime DAG and
+    # its existing host dispatcher remain responsible for any execution.
+    task_by_kind = {
+        "story-semantic-critic-shadow": "story_semantic_critic",
+        "preimage-semantic-critic-shadow": "preimage_semantic_critic",
+        "final-semantic-critic-shadow": "final_semantic_critic",
+    }
+    task_type = str(metadata.get("capability_task_type") or task_by_kind.get(kind) or "")
+    if task_type:
+        try:
+            import capability_router
+            router_cfg = capability_router.effective_router_config()
+            if router_cfg["production_enabled"] and task_type in router_cfg["supported_task_types"]:
+                route_request, _, _, _ = capability_router.critic_route_request(
+                    request_id=req["request_id"], kind=kind, stage=str(metadata.get("stage") or kind),
+                    host_execution="workspace_provider", legacy_provider="WORK", legacy_model=None)
+                decision = capability_router.resolve_effective_route(
+                    route_request, legacy_provider="WORK", legacy_model=None, legacy_runtime="WORK",
+                    health=capability_router.process_health_cache())
+                req["capability_route_decision"] = decision
+                req["effective_execution_target"] = decision["effective_route"]
+                req["scheduler_dispatch_required"] = decision["effective_action"] in {"FALLBACK", "NO_ROUTE"}
+                req["actual_dispatch_changed"] = False
+                evidence = {
+                    "schema_version": 1, "kind": "p4_capability_router_production_decision",
+                    "request": route_request.to_dict(), "decision": decision,
+                    "request_sha256": capability_router._sha(route_request.to_dict()),
+                    "decision_sha256": capability_router._sha(decision),
+                    "scheduler_dispatch_required": req["scheduler_dispatch_required"],
+                    "actual_dispatch_changed": False,
+                }
+                evidence_root = ROOT / ".storyos/p4-capability-router/production"
+                evidence_path = evidence_root / f"{req['request_id']}.json"
+                evidence_sha = capability_router._write_immutable(evidence_path, evidence)
+                req["production_route_evidence"] = {
+                    "path": _repo_rel(evidence_path), "sha256": evidence_sha}
+        except Exception as exc:
+            # Fail closed for the production route; callers must retain the
+            # immutable legacy request and existing recovery path.
+            req["capability_route_error"] = str(exc)
+            req["effective_execution_target"] = None
+            req["scheduler_dispatch_required"] = True
     attempt_path = request_path(ep, kind, attempt=attempt)
     if _request_exists(attempt_path):
         existing = _read_json(attempt_path)
@@ -534,6 +578,29 @@ def prepare(
         episode_performance.safe_begin_named_span(
             ep, f"PRODUCT_REVIEW_{kind}", source="product_review_adapter",
             metadata={"request_id": req.get("request_id"), "attempt": attempt, "runtime": base})
+    # P4 is observation-only. The route proposal is persisted outside Episode
+    # Authority, and every error is fail-soft so the established host request
+    # and downstream Runtime DAG/Scheduler ownership remain unchanged.
+    if kind in {"story-semantic-critic-shadow", "preimage-semantic-critic-shadow",
+                "final-semantic-critic-shadow"}:
+        try:
+            import capability_router
+            import runtime_router
+
+            legacy_provider = "codex_user_runner" if host_execution == "codex_user_runner_shadow" else "WORK"
+            legacy_model = None
+            if host_execution == "codex_user_runner_shadow":
+                configured = capability_router._configured_codex_model()
+                legacy_model = configured[0] if configured else None
+            route_request, _provider, _model, legacy_runtime = capability_router.critic_route_request(
+                request_id=req["request_id"], kind=kind, stage=str(metadata.get("stage") or kind),
+                host_execution=host_execution, legacy_provider=legacy_provider,
+                legacy_model=legacy_model)
+            runtime_router.capability_route_shadow(
+                route_request, legacy_provider=legacy_provider, legacy_model=legacy_model,
+                legacy_runtime=legacy_runtime)
+        except Exception as exc:
+            logging.getLogger(__name__).warning("P4 critic shadow observation skipped: %s", exc)
     return {
         **req,
         "request_path": _repo_rel(attempt_path),

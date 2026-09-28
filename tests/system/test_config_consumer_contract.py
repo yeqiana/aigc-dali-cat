@@ -274,14 +274,27 @@ class EffectiveConfigTests(unittest.TestCase):
                          "config/storyos.yaml#runtime.preferred_runtime")
         self.assertEqual(snapshot["overrides_in_force"], [])
 
-    def test_the_snapshot_value_agrees_with_the_router_that_decides(self) -> None:
-        """Derived evidence must not drift from the thing it describes."""
+    def test_capability_router_flags_are_bound_to_yaml_without_env_override(self) -> None:
         sources = effective_config.snapshot()["sources"]
-        self.assertEqual(sources["runtime"]["value"], runtime_router.detect()[0])
-        self.assertEqual(sources["image_execution_runtime"]["value"],
-                         runtime_router.image_execution_runtime()[0])
-        self.assertEqual(sources["vision_review_runtime"]["value"],
-                         runtime_router.vision_review_runtime()[0])
+        self.assertEqual(sources["capability_router_shadow_enabled"], {
+            "value": True, "source": "config/storyos.yaml#agent_runtime.task_capability_router.shadow_enabled"})
+        self.assertEqual(sources["capability_router_production_enabled"], {
+            "value": False, "source": "config/storyos.yaml#agent_runtime.task_capability_router.production_enabled"})
+
+    def test_the_snapshot_value_agrees_with_the_router_that_decides(self) -> None:
+        """Derived config values agree when host availability is isolated."""
+        # The machine may have Codex CLI installed while its WebCodex host is
+        # absent; isolate the host so this contract tests the configured WORK
+        # route instead of inheriting ambient machine availability.
+        env = {"STORY_OS_RUNTIME": "", "STORY_OS_WEBCODEX_AVAILABLE": "1",
+               "STORY_OS_IMAGE_RUNTIME": "", "STORY_OS_VISION_RUNTIME": ""}
+        with mock.patch.dict(os.environ, env):
+            sources = effective_config.snapshot()["sources"]
+            self.assertEqual(sources["runtime"]["value"], runtime_router.detect()[0])
+            self.assertEqual(sources["image_execution_runtime"]["value"],
+                             runtime_router.image_execution_runtime()[0])
+            self.assertEqual(sources["vision_review_runtime"]["value"],
+                             runtime_router.vision_review_runtime()[0])
 
     def test_credentials_are_recorded_as_presence_never_as_values(self) -> None:
         secret = "not-a-real-password-4f21"
@@ -296,7 +309,9 @@ class EffectiveConfigTests(unittest.TestCase):
         base.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=base) as td:
             runtime_root = Path(td) / ".runtime-test"
-            with mock.patch.object(runtime_workspace, "DEFAULT_ROOT", runtime_root):
+            with mock.patch.dict(os.environ, {runtime_workspace.ENV_ROOT: "",
+                                              "STORYOS_HOT_STATE_MODE": "file"}), \
+                 mock.patch.object(runtime_workspace, "DEFAULT_ROOT", runtime_root):
                 effective_config.write(td)
                 path = runtime_workspace.workspace_path(td, effective_config.REL)
                 self.assertTrue(path.is_file())

@@ -18,6 +18,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -50,6 +51,9 @@ class StopTargetPredicateTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="storyos-until-")
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        env = patch.dict(os.environ, {"STORYOS_EPISODE_META_STORE_MODE": "json"})
+        env.start()
+        self.addCleanup(env.stop)
 
     def test_arrived_and_gates_pass_is_reached(self):
         write_state(self.ep, "PRODUCTION_PASSED")
@@ -112,6 +116,9 @@ class StopTargetWiringTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="storyos-until-", dir=ROOT / "episodes/_tests")
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        env = patch.dict(os.environ, {"STORYOS_EPISODE_META_STORE_MODE": "json"})
+        env.start()
+        self.addCleanup(env.stop)
         self.dispatched: list[str] = []
         self.rc_by_step: dict[str, int] = {}
         self.state_after_step: dict[str, str] = {}

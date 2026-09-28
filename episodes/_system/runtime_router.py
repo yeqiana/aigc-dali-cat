@@ -211,6 +211,41 @@ def capabilities() -> dict:
 def detect() -> tuple[str, str]:
     return _runtime_with_reason()
 
+
+def capability_route_resolve(request, **kwargs) -> dict:
+    """Resolve an advisory task route; Runtime DAG/Scheduler still owns dispatch."""
+    import capability_router
+    return capability_router.resolve(request, **kwargs)
+
+
+def capability_route_shadow(request, **kwargs) -> dict:
+    """Record a task-level shadow proposal without changing the legacy route."""
+    import capability_router
+    return capability_router.observe_shadow(request, **kwargs)
+
+
+def capability_route_production(request, **kwargs) -> dict:
+    """Return a guarded task-level route decision; never dispatch or execute it."""
+    import capability_router
+    return capability_router.resolve_effective_route(request, **kwargs)
+
+
+def capability_route_record_outcome(provider: str, model: str | None, *,
+                                    successful: bool, failure_type: str | None = None,
+                                    source: str = "execution_telemetry", reason: str = "",
+                                    observed_at=None) -> dict:
+    """Refresh advisory TTL health from existing deterministic execution evidence."""
+    import capability_router
+    return capability_router.record_execution_outcome(
+        capability_router.process_health_cache(), provider, model, successful=successful,
+        failure_type=failure_type, source=source, reason=reason, observed_at=observed_at).to_dict()
+
+
+def capability_router_config() -> dict:
+    """Expose validated P4 task routing flags without changing global runtime selection."""
+    import capability_router
+    return capability_router.effective_router_config()
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=f'Story OS V{story_os_version()} runtime router')
     sub = ap.add_subparsers(dest='cmd', required=True)
