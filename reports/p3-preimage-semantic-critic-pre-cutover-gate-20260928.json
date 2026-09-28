@@ -1,0 +1,149 @@
+{
+  "benchmark_request_evidence_complete": true,
+  "benchmark_summary": {
+    "critic_false_accept": 0,
+    "critic_false_reject": 0,
+    "existing_false_accept": 3,
+    "existing_false_reject": 0,
+    "fail_labels": 3,
+    "pass_labels": 2,
+    "quality_value": true,
+    "valid_pairs": 5
+  },
+  "blockers": [
+    "PRODUCTION_EVIDENCE_REVIEW_REQUIRED"
+  ],
+  "config_state": {
+    "legacy_fallback_on_technical": true,
+    "production_enabled": false,
+    "shadow_enabled": true
+  },
+  "evidence_sha_verified": true,
+  "generated_at": "2026-09-28T04:38:00+00:00",
+  "git_head": "a13dfa47f9eb3e86ab43de45938e1cc8c973e9e9",
+  "immutable": true,
+  "issue_code_recall": "NOT_COMPARABLE",
+  "kind": "p3_preimage_semantic_critic_pre_cutover_gate",
+  "mandatory_checks": {
+    "applicability_bound": true,
+    "authority_zero_regression": true,
+    "benchmark_authority_zero_regression": true,
+    "benchmark_balanced_labels": true,
+    "benchmark_fixed_provider_model_reasoning": true,
+    "benchmark_fixture_sha_bound": true,
+    "benchmark_minimum_five_pairs": true,
+    "benchmark_no_failure_timeout": true,
+    "benchmark_telemetry_complete": true,
+    "bounded_reflection_caps": true,
+    "candidate_set_sha_bound": true,
+    "character_production_health": true,
+    "config_valid": true,
+    "decision_schema_valid": true,
+    "episode_transition_false": true,
+    "false_accept_improved": true,
+    "false_reject_not_regressed": true,
+    "gate_authority_unchanged": true,
+    "image_generation_not_invoked": true,
+    "issue_code_recall_not_fabricated": true,
+    "legacy_fallback_available": true,
+    "no_smoke_failure_timeout": true,
+    "obligation_sha_bound": true,
+    "p0_foundation_healthy": true,
+    "preimage_critic_production_disabled": true,
+    "preimage_critic_shadow_enabled": true,
+    "production_not_already_enabled": true,
+    "quality_value": true,
+    "real_model_execution": true,
+    "real_shadow_smoke_pass": true,
+    "repair_assessment_benchmark_sha_matches": true,
+    "repair_assessment_valid": true,
+    "repair_not_invoked": true,
+    "request_evidence_complete": true,
+    "smoke_telemetry_complete": true,
+    "story_semantic_no_go_preserved": true,
+    "visual_production_health": true,
+    "world_no_go_preserved": true
+  },
+  "minimum_repair_scope_recall": 0.5,
+  "note": "Read-only fail-closed gate. It never mutates config, candidates, authority, review records, episode state, or invokes a model/image provider.",
+  "policy_requirement": "REVIEW_REQUIRED",
+  "production_cutover_performed": false,
+  "production_readiness_real_evidence": "REVIEW_REQUIRED",
+  "ready_for_cutover": false,
+  "real_episode_candidate_count": 4,
+  "real_episode_eligible_count": 0,
+  "real_episode_shadow_evidence": false,
+  "real_evidence_policy_source": "P3-specific real-Episode cutover rule not explicit; conservative precedent from final-plan P1.5 (real Episode comparison) and completed Visual Gate evidence",
+  "repair_mode_at_cutover": "STRICTLY_ADVISORY_NO_AUTOMATIC_REPAIR",
+  "repair_scope_f1_median": 1.0,
+  "repair_scope_precision_median": 1.0,
+  "repair_scope_recall_median": 1.0,
+  "repair_value_blocking": false,
+  "repair_value_v2": true,
+  "schema_version": 1,
+  "smoke_evidence_binding": {
+    "applicability_bound": true,
+    "candidate_set_sha_bound": true,
+    "decision_schema_sha_bound": true,
+    "obligation_sha_bound": true,
+    "request_snapshot_and_sources": true
+  },
+  "source_evidence": {
+    "benchmark": {
+      "path": "reports/p3-preimage-semantic-critic-paired-benchmark-20260928.json",
+      "present": true,
+      "sha256": "83db61cd6652f489b5020d2fc90d413c2ee78ab3133b1c77b704ebbc44e4cb89"
+    },
+    "candidate_scan": {
+      "path": "reports/p3-preimage-semantic-critic-real-smoke-candidates-20260928.json",
+      "present": true,
+      "sha256": "bcc1d9752970a09ccc27316dfa9e3249229bedc77d8983072c99727b7f0733f2"
+    },
+    "character_health": {
+      "path": "reports/p1-character-post-cutover-health-20260926.json",
+      "present": true,
+      "sha256": "41f219fec3a4794c0a5d3b88f8c270df52e89b4c4d17ff0e0f25ca1568e7a56c"
+    },
+    "p0": {
+      "path": "reports/p0-agent-acceptance-20260926.json",
+      "present": true,
+      "sha256": "f9a8ca90cc1fce3d46f544d56ae30f1aca31aa8fcdecf337dc88b5ce708b8d15"
+    },
+    "repair_assessment": {
+      "path": "reports/p3-preimage-semantic-critic-repair-scope-assessment-v2-20260928.json",
+      "present": true,
+      "sha256": "b1bf1af2a2b3ea3e2cf8c90f29472bc93d7a0644779ed2f73c1a5e58909d612f"
+    },
+    "smoke": {
+      "path": "reports/p3-preimage-semantic-critic-real-shadow-smoke-retry1-20260928.json",
+      "present": true,
+      "sha256": "7ec7bb3614675f4da221bf78e2582e86efd2373074acc343025ae45e01c3e6d5"
+    },
+    "story_no_go": {
+      "path": "reports/p3-story-semantic-critic-quality-assessment-20260928-retry1.json",
+      "present": true,
+      "sha256": "3d448370eae0557a24ad11f55d9e1cadf986f57550b28c84525b27d764085b2d"
+    },
+    "visual_health": {
+      "path": "reports/p2-visual-narrative-post-cutover-health-20260927.json",
+      "present": true,
+      "sha256": "96333eccafdd1e7a51538308ea552cdfa4ba683ee531e25caa1ab15d89805559"
+    },
+    "world_gate": {
+      "path": "reports/p2-world-pre-cutover-gate-v2-20260927.json",
+      "present": true,
+      "sha256": "48d9c10e2c2a6bce2fbfb06378c83521fd0c54a7a5a1b88c6d76703b7ebf84fe"
+    },
+    "world_value": {
+      "path": "reports/p2-world-value-probe-20260927.json",
+      "present": true,
+      "sha256": "4c53c2bf025ec656e32e0b528434e101dd1427c838bddf1de04f7298862d48b3"
+    }
+  },
+  "status": "CONDITIONAL",
+  "warnings": [
+    "ISSUE_CODE_RECALL_NOT_COMPARABLE",
+    "NO_REAL_PREIMAGE_CANDIDATE_SET_SHADOW_EVIDENCE",
+    "REPAIR_SCOPE_MINIMUM_RECALL_BELOW_0_8"
+  ]
+}

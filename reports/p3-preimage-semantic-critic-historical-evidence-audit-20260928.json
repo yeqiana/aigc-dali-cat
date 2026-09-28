@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "kind": "p3_preimage_semantic_critic_historical_evidence_audit",
+  "generated_date": "2026-09-28",
+  "git_head": "a13dfa47f9eb3e86ab43de45938e1cc8c973e9e9",
+  "branch": "story-platform-v3-rever",
+  "read_only": true,
+  "model_invoked": false,
+  "episodes_scanned": 6,
+  "historical_snapshot_objects_found": 9,
+  "candidate_sets_examined": 2,
+  "exact_candidate_sets": 0,
+  "eligible_real_historical_sets": 0,
+  "search_sources": [
+    "episodes/** historical runtime paths in reachable Git history and blobs",
+    "current reports/ and .storyos/ runtime evidence",
+    "historical task state, host requests, barriers, committed snapshots, task contracts, candidates, and source authority blobs"
+  ],
+  "candidate_sets": [
+    {
+      "episode": "episodes/天界普通女生的一天",
+      "historical_commit_examined": "bd693905130e50f85cad567730c508f7712c77e6",
+      "candidate_snapshot_id": "fedc3470fb71 (historical candidate and host request identity)",
+      "four_task_candidates_present": true,
+      "task_contracts_present": true,
+      "candidate_verifier_pass": true,
+      "committed_snapshot_and_barrier_present": true,
+      "task_state_snapshot_id_at_examined_revision": "10664f (different from candidate snapshot id)",
+      "source_authority_binding_recoverable": false,
+      "source_authority_findings": [
+        "The exact historical story-gates source bytes do not match the snapshot-bound SHA: snapshot=8fa98a6c..., available historical source=4253f596...",
+        "The snapshot-bound story_lock and owned-scope source SHA values could not be matched to reachable exact Git blobs; only visual_profile had an exact blob match."
+      ],
+      "candidate_artifacts_byte_exact": true,
+      "historical_source_set_exact": false,
+      "eligible": false,
+      "blocker": "HISTORICAL_SOURCE_AUTHORITY_BYTES_UNAVAILABLE"
+    },
+    {
+      "episode": "episodes/尸解仙",
+      "historical_commit_examined": "bd693905130e50f85cad567730c508f7712c77e6",
+      "candidate_snapshot_id": "934b5066 (historical candidate and task identity)",
+      "four_task_candidates_present": true,
+      "task_contracts_present": false,
+      "candidate_verifier_pass": false,
+      "matching_authority_snapshot_present": false,
+      "available_authority_snapshot_id": "7cb6de (does not match candidates; barrier binds this snapshot)",
+      "source_authority_binding_recoverable": false,
+      "candidate_artifacts_byte_exact": true,
+      "historical_source_set_exact": false,
+      "eligible": false,
+      "blocker": "HISTORICAL_AUTHORITY_SNAPSHOT_AND_CONTRACT_SET_MISSING"
+    }
+  ],
+  "capsule_created": false,
+  "historical_real_shadow_executed": false,
+  "canonical_files_modified": false,
+  "canonical_episode_modified": false,
+  "authority_write": false,
+  "episode_transition": false,
+  "image_generation_invoked": false,
+  "decision": "NO_RECOVERABLE_REAL_PREIMAGE_CANDIDATE_SET",
+  "preimage_track_status": "CONDITIONAL_CUTOVER_REVIEW",
+  "quality_value": "QUALITY_VALUE_PROVEN_IN_FIXTURE",
+  "production_evidence": "REAL_PRODUCTION_EVIDENCE_PENDING",
+  "gate_action": "Do not create retry1 Gate; retain the immutable existing CONDITIONAL Gate and its blocker PRODUCTION_EVIDENCE_REVIEW_REQUIRED.",
+  "config_expected_unchanged": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "legacy_fallback_on_technical": true
+  }
+}

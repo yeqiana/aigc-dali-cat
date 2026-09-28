@@ -1,0 +1,406 @@
+{
+  "authority_write": false,
+  "candidate_count": 4,
+  "canonical_files_modified": false,
+  "eligible_count": 0,
+  "episode_transition": false,
+  "episodes": [
+    {
+      "candidate_set_complete": false,
+      "eligible_read_only_smoke": false,
+      "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+      "episode_state": "PUBLISH_READY",
+      "existing_semantic_result": "NOT_ELIGIBLE",
+      "snapshot_id": "2493c62d542fe23cb18edeb897756cc472080b50cfc889193e29e2566b54001e",
+      "snapshot_stale": true,
+      "tasks": [
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: character.finalize"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-character_finalize-2493c62d542f",
+          "task_status": "PENDING",
+          "task_type": "CHARACTER_FINALIZE"
+        },
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: visual.frame_directives",
+            "candidate payload scope must be a non-empty object: visual.environment_contract"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-environment_prepare-2493c62d542f",
+          "task_status": "PENDING",
+          "task_type": "ENVIRONMENT_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: visual.world_identity",
+            "candidate payload scope must be a non-empty object: visual.wardrobe",
+            "candidate payload scope must be a non-empty object: visual.world_state",
+            "candidate payload scope must be a non-empty object: visual.temporal_continuity"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/world.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-world_prepare-2493c62d542f",
+          "task_status": "PENDING",
+          "task_type": "WORLD_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: visual.shot_progression",
+            "candidate payload scope must be a non-empty object: visual.capture_grammar",
+            "candidate payload scope must be a non-empty object: visual.narrative_core"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-visual_narrative_prepare-2493c62d542f",
+          "task_status": "PENDING",
+          "task_type": "VISUAL_NARRATIVE_PREPARE"
+        }
+      ]
+    },
+    {
+      "candidate_set_complete": true,
+      "eligible_read_only_smoke": false,
+      "episode": "episodes/天界普通女生的一天",
+      "episode_state": "STORYBOARD_LOCKED",
+      "existing_semantic_result": "NOT_ELIGIBLE",
+      "snapshot_id": "beeb3d20c90bf35698a8f8c88102274df6555df5439fba54ec1cbf8d4094210d",
+      "snapshot_stale": true,
+      "tasks": [
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+          "candidate_present": true,
+          "candidate_sha256": "054b0ed15ca6142cc0fd65274beebd404241122052d926b43dcf92bfbc01101c",
+          "candidate_valid": false,
+          "task_id": "preimage-character_finalize-beeb3d20c90b",
+          "task_status": "PENDING",
+          "task_type": "CHARACTER_FINALIZE"
+        },
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+          "candidate_present": true,
+          "candidate_sha256": "8bf2f6f1ff69e5c441c3690bf93ac6c075d394410ac1ed0057cf613cfb9f32fe",
+          "candidate_valid": false,
+          "task_id": "preimage-environment_prepare-beeb3d20c90b",
+          "task_status": "PENDING",
+          "task_type": "ENVIRONMENT_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/world.json",
+          "candidate_present": true,
+          "candidate_sha256": "49727a8a46aa34a33aff8ce17619cd1aebbbfded3bcb331ca0b46f0896ad9d3e",
+          "candidate_valid": false,
+          "task_id": "preimage-world_prepare-beeb3d20c90b",
+          "task_status": "PENDING",
+          "task_type": "WORLD_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+          "candidate_present": true,
+          "candidate_sha256": "191e30b24a8710cbea93480df206b2f092bce5115d4688136dc04b8f2b9ab2c4",
+          "candidate_valid": false,
+          "task_id": "preimage-visual_narrative_prepare-beeb3d20c90b",
+          "task_status": "PENDING",
+          "task_type": "VISUAL_NARRATIVE_PREPARE"
+        }
+      ]
+    },
+    {
+      "candidate_set_complete": false,
+      "eligible_read_only_smoke": false,
+      "episode": "episodes/独立篇/01_五环外的浓雾",
+      "episode_state": null,
+      "existing_semantic_result": "NOT_ELIGIBLE",
+      "snapshot_id": "f51a1adbb917d02eda0e0f31aaab65b1c44dcececddad83d5522772647315920",
+      "snapshot_stale": false,
+      "tasks": [
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: character.finalize"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-character_finalize-f51a1adbb917",
+          "task_status": "PENDING",
+          "task_type": "CHARACTER_FINALIZE"
+        },
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: visual.frame_directives",
+            "candidate payload scope must be a non-empty object: visual.environment_contract"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-environment_prepare-f51a1adbb917",
+          "task_status": "PENDING",
+          "task_type": "ENVIRONMENT_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: visual.world_identity",
+            "candidate payload scope must be a non-empty object: visual.wardrobe",
+            "candidate payload scope must be a non-empty object: visual.world_state",
+            "candidate payload scope must be a non-empty object: visual.temporal_continuity"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/world.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-world_prepare-f51a1adbb917",
+          "task_status": "PENDING",
+          "task_type": "WORLD_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate missing schema_version",
+            "candidate missing task_id",
+            "candidate missing task_type",
+            "candidate missing snapshot_id",
+            "candidate missing source_authority_sha256",
+            "candidate missing generated_at",
+            "candidate missing status",
+            "candidate missing payload",
+            "candidate task_id mismatch",
+            "candidate task_type mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch",
+            "candidate status must be COMPLETED",
+            "candidate payload must be a non-empty object",
+            "candidate authority scope mismatch",
+            "candidate payload keys must exactly match declared authority scopes",
+            "candidate payload scope must be a non-empty object: visual.shot_progression",
+            "candidate payload scope must be a non-empty object: visual.capture_grammar",
+            "candidate payload scope must be a non-empty object: visual.narrative_core"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+          "candidate_present": false,
+          "candidate_sha256": null,
+          "candidate_valid": false,
+          "task_id": "preimage-visual_narrative_prepare-f51a1adbb917",
+          "task_status": "PENDING",
+          "task_type": "VISUAL_NARRATIVE_PREPARE"
+        }
+      ]
+    },
+    {
+      "candidate_set_complete": true,
+      "eligible_read_only_smoke": false,
+      "episode": "episodes/误入桃花源",
+      "episode_state": "STORYBOARD_LOCKED",
+      "existing_semantic_result": "NOT_ELIGIBLE",
+      "snapshot_id": "b72e1f735433df0cba74e84c2cdc18c7d6206a0191dcc720ae2b877daa404ded",
+      "snapshot_stale": true,
+      "tasks": [
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+          "candidate_present": true,
+          "candidate_sha256": "3d4e5108ff7815496fd8253ca0d33427f95e4ac3a4d75e3699e4ea7324f535fb",
+          "candidate_valid": false,
+          "task_id": "preimage-character_finalize-b72e1f735433",
+          "task_status": "PENDING",
+          "task_type": "CHARACTER_FINALIZE"
+        },
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+          "candidate_present": true,
+          "candidate_sha256": "b22806dd499468e36443fa5a6fb4a4759406bbd86d740527c04d9111d44c99a6",
+          "candidate_valid": false,
+          "task_id": "preimage-environment_prepare-b72e1f735433",
+          "task_status": "PENDING",
+          "task_type": "ENVIRONMENT_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/world.json",
+          "candidate_present": true,
+          "candidate_sha256": "602422ecea75654a01a590a4a56dd4a9adebe50a3d8e7ac38dc9a5d4fb33f9c2",
+          "candidate_valid": false,
+          "task_id": "preimage-world_prepare-b72e1f735433",
+          "task_status": "PENDING",
+          "task_type": "WORLD_PREPARE"
+        },
+        {
+          "candidate_errors": [
+            "candidate task_id mismatch",
+            "candidate snapshot_id mismatch",
+            "candidate source authority SHA mismatch"
+          ],
+          "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+          "candidate_present": true,
+          "candidate_sha256": "b5e8fc0df58e61e5b41c7792808622fd71159e074d9dad5dd4d87394f8d9d394",
+          "candidate_valid": false,
+          "task_id": "preimage-visual_narrative_prepare-b72e1f735433",
+          "task_status": "PENDING",
+          "task_type": "VISUAL_NARRATIVE_PREPARE"
+        }
+      ]
+    }
+  ],
+  "image_generation_invoked": false,
+  "kind": "p3_preimage_semantic_critic_real_smoke_candidates",
+  "read_only": true,
+  "runtime_env_loaded": true,
+  "schema_version": 1
+}

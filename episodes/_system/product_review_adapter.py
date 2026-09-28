@@ -198,6 +198,11 @@ def reconcile_request(ep: Path, request: dict, *, now: dt.datetime | None = None
 
 
 _EXTENDED_SOURCE_DRIFT_KINDS = {"visual-lock", "visual-lock-baseline"}
+_CODEX_SHADOW_REVIEW_KINDS = {
+    "story-semantic-critic-shadow",
+    "preimage-semantic-critic-shadow",
+    "final-semantic-critic-shadow",
+}
 
 
 def _frozen_source_key(source_files) -> tuple[tuple[str, str], ...]:
@@ -435,8 +440,8 @@ def prepare(
     host_execution = str(host_execution or "workspace_provider")
     if host_execution not in {"workspace_provider", "codex_user_runner_shadow"}:
         raise ProductReviewError(f"unsupported product review host execution: {host_execution}")
-    if host_execution == "codex_user_runner_shadow" and kind != "story-semantic-critic-shadow":
-        raise ProductReviewError("Codex user-runner execution is restricted to Story Semantic Critic shadow")
+    if host_execution == "codex_user_runner_shadow" and kind not in _CODEX_SHADOW_REVIEW_KINDS:
+        raise ProductReviewError("Codex user-runner execution is restricted to registered decision-only Critic shadows")
     metadata = dict(request_metadata or {})
     sources = []
     for path in source_paths:
@@ -584,7 +589,7 @@ def finalize_candidate(
         if contract.get("webcodex_allowed") is not workspace.is_webcodex:
             raise ProductReviewError("review contract WebCodex capability mismatch")
         allowed_local_shadow = (
-            kind == "story-semantic-critic-shadow"
+            kind in _CODEX_SHADOW_REVIEW_KINDS
             and req.get("host_execution") == "codex_user_runner_shadow"
             and contract.get("host_execution") == "codex_user_runner_shadow"
             and contract.get("local_codex_review_allowed") is True

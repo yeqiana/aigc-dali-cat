@@ -256,6 +256,22 @@ agent_runtime:
       bounded_reflection:
         max_review_attempts: 2
         max_auto_repairs: 1
+    preimage_semantic_critic:
+      # P3 PREIMAGE Critic is advisory-only; canonical verifier/barrier/commit stay authoritative.
+      shadow_enabled: true
+      production_enabled: false
+      legacy_fallback_on_technical: true
+      bounded_reflection:
+        max_review_attempts: 2
+        max_auto_repairs: 1
+    final_semantic_critic:
+      # P3 Final Semantic Critic observes the frozen reviewable frame set; existing review stays authoritative.
+      shadow_enabled: true
+      production_enabled: false
+      legacy_fallback_on_technical: true
+      bounded_reflection:
+        max_review_attempts: 2
+        max_auto_repairs: 1
 
 runtime:
   # 当前整体 Runtime = WORK：Story、前期资产、门禁与发布由产品运行时执行。

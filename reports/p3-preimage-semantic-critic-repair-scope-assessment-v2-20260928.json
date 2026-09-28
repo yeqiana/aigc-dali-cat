@@ -1,0 +1,94 @@
+{
+  "all_labelled_failures_have_repair_proposal": true,
+  "fixture_sha256": "d820d5ca0c06fa596d76fd3723ac9efe613bbf7a52639cf48d79828fc50f94fa",
+  "generated_at": "2026-09-28T04:30:18+00:00",
+  "immutable": true,
+  "issue_code_note": "No existing parent-child or semantic issue-family mapping was found; generic fixture code and specific Critic codes are not string-comparable.",
+  "issue_code_recall": "NOT_COMPARABLE",
+  "issue_code_taxonomy_mapping_available": false,
+  "kind": "p3_preimage_semantic_critic_repair_scope_assessment_v2",
+  "labelled_fail_count": 3,
+  "minimum_repair_scope_recall": 0.5,
+  "policy": {
+    "all_labelled_failures_require_repair_proposal": true,
+    "minimum_median_precision": 0.8,
+    "minimum_median_recall": 0.8,
+    "minimum_recall_exclusive": 0.0,
+    "policy_source": "cutover_gate_conservative_default"
+  },
+  "repair_mode_at_cutover": "STRICTLY_ADVISORY_NO_AUTOMATIC_REPAIR",
+  "repair_sample_count": 3,
+  "repair_scope_f1_median": 1.0,
+  "repair_scope_precision_median": 1.0,
+  "repair_scope_recall_median": 1.0,
+  "repair_value_blocking": false,
+  "repair_value_v2": true,
+  "samples": [
+    {
+      "correct_scope": [
+        "character.finalize",
+        "visual.world_identity"
+      ],
+      "decision": "REPAIR",
+      "expected_scope": [
+        "character.finalize",
+        "visual.world_identity"
+      ],
+      "f1": 1.0,
+      "observed_scope": [
+        "character.finalize",
+        "visual.world_identity"
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "repair_proposed": true,
+      "sample_id": "preimage-cross-scope-identity-conflict"
+    },
+    {
+      "correct_scope": [
+        "visual.environment_contract",
+        "visual.temporal_continuity"
+      ],
+      "decision": "REPAIR",
+      "expected_scope": [
+        "visual.environment_contract",
+        "visual.temporal_continuity"
+      ],
+      "f1": 1.0,
+      "observed_scope": [
+        "visual.environment_contract",
+        "visual.temporal_continuity"
+      ],
+      "precision": 1.0,
+      "recall": 1.0,
+      "repair_proposed": true,
+      "sample_id": "preimage-temporal-continuity-conflict"
+    },
+    {
+      "correct_scope": [
+        "visual.capture_grammar"
+      ],
+      "decision": "REPAIR",
+      "expected_scope": [
+        "character.finalize",
+        "visual.capture_grammar"
+      ],
+      "f1": 0.6666666666666666,
+      "observed_scope": [
+        "visual.capture_grammar"
+      ],
+      "precision": 1.0,
+      "recall": 0.5,
+      "repair_proposed": true,
+      "sample_id": "preimage-pov-continuity-conflict"
+    }
+  ],
+  "schema_version": 1,
+  "source_benchmark": {
+    "path": "reports/p3-preimage-semantic-critic-paired-benchmark-20260928.json",
+    "sha256": "83db61cd6652f489b5020d2fc90d413c2ee78ab3133b1c77b704ebbc44e4cb89"
+  },
+  "warnings": [
+    "MINIMUM_REPAIR_SCOPE_RECALL_BELOW_0_8"
+  ]
+}

@@ -1709,6 +1709,29 @@ def complete_preimage_task(ep: Path, request_id: str, candidate: dict) -> dict:
     snapshot = _read_json(ep / "meta/runtime/preimage-authority-snapshot.json")
     planned = preimage_task_contract.plan_tasks(ep, snapshot, resume=True) if snapshot else []
     if planned and all(item.get("status") == "REUSED" for item in planned):
+        # PREIMAGE Semantic Critic is a read-only side request. Its preparation
+        # cannot gate or rewrite the canonical commit that follows.
+        try:
+            from agents import preimage_semantic_critic_adapter as preimage_critic
+            shadow_request = preimage_critic.prepare_after_candidate_set(ep, snapshot, planned)
+            if shadow_request is not None:
+                request["preimage_semantic_critic_shadow_request"] = {
+                    "request_id": shadow_request.get("request_id"),
+                    "request_path": shadow_request.get("request_path"),
+                    "snapshot_id": snapshot.get("snapshot_id"),
+                    "candidate_set_sha256": shadow_request.get("request_metadata", {}).get("candidate_set_sha256"),
+                    "shadow_only": True,
+                    "candidate_authority": "runtime_evidence_only",
+                }
+            else:
+                request["preimage_semantic_critic_shadow"] = {"status": "DISABLED"}
+        except Exception as exc:
+            request["preimage_semantic_critic_shadow"] = {
+                "status": "NOT_PREPARED",
+                "failure_class": type(exc).__name__,
+                "reason": str(exc),
+                "canonical_commit_unaffected": True,
+            }
         execution_contexts = _live_agent_execution_contexts(ep, snapshot["snapshot_id"])
         request["authority_commit"] = preimage_protocol.commit_candidates(
             ep, snapshot, planned, execution_contexts=execution_contexts or None

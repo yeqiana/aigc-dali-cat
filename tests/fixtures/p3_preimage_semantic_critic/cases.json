@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "source": "explicit deterministic test expectations derived from existing PREIMAGE task contracts",
+  "cases": [
+    {
+      "sample_id": "preimage-clean-valid-a",
+      "reference_label": "PASS",
+      "reference_issue_codes": [],
+      "mutations": {},
+      "repair_scope": []
+    },
+    {
+      "sample_id": "preimage-clean-valid-not-applicable",
+      "reference_label": "PASS",
+      "reference_issue_codes": [],
+      "mutations": {"world_applicable": false},
+      "repair_scope": []
+    },
+    {
+      "sample_id": "preimage-cross-scope-identity-conflict",
+      "reference_label": "FAIL",
+      "reference_issue_codes": ["PREIMAGE_CROSS_SCOPE_FACT_CONFLICT"],
+      "mutations": {"character_identity": "person-a", "world_identity": "person-b"},
+      "repair_scope": ["character.finalize", "visual.world_identity"]
+    },
+    {
+      "sample_id": "preimage-temporal-continuity-conflict",
+      "reference_label": "FAIL",
+      "reference_issue_codes": ["PREIMAGE_CROSS_SCOPE_FACT_CONFLICT"],
+      "mutations": {"environment_time_of_day": "morning", "world_time_of_day": "night"},
+      "repair_scope": ["visual.environment_contract", "visual.temporal_continuity"]
+    },
+    {
+      "sample_id": "preimage-pov-continuity-conflict",
+      "reference_label": "FAIL",
+      "reference_issue_codes": ["PREIMAGE_CROSS_SCOPE_FACT_CONFLICT"],
+      "mutations": {"character_pov": "first_person", "capture_pov": "third_person"},
+      "repair_scope": ["character.finalize", "visual.capture_grammar"]
+    }
+  ]
+}

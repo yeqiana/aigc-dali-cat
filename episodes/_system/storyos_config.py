@@ -232,7 +232,7 @@ def validate(data: dict | None = None) -> list[str]:
         for key in ("shadow_enabled", "production_enabled", "legacy_fallback_on_technical"):
             if not isinstance(story_critic.get(key) if isinstance(story_critic, dict) else None, bool):
                 errors.append(f"agent_runtime.adapters.story_semantic_critic.{key} must be a bool")
-        if isinstance(story_critic, dict) and story_critic.get("shadow_enabled") is True and story_critic.get("production_enabled") is True:
+        if story_critic.get("shadow_enabled") is True and story_critic.get("production_enabled") is True:
             errors.append("agent_runtime.adapters.story_semantic_critic shadow and production cannot both be enabled")
         reflection = story_critic.get("bounded_reflection") if isinstance(story_critic, dict) else None
         if not isinstance(reflection, dict):
@@ -242,6 +242,36 @@ def validate(data: dict | None = None) -> list[str]:
                 errors.append("agent_runtime.adapters.story_semantic_critic.bounded_reflection.max_review_attempts must be 2")
             if reflection.get("max_auto_repairs") != 1:
                 errors.append("agent_runtime.adapters.story_semantic_critic.bounded_reflection.max_auto_repairs must be 1")
+    preimage_critic = get_path(cfg, "agent_runtime.adapters.preimage_semantic_critic")
+    if preimage_critic is not None:
+        for key in ("shadow_enabled", "production_enabled", "legacy_fallback_on_technical"):
+            if not isinstance(preimage_critic.get(key) if isinstance(preimage_critic, dict) else None, bool):
+                errors.append(f"agent_runtime.adapters.preimage_semantic_critic.{key} must be a bool")
+        if isinstance(preimage_critic, dict) and preimage_critic.get("shadow_enabled") is True and preimage_critic.get("production_enabled") is True:
+            errors.append("agent_runtime.adapters.preimage_semantic_critic shadow and production cannot both be enabled")
+        reflection = preimage_critic.get("bounded_reflection") if isinstance(preimage_critic, dict) else None
+        if not isinstance(reflection, dict):
+            errors.append("agent_runtime.adapters.preimage_semantic_critic.bounded_reflection must be a mapping")
+        else:
+            if reflection.get("max_review_attempts") != 2:
+                errors.append("agent_runtime.adapters.preimage_semantic_critic.bounded_reflection.max_review_attempts must be 2")
+            if reflection.get("max_auto_repairs") != 1:
+                errors.append("agent_runtime.adapters.preimage_semantic_critic.bounded_reflection.max_auto_repairs must be 1")
+    final_critic = get_path(cfg, "agent_runtime.adapters.final_semantic_critic")
+    if final_critic is not None:
+        for key in ("shadow_enabled", "production_enabled", "legacy_fallback_on_technical"):
+            if not isinstance(final_critic.get(key) if isinstance(final_critic, dict) else None, bool):
+                errors.append(f"agent_runtime.adapters.final_semantic_critic.{key} must be a bool")
+        if isinstance(final_critic, dict) and final_critic.get("shadow_enabled") is True and final_critic.get("production_enabled") is True:
+            errors.append("agent_runtime.adapters.final_semantic_critic shadow and production cannot both be enabled")
+        reflection = final_critic.get("bounded_reflection") if isinstance(final_critic, dict) else None
+        if not isinstance(reflection, dict):
+            errors.append("agent_runtime.adapters.final_semantic_critic.bounded_reflection must be a mapping")
+        else:
+            if reflection.get("max_review_attempts") != 2:
+                errors.append("agent_runtime.adapters.final_semantic_critic.bounded_reflection.max_review_attempts must be 2")
+            if reflection.get("max_auto_repairs") != 1:
+                errors.append("agent_runtime.adapters.final_semantic_critic.bounded_reflection.max_auto_repairs must be 1")
     preferred_runtime = str(get_path(cfg, "runtime.preferred_runtime", "")).upper()
     if preferred_runtime not in {"WORK", "WEB", "CODEX"}:
         errors.append("runtime.preferred_runtime must be WORK, WEB or CODEX")
