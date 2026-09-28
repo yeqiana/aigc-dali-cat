@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_real_smoke_candidates",
+  "generated_at": "2026-09-28T07:17:40.181312+00:00",
+  "read_only": true,
+  "model_invoked": false,
+  "canonical_review_invoked": false,
+  "episode_files_modified": false,
+  "authority_modified": false,
+  "production_ledger_modified": false,
+  "image_generation_invoked": false,
+  "candidate_count": 5,
+  "eligible_count": 0,
+  "candidates": [
+    {
+      "episode": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉",
+      "canonical_review_path": "episodes/09_旧物怪谈/05_婚礼前夜_记忆麻醉/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "EPISODE_NOT_IN_READ_ONLY_SMOKE_STATE"
+      ],
+      "episode_state": "PUBLISH_READY"
+    },
+    {
+      "episode": "episodes/10_山难伪纪录片/01_鳌太线_热汤",
+      "canonical_review_path": "episodes/10_山难伪纪录片/01_鳌太线_热汤/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "EPISODE_NOT_IN_READ_ONLY_SMOKE_STATE"
+      ],
+      "episode_state": "PUBLISH_READY"
+    },
+    {
+      "episode": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳",
+      "canonical_review_path": "episodes/11_仲夏夜惊魂/01_停电夜蜕壳/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "EPISODE_NOT_IN_READ_ONLY_SMOKE_STATE"
+      ],
+      "episode_state": "PUBLISH_READY"
+    },
+    {
+      "episode": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区",
+      "canonical_review_path": "episodes/_archive/20260911_EP003_abandoned_雾中的另一座生活区/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 0,
+      "source_sha_bound": false,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "EPISODE_NOT_IN_READ_ONLY_SMOKE_STATE"
+      ],
+      "episode_state": "PRODUCTION_PASSED"
+    },
+    {
+      "episode": "episodes/误入桃花源",
+      "canonical_review_path": "episodes/误入桃花源/meta/frame-semantic-review.json",
+      "canonical_review_exists": true,
+      "review_pass": false,
+      "reviewable_frame_count": 20,
+      "source_sha_bound": true,
+      "candidate_set_sha256": null,
+      "eligible": false,
+      "blockers": [
+        "CANONICAL_STORY_SOURCE_SHA_STALE",
+        "CANONICAL_STORYBOARD_SOURCE_SHA_STALE"
+      ],
+      "episode_state": "STORYBOARD_LOCKED",
+      "story_sha_match": false,
+      "storyboard_sha_match": false,
+      "visual_contract_sha_match": true
+    }
+  ]
+}

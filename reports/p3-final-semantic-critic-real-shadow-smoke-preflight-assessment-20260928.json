@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_real_smoke_preflight_assessment",
+  "generated_at": "2026-09-28T07:27:49.498807+00:00",
+  "original_smoke_path": "reports/p3-final-semantic-critic-real-shadow-smoke-20260928.json",
+  "original_smoke_sha256": "862ffc690d38a52578d235d40c6a30b715c53ce7df730a62337f1c052ae298b3",
+  "candidate_scan_path": "reports/p3-final-semantic-critic-real-smoke-candidates-retry2-20260928.json",
+  "candidate_scan_sha256": "5b1c36f0679f2246d012b93697b3f3d80239e1db26b6052aa41107e53342dccf",
+  "episode": "episodes/误入桃花源",
+  "source_validation": {
+    "frame_set_sha_match": true,
+    "story_review_sha256": "cdc9b7fc8df53c28a5b7c45bb65c9b104df4de9c4e2fb7087a2d762c49646c12",
+    "story_current_sha256": "0c039a856af0f400fea2a14be50c9a2715aa9059cfce9b6d19db54eeeb4b615b",
+    "story_match": false,
+    "storyboard_review_sha256": "116c7b5ed1c68f8f2c4ef00abcb5aff09d562006a1663b7f59e1a83f1a209856",
+    "storyboard_current_sha256": "d6c561e93fe13573ddc38b7dc5d6ee9ed90a73b9a85ceaa13ec2dc037d7955c9",
+    "storyboard_match": false,
+    "visual_contract_match": true
+  },
+  "host_request_created": false,
+  "model_invoked": false,
+  "candidate_created": false,
+  "episode_files_modified_by_smoke": false,
+  "assessment_basis": "The source-binding exception is raised before prepare_shadow_request and execute_shadow_request; the per-attempt shadow request path is absent. The initial smoke report marked unchanged checks false because its preflight snapshot was initialized after source validation; it did not observe a write.",
+  "decision": "REAL_SMOKE_NOT_ELIGIBLE_SOURCE_SHA_STALE",
+  "paired_benchmark": "NOT_ELIGIBLE"
+}

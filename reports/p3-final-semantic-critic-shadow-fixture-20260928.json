@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_shadow_fixture",
+  "generated_at": "2026-09-28T06:37:54.160163+00:00",
+  "status": "PASS",
+  "fixture_only": true,
+  "model_execution": false,
+  "canonical_review_invoked": false,
+  "authority_write": false,
+  "production_ledger_write": false,
+  "gate_pass": false,
+  "episode_transition": false,
+  "image_generation_invoked": false,
+  "case_count": 7,
+  "cases": [
+    {
+      "sample_id": "clean-pass",
+      "reference_label": "PASS",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    },
+    {
+      "sample_id": "identity-drift",
+      "reference_label": "FAIL",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    },
+    {
+      "sample_id": "continuity-break",
+      "reference_label": "FAIL",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    },
+    {
+      "sample_id": "world-conflict",
+      "reference_label": "FAIL",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    },
+    {
+      "sample_id": "pov-conflict",
+      "reference_label": "FAIL",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    },
+    {
+      "sample_id": "not-applicable-rule",
+      "reference_label": "PASS",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    },
+    {
+      "sample_id": "global-closure",
+      "reference_label": "FAIL",
+      "decision_schema_valid": true,
+      "issue_taxonomy_valid": true,
+      "applicability_contract_valid": true,
+      "model_execution": false
+    }
+  ],
+  "coverage": [
+    "decision schema",
+    "canonical issue taxonomy",
+    "versioned applicability names",
+    "pass/fail/repair fixture labels"
+  ],
+  "limitations": [
+    "Does not claim image semantic quality or real-model telemetry; real smoke remains required."
+  ]
+}

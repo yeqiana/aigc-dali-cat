@@ -1153,6 +1153,16 @@ Return one row for EVERY attached frame. If any hard check fails, mark it false,
 """
 
 
+def _prepare_final_semantic_shadow_best_effort(ep: Path, attempt: int) -> dict | None:
+    """Prepare the advisory lane without allowing it to block canonical review."""
+    try:
+        import final_semantic_critic_adapter
+        return final_semantic_critic_adapter.schedule_shadow_best_effort(ep, attempt=attempt)
+    except Exception as exc:  # pragma: no cover - defensive fallback around a non-authoritative lane
+        print(f"WARN: Final Semantic Critic Shadow wiring unavailable: {type(exc).__name__}: {exc}")
+        return None
+
+
 def _full_review_parallelism(frame_count: int) -> int:
     """Choose bounded Final Semantic fan-out from frame count and the canonical config cap."""
     count = max(0, int(frame_count))
@@ -1930,6 +1940,11 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
         "storyboard": sha256_file(storyboard),
         "visual": sha256_json(stable_visual_contract(ep)),
     }
+
+    # Advisory Final Semantic Critic gets a distinct Product Review request.
+    # It is prepared from the same frozen frame set before canonical review,
+    # but its failure is deliberately unable to affect the existing reviewer.
+    _prepare_final_semantic_shadow_best_effort(ep, attempt)
 
     active_runtime, _ = runtime_router.detect()
     vision_runtime, _ = runtime_router.vision_review_runtime()

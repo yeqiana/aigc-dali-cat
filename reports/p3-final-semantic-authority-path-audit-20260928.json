@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_authority_path_audit",
+  "generated_date": "2026-09-28",
+  "git_head": "a13dfa47f9eb3e86ab43de45938e1cc8c973e9e9",
+  "read_only": true,
+  "model_invoked": false,
+  "adapter_started": false,
+  "shadow_wiring_started": false,
+  "canonical_path": {
+    "task": "Final Semantic production review of the complete reviewable frame set",
+    "input_authority": "production_ledger current_candidate or approved_asset rows, with frame and frozen source bindings",
+    "input_preparation": "episodes/_system/frame_semantic_review.py reviewable_frame_records",
+    "review_dispatch": "episodes/_system/vision_review_executor.py REVIEW_FINAL_PRODUCTION dispatches frame_semantic_review.run_critic",
+    "critic_execution": "frame_semantic_review.py runs bounded full-review shards, merges decisions, and runs global closure before candidate persistence",
+    "authoritative_output": "meta/frame-semantic-review.json plus frame-semantic-candidate-attempt-N.json and frame-semantic-audit evidence",
+    "authority_effect": "_apply_candidate_gate closes per-frame Candidate PASS/FAIL into production_ledger transitions, promotion, and lock; this is the canonical authority-bearing boundary",
+    "existing_semantic_verifier": "frame_semantic_review.verify_episode validates persisted review evidence and bindings",
+    "consumers": [
+      "episodes/_system/machine_gate.py check_production consumes verify_frame_semantic_episode errors as FAIL findings",
+      "episodes/_system/machine_action_executor.py final production action calls verify_episode and rejects invalid review",
+      "episodes/_system/final_candidate_snapshot.py verifies Final Semantic before snapshot build and includes the review evidence in the snapshot",
+      "release preflight and delivery consume the verified final candidate snapshot and Final Semantic evidence"
+    ]
+  },
+  "authority_order": [
+    "reviewable Candidate set and source bindings are assembled",
+    "existing Final Semantic model review runs and validates its Candidate",
+    "candidate persistence records review evidence",
+    "canonical candidate gate applies ledger PASS/FAIL and may promote/lock",
+    "machine gate, final snapshot, and release consumers validate the persisted result"
+  ],
+  "shadow_boundary_observation": "Any future advisory shadow must read the same frozen reviewable Candidate set and source bindings before the canonical authority-bearing ledger transition; it must not write review records, the production ledger, locks, gates, or snapshot state.",
+  "existing_final_semantic_critic": "Already present as the canonical Final Semantic production reviewer; a P3 shadow would be an additional advisory comparison path, not a replacement for this reviewer.",
+  "source_code_sha256": {
+    "episodes/_system/frame_semantic_review.py": "906ee922ef059718e77b3e4457a5c99fc9b3db132b43b9c0230b094446ebb85a",
+    "episodes/_system/vision_review_executor.py": "2c8b280bf6afd0ad01da2fc61c0a2c795aa26ea3e1df7de98345683df972f882",
+    "episodes/_system/machine_gate.py": "34ce331b7f2a1afbd1af56773fc2593831dedfb593b295db80889d866c10468f",
+    "episodes/_system/machine_action_executor.py": "ab444adfbd297f3f21b8dd1789f0a522cea2b9a6c3358a280d85840f81604f3a",
+    "episodes/_system/final_candidate_snapshot.py": "e8a401f2d1d907ed8c1446964cd95c1b66816e85aadf64fd7e8bb2ea805782ee",
+    "episodes/_system/production_ledger.py": "c99084762109a9e6ad6ce33f04294c7445d1801715802382d0e36fd2a4e81427"
+  },
+  "architecture_order": ["Story Semantic", "PREIMAGE semantic", "Final Semantic"],
+  "episode_files_modified": false,
+  "authority_modified": false,
+  "image_generation_invoked": false
+}

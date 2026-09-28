@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_deterministic_contract_fixtures",
+  "fixture_only": true,
+  "model_execution": false,
+  "ground_truth_source": "episodes/_system/frame_semantic_review.py versioned checks, ISSUE_CODES, and GLOBAL_CLOSURE_CHECKS",
+  "cases": [
+    {"sample_id": "clean-pass", "reference_label": "PASS", "applicability": ["scene_storyboard_fidelity", "character_identity", "temporal_continuity"], "reference_issue_codes": []},
+    {"sample_id": "identity-drift", "reference_label": "FAIL", "applicability": ["character_identity", "wardrobe_continuity"], "reference_issue_codes": ["IDENTITY_DRIFT"]},
+    {"sample_id": "continuity-break", "reference_label": "FAIL", "applicability": ["spatial_continuity", "temporal_continuity"], "reference_issue_codes": ["TEMPORAL_CONTRADICTION"]},
+    {"sample_id": "world-conflict", "reference_label": "FAIL", "applicability": ["world_identity_fidelity", "environment_physics_fidelity"], "reference_issue_codes": ["WORLD_IDENTITY_DRIFT"]},
+    {"sample_id": "pov-conflict", "reference_label": "FAIL", "applicability": ["pov_photographer_legality", "camera_authorship_physical"], "reference_issue_codes": ["POV_ILLEGAL", "GHOST_CAMERA"]},
+    {"sample_id": "not-applicable-rule", "reference_label": "PASS", "applicability": [], "not_applicable": ["shot_scale_fidelity"], "reference_issue_codes": []},
+    {"sample_id": "global-closure", "reference_label": "FAIL", "applicability": ["ending_payoff_coherence", "narrative_progression"], "reference_issue_codes": ["NARRATIVE_REDUNDANCY"]}
+  ]
+}
