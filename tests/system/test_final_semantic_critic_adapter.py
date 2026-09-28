@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 from unittest.mock import Mock
 
+from PIL import Image
+
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes" / "_system"
 AGENTS = SYSTEM / "agents"
@@ -30,8 +32,9 @@ def _freeze_fixture(monkeypatch, tmp_path):
     schema = repo / "critic_decision.schema.json"
     for path, data in ((story, "frozen story"), (storyboard, "frozen board"),
                        (gates, json.dumps({"visual": {"references": {"items": []}}})),
-                       (image, "fixture-image-bytes"), (schema, "{}")):
+                       (schema, "{}")):
         path.write_text(data, encoding="utf-8")
+    Image.new("RGB", (2, 2), (10, 20, 30)).save(image, format="PNG")
     monkeypatch.setattr(critic, "ROOT", repo)
     monkeypatch.setattr(critic, "DECISION_SCHEMA", schema)
     rubric_paths = []
@@ -123,6 +126,9 @@ def test_shadow_preparation_uses_separate_decision_only_request(monkeypatch, tmp
     capsule["capsule_sha256"] = critic.digest(capsule)
     monkeypatch.setattr(critic, "adapter_config", lambda: {"shadow_enabled": True, "production_enabled": False})
     monkeypatch.setattr(critic, "build_frozen_review_capsule", lambda _ep: capsule)
+    monkeypatch.setattr(critic, "final_critic_visual_attachment_plan", lambda *_a, **_k: {
+        "text_sources": [], "visual_attachment_files": [], "preflight_status": "PASS",
+    })
     request_file = ep / "request.json"
     request_file.write_text("{}", encoding="utf-8")
     monkeypatch.setattr(product_review_adapter, "request_path", lambda *_a, **_k: request_file)

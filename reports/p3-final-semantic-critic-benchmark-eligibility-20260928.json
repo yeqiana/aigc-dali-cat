@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "p3_final_semantic_critic_benchmark_eligibility",
+  "generated_at": "2026-09-28T19:09:28+08:00",
+  "status": "BENCHMARK_NOT_ELIGIBLE",
+  "real_shadow_smoke_path": "reports/p3-final-semantic-critic-real-shadow-smoke-retry2-20260928.json",
+  "real_shadow_smoke_sha256": "e0100477d6d9dffc54dd7aae0350b22fec8d4968ca7de43d9f4be554d9c47ed9",
+  "real_shadow_smoke_pass": true,
+  "label_fixture_path": "tests/fixtures/p3_final_semantic_critic/cases.json",
+  "label_fixture_sha256": "3ce9652bb349bd1adfabef91f3a7a74f890e8d7d5a09f5c9dd3cb263b84abaf5",
+  "label_fixture_only": true,
+  "fixture_label_count": 7,
+  "fixture_pass_labels": 2,
+  "fixture_fail_or_repair_labels": 5,
+  "fixture_ground_truth_source": "episodes/_system/frame_semantic_review.py versioned checks, ISSUE_CODES, and GLOBAL_CLOSURE_CHECKS",
+  "fixture_cases_have_frozen_source_bindings": false,
+  "fixture_cases_have_visual_asset_sets": false,
+  "distinct_labelled_frozen_source_set_count": 0,
+  "real_episode_labelled_sample_count": 0,
+  "real_episode_candidate_scan_path": "reports/p3-final-semantic-critic-real-smoke-candidates-retry2-20260928.json",
+  "real_episode_candidate_scan_sha256": "5b1c36f0679f2246d012b93697b3f3d80239e1db26b6052aa41107e53342dccf",
+  "real_shadow_smoke_counts_as_ground_truth": false,
+  "benchmark_started": false,
+  "attempted_pairs": 0,
+  "valid_pairs": 0,
+  "quality_value": null,
+  "blockers": [
+    "LABELLED_FINAL_SEMANTIC_SAMPLE_SET_INSUFFICIENT",
+    "DETERMINISTIC_FIXTURE_LABELS_HAVE_NO_FROZEN_VISUAL_SOURCE_SETS"
+  ],
+  "notes": [
+    "Seven deterministic fixture labels exist, including two PASS and five FAIL cases, but they contain only applicability and issue-code labels; they are not distinct byte-bound frame/source sets and cannot validate image-semantic behavior.",
+    "The successful historical real Episode smoke is one source set without independent ground truth; the canonical model reviewer is not treated as a label.",
+    "No benchmark model calls were made because the minimum distinct labelled frozen source set requirement is unmet."
+  ]
+}
