@@ -374,14 +374,21 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
     model, effort = configured_cli_model()
     if not model or not effort:
         raise PreimageCriticError("active Codex model and reasoning effort are not observable")
+    execution_target = codex_critic_runner.effective_execution_target(
+        task_type="preimage_semantic_critic",
+        legacy_target={"provider": "codex_user_runner", "model": model, "runtime": "CODEX"},
+        route_decision=request.get("capability_route_decision"),
+    )
+    model = execution_target["model"]
     prompt = str(request.get("prompt") or "")
     log_path = candidate_path.with_name(f"attempt-{attempt}-codex.jsonl")
     result = codex_critic_runner.launch(
         prompt, codex=codex_critic_runner.resolve_codex(None), root=ROOT, timeout=timeout,
         output_path=candidate_path, output_schema=DECISION_SCHEMA, model=model,
         reasoning_effort=effort, sandbox="read-only", log_path=log_path,
+        execution_target=execution_target,
     )
-    telemetry = execution_telemetry(result, provider="codex_user_runner", model=model)
+    telemetry = execution_telemetry(result, provider=execution_target["provider"], model=model)
     if result.returncode != 0:
         raise PreimageCriticError(f"PREIMAGE Critic model failed with returncode={result.returncode}")
     decision = validate_decision(json.loads(candidate_path.read_text(encoding="utf-8-sig")))

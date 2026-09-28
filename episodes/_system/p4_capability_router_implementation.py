@@ -216,8 +216,8 @@ def audit_dispatch_consumer() -> dict:
         "call_path": [
             "Runtime DAG calls Runtime Scheduler to plan DAG work.",
             "Critic adapters prepare host requests; product_review_adapter writes effective_execution_target as advisory request evidence.",
-            "Runtime DAG and Runtime Scheduler do not consume effective_execution_target or capability_route_decision.",
-            "codex_critic_runner.launch has no execution-target selector; three local Critic launch callsites do not pass one.",
+            "Story/PREIMAGE/Final Critic execution adapters pass the effective target into codex_critic_runner.launch; the Codex model selector consumes it and execution telemetry records the actual target.",
+            "Runtime DAG and Runtime Scheduler still do not bind a runnable Critic node to that target; there is no verified DAG/Scheduler-to-Critic dispatch handoff.",
         ],
         "source_files": {name: {"path": row["path"], "sha256": row["sha256"]}
                          for name, row in sources.items()},
@@ -273,7 +273,7 @@ def build_implementation_gate(*, regression: dict) -> dict:
         "blockers": blockers,
         "blocker_details": ([{
             "check": "adapter_dispatch_consumer_present",
-            "reason": "The effective target remains advisory request evidence; DAG/Scheduler and actual Critic executor do not consume/pass it.",
+            "reason": "The local Critic executor consumes a route target, but Runtime DAG/Scheduler do not bind a runnable Critic node to it, so end-to-end workflow dispatch is still unverified.",
             "missing_handoffs": dispatch_audit["missing_handoffs"],
         }] if "adapter_dispatch_consumer_present" in blockers else []),
         "production_enabled": False,
@@ -302,10 +302,12 @@ def write_implementation_gate_report(*, regression: dict,
         "episodes/_system/runtime_dag.py",
         "episodes/_system/runtime_scheduler.py",
         "episodes/_system/codex_critic_runner.py",
+        "episodes/_system/codex_execution_telemetry.py",
         "episodes/_system/agents/story_semantic_critic_adapter.py",
         "episodes/_system/agents/preimage_semantic_critic_adapter.py",
         "episodes/_system/agents/final_semantic_critic_adapter.py",
         "tests/system/test_p4_production_router.py",
+        "tests/system/test_p4_runtime_dispatch_consumer.py",
     ]
     source_hashes = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
                      for name in source_paths}
@@ -320,6 +322,7 @@ def write_implementation_gate_report(*, regression: dict,
         "reports/p4-capability-router-pre-cutover-gate-20260928.json",
         "reports/p4-capability-router-production-policy-review-20260928.json",
         "reports/p4-capability-router-dispatch-consumer-audit-20260928.json",
+        "reports/p4-capability-router-dispatch-consumer-audit-runner-consumer-20260928.json",
     ]
     report_hashes = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
                      for name in report_sources if (ROOT / name).is_file()}
@@ -366,8 +369,16 @@ def write_dispatch_consumer_audit_report(*, regression: dict,
         "runtime_scheduler_remains_dispatch_owner": True,
         "runtime_dag_remains_workflow_owner": True,
         "actual_dispatch_consumer_path": None,
-        "effective_execution_target_location": "product_review_adapter.prepare -> advisory request field",
-        "effective_execution_target_consumed_by": [],
+        "critic_local_runner_consumer_path": (
+            "Critic adapter execute_shadow_request -> codex_critic_runner.launch -> codex_user_runner.run_codex"
+            if audit["checks"]["executor_accepts_effective_target"]
+            and all(audit["checks"][key] for key in (
+                "story_adapter_passes_effective_target", "preimage_adapter_passes_effective_target",
+                "final_adapter_passes_effective_target")) else None),
+        "effective_execution_target_location": "Critic adapter -> codex_critic_runner.launch; production requires scheduler_authorized",
+        "effective_execution_target_consumed_by": (["codex_critic_runner.launch", "codex_user_runner.run_codex"]
+                                                     if audit["checks"]["executor_accepts_effective_target"] else []),
+        "runtime_scheduler_consumes_critic_execution_target": audit["checks"]["runtime_scheduler_consumes_effective_target"],
         "audit": audit,
         "regression": regression,
         "production_enabled": router.effective_router_config()["production_enabled"],

@@ -114,6 +114,8 @@ def model_execution(
         "runner_request_id": remote.get("request_id"),
         "runner_task_type": remote.get("task_type"),
         "codex_resolution": remote.get("codex_resolution"),
+        "effective_execution_target": getattr(result, "execution_target", None),
+        "actual_dispatch_target": getattr(result, "actual_dispatch_target", None),
     }
 
 

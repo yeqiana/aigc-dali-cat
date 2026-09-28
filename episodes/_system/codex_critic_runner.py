@@ -40,6 +40,52 @@ class LaunchResult:
     log_text: str
     output: bytes = b""
     remote: dict | None = None
+    execution_target: dict | None = None
+    actual_dispatch_target: dict | None = None
+
+
+class ExecutionTargetRejected(RuntimeError):
+    """The selected route cannot safely be consumed by this executor."""
+
+
+def effective_execution_target(*, task_type, legacy_target, route_decision=None,
+                               production_enabled=None, scheduler_authorized=False):
+    """Return the target this local Codex executor is allowed to run.
+
+    Shadow proposals never change dispatch. In production mode only the three
+    allowlisted Critic tasks can consume a router decision; NO_ROUTE and
+    targets belonging to another runtime fail closed before subprocess launch.
+    """
+    target = dict(legacy_target or {})
+    if not target:
+        raise ExecutionTargetRejected("legacy execution target is required")
+    if production_enabled is None:
+        import capability_router
+        production_enabled = capability_router.effective_router_config()["production_enabled"]
+    if not production_enabled:
+        return target
+    allowed = {"story_semantic_critic", "preimage_semantic_critic", "final_semantic_critic"}
+    if task_type not in allowed:
+        return target
+    if scheduler_authorized is not True:
+        raise ExecutionTargetRejected("production target requires Runtime Scheduler authorization")
+    if not isinstance(route_decision, dict):
+        raise ExecutionTargetRejected("production route decision is missing")
+    if route_decision.get("effective_action") == "NO_ROUTE":
+        raise ExecutionTargetRejected("P4_NO_ROUTE: executor dispatch refused")
+    if route_decision.get("effective_action") in {"KEEP_LEGACY", "BYPASS_ROUTER_PRODUCTION"}:
+        return target
+    if route_decision.get("effective_action") != "FALLBACK":
+        raise ExecutionTargetRejected("unsupported production route action")
+    selected = route_decision.get("effective_route")
+    if not isinstance(selected, dict):
+        raise ExecutionTargetRejected("fallback route target is missing")
+    if selected.get("provider") != "codex_user_runner" or selected.get("runtime") != "CODEX":
+        raise ExecutionTargetRejected("selected route is not consumable by the Codex Critic executor")
+    if not isinstance(selected.get("model"), str) or not selected["model"].strip():
+        raise ExecutionTargetRejected("selected Codex route has no model")
+    return {"provider": selected["provider"], "model": selected["model"],
+            "runtime": selected["runtime"]}
 
 
 def resolve_codex(raw):
@@ -130,6 +176,7 @@ def launch(
     sandbox=None,
     log_path=None,
     extra=None,
+    execution_target=None,
 ):
     """Run one critic; returns rc plus the full attempt log text.
 
@@ -138,6 +185,14 @@ def launch(
     """
     resolved_log = log_path or default_log_path(root)
     resolved_log.parent.mkdir(parents=True, exist_ok=True)
+    if execution_target is not None:
+        if (not isinstance(execution_target, dict)
+                or execution_target.get("provider") != "codex_user_runner"
+                or execution_target.get("runtime") != "CODEX"
+                or not isinstance(execution_target.get("model"), str)
+                or not execution_target["model"].strip()):
+            raise ExecutionTargetRejected("invalid execution target for Codex Critic runner")
+        model = execution_target["model"]
     cmd = build_command(
         codex=codex,
         root=root,
@@ -167,7 +222,9 @@ def launch(
     remote = dict(getattr(done, "remote", {}) or {})
     return LaunchResult(returncode=done.returncode, log_path=resolved_log,
                         log_text=log_text, output=log_text.encode("utf-8"),
-                        remote=remote or None)
+                        remote=remote or None,
+                        execution_target=dict(execution_target) if execution_target else None,
+                        actual_dispatch_target=dict(execution_target) if execution_target else None)
 
 
 def parse_json_text(text):

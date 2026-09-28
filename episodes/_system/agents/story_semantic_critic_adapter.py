@@ -539,6 +539,12 @@ def execute_shadow_request(
     model, effort = configured_cli_model()
     if not model or not effort:
         raise CriticDecisionError("active Codex model/reasoning effort is not observable")
+    execution_target = codex_critic_runner.effective_execution_target(
+        task_type="story_semantic_critic",
+        legacy_target={"provider": "codex_user_runner", "model": model, "runtime": "CODEX"},
+        route_decision=request.get("capability_route_decision"),
+    )
+    model = execution_target["model"]
     codex = codex_critic_runner.resolve_codex(None)
     log_path = candidate.parent / f"attempt-{attempt}-codex.jsonl"
     candidate.parent.mkdir(parents=True, exist_ok=True)
@@ -555,6 +561,7 @@ def execute_shadow_request(
         reasoning_effort=effort,
         sandbox="read-only",
         log_path=log_path,
+        execution_target=execution_target,
     )
     telemetry = execution_telemetry(
         result,
@@ -568,7 +575,7 @@ def execute_shadow_request(
         raise CriticDecisionError("Critic modified frozen Story or Storyboard")
     finalized = finalize_shadow_candidate(
         ep, attempt=attempt, runner_result=result,
-        provider="codex_user_runner", model=model, authority_capsule_read_once=True,
+        provider=execution_target["provider"], model=model, authority_capsule_read_once=True,
     )
     comparison = compare_with_existing_review(finalized["decision"], existing_review)
     existing_attempt = int((existing_review.get("revision_count") or 0) + 1)

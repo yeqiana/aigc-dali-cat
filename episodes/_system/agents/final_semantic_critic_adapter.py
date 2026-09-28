@@ -488,6 +488,12 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int = 1, timeout: int 
     model, effort = _configured_cli_model()
     if not model or not effort:
         raise FinalSemanticCriticError("active Codex model and reasoning effort are not observable")
+    execution_target = codex_critic_runner.effective_execution_target(
+        task_type="final_semantic_critic",
+        legacy_target={"provider": "codex_user_runner", "model": model, "runtime": "CODEX"},
+        route_decision=request.get("capability_route_decision"),
+    )
+    model = execution_target["model"]
     log_path = candidate_path.with_name(f"attempt-{attempt}-codex.jsonl")
     attachment_plan = final_critic_visual_attachment_plan(
         capsule, root=ROOT, non_image_paths=(capsule_path, DECISION_SCHEMA),
@@ -498,10 +504,10 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int = 1, timeout: int 
         request["prompt"], codex=codex_critic_runner.resolve_codex(None), root=ROOT,
         timeout=timeout, output_path=candidate_path, output_schema=DECISION_SCHEMA,
         attachments=attachment_plan["visual_attachment_files"], model=model, reasoning_effort=effort,
-        sandbox="read-only", log_path=log_path,
+        sandbox="read-only", log_path=log_path, execution_target=execution_target,
     )
     telemetry = codex_execution_telemetry.model_execution(
-        result, provider="codex_user_runner", model=model, authority_capsule_read_once=True,
+        result, provider=execution_target["provider"], model=model, authority_capsule_read_once=True,
     )
     telemetry["reasoning_effort"] = effort
     telemetry["complete"] = all(telemetry.get(key) is not None for key in (

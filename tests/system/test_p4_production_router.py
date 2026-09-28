@@ -137,8 +137,12 @@ class P4ProductionRouterTests(unittest.TestCase):
         self.assertTrue(audit["checks"]["advisory_target_producer_present"])
         self.assertTrue(audit["checks"]["runtime_dag_uses_runtime_scheduler"])
         self.assertFalse(audit["checks"]["runtime_dag_consumes_effective_target"])
-        self.assertFalse(audit["checks"]["executor_accepts_effective_target"])
+        self.assertTrue(audit["checks"]["executor_accepts_effective_target"])
+        self.assertTrue(audit["checks"]["story_adapter_passes_effective_target"])
+        self.assertTrue(audit["checks"]["preimage_adapter_passes_effective_target"])
+        self.assertTrue(audit["checks"]["final_adapter_passes_effective_target"])
         self.assertIn("runtime_dag_consumes_effective_target", audit["missing_handoffs"])
+        self.assertIn("runtime_scheduler_consumes_effective_target", audit["missing_handoffs"])
         self.assertTrue(any(row["path"].endswith("/codex_critic_runner.py")
                             for row in audit["source_files"].values()))
 
