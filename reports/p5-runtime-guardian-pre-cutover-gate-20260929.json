@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "p5_runtime_guardian_pre_cutover_gate",
+  "generated_at": "2026-09-29T03:21:51Z",
+  "tested_head": "562042274b74e471c3904641b9b6833efe95e04a",
+  "current_head_when_gate_authored": "6bfbfce6933ab82d569360d4865a0c12e4e96be7",
+  "status": "PASS",
+  "p5_status": "GUARDIAN_SHADOW_VALIDATED",
+  "scope": "deterministic Guardian shadow observation only; no Guardian production recovery",
+  "guardian": {
+    "facade": "episodes/_system/runtime_guardian_facade.py",
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "resident_llm_calls": 0,
+    "network_probes": 0,
+    "recovery_executed": false,
+    "authority_writes": 0,
+    "episode_transitions": 0,
+    "force_pass": false
+  },
+  "checks": {
+    "guardian_facade_present": true,
+    "detection_pass": true,
+    "classification_pass": true,
+    "existing_recovery_reused": true,
+    "new_retry_engine_absent": true,
+    "new_scheduler_absent": true,
+    "new_state_machine_absent": true,
+    "content_failure_no_retry_tech": true,
+    "force_pass_forbidden": true,
+    "resident_llm_calls_zero": true,
+    "network_probe_zero": true,
+    "authority_writes_zero": true,
+    "episode_state_unchanged": true,
+    "p4_cutover_unchanged": true,
+    "p3_closure_unchanged": true,
+    "focused_regression_pass": true,
+    "broad_regression_pass": true,
+    "guardian_production_disabled": true
+  },
+  "detection_coverage": [
+    "NETWORK_TRANSIENT",
+    "MYSQL_TRANSIENT",
+    "JOB_TIMEOUT",
+    "HEARTBEAT_STALE",
+    "QUEUE_STUCK",
+    "LEASE_STALE",
+    "HOST_REQUEST_STALE",
+    "INVALID_TRANSITION",
+    "STALE_AUTHORITY",
+    "TECHNICAL_RETRY_EXHAUSTED",
+    "CONTENT_FAILURE",
+    "UNKNOWN"
+  ],
+  "shadow_comparison": {
+    "existing_runner_action_source": "runtime_failure_classifier + Runtime Runner bounded action",
+    "comparison_cases": 2,
+    "deterministic_injected_cases": 12,
+    "unknown_action": "DIAGNOSTIC_REQUIRED",
+    "unknown_llm_calls": 0,
+    "recovery_mutations": 0
+  },
+  "regression": {
+    "focused": {
+      "passed": 132,
+      "failed": 0,
+      "subtests": 8
+    },
+    "broad_system": {
+      "passed": 1594,
+      "failed": 21,
+      "skipped": 1,
+      "subtests": 98,
+      "all_green": false,
+      "baseline_failed_before_p5": 22,
+      "new_failures": 0,
+      "resolved_baseline_failures": 1,
+      "known_failure_groups": {
+        "canonical_full_auto_visual_profile_cleanup": 18,
+        "archive_relocation_cleanup": 1,
+        "missing_series_master_assets": 1,
+        "legacy_visual_profile_asset_hash": 1
+      },
+      "interpretation": "The system suite is not all green. Current failures match the pre-P5 cleanup baseline; no new failing test node was observed."
+    }
+  },
+  "runtime_ownership": {
+    "guardian": "detect/classify/shadow comparison only",
+    "scheduler": "dispatch owner unchanged",
+    "recovery": "existing recovery modules remain owners",
+    "episode_authority": "meta/episode-state.json unchanged"
+  },
+  "phase_status": {
+    "p4_status": "CUTOVER_ROLLED_BACK",
+    "p4_production_enabled": false,
+    "p5_status": "GUARDIAN_SHADOW_VALIDATED",
+    "p5_production_enabled": false,
+    "production_mode": "COLLABORATIVE"
+  },
+  "source_sha256": {
+    "reports/p4-capability-router-cutover-implementation-gate-20260928.json": "b29c6db2c31e0ec9188896844c47a6cc628939f79ec6ca9eee98f109abd1e5d2",
+    "reports/p3-critic-phase-closure-20260928.json": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "config/storyos.yaml": "a2f136cb868e73832b7fe93b44cc621fc2acc2774b9c76c48034494fcc5ffc25",
+    "episodes/_system/storyos_config.py": "915595d257d85869549b9a07fda490b0ed871ceaf2079129aa2a3059c8dc3dc5",
+    "episodes/_system/runtime_guardian_facade.py": "7f1628f2dd6ed7096a2000086862b09147381a0f1814cfccf04c7fad4f5804ae",
+    "episodes/_system/episode_runner.py": "c80316cd581e035b9e6bf00213e9275f88f1bc3dbd205db9208e6d0864fd0c7c",
+    "tests/system/test_runtime_guardian_facade.py": "9b7d44c63a0a9927d0cbaa31b21e75d805919026ac530b26c0b0adfa2a387900"
+  },
+  "limitations": [
+    "P4 production cutover remains rolled back and disabled; this P5 shadow result does not change that status.",
+    "Broad system suite retains 21 known cleanup-related failures; broad_regression_pass means zero new failures against the captured 22-failure baseline, not an all-green suite."
+  ]
+}
