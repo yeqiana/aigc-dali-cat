@@ -75,6 +75,61 @@ INCREMENTAL_PLAN_INPUTS=[
 ]
 
 
+def dispatch_critic_runnable(task_type, *, adapter, episode_dir, attempt,
+                             legacy_target, route_decision=None,
+                             production_enabled=None, adapter_kwargs=None):
+    """Dispatch one existing Critic request through the DAG/Scheduler owner.
+
+    This is an execution substep, not an Episode stage. The Scheduler is the
+    only component that authorizes a production target; adapters receive that
+    authorization and runners only consume the resulting target.
+    """
+    authorization = runtime_scheduler.authorize_critic_dispatch(
+        task_type=task_type, legacy_target=legacy_target,
+        route_decision=route_decision, production_enabled=production_enabled,
+    )
+    action = authorization["action"]
+    if action == "NO_ROUTE":
+        return {"status": "BLOCKED", "failure_class": "P4_NO_ROUTE",
+                "task_type": task_type, "scheduler_authorization": authorization,
+                "adapter_called": False, "runner_called": False}
+    if action == "BYPASS_ROUTER_PRODUCTION":
+        return {"status": "BYPASS", "task_type": task_type,
+                "execution_target": authorization["execution_target"],
+                "reason": authorization["reason"], "adapter_called": False}
+    if adapter is None or not callable(getattr(adapter, "execute_shadow_request", None)):
+        raise ValueError("Critic runnable adapter must expose execute_shadow_request")
+    result = adapter.execute_shadow_request(
+        episode_dir, attempt=attempt, dispatch_authorization=authorization,
+        **(adapter_kwargs or {}),
+    )
+    return {"status": "DISPATCHED", "task_type": task_type,
+            "scheduler_authorization": authorization,
+            "scheduler_authorized_target": authorization["execution_target"],
+            "adapter_result": result, "adapter_called": True}
+
+
+def dispatch_pending_critic(task_type, *, adapter, episode_dir, attempt,
+                            adapter_kwargs=None):
+    """Load the frozen Critic request, then enter the Scheduler-owned runnable."""
+    ep = Path(episode_dir).resolve()
+    if not hasattr(adapter, "REQUEST_KIND") or not callable(
+            getattr(adapter, "legacy_execution_target", None)):
+        raise ValueError("Critic adapter must expose REQUEST_KIND and legacy_execution_target")
+    import product_review_adapter
+    request_path = product_review_adapter.request_path(ep, adapter.REQUEST_KIND, attempt=attempt)
+    request = product_review_adapter._read_json(request_path)
+    if request.get("status") != product_review_adapter.AWAITING:
+        return {"status": "BLOCKED", "failure_class": "CRITIC_REQUEST_NOT_AWAITING",
+                "request_id": request.get("request_id"), "adapter_called": False}
+    return dispatch_critic_runnable(
+        task_type, adapter=adapter, episode_dir=ep, attempt=attempt,
+        legacy_target=adapter.legacy_execution_target(),
+        route_decision=request.get("capability_route_decision"),
+        adapter_kwargs=adapter_kwargs,
+    )
+
+
 def _story_review_authority_sha(ep):
     return review_record_persistence.authority_sha256(
         Path(ep).resolve(),

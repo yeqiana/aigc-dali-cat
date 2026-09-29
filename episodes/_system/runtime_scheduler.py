@@ -18,6 +18,68 @@ NODE_TYPES = {
     "image_generation", "review", "repair", "release",
 }
 
+CRITIC_TASK_TYPES = frozenset({
+    "story_semantic_critic", "preimage_semantic_critic", "final_semantic_critic",
+})
+
+
+def authorize_critic_dispatch(*, task_type: str, legacy_target: dict,
+                              route_decision: dict | None,
+                              production_enabled: bool | None = None) -> dict:
+    """Authorize the execution target for one Critic runnable.
+
+    This is a pure dispatch authorization step. It does not execute, retry,
+    persist, or make a second capability decision. A shadow proposal is never
+    used while Production is off; NO_ROUTE returns no executable target.
+    """
+    task = str(task_type or "")
+    legacy = dict(legacy_target or {})
+    if not legacy:
+        raise ValueError("legacy critic execution target is required")
+    if task not in CRITIC_TASK_TYPES:
+        return {"task_type": task, "action": "BYPASS_ROUTER_PRODUCTION",
+                "execution_target": legacy, "scheduler_authorized": False,
+                "reason": "UNSUPPORTED_TASK_TYPE", "router_proposed_target": None}
+    if production_enabled is None:
+        import capability_router
+        production_enabled = capability_router.effective_router_config()["production_enabled"]
+    if production_enabled is not True:
+        return {"task_type": task, "action": "KEEP_LEGACY",
+                "execution_target": legacy, "scheduler_authorized": True,
+                "reason": "PRODUCTION_DISABLED",
+                "router_proposed_target": route_decision.get("effective_route") if isinstance(route_decision, dict) else None}
+    if not isinstance(route_decision, dict):
+        raise ValueError("Critic route decision is required when Production is enabled")
+    action = str(route_decision.get("effective_action") or "")
+    if action == "NO_ROUTE":
+        return {"task_type": task, "action": "NO_ROUTE", "execution_target": None,
+                "scheduler_authorized": False, "reason": "P4_NO_ROUTE",
+                "router_proposed_target": None}
+    if action in {"KEEP_LEGACY", "BYPASS_ROUTER_PRODUCTION"}:
+        return {"task_type": task, "action": "KEEP_LEGACY",
+                "execution_target": legacy, "scheduler_authorized": True,
+                "reason": "ROUTER_KEEP_LEGACY",
+                "router_proposed_target": route_decision.get("effective_route")}
+    if action != "FALLBACK":
+        raise ValueError("unsupported Critic route action")
+    selected = route_decision.get("effective_route")
+    if (not isinstance(selected, dict)
+            or selected.get("provider") != "codex_user_runner"
+            or selected.get("runtime") != "CODEX"
+            or not isinstance(selected.get("model"), str)
+            or not selected["model"].strip()):
+        raise ValueError("fallback target is not consumable by the Critic executor")
+    if str(route_decision.get("health_status") or "").upper() == "UNKNOWN":
+        return {"task_type": task, "action": "KEEP_LEGACY",
+                "execution_target": legacy, "scheduler_authorized": True,
+                "reason": "UNKNOWN_HEALTH_KEEPS_LEGACY",
+                "router_proposed_target": selected}
+    target = {"provider": selected["provider"], "model": selected["model"],
+              "runtime": selected["runtime"]}
+    return {"task_type": task, "action": "FALLBACK", "execution_target": target,
+            "scheduler_authorized": True, "reason": "ROUTER_FALLBACK",
+            "router_proposed_target": target}
+
 
 def load_node_contract(source) -> list[dict]:
     """Load a Node Contract from a dict/list or a JSON file; no files are written."""

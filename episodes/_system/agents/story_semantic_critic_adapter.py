@@ -473,6 +473,13 @@ def configured_cli_model() -> tuple[str | None, str | None]:
         return None, None
 
 
+def legacy_execution_target() -> dict[str, str]:
+    model, _effort = configured_cli_model()
+    if not model:
+        raise CriticDecisionError("active Codex model is not observable")
+    return {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
+
+
 def execute_shadow_request(
     episode_dir: Path,
     *,
@@ -480,8 +487,22 @@ def execute_shadow_request(
     review_attempt: int | None = None,
     timeout: int,
     existing_review: dict[str, Any],
+    dispatch_authorization: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Execute the persisted shadow Host Request using the existing Codex critic runner."""
+    if dispatch_authorization is None:
+        import sys
+        import runtime_dag
+        routed = runtime_dag.dispatch_pending_critic(
+            "story_semantic_critic", adapter=sys.modules[__name__], episode_dir=episode_dir,
+            attempt=attempt, adapter_kwargs={"review_attempt": review_attempt,
+                "timeout": timeout, "existing_review": existing_review},
+        )
+        if routed.get("status") != "DISPATCHED":
+            return routed
+        receipt = {key: routed.get(key) for key in (
+            "task_type", "scheduler_authorization", "scheduler_authorized_target")}
+        return {**routed.get("adapter_result", {}), "runtime_dispatch_receipt": receipt}
     import codex_critic_runner
     import product_review_adapter
     import story_review
@@ -539,10 +560,10 @@ def execute_shadow_request(
     model, effort = configured_cli_model()
     if not model or not effort:
         raise CriticDecisionError("active Codex model/reasoning effort is not observable")
-    execution_target = codex_critic_runner.effective_execution_target(
-        task_type="story_semantic_critic",
-        legacy_target={"provider": "codex_user_runner", "model": model, "runtime": "CODEX"},
-        route_decision=request.get("capability_route_decision"),
+    legacy_target = {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
+    execution_target = codex_critic_runner.consume_scheduler_authorization(
+        task_type="story_semantic_critic", legacy_target=legacy_target,
+        dispatch_authorization=dispatch_authorization,
     )
     model = execution_target["model"]
     codex = codex_critic_runner.resolve_codex(None)
@@ -562,6 +583,8 @@ def execute_shadow_request(
         sandbox="read-only",
         log_path=log_path,
         execution_target=execution_target,
+        dispatch_authorization=dispatch_authorization,
+        router_proposed_target=request.get("effective_execution_target"),
     )
     telemetry = execution_telemetry(
         result,
@@ -569,6 +592,13 @@ def execute_shadow_request(
         model=model,
         authority_capsule_read_once=True,
     )
+    telemetry.update({
+        "router_proposed_target": request.get("effective_execution_target"),
+        "scheduler_authorized_target": (dispatch_authorization or {}).get("execution_target"),
+        "adapter_execution_target": execution_target,
+        "actual_dispatch_target": result.actual_dispatch_target,
+        "route_behavior": "PRODUCTION_DISABLED" if (dispatch_authorization or {}).get("reason") == "PRODUCTION_DISABLED" else None,
+    })
     if result.returncode != 0:
         raise CriticDecisionError(f"Critic model failed with returncode={result.returncode}")
     if sha256_file(sources[0]) != before_story or sha256_file(sources[1]) != before_board:

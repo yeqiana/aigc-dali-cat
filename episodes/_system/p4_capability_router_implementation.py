@@ -151,12 +151,7 @@ def _source_audit(path: Path) -> dict:
 
 
 def audit_dispatch_consumer() -> dict:
-    """Verify the route target reaches the actual Critic execution boundary.
-
-    A target written into a Host Request is advisory until the DAG/adapter
-    passes it through to the executor. This deliberately requires the complete
-    source-level handoff and cannot be satisfied by a resolver-only canary.
-    """
+    """Verify the real DAG -> Scheduler -> adapter -> executor handoff surface."""
     names = {
         "dag": ROOT / "episodes/_system/runtime_dag.py",
         "scheduler": ROOT / "episodes/_system/runtime_scheduler.py",
@@ -189,6 +184,22 @@ def audit_dispatch_consumer() -> dict:
                 return True
         return False
 
+    def calls_function(name: str, function_name: str) -> bool:
+        return any(isinstance(node, ast.Call) and (
+            isinstance(node.func, ast.Name) and node.func.id == function_name
+            or isinstance(node.func, ast.Attribute) and node.func.attr == function_name)
+            for node in ast.walk(sources[name]["tree"]))
+
+    def accepts_argument(name: str, function_name: str, argument: str) -> bool:
+        return argument in function_args(name, function_name)
+
+    def adapter_enters_dag(name: str, task_type: str) -> bool:
+        source = sources[name]["source"]
+        return (accepts_argument(name, "execute_shadow_request", "dispatch_authorization")
+                and "dispatch_pending_critic" in source
+                and "legacy_execution_target" in source
+                and task_type in source)
+
     dag_calls_scheduler = any(
         isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
         and node.func.attr in {"schedule", "schedule_next", "schedule_batch"}
@@ -196,12 +207,31 @@ def audit_dispatch_consumer() -> dict:
     executor_args = function_args("executor", "launch")
     checks = {
         "runtime_dag_uses_runtime_scheduler": dag_calls_scheduler,
-        "runtime_dag_consumes_effective_target": has_target_reference("dag"),
-        "runtime_scheduler_consumes_effective_target": has_target_reference("scheduler"),
+        "runtime_dag_consumes_effective_target": (
+            calls_function("dag", "authorize_critic_dispatch")
+            and accepts_argument("dag", "dispatch_critic_runnable", "route_decision")
+            and "dispatch_authorization=authorization" in sources["dag"]["source"]),
+        "runtime_scheduler_consumes_effective_target": (
+            "def authorize_critic_dispatch" in sources["scheduler"]["source"]
+            and "effective_route" in sources["scheduler"]["source"]
+            and "execution_target" in sources["scheduler"]["source"]),
         "executor_accepts_effective_target": bool(executor_args & {"execution_target", "effective_execution_target"}),
-        "story_adapter_passes_effective_target": launch_passes_target("story_adapter"),
-        "preimage_adapter_passes_effective_target": launch_passes_target("preimage_adapter"),
-        "final_adapter_passes_effective_target": launch_passes_target("final_adapter"),
+        "story_adapter_passes_effective_target": (launch_passes_target("story_adapter")
+            and accepts_argument("story_adapter", "execute_shadow_request", "dispatch_authorization")
+            and calls_function("story_adapter", "consume_scheduler_authorization")
+            and adapter_enters_dag("story_adapter", "story_semantic_critic")),
+        "preimage_adapter_passes_effective_target": (launch_passes_target("preimage_adapter")
+            and accepts_argument("preimage_adapter", "execute_shadow_request", "dispatch_authorization")
+            and calls_function("preimage_adapter", "consume_scheduler_authorization")
+            and adapter_enters_dag("preimage_adapter", "preimage_semantic_critic")),
+        "final_adapter_passes_effective_target": (launch_passes_target("final_adapter")
+            and accepts_argument("final_adapter", "execute_shadow_request", "dispatch_authorization")
+            and calls_function("final_adapter", "consume_scheduler_authorization")
+            and adapter_enters_dag("final_adapter", "final_semantic_critic")),
+        "runner_consumes_scheduler_authorization": (
+            accepts_argument("executor", "launch", "dispatch_authorization")
+            and calls_function("executor", "consume_scheduler_authorization")
+            and "def effective_execution_target" not in sources["executor"]["source"]),
     }
     producer_has_target = has_target_reference("product_review_adapter")
     checks["advisory_target_producer_present"] = producer_has_target
@@ -210,20 +240,25 @@ def audit_dispatch_consumer() -> dict:
             "runtime_dag_uses_runtime_scheduler", "runtime_dag_consumes_effective_target",
             "runtime_scheduler_consumes_effective_target", "executor_accepts_effective_target",
             "story_adapter_passes_effective_target", "preimage_adapter_passes_effective_target",
-            "final_adapter_passes_effective_target")),
+            "final_adapter_passes_effective_target", "runner_consumes_scheduler_authorization")),
         "checks": checks,
         "missing_handoffs": [key for key, value in checks.items() if not value and key != "advisory_target_producer_present"],
         "call_path": [
-            "Runtime DAG calls Runtime Scheduler to plan DAG work.",
-            "Critic adapters prepare host requests; product_review_adapter writes effective_execution_target as advisory request evidence.",
-            "Story/PREIMAGE/Final Critic execution adapters pass the effective target into codex_critic_runner.launch; the Codex model selector consumes it and execution telemetry records the actual target.",
-            "Runtime DAG and Runtime Scheduler still do not bind a runnable Critic node to that target; there is no verified DAG/Scheduler-to-Critic dispatch handoff.",
+            "Critic adapter execute_shadow_request enters runtime_dag.dispatch_pending_critic; the DAG loads the persisted request and legacy target.",
+            "runtime_dag.dispatch_critic_runnable calls runtime_scheduler.authorize_critic_dispatch.",
+            "Runtime Scheduler returns one authorized execution_target or an explicit NO_ROUTE/BYPASS result.",
+            "The Critic adapter consumes dispatch_authorization and passes the same target to codex_critic_runner.launch.",
+            "codex_critic_runner validates the supplied target and the execution receipt exposes scheduler_authorized_target and actual_dispatch_target.",
         ],
         "source_files": {name: {"path": row["path"], "sha256": row["sha256"]}
                          for name, row in sources.items()},
         "dispatch_owner": "runtime_dag / runtime_scheduler",
         "router_rights": "decision_only",
-        "decision": "BLOCKED_NO_VERIFIED_EXECUTION_CONSUMER" if not all(checks.values()) else "CONSUMER_VERIFIED",
+        "decision": "BLOCKED_NO_VERIFIED_EXECUTION_CONSUMER" if not all(checks[key] for key in (
+            "runtime_dag_uses_runtime_scheduler", "runtime_dag_consumes_effective_target",
+            "runtime_scheduler_consumes_effective_target", "executor_accepts_effective_target",
+            "story_adapter_passes_effective_target", "preimage_adapter_passes_effective_target",
+            "final_adapter_passes_effective_target", "runner_consumes_scheduler_authorization")) else "CONSUMER_VERIFIED",
     }
 
 

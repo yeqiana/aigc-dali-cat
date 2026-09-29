@@ -133,26 +133,28 @@ class P4ProductionRouterTests(unittest.TestCase):
 
     def test_dispatch_consumer_gate_is_derived_from_actual_execution_path(self):
         audit = impl.audit_dispatch_consumer()
-        self.assertFalse(audit["consumer_present"])
+        self.assertTrue(audit["consumer_present"])
         self.assertTrue(audit["checks"]["advisory_target_producer_present"])
         self.assertTrue(audit["checks"]["runtime_dag_uses_runtime_scheduler"])
-        self.assertFalse(audit["checks"]["runtime_dag_consumes_effective_target"])
+        self.assertTrue(audit["checks"]["runtime_dag_consumes_effective_target"])
+        self.assertTrue(audit["checks"]["runtime_scheduler_consumes_effective_target"])
         self.assertTrue(audit["checks"]["executor_accepts_effective_target"])
+        self.assertTrue(audit["checks"]["runner_consumes_scheduler_authorization"])
         self.assertTrue(audit["checks"]["story_adapter_passes_effective_target"])
         self.assertTrue(audit["checks"]["preimage_adapter_passes_effective_target"])
         self.assertTrue(audit["checks"]["final_adapter_passes_effective_target"])
-        self.assertIn("runtime_dag_consumes_effective_target", audit["missing_handoffs"])
-        self.assertIn("runtime_scheduler_consumes_effective_target", audit["missing_handoffs"])
+        self.assertNotIn("runtime_dag_consumes_effective_target", audit["missing_handoffs"])
+        self.assertNotIn("runtime_scheduler_consumes_effective_target", audit["missing_handoffs"])
         self.assertTrue(any(row["path"].endswith("/codex_critic_runner.py")
                             for row in audit["source_files"].values()))
 
-    def test_implementation_gate_keeps_real_dispatch_consumer_blocker(self):
+    def test_implementation_gate_accepts_verified_dispatch_consumer(self):
         gate = impl.build_implementation_gate(regression={
             "focused_pass": True, "broad_pass": True,
         })
-        self.assertFalse(gate["mandatory_checks"]["adapter_dispatch_consumer_present"])
-        self.assertIn("adapter_dispatch_consumer_present", gate["blockers"])
-        self.assertEqual(gate["p4_status"], "CUTOVER_IMPLEMENTATION_BLOCKED")
+        self.assertTrue(gate["mandatory_checks"]["adapter_dispatch_consumer_present"])
+        self.assertNotIn("adapter_dispatch_consumer_present", gate["blockers"])
+        self.assertEqual(gate["p4_status"], "CUTOVER_IMPLEMENTATION_READY")
         self.assertFalse(gate["production_enabled"])
 
     def test_canary_dry_run_never_dispatches(self):

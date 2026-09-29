@@ -331,9 +331,30 @@ def _comparison_evidence(existing: dict, critic: dict) -> dict:
     }
 
 
+def legacy_execution_target() -> dict[str, str]:
+    model, _effort = configured_cli_model()
+    if not model:
+        raise PreimageCriticError("active Codex model is not observable")
+    return {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
+
+
 def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 900,
                            reference_label: str | None = None,
-                           reference_issue_codes: list[str] | None = None) -> dict:
+                           reference_issue_codes: list[str] | None = None,
+                           dispatch_authorization: dict | None = None) -> dict:
+    if dispatch_authorization is None:
+        import sys
+        import runtime_dag
+        routed = runtime_dag.dispatch_pending_critic(
+            "preimage_semantic_critic", adapter=sys.modules[__name__], episode_dir=episode_dir,
+            attempt=attempt, adapter_kwargs={"timeout": timeout, "reference_label": reference_label,
+                "reference_issue_codes": reference_issue_codes},
+        )
+        if routed.get("status") != "DISPATCHED":
+            return routed
+        receipt = {key: routed.get(key) for key in (
+            "task_type", "scheduler_authorization", "scheduler_authorized_target")}
+        return {**routed.get("adapter_result", {}), "runtime_dispatch_receipt": receipt}
     import codex_critic_runner
 
     ep = Path(episode_dir).resolve()
@@ -374,10 +395,10 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
     model, effort = configured_cli_model()
     if not model or not effort:
         raise PreimageCriticError("active Codex model and reasoning effort are not observable")
-    execution_target = codex_critic_runner.effective_execution_target(
-        task_type="preimage_semantic_critic",
-        legacy_target={"provider": "codex_user_runner", "model": model, "runtime": "CODEX"},
-        route_decision=request.get("capability_route_decision"),
+    legacy_target = {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
+    execution_target = codex_critic_runner.consume_scheduler_authorization(
+        task_type="preimage_semantic_critic", legacy_target=legacy_target,
+        dispatch_authorization=dispatch_authorization,
     )
     model = execution_target["model"]
     prompt = str(request.get("prompt") or "")
@@ -386,9 +407,17 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
         prompt, codex=codex_critic_runner.resolve_codex(None), root=ROOT, timeout=timeout,
         output_path=candidate_path, output_schema=DECISION_SCHEMA, model=model,
         reasoning_effort=effort, sandbox="read-only", log_path=log_path,
-        execution_target=execution_target,
+        execution_target=execution_target, dispatch_authorization=dispatch_authorization,
+        router_proposed_target=request.get("effective_execution_target"),
     )
     telemetry = execution_telemetry(result, provider=execution_target["provider"], model=model)
+    telemetry.update({
+        "router_proposed_target": request.get("effective_execution_target"),
+        "scheduler_authorized_target": (dispatch_authorization or {}).get("execution_target"),
+        "adapter_execution_target": execution_target,
+        "actual_dispatch_target": result.actual_dispatch_target,
+        "route_behavior": "PRODUCTION_DISABLED" if (dispatch_authorization or {}).get("reason") == "PRODUCTION_DISABLED" else None,
+    })
     if result.returncode != 0:
         raise PreimageCriticError(f"PREIMAGE Critic model failed with returncode={result.returncode}")
     decision = validate_decision(json.loads(candidate_path.read_text(encoding="utf-8-sig")))

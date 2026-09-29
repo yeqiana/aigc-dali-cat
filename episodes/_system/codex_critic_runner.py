@@ -42,48 +42,40 @@ class LaunchResult:
     remote: dict | None = None
     execution_target: dict | None = None
     actual_dispatch_target: dict | None = None
+    scheduler_authorized_target: dict | None = None
+    router_proposed_target: dict | None = None
 
 
 class ExecutionTargetRejected(RuntimeError):
     """The selected route cannot safely be consumed by this executor."""
 
 
-def effective_execution_target(*, task_type, legacy_target, route_decision=None,
-                               production_enabled=None, scheduler_authorized=False):
-    """Return the target this local Codex executor is allowed to run.
-
-    Shadow proposals never change dispatch. In production mode only the three
-    allowlisted Critic tasks can consume a router decision; NO_ROUTE and
-    targets belonging to another runtime fail closed before subprocess launch.
-    """
+def consume_scheduler_authorization(*, task_type, legacy_target, dispatch_authorization=None):
+    """Validate and consume a Runtime Scheduler target; never resolve policy here."""
     target = dict(legacy_target or {})
     if not target:
         raise ExecutionTargetRejected("legacy execution target is required")
-    if production_enabled is None:
-        import capability_router
-        production_enabled = capability_router.effective_router_config()["production_enabled"]
-    if not production_enabled:
-        return target
     allowed = {"story_semantic_critic", "preimage_semantic_critic", "final_semantic_critic"}
-    if task_type not in allowed:
+    if dispatch_authorization is None:
+        import capability_router
+        if (task_type in allowed
+                and capability_router.effective_router_config()["production_enabled"] is True):
+            raise ExecutionTargetRejected("production target requires Runtime Scheduler authorization")
         return target
-    if scheduler_authorized is not True:
-        raise ExecutionTargetRejected("production target requires Runtime Scheduler authorization")
-    if not isinstance(route_decision, dict):
-        raise ExecutionTargetRejected("production route decision is missing")
-    if route_decision.get("effective_action") == "NO_ROUTE":
-        raise ExecutionTargetRejected("P4_NO_ROUTE: executor dispatch refused")
-    if route_decision.get("effective_action") in {"KEEP_LEGACY", "BYPASS_ROUTER_PRODUCTION"}:
-        return target
-    if route_decision.get("effective_action") != "FALLBACK":
-        raise ExecutionTargetRejected("unsupported production route action")
-    selected = route_decision.get("effective_route")
-    if not isinstance(selected, dict):
-        raise ExecutionTargetRejected("fallback route target is missing")
-    if selected.get("provider") != "codex_user_runner" or selected.get("runtime") != "CODEX":
-        raise ExecutionTargetRejected("selected route is not consumable by the Codex Critic executor")
-    if not isinstance(selected.get("model"), str) or not selected["model"].strip():
-        raise ExecutionTargetRejected("selected Codex route has no model")
+    if not isinstance(dispatch_authorization, dict):
+        raise ExecutionTargetRejected("invalid Runtime Scheduler authorization")
+    if dispatch_authorization.get("task_type") != task_type:
+        raise ExecutionTargetRejected("Scheduler authorization task binding mismatch")
+    if dispatch_authorization.get("scheduler_authorized") is not True:
+        raise ExecutionTargetRejected("Scheduler did not authorize Critic execution")
+    selected = dispatch_authorization.get("execution_target")
+    if not isinstance(selected, dict) or not selected:
+        raise ExecutionTargetRejected("Scheduler authorization has no executable target")
+    if (selected.get("provider") != "codex_user_runner"
+            or selected.get("runtime") != "CODEX"
+            or not isinstance(selected.get("model"), str)
+            or not selected["model"].strip()):
+        raise ExecutionTargetRejected("Scheduler target is not consumable by Codex Critic runner")
     return {"provider": selected["provider"], "model": selected["model"],
             "runtime": selected["runtime"]}
 
@@ -177,6 +169,8 @@ def launch(
     log_path=None,
     extra=None,
     execution_target=None,
+    dispatch_authorization=None,
+    router_proposed_target=None,
 ):
     """Run one critic; returns rc plus the full attempt log text.
 
@@ -192,6 +186,13 @@ def launch(
                 or not isinstance(execution_target.get("model"), str)
                 or not execution_target["model"].strip()):
             raise ExecutionTargetRejected("invalid execution target for Codex Critic runner")
+        authorized = consume_scheduler_authorization(
+            task_type=(dispatch_authorization or {}).get("task_type"),
+            legacy_target=execution_target,
+            dispatch_authorization=dispatch_authorization,
+        ) if dispatch_authorization is not None else dict(execution_target)
+        if authorized != execution_target:
+            raise ExecutionTargetRejected("runner target differs from Scheduler authorization")
         model = execution_target["model"]
     cmd = build_command(
         codex=codex,
@@ -220,11 +221,15 @@ def launch(
         )
     log_text = resolved_log.read_text(encoding="utf-8-sig", errors="replace")
     remote = dict(getattr(done, "remote", {}) or {})
+    authorized_target = ((dispatch_authorization or {}).get("execution_target")
+                         if dispatch_authorization else None)
     return LaunchResult(returncode=done.returncode, log_path=resolved_log,
                         log_text=log_text, output=log_text.encode("utf-8"),
                         remote=remote or None,
                         execution_target=dict(execution_target) if execution_target else None,
-                        actual_dispatch_target=dict(execution_target) if execution_target else None)
+                        actual_dispatch_target=dict(execution_target) if execution_target else None,
+                        scheduler_authorized_target=dict(authorized_target) if authorized_target else None,
+                        router_proposed_target=dict(router_proposed_target) if router_proposed_target else None)
 
 
 def parse_json_text(text):
