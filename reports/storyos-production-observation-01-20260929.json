@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation",
+  "observation_id": "storyos-production-observation-01-20260929",
+  "generated_at": "2026-09-29T04:17:53Z",
+  "status": "PRODUCTION_READINESS_BLOCKED",
+  "scope": "readiness audit and deterministic production-wiring verification only; no pilot episode or real production execution",
+  "git": {
+    "branch": "story-platform-v3-rever",
+    "head": "28939f784c8f642d74e95634cc48ec0f50489efd",
+    "origin": "28939f784c8f642d74e95634cc48ec0f50489efd",
+    "ahead": 0,
+    "behind": 0
+  },
+  "production": {
+    "mode": "COLLABORATIVE",
+    "p4_status": "P4_PRODUCTION_CUTOVER_COMPLETE",
+    "p4_shadow_enabled": true,
+    "p4_production_enabled": true,
+    "p5_status": "GUARDIAN_SHADOW_VALIDATED",
+    "p5_shadow_enabled": true,
+    "p5_production_enabled": false,
+    "p3_production_flags": {
+      "story_semantic_critic": false,
+      "preimage_semantic_critic": false,
+      "final_semantic_critic": false
+    },
+    "codex_managed_enabled": false,
+    "configuration_valid": true
+  },
+  "episode": {
+    "episode_id": null,
+    "source": "user-provided story in prior conversation: 未交的答卷",
+    "story_input_available": true,
+    "existing_clean_pilot_found": false,
+    "episode_created": false,
+    "reason_not_created": "COLLABORATIVE resolves to WORK, but the configured WebCodex host is not detected in this environment; local Codex fallback is disabled. The formal production entrypoint would stop at a host wait, so no incomplete canonical Episode was created."
+  },
+  "readiness_audit": {
+    "status": "BLOCKED",
+    "production_mode_collaborative": true,
+    "p4_production_enabled": true,
+    "p5_shadow_enabled": true,
+    "p5_production_disabled": true,
+    "p3_production_disabled": true,
+    "p3_closure_unchanged": true,
+    "p3_closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "runtime": {
+      "effective_runtime": "WORK",
+      "workspace_provider": "webcodex",
+      "workspace_transport": "WEBCODEX",
+      "workspace_execution_mode": "host_mcp_runner",
+      "workspace_host_required": true,
+      "webcodex_detected": false,
+      "webcodex_detection_reason": "no WebCodex host environment detected",
+      "automatic_codex_fallback": false,
+      "local_codex_spawn_allowed": false
+    },
+    "executor_configuration": {
+      "image_executor": "CODEX",
+      "vision_review_executor": "CODEX"
+    },
+    "blocking_conditions": [
+      "COLLABORATIVE production requires a detected WebCodex host; none is available in this environment."
+    ],
+    "doctor_known_legacy_cleanup_errors": 6
+  },
+  "non_model_wiring_verification": {
+    "runtime_dag_present": true,
+    "runtime_scheduler_present": true,
+    "capability_router_present": true,
+    "checkpoint_and_resume_present": true,
+    "runtime_ownership_present": true,
+    "review_persistence_present": true,
+    "execution_telemetry_present": true,
+    "guardian_shadow_present": true,
+    "canonical_production_entrypoint": "episodes/_system/story_os.py create <request> --full-auto",
+    "canonical_entrypoint_invoked": false,
+    "reason_not_invoked": "The readiness audit found no configured WORK host. No local Codex substitution is permitted in COLLABORATIVE mode."
+  },
+  "pilot_observation": {
+    "pilot_started": false,
+    "runtime_dag_used": false,
+    "runtime_scheduler_used": false,
+    "p4_route_observations": [],
+    "model_calls": 0,
+    "image_calls": 0,
+    "execution_receipt_count": 0,
+    "incomplete_receipt_count": 0,
+    "duplicate_dispatch_count": 0,
+    "resume_checks": {
+      "deterministic_contract_tests_passed": true,
+      "natural_pilot_checkpoint_observed": false,
+      "natural_resume_idempotency_observed": false
+    },
+    "guardian_findings": [],
+    "guardian_recovery_executions": 0,
+    "router_authority_writes": 0,
+    "guardian_authority_writes": 0,
+    "guardian_episode_transitions": 0,
+    "episode_stage_transitions": 0,
+    "content_failures": 0,
+    "technical_failures": 0,
+    "architecture_failures": 0
+  },
+  "regression": {
+    "focused": {
+      "passed": 204,
+      "failed": 0,
+      "subtests_passed": 6
+    },
+    "broad": {
+      "command": "python -m pytest -q tests/system",
+      "passed": 1595,
+      "failed": 21,
+      "skipped": 1,
+      "subtests_passed": 98,
+      "known_baseline_failures": 21,
+      "known_failure_groups": {
+        "archive_relocation_cleanup": 1,
+        "canonical_full_auto_visual_profile_and_old_episode_references": 18,
+        "missing_series_master_assets": 1,
+        "legacy_visual_profile_asset_hash": 1
+      },
+      "baseline_source_report": "reports/p4-capability-router-production-cutover-final-20260929.json",
+      "baseline_source_report_sha256": "086ac0d750d3a805f06ba564861485b310583a8404fdc035542cb9487db6d66e",
+      "new_failures": [],
+      "resolved_baseline_failures": []
+    },
+    "py_compile": "PASS",
+    "git_diff_check": "PASS_WITH_UNRELATED_CRLF_WARNING"
+  },
+  "source_sha256": {
+    "config/storyos.yaml": "74e90acd6ad2004c229b25e99c4b2bd35f1c363ab9be1d06a6cd57721f5592dd",
+    "reports/p4-capability-router-cutover-implementation-gate-20260928.json": "b29c6db2c31e0ec9188896844c47a6cc628939f79ec6ca9eee98f109abd1e5d2",
+    "reports/p4-capability-router-production-cutover-final-20260929.json": "086ac0d750d3a805f06ba564861485b310583a8404fdc035542cb9487db6d66e",
+    "reports/p5-runtime-guardian-pre-cutover-gate-20260929.json": "ff77e9424b4b6d07cc17c7be81d80abb785fcb240cd1769afd57551f9c355c35",
+    "reports/p3-critic-phase-closure-20260928.json": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "episodes/_system/runtime_dag.py": "1fc170799f46ac3934b9df0ea77993adf67d8dea8abe208a680ec6c6a9132622",
+    "episodes/_system/runtime_scheduler.py": "2d8a8c9ee557d90a4f9b9595f530d3cfcd39a7a29769ba322806fa61eaab2baf",
+    "episodes/_system/runtime_router.py": "98ff90cd58de0af49173b3fa12a04f51a151444f84f0a7d6900cc1dd2597b8bc",
+    "episodes/_system/runtime_checkpoint.py": "62be91f1d68802b99b46ac6ca68bd52e49ea4ab4c9df44194ee4c330637349ea",
+    "episodes/_system/runtime_resume_capsule.py": "df6a78566fd6d52ef62a3eb13881ebb2aefa42bb738fcf3505d3daddf56da388",
+    "episodes/_system/runtime_ownership.py": "72c5b19b27b7248f4116f2c5b36516607037688489acc56c90c4fee704cbb595",
+    "episodes/_system/runner_state_store.py": "7766e554333c38413854c9cd79d2453b69272743d65479625bc35356fa53722e",
+    "episodes/_system/runtime_review_persistence.py": "4f2390d3d0b86e2428972266f619cf4461bc0abb3706d496f14c4b480f48a865",
+    "episodes/_system/codex_execution_telemetry.py": "b2292a694d503269748415535d7dd1258ae2e23f717d66b832a1cc54cd5fa3db",
+    "episodes/_system/runtime_guardian_facade.py": "7f1628f2dd6ed7096a2000086862b09147381a0f1814cfccf04c7fad4f5804ae",
+    "episodes/_system/product_review_adapter.py": "24367afc89eed991f045b921845034174d66742fc06bd362ba0c4aff8bbc5b27",
+    "episodes/_system/codex_critic_runner.py": "da2d9d7d8597b19becf98d7c68f5a88b985f93222ee01c61a4606a3d4918b75b",
+    "episodes/_system/agents/story_semantic_critic_adapter.py": "6670e07fc2697a73c727651d3909fdbd7bc0fd24d36901a739c43f6e5d3b6a89",
+    "episodes/_system/agents/preimage_semantic_critic_adapter.py": "6b2ee97be296163d2ffda255a567232f0640e09a4adb675ebc2156365c77b4b6",
+    "episodes/_system/agents/final_semantic_critic_adapter.py": "02033944200ac8c33148cdae90158ad3c039a9e0f3755f828e7ce94a91ac0754"
+  },
+  "notes": [
+    "No production Episode was created because the required collaborative host is unavailable; the user-provided story remains available for a future Pilot once WORK host capability is present.",
+    "The six StoryOS Doctor errors are the already-known missing legacy series master assets; they were not repaired or restored.",
+    "No real model, image, network, Episode, or Authority execution occurred during this observation run."
+  ]
+}

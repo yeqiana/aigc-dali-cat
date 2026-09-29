@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation_gate",
+  "generated_at": "2026-09-29T04:17:53Z",
+  "status": "BLOCKED",
+  "storyos_status": "PRODUCTION_READINESS_BLOCKED",
+  "pilot_episode_completed": false,
+  "observation_report": {
+    "path": "reports/storyos-production-observation-01-20260929.json",
+    "sha256": "751197d3eb0d2b1c1de24db44ff77ea9f48e0ce41fddf76e220311e2ebadfb8f"
+  },
+  "checks": {
+    "production_mode_collaborative": {
+      "status": "PASS",
+      "observed": "COLLABORATIVE"
+    },
+    "p4_production_enabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "p4_dispatch_match": {
+      "status": "BLOCKED_NOT_OBSERVED",
+      "reason": "No formal Pilot dispatch occurred because the required WebCodex host was unavailable. Deterministic consumer tests passed, but they do not substitute for the requested production observation."
+    },
+    "p4_receipts_complete": {
+      "status": "BLOCKED_NOT_OBSERVED",
+      "reason": "No Pilot execution receipt exists because no formal Pilot dispatch occurred."
+    },
+    "p5_shadow_enabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "p5_production_disabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "guardian_zero_authority_write": {
+      "status": "PASS",
+      "evidence": "Existing P5 Shadow Gate plus zero Pilot executions in this observation."
+    },
+    "guardian_zero_recovery_execution": {
+      "status": "PASS",
+      "observed": 0
+    },
+    "p3_production_unchanged": {
+      "status": "PASS",
+      "all_three_critic_production_flags": false,
+      "closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347"
+    },
+    "duplicate_dispatch_zero": {
+      "status": "PASS",
+      "pilot_dispatches": 0,
+      "scope_note": "No duplicate was observed; production dispatch behavior remains unobserved in this run."
+    },
+    "resume_idempotent": {
+      "status": "PASS_DETERMINISTIC_TESTS",
+      "focused_resume_and_checkpoint_tests_passed": true,
+      "natural_pilot_resume_observed": false
+    },
+    "episode_authority_preserved": {
+      "status": "PASS",
+      "episode_created": false,
+      "episode_transitions": 0
+    },
+    "unexpected_architecture_failure_zero": {
+      "status": "PASS",
+      "observed": 0
+    },
+    "new_regression_failure_zero": {
+      "status": "PASS",
+      "observed": 0,
+      "known_legacy_failures": 21
+    },
+    "webcodex_host_available": {
+      "status": "BLOCKED",
+      "observed": false,
+      "reason": "COLLABORATIVE mode requires the configured WEBCODEX host; runtime capabilities reported no WebCodex host environment. Automatic local Codex fallback is disabled."
+    }
+  },
+  "blockers": [
+    "WebCodex host is not available in the current environment, so the canonical collaborative production entrypoint cannot execute a Pilot.",
+    "P4 dispatch target and receipt completeness have not been observed in a formal Episode production run."
+  ],
+  "conditions_to_resume": [
+    "Make the configured WebCodex host available without switching production.mode to CODEX_MANAGED.",
+    "Resume with the existing user-provided story 未交的答卷 through the canonical StoryOS production entrypoint, then observe one Pilot Episode end to end."
+  ],
+  "production_flags_unchanged": {
+    "p4_production_enabled": true,
+    "p5_production_enabled": false,
+    "p3_story_critic_production_enabled": false,
+    "p3_preimage_critic_production_enabled": false,
+    "p3_final_critic_production_enabled": false,
+    "production_mode": "COLLABORATIVE"
+  }
+}
