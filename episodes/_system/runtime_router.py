@@ -11,6 +11,7 @@ from story_os_contract import story_os_version
 import storyos_config
 import workspace_provider
 import production_mode
+import webcodex_host_attachment
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
@@ -112,19 +113,28 @@ def _codex_cli_path() -> str | None:
 
 
 def webcodex_available() -> tuple[bool, str]:
-    """Detect the host-managed WebCodex workspace from runtime evidence, not config alone."""
+    """Detect WebCodex only from a fresh attachment or explicit dev/test evidence."""
     forced = os.getenv('STORY_OS_WEBCODEX_AVAILABLE', '').strip().lower()
-    if forced in _WEBCODEX_TRUE:
-        return True, 'STORY_OS_WEBCODEX_AVAILABLE override'
     if forced in _WEBCODEX_FALSE:
-        return False, 'STORY_OS_WEBCODEX_AVAILABLE override'
+        return False, 'STORY_OS_WEBCODEX_AVAILABLE explicit false override'
+    test_or_dev = (
+        bool(os.getenv('PYTEST_CURRENT_TEST'))
+        or os.getenv('STORY_OS_ENV', '').strip().lower() in {'test', 'dev', 'development'}
+    )
+    if forced in _WEBCODEX_TRUE and test_or_dev:
+        return True, 'STORY_OS_WEBCODEX_AVAILABLE test override'
+    evidence = webcodex_host_attachment.validate_attachment()
+    if evidence['available']:
+        return True, evidence['reason']
     service_root = os.getenv('WEBCODEX_SERVICE_ROOT', '').strip()
     if service_root and Path(service_root).expanduser().is_dir():
         return True, 'WEBCODEX_SERVICE_ROOT detected'
     env_file = os.getenv('WEBCODEX_ENV_FILE', '').strip()
     if env_file and Path(env_file).expanduser().is_file():
         return True, 'WEBCODEX_ENV_FILE detected'
-    return False, 'no WebCodex host environment detected'
+    if forced in _WEBCODEX_TRUE and not test_or_dev:
+        return False, 'production WebCodex availability override ignored; fresh Host attachment required'
+    return False, evidence['reason']
 
 
 def _runtime_with_reason() -> tuple[str, str]:
@@ -182,6 +192,19 @@ def capabilities() -> dict:
     governance_runtime, governance_runtime_reason = governance_review_runtime()
     workspace = workspace_provider.current()
     mode = production_mode.resolve(_CONFIG)
+    host_evidence = webcodex_host_attachment.validate_attachment()
+    evidence_source = host_evidence.get('evidence_source')
+    evidence_age = host_evidence.get('evidence_age_seconds')
+    evidence_expires = host_evidence.get('evidence_expires_at')
+    workspace_match = host_evidence.get('workspace_match')
+    if not host_evidence.get('available') and webcodex_ok and webcodex_reason in {
+        'WEBCODEX_SERVICE_ROOT detected', 'WEBCODEX_ENV_FILE detected'
+    }:
+        evidence_source = 'legacy_environment_evidence'
+        workspace_match = None
+    elif webcodex_reason == 'STORY_OS_WEBCODEX_AVAILABLE test override':
+        evidence_source = 'explicit_test_override'
+        workspace_match = None
     return {
         'story_os_version': story_os_version(),
         'configured_production_mode': mode['configured_mode'],
@@ -195,6 +218,11 @@ def capabilities() -> dict:
         'effective_runtime_reason': effective_reason,
         'webcodex_detected': webcodex_ok,
         'webcodex_detection_reason': webcodex_reason,
+        'webcodex_evidence_source': evidence_source,
+        'webcodex_evidence_age_seconds': evidence_age,
+        'webcodex_evidence_expires_at': evidence_expires,
+        'webcodex_workspace_match': workspace_match,
+        'webcodex_host_status': host_evidence.get('status'),
         'codex_fallback_active': effective == 'CODEX' and 'fallback' in effective_reason.lower(),
         'repository_filesystem': ROOT.is_dir(),
         'repository_writable': os.access(ROOT, os.W_OK),
