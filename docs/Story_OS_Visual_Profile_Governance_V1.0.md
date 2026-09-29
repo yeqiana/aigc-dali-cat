@@ -63,7 +63,7 @@ G3/G4 必须在 Phase 2 之前收敛，否则 M01/M02/M03 会各自长出第三�
 
 本次审计在当前分支已落地的建集链路（`episodes/_system/story_creator.py` + `episodes/_system/visual_profile_resolver.py`）里，直接观察到缺口已经成型：
 
-1. `episodes/江南卖花姑娘的一天/meta/runtime-request.json` 声明 `"visual_profile": "M00_ANCIENT_DAILY_LIFE_V1"`。
+1. `episodes/00_独立篇/03_江南卖花姑娘的一天/meta/runtime-request.json` 声明 `"visual_profile": "M00_ANCIENT_DAILY_LIFE_V1"`。
 2. 该 id 在 `standards/visual_profiles/` 中**没有对应文件**（目录只有 `M00_MP4_网吧_流水席_旧数码.json` 与 `SPIRITED_AWAY_LIVE_ACTION_V1.json`）。
 3. `episodes/_system/story_creator.py` 调用 `visual_profile_resolver.resolve_profile()`；未命中时该函数返回默认 id `M00_MP4_网吧_流水席_旧数码` 且 `source=default`，**不报错**。
 4. 同一条链路把结果写进 `runtime-request.json#visual_profile_resolution`，形式上"有解析证据"，实质上发生了静默替换。
@@ -249,7 +249,7 @@ M00 的**特殊职责**：它同时是"现实基底规则"的当前承载者（�
 | audience expectation | "江南普通人的真实生活" |
 | compatible story types | 水乡日常、茶/卖花/船居等生计 |
 
-**待决**：M03 的 `era` 目前不明确（现代还是古代？）。`episodes/江南卖花姑娘的一天/meta/runtime-request.json` 绑定 `M00_ANCIENT_DAILY_LIFE_V1`，已有链路把"江南"当作古代，但 M03 名称为"沉浸式生活"，语义偏地域而非年代。必须在 Phase 1 明确：**M03 = 地域母版（era 需在实例中声明）**，或**把江南归入 M01 的一个 environment**。命名冲突需在 Phase 2 一并收敛（见 0.5）。
+**待决**：M03 的 `era` 目前不明确（现代还是古代？）。`episodes/00_独立篇/03_江南卖花姑娘的一天/meta/runtime-request.json` 绑定 `M00_ANCIENT_DAILY_LIFE_V1`，已有链路把"江南"当作古代，但 M03 名称为"沉浸式生活"，语义偏地域而非年代。必须在 Phase 1 明确：**M03 = 地域母版（era 需在实例中声明）**，或**把江南归入 M01 的一个 environment**。命名冲突需在 Phase 2 一并收敛（见 0.5）。
 
 ### 3.6 分类小结
 

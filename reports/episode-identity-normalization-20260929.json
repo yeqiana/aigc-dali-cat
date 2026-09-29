@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-29T10:44:41+08:00",
+  "policy": {
+    "storage_episode_id": "stable EPU primary key; never renumber for display normalization",
+    "series_namespace": "NN_系列名",
+    "episode_directory": "EE_标题",
+    "business_episode_id": "NN-EE",
+    "legacy_immutable_evidence": "preserved; old ids inside immutable request/ledger history are not rewritten"
+  },
+  "database": "STORY_OS_RUNTIME",
+  "backup_path": ".storyos/tmp/episode-identity-normalization-backup-20260929-104440.json",
+  "episode_map": [
+    {
+      "id": "EPU_013138e9b6ce2b45e89d88f7cab0f9955f97deda",
+      "old_business": "独立篇_五环外的浓雾",
+      "business": "00-01",
+      "old_series": "独立篇",
+      "series": "00_独立篇",
+      "old_ns": "独立篇/01_五环外的浓雾",
+      "ns": "00_独立篇/01_五环外的浓雾"
+    },
+    {
+      "id": "EPU_52e30559cf072a8dd5f159ca11948d709a686303",
+      "old_business": "埋儿那天_娘把我拦住了",
+      "business": "00-02",
+      "old_series": null,
+      "series": "00_独立篇",
+      "old_ns": "埋儿那天_娘把我拦住了",
+      "ns": "00_独立篇/02_埋儿那天_娘把我拦住了"
+    },
+    {
+      "id": "EPU_9c1380d6c00a7bc321f5730b994465c0422bae4e",
+      "old_business": "江南卖花姑娘的一天",
+      "business": "00-03",
+      "old_series": null,
+      "series": "00_独立篇",
+      "old_ns": "江南卖花姑娘的一天",
+      "ns": "00_独立篇/03_江南卖花姑娘的一天"
+    },
+    {
+      "id": "EPU_29f8130b92a0050818f17708c1a278a1b3250493",
+      "old_business": "误入桃花源",
+      "business": "07-05",
+      "old_series": "07_误入",
+      "series": "07_误入",
+      "old_ns": "误入桃花源",
+      "ns": "07_误入/05_误入桃花源"
+    },
+    {
+      "id": "EPU_a39996337556d8d441282fb816616ae9237c217a",
+      "old_business": "10-01",
+      "business": "14-01",
+      "old_series": "10_彼此的天上",
+      "series": "14_彼此的天上",
+      "old_ns": "10_彼此的天上/01_不存在的夜行路",
+      "ns": "14_彼此的天上/01_不存在的夜行路"
+    },
+    {
+      "id": "EPU_a9edc7bd8f1f49a1ba57bc6dcc16a47484e12692",
+      "old_business": "10-02",
+      "business": "14-02",
+      "old_series": "10_彼此的天上",
+      "series": "14_彼此的天上",
+      "old_ns": "10_彼此的天上/02_玻璃另一边的手",
+      "ns": "14_彼此的天上/02_玻璃另一边的手"
+    },
+    {
+      "id": "EPU_0d45a86a85866bedb57efea9c92570f238068380",
+      "old_business": "10-03",
+      "business": "14-03",
+      "old_series": "10_彼此的天上",
+      "series": "14_彼此的天上",
+      "old_ns": "_archive/20260911_EP003_abandoned_雾中的另一座生活区",
+      "ns": "_archive/20260911_EP003_abandoned_雾中的另一座生活区"
+    },
+    {
+      "id": "EPU_c1c8a4b1249445d298497aa48542d70e8c941a34",
+      "old_business": "11-01",
+      "business": "11-02",
+      "old_series": "11_仲夏夜惊魂",
+      "series": "11_仲夏夜惊魂",
+      "old_ns": "11_仲夏夜惊魂/01_惊魂",
+      "ns": "11_仲夏夜惊魂/02_惊魂_重制版"
+    },
+    {
+      "id": "EPU_cfa10f4e9359457955374b2c5ad5620c3af392e0",
+      "old_business": "天界普通女生的一天",
+      "business": "15-01",
+      "old_series": "天界生活日常",
+      "series": "15_天界生活日常",
+      "old_ns": "天界普通女生的一天",
+      "ns": "15_天界生活日常/01_天界普通女生的一天"
+    },
+    {
+      "id": "EPU_d09b677370ba0bc56b421e2687dafe09570e9532",
+      "old_business": "尸解仙",
+      "business": "16-01",
+      "old_series": "尸解仙",
+      "series": "16_尸解仙",
+      "old_ns": "尸解仙",
+      "ns": "16_尸解仙/01_尸解仙"
+    }
+  ],
+  "filesystem_moves": [
+    {
+      "from": "episodes/独立篇",
+      "to": "episodes/00_独立篇"
+    },
+    {
+      "from": "episodes/误入桃花源",
+      "to": "episodes/07_误入/05_误入桃花源"
+    },
+    {
+      "from": "episodes/天界普通女生的一天",
+      "to": "episodes/15_天界生活日常/01_天界普通女生的一天"
+    },
+    {
+      "from": "episodes/尸解仙",
+      "to": "episodes/16_尸解仙/01_尸解仙"
+    },
+    {
+      "from": "episodes/江南卖花姑娘的一天",
+      "to": "episodes/00_独立篇/03_江南卖花姑娘的一天"
+    },
+    {
+      "from": "episodes/埋儿那天_娘把我拦住了",
+      "to": "episodes/00_独立篇/02_埋儿那天_娘把我拦住了"
+    },
+    {
+      "from": "episodes/10_彼此的天上",
+      "to": "episodes/14_彼此的天上"
+    },
+    {
+      "from": "episodes/11_仲夏夜惊魂/01_惊魂",
+      "to": "episodes/11_仲夏夜惊魂/02_惊魂_重制版"
+    },
+    {
+      "from": "episodes/06_神话遗址/S1_墨脱",
+      "to": "episodes/06_神话遗址/01_墨脱"
+    },
+    {
+      "from": "episodes/06_神话遗址/S2_罗布泊",
+      "to": "episodes/06_神话遗址/02_罗布泊"
+    },
+    {
+      "from": "episodes/06_神话遗址/S6_东海龙宫",
+      "to": "episodes/06_神话遗址/06_东海龙宫"
+    },
+    {
+      "from": "episodes/07_误入/中元节误入流水席",
+      "to": "episodes/07_误入/02_中元节误入流水席"
+    },
+    {
+      "from": "episodes/07_误入/下山误入旧镇",
+      "to": "episodes/07_误入/03_下山误入旧镇"
+    },
+    {
+      "from": "episodes/07_误入/中元节最后一单",
+      "to": "episodes/07_误入/04_中元节最后一单"
+    },
+    {
+      "from": "episodes/爸爸没点过赞",
+      "to": "episodes/_archive/legacy_unregistered/爸爸没点过赞"
+    }
+  ],
+  "runtime_moves": [
+    {
+      "from": ".storyos/runtime/episodes/独立篇",
+      "to": ".storyos/runtime/episodes/00_独立篇"
+    },
+    {
+      "from": ".storyos/runtime/episodes/误入桃花源",
+      "to": ".storyos/runtime/episodes/07_误入/05_误入桃花源"
+    },
+    {
+      "from": ".storyos/runtime/episodes/天界普通女生的一天",
+      "to": ".storyos/runtime/episodes/15_天界生活日常/01_天界普通女生的一天"
+    },
+    {
+      "from": ".storyos/runtime/episodes/尸解仙",
+      "to": ".storyos/runtime/episodes/16_尸解仙/01_尸解仙"
+    },
+    {
+      "from": ".storyos/runtime/episodes/10_彼此的天上",
+      "to": ".storyos/runtime/episodes/14_彼此的天上"
+    }
+  ],
+  "legacy_asset_moves": [
+    {
+      "from": "04_科考队系列/K1_水库退水门口泥人",
+      "to": "04_科考队系列/01_K1_水库退水门口泥人"
+    },
+    {
+      "from": "04_科考队系列/K2_冰川",
+      "to": "04_科考队系列/02_K2_冰川"
+    },
+    {
+      "from": "04_科考队系列/K3_盐湖",
+      "to": "04_科考队系列/03_K3_盐湖"
+    },
+    {
+      "from": "04_科考队系列/K4_溶洞",
+      "to": "04_科考队系列/04_K4_溶洞"
+    },
+    {
+      "from": "04_科考队系列/K5_卡拉先格尔",
+      "to": "04_科考队系列/05_K5_卡拉先格尔"
+    },
+    {
+      "from": "04_科考队系列/S4_红外相机蹲着的人",
+      "to": "04_科考队系列/06_S4_红外相机蹲着的人"
+    },
+    {
+      "from": "04_科考队系列/泥人续_送件",
+      "to": "04_科考队系列/07_泥人续_送件"
+    },
+    {
+      "from": "08_古籍志怪/S1_促织",
+      "to": "08_古籍志怪/01_促织"
+    },
+    {
+      "from": "08_古籍志怪/S2_种梨",
+      "to": "08_古籍志怪/02_种梨"
+    },
+    {
+      "from": "08_古籍志怪/S3_画工画僵尸",
+      "to": "08_古籍志怪/03_画工画僵尸"
+    },
+    {
+      "from": "06a_铁三角/S1_墨脱",
+      "to": "17_铁三角/01_墨脱"
+    },
+    {
+      "from": "05d_神尸地图_嫦娥",
+      "to": "05_神尸地图_嫦娥"
+    },
+    {
+      "from": "爸爸没点过赞",
+      "to": "_archive/legacy_unregistered/爸爸没点过赞"
+    }
+  ],
+  "legacy_layout_policy": {
+    "grandfathered_read_only": [
+      "02_折多山守夜人",
+      "03_哀牢山三十六道班",
+      "05_神尸地图_嫦娥"
+    ],
+    "rule": "Published/read-only single-level legacy roots may remain in place; if reactivated, migrate before new production.",
+    "missing_historical_index": [
+      "01_家教 (README historical record only; no current Git directory)"
+    ]
+  },
+  "prevention": {
+    "new_standalone_path": "episodes/00_独立篇/EE_标题",
+    "new_standalone_business_id": "00-EE",
+    "same_title": "reuse existing numbered directory",
+    "storage_primary_key": "EPU_* remains stable",
+    "runtime_env_precedence": "explicit process environment > runtime.env",
+    "test_storage": "tests/system defaults to JSON/file and subprocesses retain those explicit overrides"
+  },
+  "validation": {
+    "focused_tests": "81 passed, 8 subtests passed",
+    "mysql_episode_count": 14,
+    "mysql_orphan_episode_refs": 0,
+    "mysql_bad_business_ids": 0,
+    "mysql_duplicate_business_ids": 0,
+    "mysql_old_path_hits": 0,
+    "identity_errors": 0,
+    "series_code_collisions": 0,
+    "bad_active_namespace_shape": 0
+  },
+  "updated_at": "2026-09-29T11:06:40+08:00"
+}

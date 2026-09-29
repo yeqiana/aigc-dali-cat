@@ -148,7 +148,7 @@ selection_evidence 必须包含：
 「presence + 旧 tool_version/mode」不构成治理证据，因此历史 Episode 不会被追溯判失败。仓库现有实例：
 
 - episodes/12_千寻/01_那条不存在的隧道/meta/visual-profile.json -> legacy_unmanaged
-- episodes/江南卖花姑娘的一天（无 lock、无治理声明） -> legacy_unmanaged
+- episodes/00_独立篇/03_江南卖花姑娘的一天（无 lock、无治理声明） -> legacy_unmanaged
 
 Gate adapter：verify(episode, metadata_only=False) 只对 FAIL 返回错误字符串，legacy_unmanaged 返回空列表，
 所以未来接入 Gate 时不会误伤历史 Episode，也不会把「没接入治理」当成失败。
