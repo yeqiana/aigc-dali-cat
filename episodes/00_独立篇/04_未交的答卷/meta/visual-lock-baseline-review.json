@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "decision": "PASS",
+  "created_at": "2026-09-29T15:15:03+08:00",
+  "role": "ordinary_baseline",
+  "frame": 1,
+  "asset_path": "episodes/00_独立篇/04_未交的答卷/media/candidates/scheduled/01-97beed4c5d9f-a1.png",
+  "sha256": "409d8be5b744293d5536e4b0c061de38d8c4ce093041c7cce5017c51f1f8d885",
+  "frame_contract_sha256": "31b6ad52d5df8b76947926970219bb2b7db93a906221d29eaa717a7fe0e86234",
+  "queue_item_id": "97beed4c5d9f",
+  "reviewer_scope": "delegated_pixel_review",
+  "checks": {
+    "visual_profile_match": "PASS",
+    "reality_first": "PASS",
+    "ordinary_life_density": "PASS",
+    "unposed_capture": "PASS",
+    "not_cinematic": "PASS",
+    "capture_credibility": "PASS",
+    "identity_usable": "PASS",
+    "group_members_distinct": "PASS",
+    "identity_anchor_usable": "PASS"
+  },
+  "face_boxes": [
+    {
+      "character_id": "P01",
+      "x": 0.36,
+      "y": 0.26,
+      "w": 0.23,
+      "h": 0.23
+    }
+  ],
+  "note": "actual-pixel evidence: a clear, recognizable single subject in an ordinary study-bedroom setting; believable unposed phone capture and usable facial identity anchor.",
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "CODEX_ISOLATED",
+    "base_runtime": "CODEX",
+    "isolated_session": true,
+    "execution_source": "local_codex_cli",
+    "attempt": 1,
+    "reviewed_at": "2026-09-29T15:15:50+08:00",
+    "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-baseline-critic-attempt-1.jsonl",
+    "review_capability": "vision",
+    "ephemeral": true,
+    "session_reused_from_generation": false,
+    "review_scope": "VISUAL_LOCK_BASELINE",
+    "log_sha256": "e1f94817cac30a5179f660b143a3ecfe9745f67a1db8eb3c664ab300fcb62958"
+  },
+  "approved_at": "2026-09-29T15:16:01+08:00",
+  "provisional_master_created": false
+}

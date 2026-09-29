@@ -1,0 +1,1013 @@
+{
+  "schema_version": 3,
+  "status": "LOCKED",
+  "genre_family": "general_reality_crack",
+  "anomaly_applicable": true,
+  "anomaly_exception_reason": "",
+  "interaction_applicable": false,
+  "interaction_exception_reason": "单人第一人称故事；引导者对话属于功能性交互，不需要多人关系建立配额。",
+  "rules": {
+    "max_identical_setup_consecutive": 2,
+    "min_unique_setups_in_5_frames": 3,
+    "frame10_requires_new_question_or_evidence": true,
+    "scale_only_escalation_is_not_enough": true,
+    "max_passive_human_frames_after_confirmation": 2,
+    "emotion_intensity_range": [
+      0,
+      4
+    ],
+    "emotion_trigger_required_at_intensity_gte": 2,
+    "synchronized_theatrical_reaction_forbidden": true,
+    "max_consecutive_urgent_frames": 2,
+    "min_meaningful_interaction_per_5_human_frames": 1,
+    "max_meaningful_interaction_ratio": 0.75,
+    "opening_social_natural_interaction_required": true,
+    "require_large_and_small_scene": true,
+    "exact_scene_position_reuse_forbidden": true,
+    "min_cinematic_reference_frames": 2,
+    "practical_lighting_required": true,
+    "suspense_genre_requires_concealed_anomaly": true
+  },
+  "frames": [
+    {
+      "frame": "01",
+      "camera_position": "desk_left",
+      "subject_distance": "medium",
+      "primary_subject": "P01",
+      "action": "伏案看几何题与复习资料",
+      "visual_function": "建立高三压力",
+      "capture_purpose": "记录人物压力基线",
+      "pov_mode": "first_person_adjacent",
+      "location_zone": "bedroom_desk",
+      "shot_scale": "medium",
+      "scene_position_id": "S01_desk_left",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "02",
+      "camera_position": "desk_over",
+      "subject_distance": "close",
+      "primary_subject": "试卷与右手",
+      "action": "扫过红圈名次、草稿凹痕和铅笔",
+      "visual_function": "具象化达标压力",
+      "capture_purpose": "记录物证",
+      "pov_mode": "first_person_detail",
+      "location_zone": "bedroom_desk",
+      "shot_scale": "detail",
+      "scene_position_id": "S02_desk_over",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "none",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "ordinary",
+      "human_action_stage": "ordinary",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "红圈名次与未解题",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "03",
+      "camera_position": "pencil_floor",
+      "subject_distance": "close",
+      "primary_subject": "断铅笔与P01",
+      "action": "铅笔折断、视野倾斜",
+      "visual_function": "触发世界切换",
+      "capture_purpose": "捕捉转场动作",
+      "pov_mode": "first_person_unsteady",
+      "location_zone": "bedroom_desk",
+      "shot_scale": "close",
+      "scene_position_id": "S03_pencil_floor",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "foreground_occlusion",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "桌面/铅笔等现实前景",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "discovery",
+      "human_action_stage": "notice",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "眩晕与断铅笔",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "04",
+      "camera_position": "avenue_center",
+      "subject_distance": "far",
+      "primary_subject": "P01与净域大道",
+      "action": "在乳白大道中央站稳抬头",
+      "visual_function": "完整建立净域",
+      "capture_purpose": "证明环境规则改变",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_avenue",
+      "shot_scale": "wide",
+      "scene_position_id": "S04_avenue_center",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "curious",
+        "intensity": 2,
+        "trigger": "陌生无缝街区",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "05",
+      "camera_position": "avenue_space",
+      "subject_distance": "medium",
+      "primary_subject": "P01与引导者",
+      "action": "引导者走近并说明净域",
+      "visual_function": "乌托邦诱惑成立",
+      "capture_purpose": "建立安全承诺",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_avenue",
+      "shot_scale": "medium",
+      "scene_position_id": "S05_avenue_space",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "curious",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "06",
+      "camera_position": "room_window",
+      "subject_distance": "far",
+      "primary_subject": "P01与人工湖",
+      "action": "推窗看水鸟波纹迅速被抚平",
+      "visual_function": "舒适里埋入异常",
+      "capture_purpose": "记录不自然平静",
+      "pov_mode": "first_person_room",
+      "location_zone": "jingyu_room",
+      "shot_scale": "wide",
+      "scene_position_id": "S06_room_window",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "water_reflection",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "人工湖真实水面",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 2,
+        "trigger": "湖面异常恢复",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "07",
+      "camera_position": "fountain_arc",
+      "subject_distance": "far",
+      "primary_subject": "P01与喷泉",
+      "action": "观察每次水花高度完全一致",
+      "visual_function": "异常升级为系统规律",
+      "capture_purpose": "建立广场秩序尺度",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_plaza",
+      "shot_scale": "extreme_wide",
+      "scene_position_id": "S07_fountain_arc",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "observe",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "喷泉精确重复",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "08",
+      "camera_position": "indicator_low",
+      "subject_distance": "close",
+      "primary_subject": "草稿本与指示灯",
+      "action": "画不规则线条后指示灯闪两次",
+      "visual_function": "证明系统响应表达",
+      "capture_purpose": "建立因果",
+      "pov_mode": "first_person_detail",
+      "location_zone": "jingyu_plaza_bench",
+      "shot_scale": "close",
+      "scene_position_id": "S08_indicator_low",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "light_and_shadow",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "光洁地面、现场指示灯或边界实际光源",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 3,
+        "trigger": "涂鸦触发监测灯",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "09",
+      "camera_position": "plaza_space",
+      "subject_distance": "far",
+      "primary_subject": "P01与空旷广场",
+      "action": "停笔观察淡黄灯的反射",
+      "visual_function": "强化被监视感",
+      "capture_purpose": "负空间第二信息区",
+      "pov_mode": "observer_offset",
+      "location_zone": "jingyu_plaza",
+      "shot_scale": "wide",
+      "scene_position_id": "S09_plaza_space",
+      "cinematic_reference": {
+        "reference_id": "NEGATIVE_SPACE_SUSPENSE",
+        "technique_translation": "把主角偏置，让广场留白成为持续检查的第二信息区，不复刻具体电影镜头。",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "create_negative_space",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "light_and_shadow",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "光洁地面、现场指示灯或边界实际光源",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "意识到表达被读取",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "10",
+      "camera_position": "opposite_bench",
+      "subject_distance": "medium",
+      "primary_subject": "年轻女性与P01视线",
+      "action": "确认女性重复微笑、翻页和眨眼",
+      "visual_function": "打开居民标准化问题",
+      "capture_purpose": "Frame10新证据",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_plaza_opposite",
+      "shot_scale": "medium",
+      "scene_position_id": "S10_opposite_bench",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "glass_reflection",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "街区真实玻璃立面",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "causal_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "居民跨日重复",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "11",
+      "camera_position": "guide_walk",
+      "subject_distance": "medium",
+      "primary_subject": "P01与引导者",
+      "action": "追上引导者询问哭喊会怎样",
+      "visual_function": "从观察转主动求证",
+      "capture_purpose": "验证机制",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_walkway",
+      "shot_scale": "medium",
+      "scene_position_id": "S11_guide_walk",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "confirmation",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "核心规则将被回应",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "12",
+      "camera_position": "guide_face",
+      "subject_distance": "close",
+      "primary_subject": "引导者与P01",
+      "action": "引导者说明系统扰动和恢复标准",
+      "visual_function": "确认情绪校准机制",
+      "capture_purpose": "温和语言与控制反差",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_walkway",
+      "shot_scale": "close",
+      "scene_position_id": "S12_guide_face",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "系统承认情绪调节",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "13",
+      "camera_position": "street_glass",
+      "subject_distance": "far",
+      "primary_subject": "P01、人群与玻璃反射",
+      "action": "看见步调与表情近乎同步",
+      "visual_function": "完成主题反转",
+      "capture_purpose": "反射承载标准化证据",
+      "pov_mode": "observer_offset",
+      "location_zone": "jingyu_street",
+      "shot_scale": "wide",
+      "scene_position_id": "S13_street_glass",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "glass_reflection",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "街区真实玻璃立面",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "adapt",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "净域变成更深达标系统",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "14",
+      "camera_position": "edge_road",
+      "subject_distance": "far",
+      "primary_subject": "P01背影与街区边缘",
+      "action": "独自走向边界",
+      "visual_function": "进入主动逃离",
+      "capture_purpose": "记录行动方向反转",
+      "pov_mode": "observer_rear",
+      "location_zone": "jingyu_edge_road",
+      "shot_scale": "wide",
+      "scene_position_id": "S14_edge_road",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "move",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 2,
+        "trigger": "主动选择未知边界",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "15",
+      "camera_position": "boundary_frame",
+      "subject_distance": "medium",
+      "primary_subject": "P01手与屏障",
+      "action": "触碰半透明屏障激起蓝色波纹",
+      "visual_function": "边界实体化",
+      "capture_purpose": "框中框展示两个世界",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "jingyu_boundary",
+      "shot_scale": "medium",
+      "scene_position_id": "S15_boundary_frame",
+      "cinematic_reference": {
+        "reference_id": "FRAME_WITHIN_FRAME",
+        "technique_translation": "利用真实边界框体形成框中框，同时展示净域与外部荒原。",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "doorway_or_window",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "半透明边界与真实框体",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "spatial_contradiction",
+      "human_action_stage": "verify",
+      "human_present": true,
+      "emotion": {
+        "state": "uneasy",
+        "intensity": 3,
+        "trigger": "屏障阻止自由离开",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "16",
+      "camera_position": "guides_depth",
+      "subject_distance": "far",
+      "primary_subject": "P01与引导者们",
+      "action": "引导者整齐抵达劝他留下",
+      "visual_function": "安全成为最后诱惑",
+      "capture_purpose": "记录温和阻拦",
+      "pov_mode": "observer_side",
+      "location_zone": "jingyu_boundary",
+      "shot_scale": "wide",
+      "scene_position_id": "S16_guides_depth",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "human_consequence",
+      "human_action_stage": "discuss",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "安全承诺成为阻力",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "17",
+      "camera_position": "turnback_close",
+      "subject_distance": "close",
+      "primary_subject": "P01",
+      "action": "回望净域并想起现实粗粝细节",
+      "visual_function": "做出价值判断",
+      "capture_purpose": "捕捉决定前转折",
+      "pov_mode": "observer_front",
+      "location_zone": "jingyu_boundary",
+      "shot_scale": "close",
+      "scene_position_id": "S17_turnback_close",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "adapt",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 3,
+        "trigger": "真实摩擦也是生活价值",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "18",
+      "camera_position": "boundary_impact",
+      "subject_distance": "far",
+      "primary_subject": "P01与屏障",
+      "action": "全力撞向屏障，白蓝线条融化",
+      "visual_function": "视觉高潮",
+      "capture_purpose": "捕捉不可逆动作",
+      "pov_mode": "observer_side",
+      "location_zone": "jingyu_boundary",
+      "shot_scale": "wide",
+      "scene_position_id": "S18_boundary_impact",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "sky_light",
+        "contrast_mode": "flat_natural",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "light_and_shadow",
+        "purpose": "通过现场可解释的第二层信息逐步暴露异常",
+        "physical_anchor": "光洁地面、现场指示灯或边界实际光源",
+        "adds_information": true
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "urgent",
+        "intensity": 4,
+        "trigger": "主动拒绝标准化安全",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "19",
+      "camera_position": "desk_wake",
+      "subject_distance": "medium",
+      "primary_subject": "P01与木桌",
+      "action": "猛抬头喘息，现实纸张与灯光恢复",
+      "visual_function": "回归现实",
+      "capture_purpose": "建立双世界反差",
+      "pov_mode": "observer_near_pov",
+      "location_zone": "bedroom_desk",
+      "shot_scale": "medium",
+      "scene_position_id": "S19_desk_wake",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "reversal",
+      "human_action_stage": "consequence",
+      "human_present": true,
+      "emotion": {
+        "state": "alert",
+        "intensity": 3,
+        "trigger": "现实触觉恢复",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    },
+    {
+      "frame": "20",
+      "camera_position": "shavings",
+      "subject_distance": "close",
+      "primary_subject": "手、卷笔刀与铅笔",
+      "action": "削出新笔尖并重新落到几何题",
+      "visual_function": "行动闭环",
+      "capture_purpose": "记录粗粝触感",
+      "pov_mode": "first_person_detail",
+      "location_zone": "bedroom_desk_edge",
+      "shot_scale": "detail",
+      "scene_position_id": "S20_shavings",
+      "cinematic_reference": {
+        "reference_id": "",
+        "technique_translation": "",
+        "exact_shot_recreation": false
+      },
+      "lighting_design": {
+        "practical_source": "fluorescent",
+        "contrast_mode": "mixed_practical",
+        "suspense_function": "reveal_partial_information",
+        "physically_motivated": true,
+        "invented_cinematic_light": false
+      },
+      "anomaly_concealment": {
+        "carrier": "none",
+        "purpose": "",
+        "physical_anchor": "",
+        "adds_information": false
+      },
+      "anomaly_logic_stage": "payoff",
+      "human_action_stage": "act",
+      "human_present": true,
+      "emotion": {
+        "state": "ordinary",
+        "intensity": 1,
+        "trigger": "",
+        "response_sync": "single_subject"
+      },
+      "interaction": {
+        "type": "none",
+        "actor": "",
+        "target": "",
+        "action": "",
+        "meaningful": false
+      },
+      "new_information": true,
+      "continuity_exception_reason": ""
+    }
+  ]
+}

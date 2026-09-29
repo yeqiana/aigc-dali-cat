@@ -1,0 +1,230 @@
+{
+  "candidates": [
+    {
+      "id": "C01",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 19,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 92,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "现实高压与净域舒适形成清晰双世界对照",
+        "监测灯、标准微笑、边界融化形成完整视觉升级",
+        "撞向屏障把主题选择转成可见动作"
+      ],
+      "risks": [
+        "中段必须避免只靠解释规则，要让重复行为和系统反馈先成为证据"
+      ]
+    },
+    {
+      "id": "C02",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 16,
+        "escalation_ceiling": 16,
+        "climax_visual_payoff": 12,
+        "mechanism_novelty": 11,
+        "discussion_space": 8
+      },
+      "concept_voltage": 80,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": false,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "无时钟房间与现实倒计时反差直接",
+        "湖面被抚平的视觉隐喻易懂"
+      ],
+      "risks": [
+        "主要异常集中在舒适环境，升级读感弱于C01"
+      ]
+    },
+    {
+      "id": "C03",
+      "ambition_band": "A3",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 17,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 86,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "标准微笑和同步人流无需字幕即可成立",
+        "群体行为异常具有传播性"
+      ],
+      "risks": [
+        "机制过度集中在人群同步，容易弱化原作从压力到自由选择的完整主题"
+      ]
+    },
+    {
+      "id": "C04",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 19,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "个人情绪监测可升级到城市尺度",
+        "淡黄警示点与乳白城市具有鲜明视觉识别度"
+      ],
+      "risks": [
+        "若直接展示全城网格会比用户原文更科幻，需要保持为备选而非改写主线"
+      ]
+    },
+    {
+      "id": "C05",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 13,
+        "mechanism_novelty": 13,
+        "discussion_space": 9
+      },
+      "concept_voltage": 87,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "被抚平的湖是强视觉隐喻",
+        "从水面到人的规整逻辑一致"
+      ],
+      "risks": [
+        "脚印自动消失是原文没有的强化，使用会改变核心机制边界"
+      ]
+    },
+    {
+      "id": "C06",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 19,
+        "escalation_ceiling": 18,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 9
+      },
+      "concept_voltage": 89,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "白色秩序与昏暗荒原的边界构图强",
+        "自由与安全选择具有直接讨论空间"
+      ],
+      "risks": [
+        "道路循环和风雨涌入并非原作主要证据，容易把心理寓言变成空间逃脱"
+      ]
+    },
+    {
+      "id": "C07",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 17,
+        "hero_frame": 18,
+        "escalation_ceiling": 19,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 14,
+        "discussion_space": 9
+      },
+      "concept_voltage": 91,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "把情绪规整推进到身体节奏，图像可读性强",
+        "群体同步与主角逆节奏具有明确高潮"
+      ],
+      "risks": [
+        "标准呼吸是新增机制，若采用会偏离用户已给出的监测灯与情绪调节证据"
+      ]
+    },
+    {
+      "id": "C08",
+      "ambition_band": "A4",
+      "scores": {
+        "one_line_hook": 18,
+        "hero_frame": 18,
+        "escalation_ceiling": 17,
+        "climax_visual_payoff": 14,
+        "mechanism_novelty": 12,
+        "discussion_space": 10
+      },
+      "concept_voltage": 89,
+      "wordless_test": {
+        "stop_scroll": true,
+        "escalation_readable": true,
+        "curiosity_gap": true
+      },
+      "strengths": [
+        "‘永远正确’与考试红叉构成强主题呼应",
+        "最终故意选择错误具有清晰价值反转"
+      ],
+      "risks": [
+        "选择面板和路径纠正不是原文设定，容易把隐性规训显性系统化"
+      ]
+    }
+  ],
+  "selected_id": "C01",
+  "selection_reason": "C01最完整保留用户原故事的八段核心链条，同时具备可在20帧中逐级看见的视觉证据：现实考试压力→净域诱惑→重复与监测→情绪标准化确认→边界选择→撞击融化→现实触觉回归。它不需要新增系统面板、城市网格或追逐规则来获得高视觉电压，因此主题忠实度和传播画面兼得。",
+  "issue_codes": [],
+  "summary": {
+    "passed": true
+  },
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "candidates_sha256": "6fd65dd66eeb0407654e2cbdba75a01c09155534b6ac684bd5c975d6f847ef6a",
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-29T13:58:05+08:00",
+    "workspace_provider": "webcodex",
+    "workspace_transport": "WEBCODEX",
+    "isolation_mode": "fresh_product_review_turn",
+    "webcodex_used": true,
+    "request_path": "episodes/00_独立篇/04_未交的答卷/meta/runtime/reviews/concept-ambition-attempt-1-request.json",
+    "request_id": "concept-ambition-a1-544662dabb28cad3",
+    "request_fingerprint": "544662dabb28cad32ddf8f8af0f09cf916961d8c16835084f7db14ea675918f8"
+  }
+}

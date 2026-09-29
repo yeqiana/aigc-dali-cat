@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation",
+  "observation_id": "03",
+  "generated_at": "2026-09-29T17:20:00+08:00",
+  "status": "PASS",
+  "storyos_status": "PRODUCTION_OBSERVATION_PASS",
+  "platform_result": "PASS",
+  "content_result": "NEEDS_USER",
+  "title": "未交的答卷",
+  "episode": {
+    "episode_id": "00-04",
+    "storage_episode_id": "EPU_3135853f07a8acba4c5ce5180e7fa185f5a5f49a",
+    "path": "episodes/00_独立篇/04_未交的答卷",
+    "created": true,
+    "canonical_entrypoint": "episodes/_system/story_os.py create <story> --full-auto --title 未交的答卷 --json",
+    "start_stage": "IDEA_LOCKED",
+    "final_stage": "STORYBOARD_LOCKED",
+    "disposition": "ACTIVE",
+    "next_action": "USER_DECISION_REQUIRED",
+    "blocking_frames": [
+      3,
+      15,
+      18
+    ],
+    "reason": "Visual Lock bounded admission candidate pool exhausted after real Codex Vision failures"
+  },
+  "production_mode": {
+    "mode": "COLLABORATIVE",
+    "effective_authoring_runtime": "WORK",
+    "workspace_provider": "webcodex",
+    "image_executor": "CODEX",
+    "vision_review_executor": "CODEX",
+    "codex_managed_enabled": false,
+    "automatic_runtime_fallback": false
+  },
+  "runtime": {
+    "dag_observed": true,
+    "observed_steps": [
+      "INCREMENTAL_PLAN",
+      "CREATIVE_STORY",
+      "PREIMAGE_COMPILE",
+      "VISUAL_LOCK"
+    ],
+    "scheduler_observed": true,
+    "same_episode_resume_observed": true,
+    "checkpoint_present": true,
+    "checkpoint_is_not_stage_authority": true,
+    "duplicate_dispatch_count": 0,
+    "episode_state_is_sole_stage_authority": true
+  },
+  "preimage": {
+    "requested": 4,
+    "started": 4,
+    "finished": 4,
+    "peak_observed_concurrency": 4,
+    "input_snapshot_id": "8402c32a1c4c614e24103eaecdb1c136719e7785f7fa095f663abb3504cdda1e",
+    "committed_snapshot_id": "f87472c2ed398102d5343c33247762ec90f778c638aa130de1422b0ba00a3fdf",
+    "authority_barrier_status": "READY",
+    "authority_commit_count": 1
+  },
+  "p4": {
+    "shadow_enabled": true,
+    "production_enabled": true,
+    "observations": [
+      {
+        "task": "story_semantic_critic",
+        "request_id": "story-semantic-critic-shadow-a1-1d69be77ad06c4d1",
+        "scheduler_authorized_target": {
+          "provider": "codex_user_runner",
+          "model": "gpt-6-luna",
+          "runtime": "CODEX"
+        },
+        "actual_dispatch_target": {
+          "provider": "codex_user_runner",
+          "model": "gpt-6-luna",
+          "runtime": "CODEX"
+        },
+        "target_match": true,
+        "receipt_complete": true,
+        "authority_write": false,
+        "episode_transition": false
+      },
+      {
+        "task": "preimage_semantic_critic",
+        "request_id": "preimage-semantic-critic-shadow-a1-016fa5c4a19cc7af",
+        "scheduler_authorized_target": {
+          "provider": "codex_user_runner",
+          "model": "gpt-6-luna",
+          "runtime": "CODEX"
+        },
+        "actual_dispatch_target": {
+          "provider": "codex_user_runner",
+          "model": "gpt-6-luna",
+          "runtime": "CODEX"
+        },
+        "target_match": true,
+        "receipt_complete": true,
+        "authority_write": false,
+        "episode_transition": false
+      }
+    ],
+    "incomplete_receipts": 0
+  },
+  "p3": {
+    "story_semantic_critic_production": false,
+    "preimage_semantic_critic_production": false,
+    "final_semantic_critic_production": false,
+    "closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347"
+  },
+  "p5_guardian": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "recovery_executions": 0,
+    "authority_writes": 0,
+    "stage_transitions": 0,
+    "llm_calls": 0,
+    "network_probes": 0,
+    "observation_note": "Production local host actions preserved P5 Shadow invariants. Resident runner-cycle Guardian findings were not the execution path for image/vision local actions, so no synthetic Guardian finding is claimed."
+  },
+  "models": {
+    "receipt_backed_p4_text_calls": 2,
+    "work_host_product_reviews": [
+      "concept_ambition",
+      "recent5_semantic",
+      "story_semantic_review"
+    ],
+    "image_attempts": 16,
+    "image_completions": 13,
+    "image_technical_failures": 3,
+    "image_duplicate_attempt_ids": [],
+    "vision_review_invocations_observed": 6,
+    "vision_content_result_events": 5,
+    "vision_process_error_events": 2
+  },
+  "visual_lock": {
+    "passed_frames": [
+      1
+    ],
+    "needs_user_frames": [
+      3,
+      15,
+      18
+    ],
+    "generated_image_completions": 13,
+    "generation_budget_limit": 35,
+    "generation_budget_remaining": 22,
+    "bounded_content_repairs_used_per_failed_frame": 1,
+    "independent_candidate_slots_used_per_failed_frame": 2,
+    "weak_pass_used": false,
+    "force_pass_used": false,
+    "final_findings": {
+      "15": [
+        "CINEMATIC_CONCEPT_ART",
+        "ENVIRONMENT_PHYSICS_WEAK",
+        "SCALE_REFERENCE_INSUFFICIENT"
+      ],
+      "18": [
+        "GHOST_CAMERA",
+        "CINEMATIC_POSTER_COMPOSITION",
+        "STAGED_HERO_SHOT",
+        "ENVIRONMENT_PHYSICS_WEAK"
+      ],
+      "03": [
+        "ANOMALY_NOT_READABLE"
+      ]
+    }
+  },
+  "technical_incidents": {
+    "recovered": [
+      "Canonical create initially inherited no runtime.env and failed before Episode creation on local MySQL connection; rerun used the existing runtime launcher allowlist.",
+      "Canonical Episode path resolver mismatch read the legacy title-only path after numbered standalone creation; fixed and resumed the same Episode.",
+      "Semantic shadow adapters used top-level imports while production modules live under agents/; fixed with test-compatible fallback imports.",
+      "PREIMAGE Semantic Shadow incorrectly required the pre-commit authority snapshot after the single-writer commit; changed to frozen candidate SHA integrity.",
+      "Codex Vision experienced transient websocket/429 failures; existing technical retry was used without re-generating successful siblings.",
+      "A post-result Vision transport failure could hide an already persisted SHA-bound content verdict; fixed to reuse the persisted verdict without duplicate review.",
+      "Independent Visual Lock candidate progression depended on Ledger NEEDS_USER even after successful candidate generation left Ledger PASSED; fixed with exact SHA-bound admission/candidate matching.",
+      "One image queue mutation encountered QUEUE_MUTATION_BUSY; bounded retry succeeded after lock release."
+    ],
+    "unresolved": []
+  },
+  "architecture": {
+    "resolved_runtime_defects": 5,
+    "unresolved_failures": 0,
+    "wrong_target_count": 0,
+    "duplicate_dispatch_count": 0,
+    "unexpected_stage_mutations": 0,
+    "router_authority_writes": 0,
+    "guardian_authority_writes": 0
+  },
+  "regression": {
+    "focused": {
+      "passed": 266,
+      "failed": 0
+    },
+    "broad": {
+      "passed": 1633,
+      "failed": 3,
+      "known_legacy_failures": 3,
+      "new_failures": 0,
+      "skipped": 1,
+      "subtests_passed": 98,
+      "known_legacy_nodes": [
+        "test_archive_relocation.py::RealArchiveRegressionTest::test_ep003_relocation_entry_verifies",
+        "test_series_master_git_tracking.py::SeriesMasterGitTrackingTests::test_this_repository_has_no_untracked_series_master",
+        "test_visual_profile_assets.py::GovernedProfileSchemaTest::test_legacy_m00_asset_is_not_rewritten"
+      ]
+    }
+  },
+  "code_fix_commit": "31fbc62",
+  "final_conclusion": "COLLABORATIVE_PRODUCTION_OBSERVATION_PASS_WITH_CONTENT_NEEDS_USER",
+  "notes": [
+    "Platform PASS and story content result are intentionally separate.",
+    "No additional image generation is authorized automatically for frames 03/15/18 because the bounded Visual Lock candidate pool is exhausted.",
+    "A later CODEX_MANAGED cutover may use this PASS as the previous collaborative observation gate, but must not silently reuse this Episode as a clean first-managed Episode without an explicit policy decision."
+  ]
+}

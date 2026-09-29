@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "derived_from_preimage_authority": true,
+  "initial_state": {
+    "time": "dusk",
+    "location": "bedroom_desk",
+    "weather": "indoor early evening",
+    "characters": {
+      "P01": {
+        "gender": "male",
+        "age": 18,
+        "build": "偏瘦但健康的高三男生体型",
+        "hair": "自然黑色短发",
+        "clothing_anchor": "普通浅灰居家长袖上衣+深色运动长裤",
+        "status": "present"
+      }
+    },
+    "recorder": {
+      "photographer_id": "P01",
+      "active_device": "普通智能手机"
+    },
+    "props": {
+      "broken pencil": {
+        "state": "persistent"
+      },
+      "geometry draft paper": {
+        "state": "persistent"
+      },
+      "review books": {
+        "state": "persistent"
+      }
+    },
+    "anomaly": {
+      "phase": "ordinary"
+    }
+  },
+  "frames": {
+    "01": {
+      "delta": {
+        "time": "dusk",
+        "location": "bedroom_desk",
+        "weather": "indoor early evening",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "伏案看几何题与复习资料"
+    },
+    "02": {
+      "delta": {
+        "time": "dusk",
+        "location": "bedroom_desk",
+        "weather": "indoor early evening",
+        "anomaly": {
+          "phase": "ordinary"
+        }
+      },
+      "story_event": "扫过红圈名次、草稿凹痕和铅笔"
+    },
+    "03": {
+      "delta": {
+        "time": "dusk",
+        "location": "bedroom_desk",
+        "weather": "indoor early evening",
+        "anomaly": {
+          "phase": "discovery"
+        }
+      },
+      "story_event": "铅笔折断、视野倾斜"
+    },
+    "04": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_avenue",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "在乳白大道中央站稳抬头"
+    },
+    "05": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_avenue",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "spatial_contradiction"
+        }
+      },
+      "story_event": "引导者走近并说明净域"
+    },
+    "06": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_room",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "causal_contradiction"
+        }
+      },
+      "story_event": "推窗看水鸟波纹迅速被抚平"
+    },
+    "07": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_plaza",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "观察每次水花高度完全一致"
+    },
+    "08": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_plaza_bench",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "causal_contradiction"
+        }
+      },
+      "story_event": "画不规则线条后指示灯闪两次"
+    },
+    "09": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_plaza",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "停笔观察淡黄灯的反射"
+    },
+    "10": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_plaza_opposite",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "causal_contradiction"
+        }
+      },
+      "story_event": "确认女性重复微笑、翻页和眨眼"
+    },
+    "11": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_walkway",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "confirmation"
+        }
+      },
+      "story_event": "追上引导者询问哭喊会怎样"
+    },
+    "12": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_walkway",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "引导者说明系统扰动和恢复标准"
+    },
+    "13": {
+      "delta": {
+        "time": "day",
+        "location": "jingyu_street",
+        "weather": "diffuse daylike light with no visible sun",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "看见步调与表情近乎同步"
+    },
+    "14": {
+      "delta": {
+        "time": "dusk",
+        "location": "jingyu_edge_road",
+        "weather": "cool diffuse dusk at the boundary",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "独自走向边界"
+    },
+    "15": {
+      "delta": {
+        "time": "dusk",
+        "location": "jingyu_boundary",
+        "weather": "cool diffuse dusk at the boundary",
+        "anomaly": {
+          "phase": "spatial_contradiction"
+        }
+      },
+      "story_event": "触碰半透明屏障激起蓝色波纹"
+    },
+    "16": {
+      "delta": {
+        "time": "dusk",
+        "location": "jingyu_boundary",
+        "weather": "cool diffuse dusk at the boundary",
+        "anomaly": {
+          "phase": "human_consequence"
+        }
+      },
+      "story_event": "引导者整齐抵达劝他留下"
+    },
+    "17": {
+      "delta": {
+        "time": "dusk",
+        "location": "jingyu_boundary",
+        "weather": "cool diffuse dusk at the boundary",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "回望净域并想起现实粗粝细节"
+    },
+    "18": {
+      "delta": {
+        "time": "dusk",
+        "location": "jingyu_boundary",
+        "weather": "cool diffuse dusk at the boundary",
+        "anomaly": {
+          "phase": "payoff"
+        }
+      },
+      "story_event": "全力撞向屏障，白蓝线条融化"
+    },
+    "19": {
+      "delta": {
+        "time": "night",
+        "location": "bedroom_desk",
+        "weather": "indoor night",
+        "anomaly": {
+          "phase": "reversal"
+        }
+      },
+      "story_event": "猛抬头喘息，现实纸张与灯光恢复"
+    },
+    "20": {
+      "delta": {
+        "time": "night",
+        "location": "bedroom_desk_edge",
+        "weather": "indoor night",
+        "anomaly": {
+          "phase": "payoff"
+        }
+      },
+      "story_event": "削出新笔尖并重新落到几何题"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "PREIMAGE_AUTHORITY_READY",
+  "not_episode_stage": true,
+  "not_gate_authority": true,
+  "canonical_stage_source": "meta/episode-state.json",
+  "status": "READY",
+  "input_snapshot_id": "8402c32a1c4c614e24103eaecdb1c136719e7785f7fa095f663abb3504cdda1e",
+  "committed_snapshot_id": "f87472c2ed398102d5343c33247762ec90f778c638aa130de1422b0ba00a3fdf",
+  "created_at": "2026-09-29T14:57:06+08:00",
+  "commit_count": 1
+}

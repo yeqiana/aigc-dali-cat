@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "status": "AVAILABLE_CONTENT_FAIL",
+  "consecutive_technical_failures": 0,
+  "last_fingerprint": null,
+  "events": [
+    {
+      "at": "2026-09-29T15:32:32+08:00",
+      "source": "visual_lock_critic_process",
+      "attempt": 2,
+      "issue_codes": [
+        "CRITIC_PROCESS_ERROR"
+      ],
+      "fingerprint": "74a48e44992f0fd3",
+      "status": "TECHNICAL_BLOCKED",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-2.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-29T15:37:24+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 2,
+      "issue_codes": [
+        "ANOMALY_SCALE_NOT_DELIVERED",
+        "SCALE_REFERENCE_INSUFFICIENT",
+        "FIRST_MAJOR_ANOMALY_MISSING",
+        "CINEMATIC_POSTER_COMPOSITION",
+        "GHOST_CAMERA",
+        "REALITY_FIRST_VIOLATION",
+        "ORDINARY_LIFE_CONTEXT_LOST"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-2.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-29T16:00:20+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 2,
+      "issue_codes": [
+        "CINEMATIC_CONCEPT_ART_LOOK",
+        "ANOMALY_ENVIRONMENT_BINDING_WEAK",
+        "COMMERCIAL_HDR_COLOR_AND_DETAIL",
+        "FIRST_MAJOR_ANOMALY_NOT_READABLE",
+        "GHOST_CAMERA",
+        "CINEMATIC_HERO_SHOT",
+        "HIGH_IMPACT_CONSEQUENCE_UNDERDELIVERED"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-2.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-29T16:06:57+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 2,
+      "issue_codes": [
+        "CINEMATIC_PROMO_COMPOSITION",
+        "COMMERCIAL_HDR",
+        "ANOMALY_NOT_AMPLIFIED",
+        "ENVIRONMENT_BINDING_WEAK",
+        "FIRST_MAJOR_ANOMALY_MISSING",
+        "DECORATIVE_MOTION_BLUR",
+        "CINEMATIC_LIGHT_TRAILS",
+        "GHOST_CAMERA",
+        "CINEMATIC_HERO_SHOT",
+        "BOUNDARY_FIELD_NOT_DESTABILIZED",
+        "ENVIRONMENT_PHYSICS_WEAK",
+        "HIGH_IMPACT_SCALE_UNDERDELIVERED"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-2.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-29T16:20:57+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 3,
+      "issue_codes": [
+        "CINEMATIC_CONCEPT_ART",
+        "STAGED_SELFIE",
+        "DECORATIVE_ANOMALY_RENDERING",
+        "ANOMALY_NOT_READABLE",
+        "ORDINARY_LIFE_CONTEXT_LOST"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-3.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-29T16:21:15+08:00",
+      "source": "visual_lock_critic_process",
+      "attempt": 3,
+      "issue_codes": [
+        "CRITIC_PROCESS_ERROR"
+      ],
+      "fingerprint": "74a48e44992f0fd3",
+      "status": "TECHNICAL_BLOCKED",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-3.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    },
+    {
+      "at": "2026-09-29T17:06:07+08:00",
+      "source": "visual_lock_critic",
+      "attempt": 4,
+      "issue_codes": [
+        "CINEMATIC_CONCEPT_ART",
+        "ENVIRONMENT_PHYSICS_WEAK",
+        "SCALE_REFERENCE_INSUFFICIENT",
+        "ANOMALY_NOT_READABLE",
+        "GHOST_CAMERA",
+        "CINEMATIC_POSTER_COMPOSITION",
+        "STAGED_HERO_SHOT"
+      ],
+      "status": "AVAILABLE_CONTENT_FAIL",
+      "log": "episodes/00_独立篇/04_未交的答卷/meta/visual-lock-critic-attempt-4.jsonl",
+      "visual_lock_run_id": null,
+      "visual_lock_started_at": null
+    }
+  ],
+  "speculative_production_allowed": false,
+  "last_issue_codes": [
+    "CINEMATIC_CONCEPT_ART",
+    "ENVIRONMENT_PHYSICS_WEAK",
+    "SCALE_REFERENCE_INSUFFICIENT",
+    "ANOMALY_NOT_READABLE",
+    "GHOST_CAMERA",
+    "CINEMATIC_POSTER_COMPOSITION",
+    "STAGED_HERO_SHOT"
+  ],
+  "last_event_at": "2026-09-29T17:06:07+08:00",
+  "last_visual_lock_run_id": null
+}

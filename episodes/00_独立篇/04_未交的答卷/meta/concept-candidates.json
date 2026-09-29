@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "creative_doctrine": "保留用户《未交的答卷》的高三压力—净域—识破标准化—主动回归现实核心；发散只比较视觉与机制表达，不改变主题。",
+  "candidates": [
+    {
+      "id": "C01",
+      "title": "透明的达标网",
+      "one_line_hook": "一个被高考压力压垮的高三生逃进没有分数的净域，却发现那里连情绪也必须达标。",
+      "concept_class": "psychological_utopia_reversal",
+      "anomaly_ceiling": {"initial": "无太阳却均匀明亮、无脚步回声的完美街区", "middle": "喷泉、笑容、步调和情绪被系统标准化", "climax": "主角撞向半透明边界，完美秩序整体像水彩般融化"},
+      "viral_frames": {
+        "cover": {"visual": "铅灰书桌与乳白净域在断裂铅笔两侧形成强烈对照", "why_stop": "现实压力与理想避风港同时出现，立即形成选择悬念"},
+        "mid": {"visual": "女孩重复同一微笑，旁侧淡黄指示灯在主角涂鸦时闪烁", "why_stop": "温柔画面里出现可验证的机械重复"},
+        "climax": {"visual": "主角撞向淡蓝屏障，白色城市线条扭曲融化", "why_stop": "价值选择转化为清晰的大动作视觉高潮"}
+      },
+      "discussion_question": "如果一个世界消除了竞争，却也消除了失控和悲伤，它还是自由吗？"
+    },
+    {
+      "id": "C02",
+      "title": "没有倒计时的房间",
+      "one_line_hook": "高三生得到一间没有时钟、永远22℃的理想房间，直到他发现每次焦虑都会被环境悄悄抹平。",
+      "concept_class": "controlled_comfort",
+      "anomaly_ceiling": {"initial": "恒温无时钟居所", "middle": "环境主动消除涟漪、噪声与情绪痕迹", "climax": "房间扩展成覆盖整座城市的情绪校准系统"},
+      "viral_frames": {
+        "cover": {"visual": "没有指针的空白钟面与堆满倒计时试卷的现实书桌重叠", "why_stop": "同一人物面对两种时间制度"},
+        "mid": {"visual": "湖面刚被水鸟划开便自动恢复镜面", "why_stop": "微小却违反自然的舒适感"},
+        "climax": {"visual": "城市所有住户同时露出标准微笑", "why_stop": "个体舒适突然显露群体代价"}
+      },
+      "discussion_question": "舒适如果由系统强制维持，会不会变成另一种压力？"
+    },
+    {
+      "id": "C03",
+      "title": "同一个微笑",
+      "one_line_hook": "净域里每个人都温和友善，直到高三生发现所有人的微笑精确到同一角度。",
+      "concept_class": "behavioral_standardization",
+      "anomaly_ceiling": {"initial": "陌生人礼貌得近乎完美", "middle": "眨眼、翻页、步伐出现可测重复", "climax": "整条街的人在同一秒完成相同表情与动作"},
+      "viral_frames": {
+        "cover": {"visual": "整齐街道上十几个居民以完全一致弧度微笑", "why_stop": "表面友好却产生强烈不适"},
+        "mid": {"visual": "翻页、喷泉、眨眼形成同节奏的三重重复", "why_stop": "观众无字幕也能识别规律"},
+        "climax": {"visual": "主角逆着同步人流奔向边界", "why_stop": "唯一不一致的人形成清晰视觉冲突"}
+      },
+      "discussion_question": "社会期待的情绪稳定何时会变成对人的修剪？"
+    },
+    {
+      "id": "C04",
+      "title": "城市情绪刻度",
+      "one_line_hook": "一个没有考试的城市，用看不见的刻度替每个人打情绪分。",
+      "concept_class": "world_scale_emotion_metric",
+      "anomaly_ceiling": {"initial": "局部指示灯响应情绪", "middle": "整片街区灯光随居民偏离程度改变", "climax": "从高处可见全城成为巨大的情绪校准网格"},
+      "viral_frames": {
+        "cover": {"visual": "乳白街区里只有一粒淡黄警示灯落在少年身旁", "why_stop": "极简画面里唯一偏色形成强钩子"},
+        "mid": {"visual": "多栋建筑淡黄点位沿少年路径连续亮起", "why_stop": "个人情绪被城市尺度追踪"},
+        "climax": {"visual": "边界外回望，整座净域呈规则发光网格", "why_stop": "把抽象规训变成世界尺度图像"}
+      },
+      "discussion_question": "当评价从分数变成情绪数据，人真的更自由了吗？"
+    },
+    {
+      "id": "C05",
+      "title": "被抚平的湖",
+      "one_line_hook": "净域的人工湖会自动抚平一切波纹，高三生最终意识到这里也在用同样方式抚平人。",
+      "concept_class": "visual_metaphor_engine",
+      "anomaly_ceiling": {"initial": "湖水异常快速恢复平静", "middle": "生活中所有不规则痕迹都被环境复原", "climax": "主角冲向边界时身后城市试图把他的足迹逐一抹去"},
+      "viral_frames": {
+        "cover": {"visual": "水鸟刚划开的波纹在半边湖面上诡异消失", "why_stop": "自然细节产生直观异常"},
+        "mid": {"visual": "少年涂鸦后淡黄指示灯立刻响应", "why_stop": "湖面隐喻升级到人的表达"},
+        "climax": {"visual": "奔跑脚印在身后一格格消失", "why_stop": "抚平成为追逐式高潮"}
+      },
+      "discussion_question": "我们追求平静时，是否也可能把真实感受一起抹掉？"
+    },
+    {
+      "id": "C06",
+      "title": "边界之外",
+      "one_line_hook": "净域允许一切需求，却不允许居民知道白色城市之外有什么。",
+      "concept_class": "boundary_choice",
+      "anomaly_ceiling": {"initial": "远处始终存在不可接近的灰暗边界", "middle": "每条道路都温和地把人引回中心", "climax": "屏障外显露完全不可控却真实的风雨荒原"},
+      "viral_frames": {
+        "cover": {"visual": "纯白大道尽头悬着一条昏暗荒原切线", "why_stop": "画面天然形成两个世界"},
+        "mid": {"visual": "少年沿规则街道走向边缘，指示灯越来越密", "why_stop": "舒适空间开始显露控制"},
+        "climax": {"visual": "屏障裂开后风、尘和杂乱真实光线涌入净域", "why_stop": "秩序与真实发生强烈视觉碰撞"}
+      },
+      "discussion_question": "安全和未知之间，你愿意为自由承担多少混乱？"
+    },
+    {
+      "id": "C07",
+      "title": "标准呼吸",
+      "one_line_hook": "高三生逃离排名后发现净域连呼吸节奏都给出了最优值。",
+      "concept_class": "body_regulation",
+      "anomaly_ceiling": {"initial": "引导者用温和节奏带领呼吸", "middle": "公共空间通过灯光和声场同步居民呼吸", "climax": "整座广场数百人像一个身体般同时吸气，而主角逆节奏冲向边界"},
+      "viral_frames": {
+        "cover": {"visual": "少年胸口起伏与墙面柔光节拍错开一拍", "why_stop": "极小差异暗示身体被管理"},
+        "mid": {"visual": "广场人群同步呼吸、衣料同时起伏", "why_stop": "无台词即可读出的群体异常"},
+        "climax": {"visual": "主角逆着整体呼吸节奏奔跑", "why_stop": "身体层面的反抗非常直观"}
+      },
+      "discussion_question": "如果系统能让你永远平静，你愿意交出对身体和情绪的决定权吗？"
+    },
+    {
+      "id": "C08",
+      "title": "永远正确的答案",
+      "one_line_hook": "净域里没有考试，因为所有选择都会被系统提前修正成最合适的答案。",
+      "concept_class": "choice_elimination",
+      "anomaly_ceiling": {"initial": "生活里没有错误选项", "middle": "少年每次随意选择都会被环境温和纠正", "climax": "边界前系统给出唯一的留下答案，而他第一次故意选择错误"},
+      "viral_frames": {
+        "cover": {"visual": "现实红叉试卷与净域中空白无错的选择面板并置", "why_stop": "没有错误反而制造疑问"},
+        "mid": {"visual": "少年故意走偏，地面柔光把路线重新引直", "why_stop": "选择权被温和夺走"},
+        "climax": {"visual": "唯一发光的留下路径前，少年转身撞向没有入口的屏障", "why_stop": "错误选择成为自由选择"}
+      },
+      "discussion_question": "没有错误的人生，是否也意味着没有真正属于自己的选择？"
+    }
+  ]
+}

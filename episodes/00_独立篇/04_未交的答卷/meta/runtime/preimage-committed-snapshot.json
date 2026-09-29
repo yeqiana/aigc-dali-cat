@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "f87472c2ed398102d5343c33247762ec90f778c638aa130de1422b0ba00a3fdf",
+  "snapshot_kind": "PREIMAGE_COMMITTED_SNAPSHOT",
+  "created_at": "2026-09-29T14:57:06+08:00",
+  "authority_sha256": {
+    "owned_scopes": {
+      "character.finalize": "64dd5e5b041f4d72a679b89606b77d5887113360a137951a51f9be038195f8ce",
+      "visual.environment_contract": "3eeadaac1c9d9d5eb4623f6a07e79b73165dd0a984ad36b853d44db2b5c0783f",
+      "visual.frame_directives": "bd8a152ef83edf91422a7698d3977f5a8e0a63091d88b82ef1bdceffaa23e36f",
+      "visual.world_identity": "d5acc554d675b41bef5928d47b94e96a5c60b03d13f3575ac266581344d4d191",
+      "visual.world_state": "ca5d748fa41c20b8e3871d0fa3899ae75e4dc250da6c58a3d09ebcc3d90d127c",
+      "visual.temporal_continuity": "68a6a282de5d00e05cdaafc013c397a5b85f4610e29259f608b0d80ff0991e37",
+      "visual.wardrobe": "023bf2973de81d80baa847c1af016de20fea826832982c980ac647807170282e",
+      "visual.narrative_core": "df1b7499e74e24adc4a2f91307726fa2df6a227e5f54771608b6adbb620fceff",
+      "visual.shot_progression": "65f7e60a89a11047bd1e5f58d5f87528f5b1401d8b6dd898a3cbfc7fbedfb0b5",
+      "visual.capture_grammar": "803b7b774393ac2d3ccca26e04f2260e4084d0d3910c9432d34b8868c02f42cc"
+    },
+    "character_contract": "2e86ec08213363628b8df53b25d4ca20facfc7eed4040f14195aa9b1d09346ba",
+    "character_visual_contract": "4d9adf36067172f4c19747c5dca45205ad15f89c7f7b82dba947f7c0f5b879d6",
+    "story_semantic_review": "2daa4c1e6d47057dfa49415218dbb3a02dd7619bd2168ca2dd3f88ee79c30500",
+    "world_identity": null,
+    "runtime_request_preimage": "6800fe25853e48db941a68786dd44bc6df767247efc79e38e01366bf2df16a39",
+    "story_lock": "11c089342c481985579c85756545abcde88f224800f44c4771b1fe4acfafa2d4",
+    "visual_profile": "9c33aca167b969f04280abacfd8458997c36f8591aa836fe17ebd5fdd8a1c901"
+  },
+  "whole_authority_sha256": {
+    "story_gates": "d770d56e29e848716c2f53b46d06249f9b35f3646bb11838974e40c951d1393a",
+    "character_contract": "2e86ec08213363628b8df53b25d4ca20facfc7eed4040f14195aa9b1d09346ba",
+    "character_visual_contract": "4d9adf36067172f4c19747c5dca45205ad15f89c7f7b82dba947f7c0f5b879d6",
+    "story_semantic_review": "2daa4c1e6d47057dfa49415218dbb3a02dd7619bd2168ca2dd3f88ee79c30500",
+    "world_identity": null,
+    "runtime_request_preimage": "6800fe25853e48db941a68786dd44bc6df767247efc79e38e01366bf2df16a39",
+    "story_lock": "11c089342c481985579c85756545abcde88f224800f44c4771b1fe4acfafa2d4",
+    "visual_profile": "9c33aca167b969f04280abacfd8458997c36f8591aa836fe17ebd5fdd8a1c901"
+  },
+  "derived_execution_evidence": true,
+  "episode_state_mutated": false,
+  "gate_pass": null
+}

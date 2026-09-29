@@ -1,0 +1,62 @@
+{
+  "authority_write": false,
+  "candidate_path": "episodes/00_独立篇/04_未交的答卷/meta/runtime/agent-shadow/story-semantic-critic/attempt-1-decision.json",
+  "candidate_sha256": "8f5826e9e327620f901e5877bfbc3a9904e7fa58a6c991413c2037f7eec80312",
+  "episode_transition": false,
+  "gate_pass": false,
+  "kind": "story_semantic_critic_shadow_telemetry_evidence",
+  "model_execution": {
+    "actual_dispatch_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "adapter_execution_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "cached_input_tokens": 0,
+    "codex_resolution": "caller_nominated_codex",
+    "complete": true,
+    "effective_execution_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "elapsed_seconds": 40.58,
+    "failure": false,
+    "independent_task": true,
+    "input_tokens": 52010,
+    "model": "gpt-6-luna",
+    "non_message_item_types": [],
+    "output_tokens": 492,
+    "provider": "codex_user_runner",
+    "real_model_execution": true,
+    "reasoning_output_tokens": 294,
+    "repeated_reads": 0,
+    "returncode": 0,
+    "route_behavior": null,
+    "router_proposed_target": {
+      "model": null,
+      "provider": "WORK",
+      "runtime": "WORK"
+    },
+    "runner_request_id": "7344da64d55f490695fc1f9b8833d2aa",
+    "runner_task_type": "critic",
+    "scheduler_authorized_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt",
+    "timeout": false,
+    "tool_free": true,
+    "usage_event_count": 1,
+    "wall_seconds": 40.58
+  },
+  "request_id": "story-semantic-critic-shadow-a1-1d69be77ad06c4d1",
+  "request_snapshot_path": "episodes/00_独立篇/04_未交的答卷/meta/runtime/agent-shadow/story-semantic-critic/attempt-1-request-snapshot.json",
+  "request_snapshot_sha256": "ba079e7356d174cde55f78619bbe1834274d8db6833923d9165ea3badaa01879",
+  "schema_version": 1
+}

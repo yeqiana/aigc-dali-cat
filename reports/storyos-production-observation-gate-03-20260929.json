@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation_gate",
+  "observation_id": "03",
+  "generated_at": "2026-09-29T17:21:00+08:00",
+  "status": "PASS",
+  "storyos_status": "PRODUCTION_OBSERVATION_PASS",
+  "production_observation_pass": true,
+  "production_observation_blocked": false,
+  "observation_report": {
+    "path": "reports/storyos-production-observation-03-20260929.json",
+    "sha256": "3318045d39062d2fea68d8346bf468109e0b94be218bfe48e02e56c955a66f23"
+  },
+  "episode": {
+    "title": "未交的答卷",
+    "episode_id": "00-04",
+    "created": true,
+    "canonical_stage": "STORYBOARD_LOCKED",
+    "content_result": "NEEDS_USER",
+    "next_action": "USER_DECISION_REQUIRED",
+    "frames": [
+      3,
+      15,
+      18
+    ]
+  },
+  "checks": {
+    "production_mode_collaborative": true,
+    "formal_episode_created": true,
+    "canonical_entrypoint_used": true,
+    "runtime_dag_observed": true,
+    "runtime_scheduler_observed": true,
+    "webcodex_host_used_for_work_runtime": true,
+    "p4_production_still_active": true,
+    "p4_scheduler_actual_match": true,
+    "p4_receipts_complete": true,
+    "preimage_all_tasks_complete": true,
+    "preimage_peak_concurrency_four": true,
+    "preimage_authority_commit_exactly_once": true,
+    "image_executor_correct": true,
+    "vision_executor_correct": true,
+    "image_receipts_complete_for_successes": true,
+    "duplicate_dispatch_zero": true,
+    "same_episode_resume_preserved": true,
+    "episode_authority_preserved": true,
+    "p5_shadow_enabled": true,
+    "p5_production_disabled": true,
+    "p5_recovery_execution_zero": true,
+    "p5_authority_write_zero": true,
+    "p3_production_flags_unchanged": true,
+    "force_pass_zero": true,
+    "unresolved_architecture_failures_zero": true,
+    "new_regression_failure_zero": true,
+    "content_failure_stopped_at_bounded_needs_user": true
+  },
+  "metrics": {
+    "preimage_requested": 4,
+    "preimage_finished": 4,
+    "preimage_peak_concurrency": 4,
+    "image_attempts": 16,
+    "image_successful_completions": 13,
+    "image_technical_failures": 3,
+    "duplicate_attempt_ids": 0,
+    "visual_lock_passed_frames": [
+      1
+    ],
+    "visual_lock_needs_user_frames": [
+      3,
+      15,
+      18
+    ],
+    "focused_passed": 266,
+    "focused_failed": 0,
+    "broad_passed": 1633,
+    "broad_known_legacy_failed": 3,
+    "broad_new_failed": 0,
+    "broad_skipped": 1,
+    "broad_subtests_passed": 98
+  },
+  "blockers": [],
+  "content_blockers": [
+    "Frame03: first major anomaly remains insufficiently readable after bounded repairs/candidates.",
+    "Frame15: cinematic concept-art treatment and insufficient human-vs-boundary scale reference remain.",
+    "Frame18: ghost camera / staged hero-shot / cinematic poster composition remain."
+  ],
+  "next_authorized_phase": "CODEX_MANAGED_CUTOVER_MAY_BE_EVALUATED_FROM_THIS_COLLABORATIVE_PASS",
+  "warning": "The existing Episode is content-NEEDS_USER. Do not silently treat it as a clean CODEX_MANAGED first-production Episode or bypass the three failed Visual Lock admissions.",
+  "final_conclusion": "PRODUCTION_OBSERVATION_PASS"
+}

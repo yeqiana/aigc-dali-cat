@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "8402c32a1c4c614e24103eaecdb1c136719e7785f7fa095f663abb3504cdda1e",
+  "not_episode_stage": true,
+  "not_gate_authority": true,
+  "canonical_stage_source": "meta/episode-state.json",
+  "tasks": {
+    "CHARACTER_FINALIZE": {
+      "task_id": "preimage-character_finalize-8402c32a1c4c",
+      "status": "COMPLETED",
+      "request_id": "preimage-79ad521b2719a9a1",
+      "candidate_path": "meta/runtime/preimage-candidates/character-finalize.json",
+      "updated_at": "2026-09-29T14:56:51+08:00",
+      "execution": {
+        "started_at": "2026-09-29T14:50:44.376647+08:00",
+        "worker_id": "wc-preimage-character-01",
+        "finished_at": "2026-09-29T14:56:51.083077+08:00"
+      }
+    },
+    "ENVIRONMENT_PREPARE": {
+      "task_id": "preimage-environment_prepare-8402c32a1c4c",
+      "status": "COMPLETED",
+      "request_id": "preimage-d6e18b25738c54fd",
+      "candidate_path": "meta/runtime/preimage-candidates/environment.json",
+      "updated_at": "2026-09-29T14:56:54+08:00",
+      "execution": {
+        "started_at": "2026-09-29T14:50:45.918209+08:00",
+        "worker_id": "wc-preimage-environment-01",
+        "finished_at": "2026-09-29T14:56:54.599005+08:00"
+      }
+    },
+    "WORLD_PREPARE": {
+      "task_id": "preimage-world_prepare-8402c32a1c4c",
+      "status": "COMPLETED",
+      "request_id": "preimage-a0d1513de8d809d2",
+      "candidate_path": "meta/runtime/preimage-candidates/world.json",
+      "updated_at": "2026-09-29T14:56:57+08:00",
+      "execution": {
+        "started_at": "2026-09-29T14:50:47.918060+08:00",
+        "worker_id": "wc-preimage-world-01",
+        "finished_at": "2026-09-29T14:56:57.284297+08:00"
+      }
+    },
+    "VISUAL_NARRATIVE_PREPARE": {
+      "task_id": "preimage-visual_narrative_prepare-8402c32a1c4c",
+      "status": "COMPLETED",
+      "request_id": "preimage-a0832ac282d84268",
+      "candidate_path": "meta/runtime/preimage-candidates/visual-narrative.json",
+      "updated_at": "2026-09-29T14:53:31+08:00",
+      "execution": {
+        "started_at": "2026-09-29T14:50:48.962288+08:00",
+        "worker_id": "wc-preimage-visual-01",
+        "finished_at": "2026-09-29T14:53:31.979572+08:00"
+      }
+    }
+  },
+  "updated_at": "2026-09-29T14:56:57+08:00"
+}

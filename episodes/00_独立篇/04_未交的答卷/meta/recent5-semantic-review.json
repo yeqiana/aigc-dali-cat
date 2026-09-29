@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "episode_id": "00-04",
+  "reviewed_at": "2026-09-29T14:04:09+08:00",
+  "candidate_fingerprint_path": "episodes/00_独立篇/04_未交的答卷/meta/episode-fingerprint.json",
+  "candidate_fingerprint_sha256": "62e272468f5362be6c87f941a79be83888fdb0f17f8d09d8ab09371c4d1ef986",
+  "registry_path": "reports/account-pattern-registry.json",
+  "registry_sha256": "d10cbd98166987c5d5a08fdefc5390265f349464edd52a7e575c95631b0a8f64",
+  "history_episode_ids": [
+    "09-04",
+    "10-01"
+  ],
+  "critic_provenance": {
+    "schema_version": 3,
+    "runtime": "WORK_ISOLATED",
+    "base_runtime": "WORK",
+    "isolated_session": true,
+    "execution_source": "product_runtime",
+    "attempt": 1,
+    "reviewed_at": "2026-09-29T14:04:09+08:00",
+    "workspace_provider": "webcodex",
+    "workspace_transport": "WEBCODEX",
+    "isolation_mode": "fresh_product_review_turn",
+    "webcodex_used": true,
+    "request_path": "episodes/00_独立篇/04_未交的答卷/meta/runtime/reviews/recent5-semantic-attempt-1-request.json",
+    "request_id": "recent5-semantic-a1-d46afbdb996382e0",
+    "request_fingerprint": "d46afbdb996382e0e7be20773d926adaa66ea692443ce2f13a51a96ea21db563"
+  },
+  "comparisons": [
+    {
+      "episode_id": "09-04",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    },
+    {
+      "episode_id": "10-01",
+      "equivalent_dimensions": {
+        "core_anomaly_mechanism": false,
+        "story_engine": false,
+        "entry_mode": false,
+        "anomaly_carrier": false,
+        "primary_visual_space": false,
+        "middle_escalation": false,
+        "climax_form": false,
+        "relationship": false,
+        "reality_residue": false
+      },
+      "match_reasons": {},
+      "semantic_similarity_score": 0,
+      "semantic_mechanism_veto": false,
+      "semantic_matched_dimensions": []
+    }
+  ]
+}

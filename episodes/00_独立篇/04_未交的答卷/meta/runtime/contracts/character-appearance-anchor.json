@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "contract_version": "2.2.1",
+  "derived_cache": true,
+  "world_identity_profile_id": "CN_MAINLAND_YOUNG_ADULT_DEFAULT_V1",
+  "world_identity_effective_sha256": "f7f874fb35521e03ab675e1275dd7cb135b1c8b968b5418befe8d8455e660f6b",
+  "character_contract_path": "meta/character-contract.json",
+  "character_contract_sha256": "2e86ec08213363628b8df53b25d4ca20facfc7eed4040f14195aa9b1d09346ba",
+  "character_visual_contract_path": "meta/character-visual-contract.json",
+  "character_visual_contract_sha256": "4d9adf36067172f4c19747c5dca45205ad15f89c7f7b82dba947f7c0f5b879d6",
+  "members": {
+    "P01": {
+      "character_id": "P01",
+      "nationality_context": "Chinese",
+      "resident_context": "mainland Chinese local residents",
+      "gender": "male",
+      "age": 18,
+      "build": "偏瘦但健康的高三男生体型",
+      "body_build": "lean_proportionate_natural",
+      "hair": {
+        "character_contract_anchor": "自然黑色短发",
+        "haircut_anchor": "自然黑色学生短发，鬓角与后颈不过度修饰",
+        "hair_length_anchor": "耳上短发，顶部约4-6厘米，自然蓬松"
+      },
+      "clothing_anchor": "普通浅灰居家长袖上衣+深色运动长裤",
+      "device_anchor": null,
+      "visual_priority": "primary",
+      "identity_rules": {
+        "same_person_across_frames": true,
+        "original_character": true,
+        "independently_distinct_face": true,
+        "reference_similarity_target": "low",
+        "natural_skin_texture": "natural_visible_texture",
+        "allowed_variation": [
+          "wet",
+          "windblown",
+          "messy",
+          "hood_up",
+          "tied_or_untied_with_story_reason"
+        ],
+        "forbidden_unmotivated_drift": [
+          "nationality/cultural identity",
+          "apparent age",
+          "face identity",
+          "haircut or hair length",
+          "body build",
+          "character role",
+          "clothing anchor unless wardrobe contract changes it"
+        ]
+      }
+    }
+  },
+  "pixel_master_relationship": "Textual pre-image anchor only. Visual Lock pixel master, when available, is the stronger pixel identity reference.",
+  "anchor_sha256": "c671e5e234b225585e8b76b1996f0bbad2a7bf5454c298a0d9b6ed727aaecec0"
+}

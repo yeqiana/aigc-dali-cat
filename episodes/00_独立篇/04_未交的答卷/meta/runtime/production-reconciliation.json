@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "reconciled_at": "2026-09-29T16:52:29+08:00",
+  "rows": [
+    {
+      "item_id": "97beed4c5d9f",
+      "frame": 1,
+      "outcome": "LEDGER_READY_REPLAYED",
+      "ledger_status": "PASSED",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "96f7cfa9cbd2",
+      "frame": 15,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "e77a666ff816",
+      "frame": 3,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "6deaa2512af0",
+      "frame": 18,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "dc39464dbb1d",
+      "frame": 15,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "eb11325773cd",
+      "frame": 3,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    },
+    {
+      "item_id": "389abdafba70",
+      "frame": 18,
+      "outcome": "OLDER_QUEUE_ITEM_IGNORED_FOR_NEWER_LEDGER_ATTEMPT",
+      "ledger_status": "NEEDS_USER",
+      "lifecycle_state": "SUCCEEDED"
+    }
+  ]
+}

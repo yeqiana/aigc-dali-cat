@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "story_os_version": "2.6.1",
+  "generated_at": "2026-09-29T15:09:26+08:00",
+  "policy": {
+    "baseline_first": true,
+    "remaining_three_parallelizable": true,
+    "calibration_count": 4,
+    "baseline_selection": "ordinary_fallback",
+    "baseline_frame": 1,
+    "opening_social_anchor_machine_priority": true,
+    "ordinary_life_override": false,
+    "legacy_first_major_anomaly_semantics": "first_major_anomaly"
+  },
+  "items": [
+    {
+      "id": "V-B",
+      "frame": 1,
+      "mode": "normal_record",
+      "role": "ordinary_baseline",
+      "impact": 0,
+      "scale_reference": "",
+      "anomaly_logic_stage": "ordinary",
+      "environment_severity": 3,
+      "contract_sha256": "31b6ad52d5df8b76947926970219bb2b7db93a906221d29eaa717a7fe0e86234",
+      "depends_on": []
+    },
+    {
+      "id": "V-W",
+      "frame": 15,
+      "mode": "anomaly_amplified",
+      "role": "worst_capture_condition",
+      "impact": 3,
+      "scale_reference": "human body against district-scale boundary",
+      "anomaly_logic_stage": "spatial_contradiction",
+      "environment_severity": 5,
+      "contract_sha256": "f2b85df19f11ee108a1c3b42fc0562d1b06d199e24c6186c036fbc1195028ee6",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-A",
+      "frame": 3,
+      "mode": "anomaly_reveal",
+      "role": "first_major_anomaly",
+      "impact": 1,
+      "scale_reference": "",
+      "anomaly_logic_stage": "discovery",
+      "environment_severity": 3,
+      "contract_sha256": "8726e4b79b08fe0160a814e7c9d6257d4abdecc6cc50b0fd9bf8017d5f20783a",
+      "depends_on": [
+        1
+      ]
+    },
+    {
+      "id": "V-H",
+      "frame": 18,
+      "mode": "climax_impact",
+      "role": "high_impact_admission",
+      "impact": 4,
+      "scale_reference": "single human impact visibly destabilizes the entire boundary field and surrounding ordered geometry",
+      "anomaly_logic_stage": "payoff",
+      "environment_severity": 5,
+      "contract_sha256": "cacdc48130495e45148cbebcc6dc08ccc5e0cf6729669f2edcd8b50a8ada7c41",
+      "depends_on": [
+        1
+      ]
+    }
+  ]
+}

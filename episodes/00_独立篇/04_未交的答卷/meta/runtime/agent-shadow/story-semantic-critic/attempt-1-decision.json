@@ -1,0 +1,1 @@
+{"decision":"REPAIR","issue_codes":["ANOMALY_CONSEQUENCE_MISSING","CLIMAX_CAUSALITY_WEAK"],"severity":"MEDIUM","repair_scope":["Story中情绪调节机制的实际介入与可见后果","Storyboard第08–13帧的触发、回应和后果链","Storyboard第15–19帧屏障冲撞与醒来的因果衔接"],"evidence":["画线时指示灯闪烁，但后续没有呈现环境调节机制实际介入或造成后果。","引导者说明情绪偏离会触发调节，但故事未展示该规则兑现。","主角撞向屏障后直接在书桌醒来，无法判断屏障如何导致回归；故事也未呈现撞击造成的净域内后果。"]}

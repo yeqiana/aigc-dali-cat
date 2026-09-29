@@ -1,0 +1,124 @@
+{
+  "authority_write": false,
+  "bounded_reflection": {
+    "max_auto_repairs": 1,
+    "max_review_attempts": 2,
+    "repair_invoked": false
+  },
+  "candidate_set_sha256": "697310fe730740fca1b78dfeac87414e8dc54c65a770775f3b76a8c0164f4229",
+  "candidate_sha256": "65d8267b8227f1f1a557834d0083d1eaa2fc064a5b5452192d41c04ed6d8d954",
+  "comparison": {
+    "critic_accept": false,
+    "critic_extra_issues": [
+      "REQUIRED_INTERACTION_NOT_REPRESENTED",
+      "URGENT_FRAME_RUN_EXCEEDS_LIMIT"
+    ],
+    "critic_issue_codes": [
+      "REQUIRED_INTERACTION_NOT_REPRESENTED",
+      "URGENT_FRAME_RUN_EXCEEDS_LIMIT"
+    ],
+    "critic_missing_issues": [],
+    "decision_disagreement": true,
+    "existing_accept": true,
+    "existing_issue_codes": [],
+    "issue_disagreement": true,
+    "issue_intersection": []
+  },
+  "critic_invoked": true,
+  "critic_provenance": {
+    "attempt": 1,
+    "base_runtime": "WORK",
+    "execution_source": "product_runtime",
+    "isolated_session": true,
+    "isolation_mode": "fresh_product_review_turn",
+    "request_fingerprint": "016fa5c4a19cc7af4545de57a1cf46a50208d151432c5579e5f44fa61cb600a1",
+    "request_id": "preimage-semantic-critic-shadow-a1-016fa5c4a19cc7af",
+    "request_path": "episodes/00_独立篇/04_未交的答卷/meta/runtime/reviews/preimage-semantic-critic-shadow-attempt-1-request.json",
+    "reviewed_at": "2026-09-29T15:01:16+08:00",
+    "runtime": "WORK_ISOLATED",
+    "schema_version": 3,
+    "webcodex_used": true,
+    "workspace_provider": "webcodex",
+    "workspace_transport": "WEBCODEX"
+  },
+  "decision": {
+    "decision": "REPAIR",
+    "evidence": [
+      "Frames 16–18 are three consecutive frames with emotion.state=\"urgent\", exceeding the frozen capture grammar limit of two consecutive urgent frames.",
+      "The capture grammar requires meaningful interaction at least once per five human-present frames and natural social interaction in the opening. Frames 1–5 and 6–10 have no meaningful interactions recorded; frame 05's guide conversation is marked meaningful=false with type=none."
+    ],
+    "issue_codes": [
+      "URGENT_FRAME_RUN_EXCEEDS_LIMIT",
+      "REQUIRED_INTERACTION_NOT_REPRESENTED"
+    ],
+    "repair_scope": [
+      "visual.shot_progression"
+    ],
+    "severity": "MEDIUM"
+  },
+  "decision_schema_sha256": "17bc95caf3881653866d69a29420fc79f8c6629b0b7dd0f7699f22eccffe4816",
+  "episode_transition": false,
+  "gate_pass": false,
+  "image_generation_invoked": false,
+  "kind": "preimage_semantic_critic_shadow_result",
+  "model_execution": {
+    "actual_dispatch_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "adapter_execution_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "cached_input_tokens": 0,
+    "codex_resolution": "caller_nominated_codex",
+    "complete": true,
+    "effective_execution_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "elapsed_seconds": 61.7,
+    "failure": false,
+    "independent_task": true,
+    "input_tokens": 53924,
+    "model": "gpt-6-luna",
+    "non_message_item_types": [],
+    "output_tokens": 1024,
+    "provider": "codex_user_runner",
+    "real_model_execution": true,
+    "reasoning_output_tokens": 883,
+    "repeated_reads": 0,
+    "returncode": 0,
+    "route_behavior": null,
+    "router_proposed_target": {
+      "model": null,
+      "provider": "WORK",
+      "runtime": "WORK"
+    },
+    "runner_request_id": "2e7b8fe3240e450fa68cfb43e74e0a51",
+    "runner_task_type": "critic",
+    "scheduler_authorized_target": {
+      "model": "gpt-6-luna",
+      "provider": "codex_user_runner",
+      "runtime": "CODEX"
+    },
+    "telemetry_source": "codex_cli_jsonl.turn.completed+codex_user_runner.receipt",
+    "timeout": false,
+    "tool_free": true,
+    "usage_event_count": 1,
+    "wall_seconds": 61.7
+  },
+  "obligation_sha256": "a91ccd549f8cb4839dadf3c9841e3995340098dfed3ce09d459e7eeace7ca008",
+  "reference_issue_codes": null,
+  "reference_label": null,
+  "repair_invoked": false,
+  "request_id": "preimage-semantic-critic-shadow-a1-016fa5c4a19cc7af",
+  "request_sha256": "7bcd3e7b5c9d3d94978eb76d7ea6f32376df25807078df67366ebefa628f43cf",
+  "request_snapshot_path": "episodes/00_独立篇/04_未交的答卷/meta/runtime/agent-shadow/preimage-semantic-critic/attempt-1-request-snapshot.json",
+  "request_snapshot_sha256": "98455732b245757b68b4b3f2ea29c5912e7400f5f7521a3d67b57497b7760c78",
+  "schema_version": 1,
+  "telemetry_complete": true
+}

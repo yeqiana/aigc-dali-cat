@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "applicable": false,
+  "mode": "not_applicable",
+  "reason": "单人高三学生室内心理故事，不存在多人旅行/返乡/出游关系建立需求。",
+  "exception_reason": "主角单人第一人称叙事，Frame01建立高三学生身份与书桌压力，不使用多人自拍。",
+  "opening_frames": [],
+  "rules": {
+    "preferred_frame_range": [
+      1,
+      2
+    ],
+    "preferred_contexts": [
+      "vehicle",
+      "destination_checkin"
+    ],
+    "selfie_required_when_applicable": true,
+    "minimum_people_visible": 2,
+    "establish_relationship_before_anomaly": true,
+    "strong_anomaly_forbidden_in_opening_anchor": true,
+    "commercial_or_staged_group_photo_forbidden": true,
+    "allow_exception_with_reason": true
+  }
+}

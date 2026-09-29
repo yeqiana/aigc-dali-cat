@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "status": "LOCKED",
+  "frame_count": 20,
+  "source_world_state_sha256": "fe8478109ff39fafaee647cc04f444355f00b3a5e8f89f3fdd22120b8b5cda1c",
+  "world_state_synced": true,
+  "derived_from_preimage_authority": true,
+  "frames": [
+    {
+      "frame": "01",
+      "elapsed_minutes_from_prev": 0,
+      "daypart": "dusk",
+      "weather": "indoor early evening",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": "opening state"
+    },
+    {
+      "frame": "02",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "indoor early evening",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "03",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "indoor early evening",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "04",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dusk -> day"
+    },
+    {
+      "frame": "05",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "06",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "07",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "08",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "09",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "10",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "11",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "12",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "13",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "day",
+      "weather": "diffuse daylike light with no visible sun",
+      "precipitation": "none",
+      "ambient_light": "daylight",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "14",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "dusk",
+      "weather": "cool diffuse dusk at the boundary",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: day -> dusk"
+    },
+    {
+      "frame": "15",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "cool diffuse dusk at the boundary",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "16",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "cool diffuse dusk at the boundary",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "17",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "cool diffuse dusk at the boundary",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "18",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "dusk",
+      "weather": "cool diffuse dusk at the boundary",
+      "precipitation": "none",
+      "ambient_light": "dusk_low",
+      "large_transition": false,
+      "transition_reason": ""
+    },
+    {
+      "frame": "19",
+      "elapsed_minutes_from_prev": 60,
+      "daypart": "night",
+      "weather": "indoor night",
+      "precipitation": "none",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": "physical time/environment transition: dusk -> night"
+    },
+    {
+      "frame": "20",
+      "elapsed_minutes_from_prev": 10,
+      "daypart": "night",
+      "weather": "indoor night",
+      "precipitation": "none",
+      "ambient_light": "artificial_night",
+      "large_transition": false,
+      "transition_reason": ""
+    }
+  ]
+}
