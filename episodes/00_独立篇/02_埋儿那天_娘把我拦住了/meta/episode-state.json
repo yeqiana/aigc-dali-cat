@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.6.1",
+  "episode_id": "00-02",
+  "series": "00_独立篇",
+  "title": "埋儿那天，娘把我拦住了",
+  "current_state": "IDEA_LOCKED",
+  "disposition": "ACTIVE",
+  "updated_at": "2026-09-16T17:35:28+08:00",
+  "history": [
+    {
+      "state": "IDEA_LOCKED",
+      "at": "2026-09-16T17:35:28+08:00",
+      "note": "一句话入口创建 Episode；后续阶段只由 canonical state transition 推进"
+    }
+  ],
+  "storage_episode_id": "EPU_52e30559cf072a8dd5f159ca11948d709a686303"
+}

@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "tool_version": "2.5.1",
+  "episode_id": "14-02",
+  "visual_profile": {
+    "mode": "default",
+    "profile_id": "M00",
+    "profile_path": "standards/visual_profiles/M00_MP4_网吧_流水席_旧数码.json",
+    "capture_profile": "auto",
+    "override_reason": null
+  },
+  "story": {
+    "recent5_checked": true,
+    "four_locks_diff_count": 4,
+    "mechanism_skin_swap_veto": false,
+    "task_closed": true,
+    "competing_explanations": 2,
+    "hook_frames": [
+      1,
+      2,
+      3
+    ],
+    "escalation_frames": [
+      3,
+      5,
+      7,
+      9,
+      11,
+      13,
+      14,
+      15
+    ],
+    "climax_frame": 14,
+    "payoff_frame": 20,
+    "semantic_review_path": "meta/story-semantic-review.json",
+    "recent5_evidence_note": "本地账号索引缺失，不伪造平台数据；仅完成系列与结构同质化核对，EP02与EP01的场景、触发、载体和高潮均不同。"
+  },
+  "visual": {
+    "profile_review_path": "meta/visual-profile-review.json",
+    "admission_frames": [
+      1,
+      9,
+      3,
+      14
+    ],
+    "continuity": {
+      "required": [
+        "location",
+        "key_prop",
+        "weather_time"
+      ],
+      "anchors": {
+        "protagonist": "P01/P02普通情侣；P02身份沿用EP001系列角色Authority，P01维持既有视觉身份",
+        "location": "川西山谷小镇普通民宿房间；落地窗外始终为窄外墙与向下陡坡，无阳台",
+        "key_prop": "落地窗湿玻璃、P01普通智能手机、旅行随身物品；异常只通过玻璃局部重叠泄露",
+        "wardrobe": "灰色系普通旅行装，入住后仅按场景自然脱湿外层",
+        "weather_time": "2023年初秋持续降雨傍晚→雨停降温夜间→次日上午湿冷阴天"
+      }
+    },
+    "authenticity_card": {
+      "story_era": "2023年初秋，现代中国大陆智能手机记录",
+      "location": "川西山谷自驾途中与山谷小镇普通民宿",
+      "photographer": "P01为主要记录者；开场旅行自拍由P02短暂持机",
+      "shooting_reason": "普通情侣自驾途中随手记录、入住后拍房间与窗外情况，异常出现后继续用手机留存现实证据",
+      "primary_capture": {
+        "id": "P01_phone",
+        "device": "普通现代智能手机"
+      },
+      "secondary_captures": [
+        {
+          "id": "P02_phone",
+          "device": "普通现代智能手机",
+          "use": "开场旅行自拍与必要的同伴记录"
+        }
+      ],
+      "secondary_source_explanation": "仅在剧情明确由P02持机或自拍时使用；其余帧默认由P01手机记录",
+      "aspect_ratio": "4:5",
+      "capture_states": {
+        "stable": "普通旅行自拍、入住记录与静态观察，手持构图自然但可读",
+        "restricted": "雨天车内、民宿狭小空间、湿玻璃反射和低照度限制构图与曝光",
+        "lost_control": "高潮时P02按住P01手腕、手机被主动按灭且机位开始下坠，允许短暂倾斜和运动模糊"
+      },
+      "camera_rules": {
+        "current_device_may_be_fully_visible": false,
+        "current_device_visibility_explanation": null,
+        "photographer_may_be_fully_visible": false,
+        "photographer_visibility_explanation": null
+      }
+    },
+    "calibration": {
+      "baseline": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "worst_condition": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "first_major_anomaly": {
+        "frame": null,
+        "asset_path": null,
+        "sha256": null,
+        "decision": "pending",
+        "note": ""
+      },
+      "schema_version": 2,
+      "policy": "four_admission_v21",
+      "items": [
+        {
+          "id": "V-B",
+          "role": "ordinary_baseline",
+          "frame": 1,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/01-6f5182e6f65b-a6.png",
+          "sha256": "308b8a08193606fdecee86b5518ca34635ad81418d253e4d8b45697240c0a25c",
+          "decision": "passed",
+          "frame_contract_sha256": "8d584e1d09e54a5bc95a0fa239ba669515dfe7873302ceb36dd88af1e75e8489",
+          "note": "",
+          "contract_sha256": "078aa443b4e2fd7fdb5136b546b78cb4806050093dac674268a7e732e088453c"
+        },
+        {
+          "id": "V-W",
+          "role": "worst_capture_condition",
+          "frame": 9,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/09-35216c31b625-a2.png",
+          "sha256": "60ce59c566230fdeee76fcde462eb007f6841cfd537c0b72978f58e2f84705a7",
+          "decision": "passed",
+          "frame_contract_sha256": "11c9d1ba9c9ce4bbf2d7072064cfce547b78f9b5bd9ca787144815b9d3f3c37a",
+          "note": "",
+          "contract_sha256": "dbfff8fc119a5dde886c6f5adaa9214cd381c6da643ffd530932ef95169b2687"
+        },
+        {
+          "id": "V-A",
+          "role": "first_major_anomaly",
+          "frame": 3,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/03-55049c2c730b-a4.png",
+          "sha256": "b421da74adeb65fec6014b9eefb0cb59f66c663cb0a2e277ae6cc2453e9a448f",
+          "decision": "passed",
+          "frame_contract_sha256": "5a2eb0f6c59383a67198a6abf0a39ab8ec4dc5dde6acbbe549653663e9fccbec",
+          "note": "",
+          "contract_sha256": "76410b7e4cc4cd36fea2292333f250294fb8e6550b44ed4e06a0acf409df1b72"
+        },
+        {
+          "id": "V-H",
+          "role": "high_impact_admission",
+          "frame": 14,
+          "asset_path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/candidates/scheduled/14-7c8e14f1a2b3-a3.png",
+          "sha256": "f3aa095093e23e8a7a476c73f504ec6f42639710f6a81bef3710272a8dbd906c",
+          "decision": "passed",
+          "frame_contract_sha256": "a35b497aae1be82ed0152338c65bb3dd199f1985142027957e3fd7c6f86b3eb4",
+          "note": "",
+          "contract_sha256": "2d2aeecc7e3771b14d802f7e38632069765bdc914fda0dd7f74028dc32664637"
+        }
+      ],
+      "finalizer_reconciled": true,
+      "finalizer_source": "meta/visual-lock-final-report.json"
+    },
+    "calibration_contact_sheet": {
+      "path": "episodes/10_彼此的天上/02_玻璃另一边的手/media/review/contact-sheets/visual-lock-admission.jpg",
+      "sha256": "79b8dc7d954822768a863396e7af346aa8594dcf7415bd6b8f864a4397c1e654"
+    },
+    "references": {
+      "required": false,
+      "required_anchors": [],
+      "items": []
+    },
+    "environment_contract": {
+      "schema_version": 1,
+      "season": "early_autumn_2023",
+      "baseline": {
+        "condition": "川西山谷连续降雨后的潮湿旅行环境，民宿房间与窗外陡坡保持现实可核对",
+        "time_of_day": "afternoon_to_night_then_next_morning",
+        "temperature_feel": "雨后明显降温，室内偏凉，次日上午湿冷",
+        "ground_state": "道路与民宿外墙周边均潮湿，室外地面湿润但无异常脚印",
+        "visibility": "白天受低云和雨幕影响，夜间受玻璃雾气、残雨与室内灯反射影响",
+        "wind": "山谷弱风到间歇冷风",
+        "precipitation": "前段持续降雨，入夜后停雨但玻璃外侧残留水膜，次日上午无降水",
+        "physical_cues": [
+          "玻璃内侧冷凝雾与外侧残留雨膜必须分层可读",
+          "民宿窗外始终是窄外墙与向下陡坡，不得凭空生成阳台",
+          "夜间低云、潮湿反光和普通室内暖光共同决定曝光与噪点",
+          "次日上午外墙、窗位和陡坡必须与夜间基线一致"
+        ]
+      },
+      "segments": [
+        {
+          "id": "rainy_arrival",
+          "start_frame": 1,
+          "end_frame": 2,
+          "condition": "持续降雨中的自驾与入住",
+          "physical_cues": [
+            "车窗雨痕与雨刷运动模糊",
+            "湿外套与潮湿民宿入口"
+          ],
+          "conditional_effects": []
+        },
+        {
+          "id": "cold_night_overlap",
+          "start_frame": 3,
+          "end_frame": 17,
+          "condition": "雨停后突然降温、低云压入山谷的夜间民宿房间",
+          "physical_cues": [
+            "玻璃内雾外雨膜",
+            "室内低照噪点",
+            "窗外现实陡坡基线仍在异常区域周围可辨"
+          ],
+          "conditional_effects": [
+            {
+              "effect": "异常只在玻璃局部清晰区泄露，不覆盖整扇窗",
+              "when": [
+                "frame>=3",
+                "frame<=16"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "next_morning_reality_check",
+          "start_frame": 18,
+          "end_frame": 20,
+          "condition": "次日上午雨停后的普通离店与现实复核",
+          "physical_cues": [
+            "自然阴天亮度",
+            "潮湿外墙",
+            "无平台无脚印无实体残留"
+          ],
+          "conditional_effects": []
+        }
+      ],
+      "frame_overrides": {
+        "14": {
+          "visibility_priority": "孩子伸手、成年人拉走、P02按住手腕三层动作必须同时可读"
+        },
+        "18": {
+          "visibility_priority": "完整外墙、窗位、陡坡三者同时清晰"
+        }
+      }
+    },
+    "frame_directives": {
+      "01": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "02": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "03": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "外侧雨膜被擦开的小块清晰区",
+          "粗墙与普通袖口",
+          "周围仍是现实山谷窗外基线"
+        ],
+        "scale_reference": "清晰区只占整扇落地窗的小部分",
+        "escalation_from": null
+      },
+      "04": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "05": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "06": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "07": {
+        "narrative_role": "evidence",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 1,
+        "required_visual_cues": [
+          "较低位置重新出现的局部清晰区",
+          "木架木碗与粗布袖",
+          "玻璃雨膜边缘"
+        ],
+        "scale_reference": "异常仍局限在局部窗口而非整片空间",
+        "escalation_from": null
+      },
+      "08": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "09": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "内侧雾气被P02擦出的半圆",
+          "外侧雨膜被成年人擦出的反向错位半圆",
+          "双方手部动作不同步"
+        ],
+        "scale_reference": "两个半圆均明显小于整扇窗且边缘不规则",
+        "escalation_from": 8
+      },
+      "10": {
+        "narrative_role": "reveal",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "普通成年人的半张脸与警惕眼睛",
+          "木碗湿布矮凳等生活用品",
+          "玻璃水膜与反射仍存在"
+        ],
+        "scale_reference": "人物只从局部清晰区露出，不做贴脸恐怖特写",
+        "escalation_from": 9
+      },
+      "11": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "P01抬高手机造成玻璃亮屏反射",
+          "对面成年人后退",
+          "粗织布被举起作为防御"
+        ],
+        "scale_reference": "亮光只来自普通手机屏反射，不形成超自然光源",
+        "escalation_from": 10
+      },
+      "12": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "13": {
+        "narrative_role": "escalation",
+        "frame_mode": "anomaly_reveal",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "成年人身后探出的普通孩子",
+          "半张脸与小手",
+          "成年人仍处在保护位置"
+        ],
+        "scale_reference": "孩子只部分露出，成年人身体保持主要遮挡关系",
+        "escalation_from": 12
+      },
+      "14": {
+        "narrative_role": "climax",
+        "frame_mode": "climax_impact",
+        "impact_level": 3,
+        "required_visual_cues": [
+          "孩子向玻璃伸手",
+          "成年人迅速把孩子抱离并挡到身后",
+          "P02按住P01手腕",
+          "玻璃反射中P01手机屏按灭且机位开始下坠"
+        ],
+        "scale_reference": "孩子与成年人形成一前一后的明确人体尺度；手机反射只作为前景小尺度参照",
+        "escalation_from": 13
+      },
+      "15": {
+        "narrative_role": "payoff",
+        "frame_mode": "payoff",
+        "impact_level": 2,
+        "required_visual_cues": [
+          "成年人一手护住孩子",
+          "粗织布盖向玻璃",
+          "录像停止前机位继续向下歪"
+        ],
+        "scale_reference": "粗布只遮住对面空间，不能穿过玻璃",
+        "escalation_from": 14
+      },
+      "16": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "17": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "18": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "19": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      },
+      "20": {
+        "narrative_role": "setup",
+        "frame_mode": "normal_record",
+        "impact_level": 0,
+        "required_visual_cues": [],
+        "scale_reference": "",
+        "escalation_from": null
+      }
+    }
+  },
+  "subtitles": {
+    "required": true,
+    "sound_card_completed": false,
+    "layout_audit_path": "meta/subtitle-layout-audit.json"
+  },
+  "locks": {
+    "edit_mode": "none",
+    "assets": []
+  },
+  "reviews": {
+    "story": "passed",
+    "authenticity": "passed",
+    "continuity": "passed",
+    "visual_admission": "passed",
+    "subtitle": "pending",
+    "production": "pending",
+    "recommendation_fit": "pending",
+    "publish": "pending"
+  },
+  "machine_contract": {
+    "version": 1,
+    "strict": true
+  },
+  "production_evidence": {
+    "frame_review_dir": "meta/frame-reviews",
+    "review_schema_version": 2,
+    "require_all_frames": true,
+    "semantic_contract": "actual_frame_v2",
+    "sha_bound": true,
+    "fresh_isolated_critic": true
+  }
+}
