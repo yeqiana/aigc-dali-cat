@@ -46,7 +46,7 @@
   "config_sha256": "01c7719192a410de1c84d1667a63f1c5fb089706947e88a73b543675038770e5",
   "policy_sha256": "e9297c8ba22d870fdc430f5523819e42334651efc0a74ef231b13405220a2e0a",
   "registry_sha256": "e131900e4cf80c511140e4f7c8b1296c22a6b74d531887e9ab7560d06ba581a3",
-  "health_review_sha256": "2c7b72103ebcf3204ccdc2ca51bbb399c4e534535689de068d98e5cb311e2848",
+  "health_review_sha256": "af56e0cc93cab2ee3837ad18b97503da693760a03a9f32c8723f68cb86b9c327",
   "canary": {
     "case_count": 11,
     "cases": [
@@ -109,7 +109,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.2266,
+        "resolve_wall_ms": 0.2806,
         "expected_action": "KEEP_LEGACY",
         "passed": true
       },
@@ -172,7 +172,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.1364,
+        "resolve_wall_ms": 0.1795,
         "expected_action": "KEEP_LEGACY",
         "passed": true
       },
@@ -236,7 +236,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.1238,
+        "resolve_wall_ms": 0.1252,
         "expected_action": "KEEP_LEGACY",
         "passed": true
       },
@@ -299,7 +299,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.2059,
+        "resolve_wall_ms": 0.1884,
         "expected_action": "FALLBACK",
         "passed": true
       },
@@ -362,7 +362,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.2138,
+        "resolve_wall_ms": 0.1665,
         "expected_action": "FALLBACK",
         "passed": true
       },
@@ -444,7 +444,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.1484,
+        "resolve_wall_ms": 0.1602,
         "expected_action": "KEEP_LEGACY",
         "passed": true
       },
@@ -528,7 +528,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.1815,
+        "resolve_wall_ms": 0.1464,
         "expected_action": "NO_ROUTE",
         "passed": true
       },
@@ -610,7 +610,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.2728,
+        "resolve_wall_ms": 0.1699,
         "expected_action": "NO_ROUTE",
         "passed": true
       },
@@ -695,7 +695,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.2096,
+        "resolve_wall_ms": 0.2048,
         "expected_action": "NO_ROUTE",
         "passed": true
       },
@@ -756,7 +756,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.1866,
+        "resolve_wall_ms": 0.161,
         "expected_action": "BYPASS_ROUTER_PRODUCTION",
         "passed": true
       },
@@ -819,7 +819,7 @@
         "llm_calls": 0,
         "network_calls": 0,
         "authority_writes": 0,
-        "resolve_wall_ms": 0.2183,
+        "resolve_wall_ms": 0.1579,
         "expected_action": "KEEP_LEGACY",
         "passed": true
       }
@@ -929,9 +929,9 @@
   "llm_calls": 0,
   "network_calls": 0,
   "authority_writes": 0,
-  "generated_at": "2026-09-29T02:09:01.212110+00:00",
-  "head_sha": "78d748039f33cab622382fc44a5a9a744eefa669",
-  "origin_sha": "78d748039f33cab622382fc44a5a9a744eefa669",
+  "generated_at": "2026-09-29T02:21:07.305670+00:00",
+  "head_sha": "f49470718f02781b0df98fe7a9efeeb7c0a3011c",
+  "origin_sha": "f49470718f02781b0df98fe7a9efeeb7c0a3011c",
   "previous_p4_status": "CUTOVER_IMPLEMENTATION_BLOCKED",
   "p3_closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
   "p3_closure_unchanged": true,
@@ -963,7 +963,7 @@
     "reports/p4-capability-router-dispatch-consumer-audit-20260928.json": "1fbb54660184ee4eeecab55f2f89e86932e45b63e4460058c74f22338fc842c6",
     "reports/p4-capability-router-dispatch-consumer-audit-runner-consumer-20260928.json": "b97ba6ff655d703e503e877e1769314fbb16eec8687b9d16f6a5937527e9d4f8"
   },
-  "supersedes_sha256": "52e8826fd10cd13658577a49828e44a9512d4357c40da2c1128274db09b052a6",
+  "supersedes_sha256": "2a4e261d4271abd9aef8aa7946fb43ea30ebd115596d742e9bfa9bd704881422",
   "immutable": true,
   "implementation_boundary": "CUTOVER_IMPLEMENTATION_REVIEW_ONLY; production_enabled remains false"
 }
