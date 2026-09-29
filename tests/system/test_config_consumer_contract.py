@@ -58,6 +58,10 @@ AUTHORITY = "config/agent_runtime/codex-subscription-batch.json"
 # §8.1: the production-critical surface. Every one of these must be read by a
 # module that actually runs, not merely type-checked by the config validator.
 PRODUCTION_KEYS = (
+    "production.mode",
+    "execution.workspace.provider",
+    "execution.image.executor",
+    "execution.vision_review.executor",
     "runtime.preferred_runtime",
     "runtime.image_execution_runtime",
     "runtime.review.vision.runtime",
@@ -260,18 +264,31 @@ class EffectiveConfigTests(unittest.TestCase):
                                    "source": "env:STORY_OS_IMAGE_RUNTIME"})
             self.assertEqual(runtime_router.image_execution_runtime()[0], "PRODUCT_RUNTIME")
 
+    def test_canonical_image_executor_override_beats_legacy_alias(self) -> None:
+        env = {"STORY_OS_IMAGE_EXECUTOR": "CODEX", "STORY_OS_IMAGE_RUNTIME": "PRODUCT_RUNTIME",
+               "STORY_OS_VISION_EXECUTOR": "CODEX", "STORY_OS_VISION_RUNTIME": "WORK"}
+        with mock.patch.dict(os.environ, env):
+            snapshot = effective_config.snapshot()["sources"]
+            self.assertEqual(runtime_router.image_execution_runtime()[0], "CODEX")
+            self.assertEqual(runtime_router.vision_review_runtime()[0], "CODEX")
+        self.assertEqual(snapshot["image_execution_runtime"]["source"], "env:STORY_OS_IMAGE_EXECUTOR")
+        self.assertEqual(snapshot["vision_review_runtime"]["source"], "env:STORY_OS_VISION_EXECUTOR")
+
     def test_without_an_override_the_config_file_is_named_as_the_source(self) -> None:
         env = {k: "" for k in (
-            "STORY_OS_IMAGE_RUNTIME", "STORY_OS_VISION_RUNTIME", "STORY_OS_RUNTIME",
+            "STORY_OS_PRODUCTION_MODE", "STORY_OS_RUNTIME",
+            "STORY_OS_IMAGE_EXECUTOR", "STORY_OS_IMAGE_RUNTIME",
+            "STORY_OS_VISION_EXECUTOR", "STORY_OS_VISION_RUNTIME",
             "STORYOS_RUNTIME_STORE_MODE", "STORYOS_EPISODE_META_STORE_MODE", "STORYOS_HOT_STATE_MODE",
         )}
         with mock.patch.dict(os.environ, env):
             snapshot = effective_config.snapshot()
         sources = snapshot["sources"]
         self.assertEqual(sources["image_execution_runtime"]["source"],
-                         "config/storyos.yaml#runtime.image_execution_runtime")
+                         "config/storyos.yaml#execution.image.executor")
         self.assertEqual(sources["runtime"]["source"],
-                         "config/storyos.yaml#runtime.preferred_runtime")
+                         "config/storyos.yaml#production.mode")
+        self.assertEqual(sources["production_mode"]["value"], "COLLABORATIVE")
         self.assertEqual(snapshot["overrides_in_force"], [])
 
     def test_capability_router_flags_are_bound_to_yaml_without_env_override(self) -> None:
@@ -286,8 +303,10 @@ class EffectiveConfigTests(unittest.TestCase):
         # The machine may have Codex CLI installed while its WebCodex host is
         # absent; isolate the host so this contract tests the configured WORK
         # route instead of inheriting ambient machine availability.
-        env = {"STORY_OS_RUNTIME": "", "STORY_OS_WEBCODEX_AVAILABLE": "1",
-               "STORY_OS_IMAGE_RUNTIME": "", "STORY_OS_VISION_RUNTIME": ""}
+        env = {"STORY_OS_RUNTIME": "", "STORY_OS_PRODUCTION_MODE": "",
+               "STORY_OS_WEBCODEX_AVAILABLE": "1", "STORY_OS_IMAGE_EXECUTOR": "",
+               "STORY_OS_IMAGE_RUNTIME": "", "STORY_OS_VISION_EXECUTOR": "",
+               "STORY_OS_VISION_RUNTIME": ""}
         with mock.patch.dict(os.environ, env):
             sources = effective_config.snapshot()["sources"]
             self.assertEqual(sources["runtime"]["value"], runtime_router.detect()[0])

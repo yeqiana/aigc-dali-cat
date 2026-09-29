@@ -60,18 +60,23 @@ def _get_path(cfg: dict, dotted: str, default: Any = None) -> Any:
 
 
 def resolve(cfg: dict) -> WorkspaceProvider:
-    provider_id = str(_get_path(cfg, "runtime.workspace.provider", "") or "").strip().lower()
+    # execution.workspace.provider is canonical; runtime.workspace.provider is
+    # retained as a compatibility alias for existing contracts and consumers.
+    provider_id = str(_get_path(cfg, "execution.workspace.provider", "")
+                      or _get_path(cfg, "runtime.workspace.provider", "") or "").strip().lower()
     if provider_id not in PROVIDERS:
         raise ValueError(
-            "runtime.workspace.provider must be one of " + ", ".join(sorted(PROVIDERS))
+            "execution.workspace.provider must be one of " + ", ".join(sorted(PROVIDERS))
         )
     spec = PROVIDERS[provider_id]
-    transport = str(_get_path(cfg, "runtime.workspace.transport", "") or "").strip().upper()
+    transport = str(_get_path(cfg, "execution.workspace.transport", "")
+                    or _get_path(cfg, "runtime.workspace.transport", "") or "").strip().upper()
     if transport != spec.transport:
         raise ValueError(
             f"runtime.workspace.transport must be {spec.transport} for provider {provider_id}"
         )
-    mode = str(_get_path(cfg, "runtime.workspace.execution_mode", "") or "").strip().lower()
+    mode = str(_get_path(cfg, "execution.workspace.execution_mode", "")
+               or _get_path(cfg, "runtime.workspace.execution_mode", "") or "").strip().lower()
     if mode != spec.execution_mode:
         raise ValueError(
             f"runtime.workspace.execution_mode must be {spec.execution_mode} for provider {provider_id}"
@@ -104,6 +109,7 @@ def host_contract_fields(cfg: dict | None = None) -> dict:
 
 def self_test() -> None:
     cfg = {
+        "execution": {"workspace": {"provider": "webcodex"}},
         "runtime": {
             "workspace": {
                 "provider": "webcodex",
@@ -119,6 +125,9 @@ def self_test() -> None:
     assert spec.local_subprocess is False
     assert spec.usage_telemetry == "not_exposed_by_workspace_transport"
     assert spec.contract_fields()["webcodex_allowed"] is True
+    legacy = {"runtime": {"workspace": {
+        "provider": "webcodex", "transport": "WEBCODEX", "execution_mode": "host_mcp_runner"}}}
+    assert resolve(legacy).provider_id == "webcodex"
 
 
 if __name__ == "__main__":

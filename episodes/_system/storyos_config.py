@@ -296,6 +296,21 @@ def validate(data: dict | None = None) -> list[str]:
     preferred_runtime = str(get_path(cfg, "runtime.preferred_runtime", "")).upper()
     if preferred_runtime not in {"WORK", "WEB", "CODEX"}:
         errors.append("runtime.preferred_runtime must be WORK, WEB or CODEX")
+    production_mode = str(get_path(cfg, "production.mode", "")).strip().upper()
+    if production_mode not in {"COLLABORATIVE", "CODEX_MANAGED"}:
+        errors.append("production.mode must be COLLABORATIVE or CODEX_MANAGED")
+    image_executor = str(get_path(cfg, "execution.image.executor", "")).strip().upper()
+    if image_executor not in {"CODEX", "PRODUCT_RUNTIME", "AUTO"}:
+        errors.append("execution.image.executor must be CODEX, PRODUCT_RUNTIME or AUTO")
+    vision_executor = str(get_path(cfg, "execution.vision_review.executor", "")).strip().upper()
+    if vision_executor not in {"CODEX", "WORK", "AUTO"}:
+        errors.append("execution.vision_review.executor must be CODEX, WORK or AUTO")
+    workspace_executor = str(get_path(cfg, "execution.workspace.provider", "")).strip().lower()
+    if workspace_executor != "webcodex":
+        errors.append("execution.workspace.provider must be webcodex")
+    legacy_workspace_executor = str(get_path(cfg, "runtime.workspace.provider", "")).strip().lower()
+    if legacy_workspace_executor and legacy_workspace_executor != workspace_executor:
+        errors.append("runtime.workspace.provider compatibility alias must match execution.workspace.provider")
     image_execution_runtime = str(get_path(cfg, "runtime.image_execution_runtime", "")).upper()
     if image_execution_runtime not in {"CODEX", "PRODUCT_RUNTIME", "AUTO"}:
         errors.append("runtime.image_execution_runtime must be CODEX, PRODUCT_RUNTIME or AUTO")
@@ -307,6 +322,10 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.local_codex_fallback must be explicit_only")
     if not isinstance(get_path(cfg, "runtime.codex_fallback_when_webcodex_unavailable"), bool):
         errors.append("runtime.codex_fallback_when_webcodex_unavailable must be a bool")
+    elif get_path(cfg, "runtime.codex_fallback_when_webcodex_unavailable") is not False:
+        errors.append("runtime.codex_fallback_when_webcodex_unavailable must remain false; mode switching is explicit")
+    if image_execution_runtime and image_execution_runtime != image_executor:
+        errors.append("runtime.image_execution_runtime compatibility alias must match execution.image.executor")
     errors.extend(workspace_provider.validate_config(cfg))
     # Review capability routing. WORK remains text/governance authority; actual-pixel
     # review is a separate isolated Codex capability and does not switch the whole Runtime.
@@ -318,6 +337,8 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.review.text.fresh_turn_required must be true")
     if str(get_path(cfg, "runtime.review.vision.runtime", "")).upper() != "CODEX":
         errors.append("runtime.review.vision.runtime must be CODEX")
+    if str(get_path(cfg, "runtime.review.vision.runtime", "")).upper() != vision_executor:
+        errors.append("runtime.review.vision.runtime compatibility alias must match execution.vision_review.executor")
     if str(get_path(cfg, "runtime.review.vision.model", "")) != "gpt-5.6-terra":
         errors.append("runtime.review.vision.model must be gpt-5.6-terra")
     if get_path(cfg, "runtime.review.vision.isolated_required") is not True:

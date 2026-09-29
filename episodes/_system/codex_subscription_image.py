@@ -105,7 +105,7 @@ def resolve_codex(raw: str | None) -> Path:
         image_runtime, _ = runtime_router.image_execution_runtime()
         raise BackendError(
             f'LOCAL_CODEX_IMAGE_DISABLED_FOR_RUNTIME: runtime={runtime}; image_runtime={image_runtime}; '
-            'select runtime.image_execution_runtime=CODEX or pass an explicit Codex executable'
+            'select execution.image.executor=CODEX or pass an explicit Codex executable'
         )
     value = raw or os.environ.get("CODEX_EXE")
     # On Windows prefer the newest ChatGPT Desktop bundled Codex CLI over PATH.

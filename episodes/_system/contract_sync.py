@@ -296,6 +296,9 @@ def collect_errors(root: Path | None = None) -> list[str]:
     try:
         cfg = storyos_config.load_config()
         preferred = str(storyos_config.get_path(cfg, "runtime.preferred_runtime") or "").upper()
+        production_mode = str(storyos_config.get_path(cfg, "production.mode") or "").upper()
+        workspace_provider = str(storyos_config.get_path(cfg, "execution.workspace.provider") or "").lower()
+        image_executor = str(storyos_config.get_path(cfg, "execution.image.executor") or "").upper()
         runtime_contract = read_json(root / "runtimes/runtime-contract.json")
         authority_index = read_json(root / "standards/AUTHORITY_INDEX.json")
         runtime_order = [str(x).upper() for x in (runtime_contract.get("routing_order") or [])]
@@ -303,7 +306,13 @@ def collect_errors(root: Path | None = None) -> list[str]:
         contract_default = str((runtime_contract.get("common_rules") or {}).get("default_runtime") or "").upper()
         expected_order = ["WORK", "CODEX", "WEB"]
         if preferred != "WORK":
-            errors.append("config runtime.preferred_runtime must remain WORK for product-runtime-first")
+            errors.append("config runtime.preferred_runtime compatibility alias must remain WORK")
+        if production_mode != "COLLABORATIVE":
+            errors.append("config production.mode must remain COLLABORATIVE by default")
+        if workspace_provider != "webcodex":
+            errors.append("config execution.workspace.provider must remain webcodex")
+        if image_executor != "CODEX":
+            errors.append("config execution.image.executor must remain CODEX")
         if contract_default != preferred:
             errors.append("runtime contract default_runtime drifted from config runtime.preferred_runtime")
         if runtime_order != expected_order:

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """What was actually in force for this run, and who decided it.
 
-W-96: `STORY_OS_RUNTIME` / `STORY_OS_IMAGE_RUNTIME` / `STORY_OS_VISION_RUNTIME`
+W-96: `STORY_OS_PRODUCTION_MODE` / `STORY_OS_IMAGE_EXECUTOR` / `STORY_OS_VISION_EXECUTOR`
 let an operator override the runtime, and `runtime_router` already computes both
 the value *and* its provenance. But that provenance only ever reached stdout. A
 run that took an override and a run that did not produced identical on-disk
@@ -37,6 +37,7 @@ if str(ROOT / "episodes/_system") not in sys.path:
     sys.path.insert(0, str(ROOT / "episodes/_system"))
 
 import runtime_router  # noqa: E402
+import production_mode  # noqa: E402
 import storyos_config  # noqa: E402
 import storage_config  # noqa: E402
 import hot_state_bridge  # noqa: E402
@@ -50,6 +51,11 @@ YAML = "config/storyos.yaml"
 # itself honours -- the contract test proves that by flipping it and watching
 # both the router and this snapshot move together.
 ROUTED = (
+    ("production_mode", "production.mode", "STORY_OS_PRODUCTION_MODE"),
+    ("runtime", "production.mode", "STORY_OS_PRODUCTION_MODE"),
+    ("image_execution_runtime", "execution.image.executor", "STORY_OS_IMAGE_EXECUTOR"),
+    ("vision_review_runtime", "execution.vision_review.executor", "STORY_OS_VISION_EXECUTOR"),
+    # Compatibility/debug aliases remain classified during migration.
     ("runtime", "runtime.preferred_runtime", "STORY_OS_RUNTIME"),
     ("image_execution_runtime", "runtime.image_execution_runtime", "STORY_OS_IMAGE_RUNTIME"),
     ("vision_review_runtime", "runtime.review.vision.runtime", "STORY_OS_VISION_RUNTIME"),
@@ -58,6 +64,10 @@ ROUTED = (
 # Read straight from the unified entry. Each of these has a real production
 # consumer (see tests/system/test_config_consumer_contract.py).
 DIRECT = (
+    ("production_mode_configured", "production.mode"),
+    ("workspace_provider_configured", "execution.workspace.provider"),
+    ("image_executor_configured", "execution.image.executor"),
+    ("vision_review_executor_configured", "execution.vision_review.executor"),
     ("local_codex_preimage_workers", "runtime.workers.local_codex_preimage"),
     ("workers_derived", "runtime.workers.derived"),
     ("preimage_parallel_enabled", "runtime.preimage_parallel_enabled"),
@@ -112,16 +122,33 @@ def snapshot() -> dict:
     out: dict = {"schema_version": SCHEMA_VERSION, "sources": {}}
     sources = out["sources"]
 
-    for name, key, env_var in ROUTED:
-        override = os.environ.get(env_var, "").strip()
-        if override:
-            sources[name] = {"value": override.upper(), "source": f"env:{env_var}"}
-        else:
-            declared = storyos_config.get_path(cfg, key)
-            sources[name] = {
-                "value": str(declared).upper() if isinstance(declared, str) else declared,
-                "source": f"{YAML}#{key}",
-            }
+    mode = production_mode.resolve(cfg)
+    effective_runtime, runtime_reason = runtime_router.detect()
+    sources["production_mode"] = {
+        "value": mode["effective_mode"], "configured_value": mode["configured_mode"],
+        "source": mode["source"], "effective_runtime": effective_runtime,
+    }
+    sources["runtime"] = {
+        "value": effective_runtime,
+        "source": ("env:STORY_OS_PRODUCTION_MODE" if runtime_reason == "STORY_OS_PRODUCTION_MODE override"
+                   else "env:STORY_OS_RUNTIME (legacy compatibility)" if runtime_reason == "STORY_OS_RUNTIME override"
+                   else f"{YAML}#production.mode"),
+        "reason": runtime_reason,
+    }
+    image_runtime, image_reason = runtime_router.image_execution_runtime()
+    image_source = ("env:STORY_OS_IMAGE_EXECUTOR" if "STORY_OS_IMAGE_EXECUTOR" in image_reason
+                    else "env:STORY_OS_IMAGE_RUNTIME" if "STORY_OS_IMAGE_RUNTIME" in image_reason
+                    else image_reason)
+    sources["image_execution_runtime"] = {"value": image_runtime, "source": image_source}
+    vision_runtime, vision_reason = runtime_router.vision_review_runtime()
+    vision_source = ("env:STORY_OS_VISION_EXECUTOR" if "STORY_OS_VISION_EXECUTOR" in vision_reason
+                     else "env:STORY_OS_VISION_RUNTIME" if "STORY_OS_VISION_RUNTIME" in vision_reason
+                     else vision_reason)
+    sources["vision_review_runtime"] = {"value": vision_runtime, "source": vision_source}
+    sources["workspace_provider"] = {
+        "value": storyos_config.get_path(cfg, "execution.workspace.provider"),
+        "source": f"{YAML}#execution.workspace.provider",
+    }
 
     for name, key in DIRECT:
         sources[name] = {"value": storyos_config.get_path(cfg, key), "source": f"{YAML}#{key}"}

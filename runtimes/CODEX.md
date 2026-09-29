@@ -7,10 +7,10 @@ Codex 是文件原生全自动生产 runtime。**Story OS V2.6.1 起它不再是
 显式启用：
 
 ```bash
-set STORY_OS_RUNTIME=CODEX
+set STORY_OS_PRODUCTION_MODE=CODEX_MANAGED
 ```
 
-或由调用方明确传入 Codex 执行入口。仅仅因为本机安装了 `codex.exe`，不得自动进入 CODEX Runtime。
+也可将 `config/storyos.yaml` 中的 `production.mode` 设为 `CODEX_MANAGED`。旧变量 `STORY_OS_RUNTIME=CODEX` 仅作为兼容/调试覆盖保留。仅仅因为本机安装了 `codex.exe`，不得自动进入 CODEX Runtime。
 
 一键入口：
 

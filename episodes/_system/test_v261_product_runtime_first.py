@@ -24,6 +24,7 @@ import next_action
 import product_image_import
 import product_review_adapter
 import product_runtime_adapter
+import production_mode
 import raw_candidate_budget
 import release_preflight
 import resource_library
@@ -37,12 +38,20 @@ import visual_review_legacy
 class ProductRuntimeFirstTests(unittest.TestCase):
     def setUp(self) -> None:
         self.runtime = os.environ.get("STORY_OS_RUNTIME")
+        self.production_mode = os.environ.get("STORY_OS_PRODUCTION_MODE")
         self.image_runtime = os.environ.get("STORY_OS_IMAGE_RUNTIME")
+        self.image_executor = os.environ.get("STORY_OS_IMAGE_EXECUTOR")
+        self.vision_runtime = os.environ.get("STORY_OS_VISION_RUNTIME")
+        self.vision_executor = os.environ.get("STORY_OS_VISION_EXECUTOR")
         self.api_key = os.environ.get("OPENAI_API_KEY")
         self.episode_meta_store_mode = os.environ.get("STORYOS_EPISODE_META_STORE_MODE")
         self.hot_state_mode = os.environ.get("STORYOS_HOT_STATE_MODE")
         os.environ.pop("STORY_OS_RUNTIME", None)
+        os.environ.pop("STORY_OS_PRODUCTION_MODE", None)
         os.environ.pop("STORY_OS_IMAGE_RUNTIME", None)
+        os.environ.pop("STORY_OS_IMAGE_EXECUTOR", None)
+        os.environ.pop("STORY_OS_VISION_RUNTIME", None)
+        os.environ.pop("STORY_OS_VISION_EXECUTOR", None)
         os.environ.pop("OPENAI_API_KEY", None)
         # These fixtures create isolated temporary Episodes and assert on their
         # JSON projections. Never route their reads/writes through production MySQL.
@@ -54,10 +63,26 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             os.environ.pop("STORY_OS_RUNTIME", None)
         else:
             os.environ["STORY_OS_RUNTIME"] = self.runtime
+        if self.production_mode is None:
+            os.environ.pop("STORY_OS_PRODUCTION_MODE", None)
+        else:
+            os.environ["STORY_OS_PRODUCTION_MODE"] = self.production_mode
         if self.image_runtime is None:
             os.environ.pop("STORY_OS_IMAGE_RUNTIME", None)
         else:
             os.environ["STORY_OS_IMAGE_RUNTIME"] = self.image_runtime
+        if self.image_executor is None:
+            os.environ.pop("STORY_OS_IMAGE_EXECUTOR", None)
+        else:
+            os.environ["STORY_OS_IMAGE_EXECUTOR"] = self.image_executor
+        if self.vision_runtime is None:
+            os.environ.pop("STORY_OS_VISION_RUNTIME", None)
+        else:
+            os.environ["STORY_OS_VISION_RUNTIME"] = self.vision_runtime
+        if self.vision_executor is None:
+            os.environ.pop("STORY_OS_VISION_EXECUTOR", None)
+        else:
+            os.environ["STORY_OS_VISION_EXECUTOR"] = self.vision_executor
         if self.api_key is None:
             os.environ.pop("OPENAI_API_KEY", None)
         else:
@@ -83,7 +108,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             runtime, reason = runtime_router.detect()
             caps = runtime_router.capabilities()
         self.assertEqual(runtime, "WORK")
-        self.assertIn("preferred_runtime", reason)
+        self.assertIn("production.mode", reason)
         self.assertEqual(caps["effective_runtime"], "WORK")
         self.assertFalse(caps["local_codex_spawn_allowed"])
         self.assertEqual(caps["image_execution_runtime"], "CODEX")
@@ -95,18 +120,19 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.assertEqual(caps["governance_review_runtime"], "WORK")
         self.assertTrue(caps["local_codex_vision_spawn_allowed"])
 
-    def test_default_runtime_falls_back_to_codex_when_webcodex_is_unavailable(self) -> None:
+    def test_collaborative_mode_does_not_fall_back_to_codex_when_webcodex_is_unavailable(self) -> None:
         with mock.patch.dict(os.environ, {
             "STORY_OS_WEBCODEX_AVAILABLE": "0",
         }, clear=False), mock.patch.object(runtime_router, "_codex_cli_path", return_value="C:/fake/codex.exe"):
             runtime, reason = runtime_router.detect()
             caps = runtime_router.capabilities()
-        self.assertEqual(runtime, "CODEX")
-        self.assertIn("Codex CLI fallback", reason)
-        self.assertEqual(caps["effective_runtime"], "CODEX")
-        self.assertTrue(caps["codex_fallback_active"])
+        self.assertEqual(runtime, "WORK")
+        self.assertIn("production.mode", reason)
+        self.assertEqual(caps["effective_runtime"], "WORK")
+        self.assertFalse(caps["codex_fallback_active"])
+        self.assertFalse(caps["automatic_runtime_fallback"])
         self.assertFalse(caps["webcodex_detected"])
-        self.assertTrue(caps["local_codex_spawn_allowed"])
+        self.assertFalse(caps["local_codex_spawn_allowed"])
 
     def test_default_runtime_stays_work_when_webcodex_is_unavailable_without_codex(self) -> None:
         with mock.patch.dict(os.environ, {
@@ -114,7 +140,24 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         }, clear=False), mock.patch.object(runtime_router, "_codex_cli_path", return_value=None):
             runtime, reason = runtime_router.detect()
         self.assertEqual(runtime, "WORK")
-        self.assertIn("preferred_runtime", reason)
+        self.assertIn("production.mode", reason)
+
+    def test_production_mode_env_is_the_primary_explicit_override(self) -> None:
+        with mock.patch.dict(os.environ, {
+            "STORY_OS_PRODUCTION_MODE": "CODEX_MANAGED",
+            "STORY_OS_RUNTIME": "WORK",
+        }, clear=False):
+            runtime, reason = runtime_router.detect()
+            caps = runtime_router.capabilities()
+        self.assertEqual(runtime, "CODEX")
+        self.assertEqual(reason, "STORY_OS_PRODUCTION_MODE override")
+        self.assertEqual(caps["effective_production_mode"], "CODEX_MANAGED")
+        self.assertEqual(caps["production_mode_source"], "env:STORY_OS_PRODUCTION_MODE")
+
+    def test_production_mode_rejects_invalid_env_override(self) -> None:
+        with mock.patch.dict(os.environ, {"STORY_OS_PRODUCTION_MODE": "AUTO"}, clear=False):
+            with self.assertRaisesRegex(ValueError, "invalid STORY_OS_PRODUCTION_MODE"):
+                production_mode.resolve()
 
     def test_explicit_work_override_disables_automatic_codex_fallback(self) -> None:
         with mock.patch.dict(os.environ, {

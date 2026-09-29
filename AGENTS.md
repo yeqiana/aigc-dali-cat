@@ -116,9 +116,9 @@
 - 显式本地 Codex：`runtimes/CODEX.md`
 - 普通 ChatGPT Web：`runtimes/WEB.md`
 
-**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 当前默认整体 Runtime 仍是 WORK，但图片执行层显式配置为 `runtime.image_execution_runtime=CODEX`；只有 image generation / image repair 可以启动本地 Codex。图片控制模型必须使用 `gpt-5.6-luna` + `reasoning=medium`；实际图片模型统一读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。Story、PREIMAGE、Critic、Review、Gate、Release 不得因此交给 Codex full-auto。整套 CODEX Runtime 仍必须显式设置 `STORY_OS_RUNTIME=CODEX`。
+**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 唯一生产模式入口为 `production.mode`（默认 `COLLABORATIVE`）；执行器分别配置在 `execution.workspace.provider`、`execution.image.executor`、`execution.vision_review.executor`。宿主不可用时不得自动改走本地 Codex。只有显式设为 `CODEX_MANAGED` 或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED` 才启用整条 CODEX Runtime；旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型必须使用 `gpt-5.6-luna` + `reasoning=medium`；实际图片模型统一读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。Story、PREIMAGE、Critic、Review、Gate、Release 不得因图片执行器而交给 Codex full-auto。
 
-Runtime DAG 使用通用 `scoped_model`；WORK/WEB 的非图片步骤通过 `product_runtime_adapter.py` 暴露宿主动作，CODEX 整体 Runtime 才使用 `scoped_codex_worker.py`。图片 Scheduler 独立读取 `STORY_OS_IMAGE_RUNTIME` / `runtime.image_execution_runtime`。宿主请求使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史，正常等待宿主执行记为 `HOST_WAIT`；Product Review 使用 attempt-scoped request。Concept/Story/Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，但都必须 fresh + source-SHA-bound。
+Runtime DAG 使用通用 `scoped_model`；WORK/WEB 的非图片步骤通过 `product_runtime_adapter.py` 暴露宿主动作，CODEX 整体 Runtime 才使用 `scoped_codex_worker.py`。图片 Scheduler 读取 `execution.image.executor`（旧 `runtime.image_execution_runtime` / `STORY_OS_IMAGE_RUNTIME` 暂保留兼容）。宿主请求使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史，正常等待宿主执行记为 `HOST_WAIT`；Product Review 使用 attempt-scoped request。Concept/Story/Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，但都必须 fresh + source-SHA-bound。
 
 Codex 不再被全局限制为“只能生成网页交接单”。当用户**明确选择 CODEX Runtime**且当前 Codex 原生工具能生成/编辑图片和保存文件时，应直接按 CODEX runtime 执行；缺媒体能力时才降级 checkpoint/handoff。
 

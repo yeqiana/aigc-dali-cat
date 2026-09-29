@@ -8,8 +8,8 @@
 
 - 默认整体 Runtime 为 `WORK`，当前 ChatGPT/Work + DevSpace 负责 Story、PREIMAGE、Critic、Review、Gate、Release。
 - 默认图片执行 Runtime 为 `CODEX`；这只授权 image generation / image repair，不得把整个 Story OS 路由成 CODEX full-auto。
-- 本机 `codex.exe` 的存在不代表整体 Runtime=CODEX；整套 CODEX Runtime 仍需显式 `STORY_OS_RUNTIME=CODEX`。
-- 图片执行可用 `STORY_OS_IMAGE_RUNTIME=CODEX|PRODUCT_RUNTIME|AUTO` 临时覆盖；PRODUCT_RUNTIME 才使用 `HOST_ACTION_REQUIRED / HOST_WAIT` 图片 Host 路径。
+- 整条生产链的唯一配置入口是 `config/storyos.yaml:production.mode`：默认 `COLLABORATIVE`，显式 `CODEX_MANAGED` 才使用 Codex 全链路；宿主不可用不触发自动切换。单次覆盖使用 `STORY_OS_PRODUCTION_MODE`。
+- 图片执行配置入口为 `execution.image.executor`；单次覆盖使用 `STORY_OS_IMAGE_EXECUTOR=CODEX|PRODUCT_RUNTIME|AUTO`。旧 `STORY_OS_RUNTIME` / `STORY_OS_IMAGE_RUNTIME` 仅保留兼容/调试用途。
 - Host Action 使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史；`product-host-request.json` 只作为当前指针。
 - Product Review 使用 `<kind>-attempt-<n>-request.json`，同一 attempt 的 frozen inputs 不得覆盖。
 - Concept / Story Critic provenance 支持 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`；均必须 fresh、source-SHA-bound、不可伪造 PASS。
