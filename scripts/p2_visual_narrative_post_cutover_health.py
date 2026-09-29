@@ -20,7 +20,7 @@ SMOKE = Path("reports/p2-visual-narrative-production-cutover-smoke-retry1-202609
 CHARACTER_HEALTH = Path("reports/p1-character-post-cutover-health-20260926.json")
 WORLD_GATE = Path("reports/p2-world-pre-cutover-gate-v2-20260927.json")
 WORLD_PROBE = Path("reports/p2-world-value-probe-20260927.json")
-SMOKE_EPISODE = "episodes/独立篇/01_五环外的浓雾"
+SMOKE_EPISODE = "episodes/00_独立篇/01_五环外的浓雾"
 OUTPUT = ROOT / "reports/p2-visual-narrative-post-cutover-health-20260927.json"
 
 

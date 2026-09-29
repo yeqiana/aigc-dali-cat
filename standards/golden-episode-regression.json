@@ -19,7 +19,7 @@
   "rule": "Golden Set must be curated. Machine regression never replaces pixel review.",
   "structural_golden_cases": [
     {
-      "path": "episodes/10_彼此的天上/01_不存在的夜行路",
+      "path": "episodes/14_彼此的天上/01_不存在的夜行路",
       "role": "PROPAGATION_STRUCTURE_REFERENCE",
       "learn_structure": [
         "ordinary_relationship_entry",

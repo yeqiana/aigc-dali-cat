@@ -7,8 +7,8 @@ advisor over them and pairs the result with an explicit, fixed human judgement.
 It is derived test data, never authority, and it never writes into the
 production chain: the store directory is always a caller-supplied temp path.
 
-EP001  episodes/10_彼此的天上/01_不存在的夜行路        WARNING
-EP002  episodes/10_彼此的天上/02_玻璃另一边的手        NEEDS_REVISION
+EP001  episodes/14_彼此的天上/01_不存在的夜行路        WARNING
+EP002  episodes/14_彼此的天上/02_玻璃另一边的手        NEEDS_REVISION
 EP003  episodes/_archive/*EP003*（雾中的另一座生活区） WARNING
 """
 from __future__ import annotations

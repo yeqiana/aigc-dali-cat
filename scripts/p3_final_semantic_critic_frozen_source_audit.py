@@ -17,7 +17,7 @@ sys.path.insert(0, str(SYSTEM))
 import frame_semantic_review
 import production_ledger
 
-EPISODE = ROOT / "episodes/误入桃花源"
+EPISODE = ROOT / "episodes/07_误入/05_误入桃花源"
 REVIEW_PATH = EPISODE / frame_semantic_review.SUMMARY_REL
 DEFAULT_REPORT = ROOT / "reports/p3-final-semantic-critic-frozen-source-audit-20260928.json"
 DEFAULT_BUNDLE = ROOT / ".storyos/p3-final-semantic-critic/historical-frozen-source/误入桃花源/frame-semantic-review-attempt-2"
@@ -106,7 +106,7 @@ def audit(*, create_bundle: bool = True, report_path: Path = DEFAULT_REPORT,
 
     visual_contract = frame_semantic_review.stable_visual_contract(EPISODE)
     visual_sha = sha_json(visual_contract)
-    bindings.append({"kind": "visual_contract_projection", "path": "episodes/误入桃花源/meta/story-gates.json#stable_visual_contract",
+    bindings.append({"kind": "visual_contract_projection", "path": "episodes/07_误入/05_误入桃花源/meta/story-gates.json#stable_visual_contract",
                      "review_bound_sha256": review.get("visual_contract_sha256"),
                      "current_sha256": visual_sha, "current_match": visual_sha == review.get("visual_contract_sha256"),
                      "historical_exact_found": False, "recovery_origin": "current_authority_projection",
@@ -157,7 +157,7 @@ def audit(*, create_bundle: bool = True, report_path: Path = DEFAULT_REPORT,
                            "byte_exact": True})
         manifest = {
             "schema_version": 1,
-            "episode": "episodes/误入桃花源",
+            "episode": "episodes/07_误入/05_误入桃花源",
             "source_type": "historical_final_semantic_exact",
             "canonical_final_review_path": REVIEW_PATH.relative_to(ROOT).as_posix(),
             "canonical_final_review_sha256": sha_bytes(review_raw),
@@ -181,7 +181,7 @@ def audit(*, create_bundle: bool = True, report_path: Path = DEFAULT_REPORT,
         "schema_version": 1,
         "kind": "p3_final_semantic_critic_frozen_source_audit",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "episode": "episodes/误入桃花源",
+        "episode": "episodes/07_误入/05_误入桃花源",
         "canonical_review_path": REVIEW_PATH.relative_to(ROOT).as_posix(),
         "canonical_review_sha256": sha_bytes(review_raw),
         "historical_git_commit": next((row["git_commit"] for row in bindings if row.get("git_commit")), None),

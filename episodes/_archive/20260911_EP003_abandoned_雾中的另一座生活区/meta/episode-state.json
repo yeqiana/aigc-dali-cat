@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "tool_version": "2.6.1",
-  "episode_id": "10-03",
-  "series": "10_彼此的天上",
+  "episode_id": "14-03",
+  "series": "14_彼此的天上",
   "title": "雾中的另一座生活区",
   "current_state": "PRODUCTION_PASSED",
   "updated_at": "2026-09-11T18:14:49+08:00",
@@ -30,5 +30,6 @@
       "mode": "advance",
       "note": "EP003 Production 收口：20/20 帧 PASSED；正式字幕源+声音卡+text audit(0/0)+字幕声音评审五项 PASS；temporal continuity LOCKED；machine/evidence gate PRODUCTION_PASSED 全 PASS"
     }
-  ]
+  ],
+  "storage_episode_id": "EPU_0d45a86a85866bedb57efea9c92570f238068380"
 }

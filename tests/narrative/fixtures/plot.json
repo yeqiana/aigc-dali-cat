@@ -43,7 +43,7 @@
       "source_type": "real",
       "source_episode": "EP003 雾中的另一座生活区（历史归档）",
       "source_evidence": [
-        "aigc-dali-cat: episodes/10_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
+        "aigc-dali-cat: episodes/14_彼此的天上/03_雾中的另一座生活区/docs/03_雾中的另一座生活区_20张正式分镜_DRAFT_V1.0.md",
         "frames 15-20"
       ],
       "scenario": "15男主明知应该返航仍多停几秒确认；16对方生活开始避让；17设备失控下降；19失联后与女友发生真实冲突；20正常日出中无人机缺席。",
@@ -74,4 +74,3 @@
     }
   ]
 }
-

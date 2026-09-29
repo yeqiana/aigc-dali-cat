@@ -82,7 +82,7 @@ class MetadataOnlyCiCompatibilityTests(unittest.TestCase):
     def test_legacy_quality_and_gates_warn_in_metadata_but_fail_full(self):
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td)
-            ep = repo / "episodes/11_仲夏夜惊魂/01_惊魂"
+            ep = repo / "episodes/11_仲夏夜惊魂/02_惊魂_重制版"
             write_json(ep / "meta/episode-state.json", self.base_legacy_state())
             write_json(ep / "meta/release-manifest.json", self.base_legacy_manifest())
             write_json(ep / "meta/story-gates.json", self.base_legacy_gates())

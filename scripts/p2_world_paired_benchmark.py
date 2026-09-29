@@ -25,7 +25,7 @@ from agents import world_prepare_model_producer
 from agents import world_prepare_adapter
 from platform.agent.runtime import AgentRuntime
 
-DEFAULT_EPISODE = "episodes/独立篇/01_五环外的浓雾"
+DEFAULT_EPISODE = "episodes/00_独立篇/01_五环外的浓雾"
 DEFAULT_MANIFEST = ".storyos/tmp/p2-world-paired-benchmark.json"
 DEFAULT_RUN_DIR = ".storyos/tmp/p2-world-paired-runs"
 DEFAULT_REPORT = "reports/p2-world-paired-benchmark-20260926.json"

@@ -253,7 +253,7 @@ def test_missing_user_runner_receipt_fails_telemetry_closed():
 
 
 def test_decision_prompt_is_frozen_decision_only_and_schema_bound():
-    context = adapter.frozen_applicability_context(ROOT / "episodes/天界普通女生的一天")
+    context = adapter.frozen_applicability_context(ROOT / "episodes/15_天界生活日常/01_天界普通女生的一天")
     prompt = adapter.build_decision_prompt(
         attempt=2, story_text="FROZEN STORY", storyboard_text="FROZEN BOARD",
         rubric_text="FROZEN RUBRIC", applicability=context,

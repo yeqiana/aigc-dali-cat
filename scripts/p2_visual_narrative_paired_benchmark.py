@@ -23,7 +23,7 @@ import product_runtime_adapter
 import story_json
 from agents import visual_narrative_prepare_model_producer as producer
 
-DEFAULT_EPISODE = "episodes/独立篇/01_五环外的浓雾"
+DEFAULT_EPISODE = "episodes/00_独立篇/01_五环外的浓雾"
 DEFAULT_SMOKE_REPORT = "reports/p2-visual-narrative-shadow-smoke-retry3-20260927.json"
 DEFAULT_MANIFEST = ".storyos/tmp/p2-visual-narrative-paired-benchmark.json"
 DEFAULT_RUN_DIR = ".storyos/tmp/p2-visual-narrative-paired-runs"

@@ -13,7 +13,7 @@ class EP002RuntimeBinding:
     """
 
     episode_id: str = "10-02"
-    episode_path: str = "episodes/10_彼此的天上/02_玻璃另一边的手"
+    episode_path: str = "episodes/14_彼此的天上/02_玻璃另一边的手"
     mode: str = "SHADOW"
 
     def build_context(self) -> dict[str, Any]:

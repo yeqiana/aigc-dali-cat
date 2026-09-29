@@ -164,7 +164,7 @@ def build_audit() -> dict:
         "fixture_rejections": rejected_fixtures,
         "other_independent_visual_label_records": [],
         "manual_review_records_rejected": [
-            {"path": "episodes/误入桃花源/release/production-review.md", "reason": "ACCEPTANCE_OF_KNOWN_DEFECTS_NOT_INDEPENDENT_PER_SAMPLE_VISUAL_LABEL"}
+            {"path": "episodes/07_误入/05_误入桃花源/release/production-review.md", "reason": "ACCEPTANCE_OF_KNOWN_DEFECTS_NOT_INDEPENDENT_PER_SAMPLE_VISUAL_LABEL"}
         ],
         "eligible": False,
         "blockers": ["LABELLED_FINAL_SEMANTIC_SAMPLE_SET_INSUFFICIENT", "INDEPENDENT_VISUAL_GROUND_TRUTH_INSUFFICIENT"],
