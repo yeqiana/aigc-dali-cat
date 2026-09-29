@@ -1,7 +1,9 @@
-"""In-memory Runtime Node Contract scheduler.
+"""In-memory Runtime Node Contract scheduler and Critic dispatch owner.
 
-It plans dependency release and worker slots only.  Execution, persistence,
-evidence generation and every Gate decision remain with existing Runtime code.
+The node planning API plans dependency release and worker slots only. The
+Critic dispatch API authorizes a target and hands it to an existing adapter;
+it never launches a process or invokes a model. Persistence, evidence
+generation and every Gate decision remain with existing Runtime code.
 """
 from __future__ import annotations
 
@@ -79,6 +81,41 @@ def authorize_critic_dispatch(*, task_type: str, legacy_target: dict,
     return {"task_type": task, "action": "FALLBACK", "execution_target": target,
             "scheduler_authorized": True, "reason": "ROUTER_FALLBACK",
             "router_proposed_target": target}
+
+
+def dispatch_critic_runnable(task_type: str, *, adapter, episode_dir, attempt: int,
+                             legacy_target: dict, route_decision: dict | None,
+                             production_enabled: bool | None = None,
+                             adapter_kwargs: dict | None = None) -> dict:
+    """Authorize and hand one Critic runnable to its existing adapter.
+
+    This is the sole dispatch boundary for allowlisted Critic tasks. The
+    adapter/runner own request transformation and execution, while this
+    function owns whether a runnable is handed off and with which target.
+    """
+    authorization = authorize_critic_dispatch(
+        task_type=task_type, legacy_target=legacy_target,
+        route_decision=route_decision, production_enabled=production_enabled,
+    )
+    action = authorization["action"]
+    if action == "NO_ROUTE":
+        return {"status": "BLOCKED", "failure_class": "P4_NO_ROUTE",
+                "task_type": task_type, "scheduler_authorization": authorization,
+                "adapter_called": False, "runner_called": False}
+    if action == "BYPASS_ROUTER_PRODUCTION":
+        return {"status": "BYPASS", "task_type": task_type,
+                "execution_target": authorization["execution_target"],
+                "reason": authorization["reason"], "adapter_called": False}
+    if adapter is None or not callable(getattr(adapter, "execute_shadow_request", None)):
+        raise ValueError("Critic runnable adapter must expose execute_shadow_request")
+    result = adapter.execute_shadow_request(
+        episode_dir, attempt=attempt, dispatch_authorization=authorization,
+        **(adapter_kwargs or {}),
+    )
+    return {"status": "DISPATCHED", "task_type": task_type,
+            "scheduler_authorization": authorization,
+            "scheduler_authorized_target": authorization["execution_target"],
+            "adapter_result": result, "adapter_called": True}
 
 
 def load_node_contract(source) -> list[dict]:

@@ -84,29 +84,11 @@ def dispatch_critic_runnable(task_type, *, adapter, episode_dir, attempt,
     only component that authorizes a production target; adapters receive that
     authorization and runners only consume the resulting target.
     """
-    authorization = runtime_scheduler.authorize_critic_dispatch(
-        task_type=task_type, legacy_target=legacy_target,
-        route_decision=route_decision, production_enabled=production_enabled,
+    return runtime_scheduler.dispatch_critic_runnable(
+        task_type, adapter=adapter, episode_dir=episode_dir, attempt=attempt,
+        legacy_target=legacy_target, route_decision=route_decision,
+        production_enabled=production_enabled, adapter_kwargs=adapter_kwargs,
     )
-    action = authorization["action"]
-    if action == "NO_ROUTE":
-        return {"status": "BLOCKED", "failure_class": "P4_NO_ROUTE",
-                "task_type": task_type, "scheduler_authorization": authorization,
-                "adapter_called": False, "runner_called": False}
-    if action == "BYPASS_ROUTER_PRODUCTION":
-        return {"status": "BYPASS", "task_type": task_type,
-                "execution_target": authorization["execution_target"],
-                "reason": authorization["reason"], "adapter_called": False}
-    if adapter is None or not callable(getattr(adapter, "execute_shadow_request", None)):
-        raise ValueError("Critic runnable adapter must expose execute_shadow_request")
-    result = adapter.execute_shadow_request(
-        episode_dir, attempt=attempt, dispatch_authorization=authorization,
-        **(adapter_kwargs or {}),
-    )
-    return {"status": "DISPATCHED", "task_type": task_type,
-            "scheduler_authorization": authorization,
-            "scheduler_authorized_target": authorization["execution_target"],
-            "adapter_result": result, "adapter_called": True}
 
 
 def dispatch_pending_critic(task_type, *, adapter, episode_dir, attempt,

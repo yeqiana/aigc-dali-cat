@@ -208,13 +208,17 @@ def audit_dispatch_consumer() -> dict:
     checks = {
         "runtime_dag_uses_runtime_scheduler": dag_calls_scheduler,
         "runtime_dag_consumes_effective_target": (
-            calls_function("dag", "authorize_critic_dispatch")
+            calls_function("dag", "dispatch_critic_runnable")
+            and "dispatch_critic_runnable(" in sources["dag"]["source"]
+            and "request.get(\"capability_route_decision\")" in sources["dag"]["source"]
             and accepts_argument("dag", "dispatch_critic_runnable", "route_decision")
-            and "dispatch_authorization=authorization" in sources["dag"]["source"]),
+            and "dispatch_pending_critic" in sources["dag"]["source"]),
         "runtime_scheduler_consumes_effective_target": (
             "def authorize_critic_dispatch" in sources["scheduler"]["source"]
             and "effective_route" in sources["scheduler"]["source"]
-            and "execution_target" in sources["scheduler"]["source"]),
+            and "execution_target" in sources["scheduler"]["source"]
+            and calls_function("scheduler", "authorize_critic_dispatch")
+            and "adapter.execute_shadow_request" in sources["scheduler"]["source"]),
         "executor_accepts_effective_target": bool(executor_args & {"execution_target", "effective_execution_target"}),
         "story_adapter_passes_effective_target": (launch_passes_target("story_adapter")
             and accepts_argument("story_adapter", "execute_shadow_request", "dispatch_authorization")
@@ -245,7 +249,7 @@ def audit_dispatch_consumer() -> dict:
         "missing_handoffs": [key for key, value in checks.items() if not value and key != "advisory_target_producer_present"],
         "call_path": [
             "Critic adapter execute_shadow_request enters runtime_dag.dispatch_pending_critic; the DAG loads the persisted request and legacy target.",
-            "runtime_dag.dispatch_critic_runnable calls runtime_scheduler.authorize_critic_dispatch.",
+            "runtime_dag.dispatch_critic_runnable delegates actual handoff to runtime_scheduler.dispatch_critic_runnable.",
             "Runtime Scheduler returns one authorized execution_target or an explicit NO_ROUTE/BYPASS result.",
             "The Critic adapter consumes dispatch_authorization and passes the same target to codex_critic_runner.launch.",
             "codex_critic_runner validates the supplied target and the execution receipt exposes scheduler_authorized_target and actual_dispatch_target.",
@@ -318,6 +322,9 @@ def build_implementation_gate(*, regression: dict) -> dict:
         "registry_sha256": router.registry_sha256(), "health_review_sha256": _sha(default_health),
         "canary": canary, "rollback": rollback,
         "runtime_dispatch_audit": dispatch_audit,
+        "runtime_dag_consumes_effective_target": dispatch_audit["checks"]["runtime_dag_consumes_effective_target"],
+        "runtime_scheduler_consumes_effective_target": dispatch_audit["checks"]["runtime_scheduler_consumes_effective_target"],
+        "actual_consumer_path": dispatch_audit["call_path"],
         "regression": regression,
         "llm_calls": 0, "network_calls": 0, "authority_writes": 0,
     }
@@ -371,7 +378,7 @@ def write_implementation_gate_report(*, regression: dict,
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "head_sha": git_value("rev-parse", "HEAD"),
         "origin_sha": git_value("rev-parse", "origin/story-platform-v3-rever"),
-        "previous_p4_status": "CUTOVER_APPROVED_AWAITING_USER_AUTHORIZATION",
+        "previous_p4_status": "CUTOVER_IMPLEMENTATION_BLOCKED",
         "production_enabled": False,
         "shadow_enabled": router.effective_router_config()["shadow_enabled"],
         "p3_closure_sha256": p3_sha,
