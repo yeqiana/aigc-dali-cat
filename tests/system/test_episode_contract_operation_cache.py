@@ -31,6 +31,16 @@ class CountingRepository:
         return {"payload": self.payload, "sha256": "not-used-for-inline-payload"}
 
 
+class MissingRepository:
+    def __init__(self):
+        self.reads = 0
+
+    def get_latest(self, _episode_id, _contract_type):
+        self.reads += 1
+        time.sleep(0.02)
+        return None
+
+
 def _prepare_mysql(monkeypatch, repo):
     monkeypatch.setattr(
         contracts.storage_config,
@@ -59,6 +69,17 @@ def test_operation_cache_reads_mysql_once_and_returns_deep_copies(monkeypatch, t
 
     assert repo.reads == 1
     assert second == {"nested": {"value": 7}}
+
+
+def test_operation_cache_caches_authoritative_mysql_miss(monkeypatch, tmp_path):
+    repo = MissingRepository()
+    _prepare_mysql(monkeypatch, repo)
+
+    with contracts.operation_scope():
+        assert contracts.load_latest(tmp_path, "WORLD_IDENTITY") is None
+        assert contracts.load_latest(tmp_path, "WORLD_IDENTITY") is None
+
+    assert repo.reads == 1
 
 
 def test_explicit_invalidate_reloads_authoritative_mysql_value(monkeypatch, tmp_path):

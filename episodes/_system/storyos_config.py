@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import contextvars
+from contextlib import contextmanager
+from functools import wraps
 import json
 import re
 from pathlib import Path
@@ -19,6 +22,30 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config/storyos.yaml"
 INDEX_PATH = ROOT / "config/index.yaml"
 _CACHE: dict[Path, tuple[int, dict]] = {}
+_operation_cache = contextvars.ContextVar("storyos_config_operation_cache", default=None)
+
+
+@contextmanager
+def operation_scope():
+    """Keep one validated config snapshot for a single logical operation."""
+    existing = _operation_cache.get()
+    if existing is not None:
+        yield existing
+        return
+    cache = {}
+    token = _operation_cache.set(cache)
+    try:
+        yield cache
+    finally:
+        _operation_cache.reset(token)
+
+
+def operation_cached(function):
+    @wraps(function)
+    def wrapped(*args, **kwargs):
+        with operation_scope():
+            return function(*args, **kwargs)
+    return wrapped
 
 
 def _load(path: Path) -> dict:
@@ -525,10 +552,16 @@ def validate(data: dict | None = None) -> list[str]:
 
 
 def load_config() -> dict:
+    cache = _operation_cache.get()
+    if cache is not None and "config" in cache:
+        return cache["config"]
     data = _load(CONFIG_PATH)
     errors = validate(data)
     if errors:
         raise ValueError("CONFIG_INVALID: " + "; ".join(errors))
+    if cache is not None:
+        cache["config"] = data
+        return data
     return data
 
 

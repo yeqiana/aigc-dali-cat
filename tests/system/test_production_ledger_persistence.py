@@ -114,6 +114,65 @@ def test_dual_projection_writes_frame_and_attempt_facts(monkeypatch, tmp_path):
     assert attempts.rows[0]["provider"] == "openai"
 
 
+def test_existing_authority_projects_only_changed_frames(monkeypatch, tmp_path):
+    frames = FakeFrames()
+    attempts = FakeAttempts()
+    authority = FakeAuthority()
+    monkeypatch.setattr(
+        persistence.storage_config,
+        "episode_meta_store_config",
+        lambda: {"mode": "mysql"},
+    )
+    monkeypatch.setattr(
+        persistence.episode_identity,
+        "storage_episode_id",
+        lambda _ep: "EPU_1",
+    )
+    monkeypatch.setattr(
+        persistence,
+        "_repositories",
+        lambda: (FakeConnection(), authority, frames, attempts),
+    )
+
+    original = _ledger()
+    first = persistence.persist_authority(tmp_path, original)
+    assert first["frame_count"] == 2
+    assert first["attempt_count"] == 1
+
+    frames.rows.clear()
+    attempts.rows.clear()
+    changed = _ledger()
+    changed["frames"]["02"]["status"] = "REPAIR_AUTHORIZED"
+    second = persistence.persist_authority(tmp_path, changed)
+
+    assert second["frame_count"] == 1
+    assert second["attempt_count"] == 0
+    assert [row["frame_no"] for row in frames.rows] == [2]
+    assert attempts.rows == []
+    assert authority.rows["EPU_1"] == changed
+
+
+def test_existing_authority_with_no_frame_changes_skips_typed_projection(monkeypatch, tmp_path):
+    frames = FakeFrames()
+    attempts = FakeAttempts()
+    authority = FakeAuthority()
+    monkeypatch.setattr(persistence.storage_config, "episode_meta_store_config", lambda: {"mode": "mysql"})
+    monkeypatch.setattr(persistence.episode_identity, "storage_episode_id", lambda _ep: "EPU_1")
+    monkeypatch.setattr(persistence, "_repositories", lambda: (FakeConnection(), authority, frames, attempts))
+
+    payload = _ledger()
+    persistence.persist_authority(tmp_path, payload)
+    frames.rows.clear()
+    attempts.rows.clear()
+
+    result = persistence.persist_authority(tmp_path, _ledger())
+
+    assert result["frame_count"] == 0
+    assert result["attempt_count"] == 0
+    assert frames.rows == []
+    assert attempts.rows == []
+
+
 def test_json_projection_is_noop(monkeypatch, tmp_path):
     monkeypatch.setattr(
         persistence.storage_config,

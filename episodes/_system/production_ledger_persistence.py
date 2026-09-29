@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import sys
+import contextvars
+from contextlib import contextmanager
+from copy import deepcopy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -15,6 +18,40 @@ from platform.repository.mysql.schema_v2 import DATABASE_NAME
 
 class ProductionLedgerAuthorityIncomplete(RuntimeError):
     """Compatibility exception retained for callers from the pre-cutover era."""
+
+
+_operation_cache = contextvars.ContextVar("production_ledger_operation_cache", default=None)
+
+
+@contextmanager
+def operation_scope():
+    """Reuse one authoritative ledger snapshot inside a single logical operation."""
+    existing = _operation_cache.get()
+    if existing is not None:
+        yield existing
+        return
+    cache = {}
+    token = _operation_cache.set(cache)
+    try:
+        yield cache
+    finally:
+        _operation_cache.reset(token)
+
+
+def operation_cached(function):
+    def wrapped(*args, **kwargs):
+        with operation_scope():
+            return function(*args, **kwargs)
+    wrapped.__name__ = getattr(function, "__name__", "wrapped")
+    wrapped.__doc__ = getattr(function, "__doc__")
+    wrapped.__wrapped__ = function
+    return wrapped
+
+
+def invalidate(ep: Path) -> None:
+    cache = _operation_cache.get()
+    if cache is not None:
+        cache.pop(str(Path(ep).resolve()), None)
 
 
 def mode() -> str:
@@ -93,10 +130,40 @@ def _attempt_record(
     }
 
 
-def _persist_projection(episode_id: str, data: dict, frames_repo, attempts_repo) -> tuple[int, int]:
+def _changed_frame_keys(previous: dict | None, current: dict) -> set[str] | None:
+    """Return frame keys whose typed projection changed; None means full projection.
+
+    The complete authority BLOB remains the source of truth. Typed frame/attempt
+    tables are only query projections, so after the first write we can avoid
+    rewriting frames whose authority payload is byte-for-byte unchanged.
+    """
+    if not isinstance(previous, dict):
+        return None
+    before = previous.get("frames") or {}
+    after = current.get("frames") or {}
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        return None
+    # Frame deletion is not a normal ledger transition and the typed repositories
+    # do not expose delete APIs. Fall back to the legacy full projection path
+    # instead of pretending an incremental sync can represent deletion.
+    if set(before) - set(after):
+        return None
+    return {str(key) for key, value in after.items() if before.get(key) != value}
+
+
+def _persist_projection(
+    episode_id: str,
+    data: dict,
+    frames_repo,
+    attempts_repo,
+    *,
+    frame_keys: set[str] | None = None,
+) -> tuple[int, int]:
     frame_count = 0
     attempt_count = 0
     for raw_key, frame in sorted((data.get("frames") or {}).items()):
+        if frame_keys is not None and str(raw_key) not in frame_keys:
+            continue
         if not isinstance(frame, dict):
             continue
         frame_no = int(frame.get("number") or raw_key)
@@ -144,10 +211,18 @@ def persist_authority(ep: Path, data: dict) -> dict:
     connection, authority_repo, frames_repo, attempts_repo = _repositories()
     try:
         with connection.transaction():
+            previous_row = authority_repo.get(episode_id)
+            previous = (previous_row or {}).get("document") if isinstance(previous_row, dict) else None
+            changed_frame_keys = _changed_frame_keys(previous, data)
             authority = authority_repo.upsert(episode_id, data)
             frame_count, attempt_count = _persist_projection(
-                episode_id, data, frames_repo, attempts_repo
+                episode_id,
+                data,
+                frames_repo,
+                attempts_repo,
+                frame_keys=changed_frame_keys,
             )
+        invalidate(ep)
         return {
             "mode": current_mode,
             "mysql_written": True,
@@ -168,13 +243,18 @@ def load_authority(ep: Path) -> dict | None:
     ep = Path(ep).resolve()
     if mode() == "json":
         return None
+    cache = _operation_cache.get()
+    key = str(ep)
+    if cache is not None and key in cache:
+        return deepcopy(cache[key])
     episode_id = episode_identity.storage_episode_id(ep)
     connection, authority_repo, _frames_repo, _attempts_repo = _repositories()
     try:
         row = authority_repo.get(episode_id)
-        if not row:
-            return None
-        document = row.get("document")
-        return document if isinstance(document, dict) else None
+        document = (row or {}).get("document")
+        result = document if isinstance(document, dict) else None
+        if cache is not None:
+            cache[key] = deepcopy(result)
+        return deepcopy(result)
     finally:
         connection.close()

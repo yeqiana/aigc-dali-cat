@@ -4,6 +4,7 @@ from __future__ import annotations
 import sys
 import copy
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -31,6 +32,23 @@ class StoryOSConfigTests(unittest.TestCase):
         self.assertEqual(storyos_config.get_path(config, "normalize.review_ratio_delta_max"), 0.03)
         self.assertEqual(storyos_config.get_path(config, "production.max_inflight_images"), 5)
         self.assertEqual(storyos_config.get_path(config, "runtime.review.vision.max_inflight_final"), 4)
+
+    def test_operation_scope_validates_once_and_reuses_loaded_config(self):
+        original_validate = storyos_config.validate
+        calls = {"count": 0}
+
+        def counted(data=None):
+            calls["count"] += 1
+            return original_validate(data)
+
+        with patch.object(storyos_config, "validate", side_effect=counted):
+            with storyos_config.operation_scope():
+                first = storyos_config.load_config()
+                second = storyos_config.load_config()
+
+        self.assertEqual(calls["count"], 1)
+        self.assertIs(first, second)
+        self.assertEqual(second["image"]["quality"], "high")
 
     def test_stage_read_sets_start_with_config(self):
         index = storyos_config.load_index()

@@ -61,7 +61,7 @@ class _OperationCache:
                 continue
             try:
                 value, cacheable = loader()
-                if cacheable and isinstance(value, dict):
+                if cacheable:
                     with self._lock:
                         if self._epochs.get(epoch_key, 0) == epoch:
                             self._values[key] = deepcopy(value)
@@ -229,6 +229,7 @@ def _load_latest_uncached(
     legacy_path: str | Path | None,
 ) -> tuple[dict | None, bool]:
     if mode in {"dual", "mysql"}:
+        row = None
         try:
             _connection, repository = _repository()
             row = repository.get_latest(
@@ -260,7 +261,11 @@ def _load_latest_uncached(
             if mode == "mysql":
                 raise
         if mode == "mysql":
-            return None, False
+            # MySQL is the sole authority in this mode. A successful authoritative
+            # lookup that found no row is stable for the rest of the current
+            # operation and may be cached. Any persist() in the same operation
+            # invalidates this contract type before a subsequent read.
+            return None, row is None
 
     if legacy_path is not None:
         path = Path(legacy_path)
