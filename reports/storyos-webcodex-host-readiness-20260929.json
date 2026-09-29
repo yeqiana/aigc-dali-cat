@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_webcodex_host_readiness",
+  "generated_at": "2026-09-29T04:55:44Z",
+  "status": "WEBCODEX_HOST_READY",
+  "provider": "webcodex",
+  "transport": "WEBCODEX",
+  "execution_mode": "host_mcp_runner",
+  "host_status": "AVAILABLE",
+  "workspace_match": true,
+  "workspace_identity_sha256": "c0a3061cd7e0cab91fd11653f503e08b24eb31aac334b8ef2ccbf8ead6fc7450",
+  "workspace_root": "D:/workspace/YeQianWorkSpace/yeqian/storyOS",
+  "git_head": "12fae909699980c33221100af09803afb5a03c29",
+  "project_id": "agent:renrp-fb517349aa0b41f0:storyos",
+  "host_instance_id": "renrp-fb517349aa0b41f0",
+  "runner_instance_id": "6788e3d1-7f92-445e-9b48-e46f46dac440",
+  "evidence_source": "webcodex_runner_non_model_handshake",
+  "observed_at": "2026-09-29T04:55:17Z",
+  "expires_at": "2026-09-29T04:56:17Z",
+  "age_seconds": 27,
+  "ttl_seconds": 60,
+  "handshake_request_id": "wc-handshake-231d6457119748dc8f4af3e8",
+  "handshake_claimed": true,
+  "handshake_completed": true,
+  "duplicate_consumption": "ALREADY_COMPLETED",
+  "completion_count": 1,
+  "evidence_files": {
+    "request": {
+      "path": ".storyos/host-handshake/wc-handshake-231d6457119748dc8f4af3e8.request.json",
+      "sha256": "d5ac5ac8b7f557b49e52712c310f4fcfe6846295599d9237f000993ba4863156"
+    },
+    "claim": {
+      "path": ".storyos/host-handshake/wc-handshake-231d6457119748dc8f4af3e8.claim.json",
+      "sha256": "458ccad9b91d9b900fc50ea2e27de18ec3813802b21cac7595adbd9c7d47d303"
+    },
+    "completion": {
+      "path": ".storyos/host-handshake/wc-handshake-231d6457119748dc8f4af3e8.completion.json",
+      "sha256": "eb3e0aa42d0ee453f85af981786b7214af8e5193460dc47455b672b42a41b23b"
+    }
+  },
+  "attachment_sha256": "d28151b537d0696b9b7c9868ed34978fc1a3027e94d15da9172851a0deeff16b",
+  "webcodex_runtime_status": {
+    "status": "online",
+    "connected": true,
+    "compatibility": "compatible",
+    "active_jobs": 0,
+    "visible_runner_count": 1,
+    "project_count": 3,
+    "registered_projects_online": 3,
+    "source_alignment": "unknown_build_identity_incomplete"
+  },
+  "side_effects": {
+    "model_calls": 0,
+    "network_model_calls": 0,
+    "image_calls": 0,
+    "authority_writes": 0,
+    "episode_transitions": 0
+  },
+  "checks": {
+    "fresh_attachment": "PASS",
+    "workspace_binding": "PASS",
+    "real_host_claim": "PASS",
+    "completion_readback": "PASS",
+    "duplicate_protection": "PASS"
+  },
+  "notes": [
+    "Evidence was produced by the connected WebCodex Runner through the project PowerShell execution tool.",
+    "The runner build does not publish a git commit identity; exact repository binding was verified by the challenge workspace-root hash and git root.",
+    "This validates Host readiness only. No production Episode was created or started."
+  ]
+}

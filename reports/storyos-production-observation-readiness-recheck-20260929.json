@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation_readiness_recheck",
+  "generated_at": "2026-09-29T04:55:44Z",
+  "status": "HOST_ATTACHMENT_VALIDATED",
+  "storyos_status": "READY_FOR_FIRST_REAL_EPISODE",
+  "supersedes_previous_readiness_interpretation": {
+    "path": "reports/storyos-production-observation-gate-20260929.json",
+    "sha256": "f7167dec3a76fd6be4ea22f5503f3dad7edeb4e8bcbd3a5d08336053df1cb718",
+    "previous_status": "BLOCKED",
+    "reason": "The previous WebCodex unavailability blocker is superseded by a real, fresh, workspace-bound Host handshake."
+  },
+  "pilot_episode_started": false,
+  "pilot_episode_created": false,
+  "episode_source": "none",
+  "production_observation_pass": false,
+  "production": {
+    "mode": "COLLABORATIVE",
+    "mode_source": "config/storyos.yaml#production.mode",
+    "p4_status": "P4_PRODUCTION_CUTOVER_COMPLETE",
+    "p4_shadow_enabled": true,
+    "p4_production_enabled": true,
+    "p5_status": "GUARDIAN_SHADOW_VALIDATED",
+    "p5_shadow_enabled": true,
+    "p5_production_enabled": false,
+    "p3_production_flags": {
+      "story_semantic_critic": false,
+      "preimage_semantic_critic": false,
+      "final_semantic_critic": false
+    },
+    "codex_managed_enabled": false,
+    "automatic_runtime_fallback": false,
+    "codex_fallback_when_webcodex_unavailable": false
+  },
+  "host_readiness_report": "reports/storyos-webcodex-host-readiness-20260929.json",
+  "host_readiness_sha256": "62f1ec4ef55412a170e3612d271d6ee7d11f52ce9c26b1fe0804a7eec8b7013e",
+  "checks": {
+    "production_mode_collaborative": {
+      "status": "PASS",
+      "observed": "COLLABORATIVE"
+    },
+    "p4_production_enabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "p5_shadow_enabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "p5_production_disabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "p3_production_unchanged": {
+      "status": "PASS",
+      "observed": {
+        "story_semantic_critic": false,
+        "preimage_semantic_critic": false,
+        "final_semantic_critic": false
+      },
+      "closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347"
+    },
+    "codex_managed_disabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "webcodex_host_available": {
+      "status": "PASS",
+      "observed": true,
+      "reason": "fresh WebCodex Host handshake and attachment verified"
+    },
+    "fresh_attachment_evidence": {
+      "status": "PASS",
+      "age_seconds": 27,
+      "ttl_seconds": 60,
+      "expires_at": "2026-09-29T04:56:17Z"
+    },
+    "workspace_match": {
+      "status": "PASS",
+      "workspace_identity_sha256": "c0a3061cd7e0cab91fd11653f503e08b24eb31aac334b8ef2ccbf8ead6fc7450"
+    },
+    "host_request_consumer_available": {
+      "status": "PASS",
+      "request_id": "wc-handshake-231d6457119748dc8f4af3e8",
+      "claimed": true,
+      "completed": true,
+      "duplicate_completion_count": 1
+    },
+    "automatic_runtime_fallback_disabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "codex_fallback_when_webcodex_unavailable_disabled": {
+      "status": "PASS",
+      "observed": true
+    },
+    "no_episode_created": {
+      "status": "PASS",
+      "observed": false
+    },
+    "no_episode_transition": {
+      "status": "PASS",
+      "observed": 0
+    },
+    "model_image_authority_side_effects_zero": {
+      "status": "PASS",
+      "model_calls": 0,
+      "image_calls": 0,
+      "authority_writes": 0
+    }
+  },
+  "not_observed_until_real_episode": [
+    "formal P4 route dispatch/actual target match",
+    "formal execution receipts across Pilot",
+    "natural checkpoint/resume idempotency",
+    "Guardian findings during real Episode"
+  ],
+  "regression": {
+    "focused": {
+      "passed": 148,
+      "failed": 0,
+      "subtests_passed": 6
+    },
+    "broad": {
+      "command": "python -m pytest -q tests/system",
+      "passed": 1606,
+      "failed": 21,
+      "skipped": 1,
+      "subtests_passed": 98,
+      "known_baseline_failures": 21,
+      "new_failures": 0,
+      "known_failure_groups": {
+        "archive_relocation_cleanup": 1,
+        "canonical_full_auto_visual_profile_and_old_episode_references": 18,
+        "missing_series_master_assets": 1,
+        "legacy_visual_profile_asset_hash": 1
+      },
+      "baseline_source_report": "reports/storyos-production-observation-01-20260929.json",
+      "baseline_source_report_sha256": "751197d3eb0d2b1c1de24db44ff77ea9f48e0ce41fddf76e220311e2ebadfb8f",
+      "baseline_failure_count": 21,
+      "baseline_identity_match": true
+    },
+    "py_compile": "PASS",
+    "git_diff_check": "PASS_WITH_UNRELATED_CRLF_WARNING"
+  },
+  "known_legacy_baseline_failure_scope": "Old Episode/asset cleanup only; exact baseline node identities unchanged.",
+  "previous_observation_gate": {
+    "path": "reports/storyos-production-observation-gate-20260929.json",
+    "sha256": "f7167dec3a76fd6be4ea22f5503f3dad7edeb4e8bcbd3a5d08336053df1cb718",
+    "status": "BLOCKED"
+  },
+  "source_sha256": {
+    "config/storyos.yaml": "74e90acd6ad2004c229b25e99c4b2bd35f1c363ab9be1d06a6cd57721f5592dd",
+    "reports/p3-critic-phase-closure-20260928.json": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "reports/p4-capability-router-cutover-implementation-gate-20260928.json": "b29c6db2c31e0ec9188896844c47a6cc628939f79ec6ca9eee98f109abd1e5d2",
+    "reports/storyos-production-observation-gate-20260929.json": "f7167dec3a76fd6be4ea22f5503f3dad7edeb4e8bcbd3a5d08336053df1cb718",
+    "reports/p4-capability-router-production-cutover-final-20260929.json": "086ac0d750d3a805f06ba564861485b310583a8404fdc035542cb9487db6d66e",
+    "reports/p5-runtime-guardian-pre-cutover-gate-20260929.json": "ff77e9424b4b6d07cc17c7be81d80abb785fcb240cd1769afd57551f9c355c35",
+    "episodes/_system/runtime_router.py": "0869b93c4234dc591e1a751e71801430c7218fb73163b55db2f2bd2a66855085",
+    "episodes/_system/webcodex_host_attachment.py": "fdc8935e2e018c3d4226991f431cebe30f15ffd02aebcce14f243caea81d6833",
+    "scripts/webcodex_host_handshake.ps1": "107aed5d5de17ebed351b15ab5609c8a742d936ea909c249757eeba6b1025e87",
+    "reports/storyos-production-observation-01-20260929.json": "751197d3eb0d2b1c1de24db44ff77ea9f48e0ce41fddf76e220311e2ebadfb8f"
+  },
+  "git": {
+    "branch": "story-platform-v3-rever",
+    "head": "12fae909699980c33221100af09803afb5a03c29",
+    "origin": "12fae909699980c33221100af09803afb5a03c29",
+    "ahead_behind": [
+      0,
+      0
+    ],
+    "implementation_commit": "12fae90"
+  },
+  "blockers": [],
+  "warnings": [
+    "No formal Episode was created; this is Host readiness, not PRODUCTION_OBSERVATION_PASS.",
+    "Formal P4 dispatch receipt and natural Episode resume remain unobserved until the next authorized Pilot.",
+    "WebCodex build source alignment is reported unknown by Host status, while this handshake proved the exact project root identity.",
+    "Attachment TTL is 60 seconds; repeat the non-model Host handshake before the next Episode entry if this evidence has expired."
+  ],
+  "host_evidence_recheck_required_before_episode": true
+}
