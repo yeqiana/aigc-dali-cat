@@ -280,7 +280,7 @@ agent_runtime:
   # P4 task-level provider/model routing. Runtime DAG/Scheduler retains dispatch ownership.
   task_capability_router:
     shadow_enabled: true
-    production_enabled: false
+    production_enabled: true
     health_ttl_seconds: 300
     max_fallback_depth: 3
     policy_mode: LEGACY_PREFERRED_CAPABILITY_GUARDED

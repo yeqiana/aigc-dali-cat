@@ -296,7 +296,10 @@ class EffectiveConfigTests(unittest.TestCase):
         self.assertEqual(sources["capability_router_shadow_enabled"], {
             "value": True, "source": "config/storyos.yaml#agent_runtime.task_capability_router.shadow_enabled"})
         self.assertEqual(sources["capability_router_production_enabled"], {
-            "value": False, "source": "config/storyos.yaml#agent_runtime.task_capability_router.production_enabled"})
+            "value": storyos_config.get_path(
+                storyos_config.load_config(),
+                "agent_runtime.task_capability_router.production_enabled"),
+            "source": "config/storyos.yaml#agent_runtime.task_capability_router.production_enabled"})
 
     def test_the_snapshot_value_agrees_with_the_router_that_decides(self) -> None:
         """Derived config values agree when host availability is isolated."""

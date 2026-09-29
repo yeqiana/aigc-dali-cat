@@ -17,6 +17,7 @@ import capability_router as router
 import product_review_adapter
 import runtime_router
 import runtime_scheduler
+import storyos_config
 
 
 UTC = dt.timezone.utc
@@ -212,6 +213,8 @@ class CapabilityRouterTests(unittest.TestCase):
                  patch.object(product_review_adapter, "_request_exists", return_value=False), \
                  patch.object(product_review_adapter, "_write_json"), \
                  patch.object(product_review_adapter.episode_performance, "safe_begin_named_span"), \
+                 patch.object(router, "effective_router_config",
+                              return_value={**router.effective_router_config(), "production_enabled": False}), \
                  patch.object(runtime_router, "capability_route_shadow") as observe:
                 prepared = product_review_adapter.prepare(
                     ep, kind="story-semantic-critic-shadow", runtime="WORK", attempt=1,
@@ -263,10 +266,12 @@ class CapabilityRouterTests(unittest.TestCase):
             self.assertIn("image_input", observe.call_args.args[0].required_capabilities)
             self.assertIn("image_generation", observe.call_args.args[0].forbidden_capabilities)
 
-    def test_runtime_router_facade_keeps_production_disabled(self):
+    def test_runtime_router_facade_reflects_yaml_production_flag(self):
         config = runtime_router.capability_router_config()
         self.assertTrue(config["shadow_enabled"])
-        self.assertFalse(config["production_enabled"])
+        yaml_config = storyos_config.load_config()
+        self.assertEqual(config["production_enabled"], storyos_config.get_path(
+            yaml_config, "agent_runtime.task_capability_router.production_enabled"))
         self.assertEqual(config["health_ttl_seconds"], router.HEALTH_TTL_SECONDS)
 
     def test_runtime_scheduler_remains_runnable_owner(self):

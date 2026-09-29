@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "kind": "p4_capability_router_production_cutover_final",
+  "status": "P4_PRODUCTION_CUTOVER_COMPLETE",
+  "previous_status": "CUTOVER_ROLLED_BACK",
+  "previous_blocker": "EXECUTION_RECEIPT_PERSISTENCE_ERROR",
+  "receipt_validation_clarification": {
+    "prior_retry_report_sha256": "83109e56487d6f45b1e076bce0260f87d5bfcf0f4ac29c273427442280e25e27",
+    "prior_retry_report_preserved": true,
+    "prior_false_negative_cause": "The retry harness hashed the post-completion mutable request instead of the request payload loaded for execution. The immutable snapshot wraps the persisted request with two prepare()-return-only path fields.",
+    "canonical_request_sha256": "bffe36507ee2c1f9b718cf17a0d4324129b57b8b0f3509878bbec7a6765bbfe8",
+    "canonical_request_sha_verified": true,
+    "verification": "Removing request_path and current_request_path from the immutable snapshot request wrapper reproduces the receipt request_sha256 exactly; product_review_adapter.prepare() adds these two fields only to its returned object, after persisting req.",
+    "request_snapshot_sha256": "555459836304da1c1b23846623eda121dc6e2613329d37f8374896decb85f302",
+    "request_snapshot_sha_verified": true,
+    "execution_receipt_complete": true,
+    "execution_receipt_persisted": true
+  },
+  "fix_commit": "5c88f6e254a51972726ecda566d3e992ad222858",
+  "implementation_gate": {
+    "path": "reports/p4-capability-router-cutover-implementation-gate-20260928.json",
+    "sha256": "b29c6db2c31e0ec9188896844c47a6cc628939f79ec6ca9eee98f109abd1e5d2",
+    "status": "PASS",
+    "p4_status": "CUTOVER_IMPLEMENTATION_READY",
+    "blockers": []
+  },
+  "previous_story_canary": {
+    "path": "reports/p4-capability-router-production-cutover-20260929.json",
+    "sha256": "c4b04e42f947fd5eae25d392a7c3ffb79e053a6f76dfab1f6c264dd4dcd385be",
+    "status": "P4_PRODUCTION_CUTOVER_PASS",
+    "real_critic_calls": 1
+  },
+  "preimage_retry": {
+    "path": "reports/p4-capability-router-production-cutover-preimage-retry2-20260929.json",
+    "request_id": "preimage-semantic-critic-shadow-a1-3cd42c4b348b3207",
+    "task_type": "preimage_semantic_critic",
+    "real_model_calls": 1,
+    "model_turn_completed": true,
+    "candidate_decision": "ACCEPT_CANDIDATE",
+    "logical_legacy_route": {
+      "provider": "WORK",
+      "model": null,
+      "runtime": "WORK"
+    },
+    "actual_legacy_execution_target": {
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "runtime": "CODEX"
+    },
+    "router_action": "KEEP_LEGACY",
+    "router_proposed_target": {
+      "provider": "WORK",
+      "model": null,
+      "runtime": "WORK"
+    },
+    "scheduler_authorized_target": {
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "runtime": "CODEX"
+    },
+    "actual_dispatch_target": {
+      "provider": "codex_user_runner",
+      "model": "gpt-6-luna",
+      "runtime": "CODEX"
+    },
+    "scheduler_target_matches_actual": true,
+    "execution_receipt_path": ".storyos/p4-capability-router/preimage-cutover-retry-20260929/63d0e9c644b0/meta/runtime/agent-shadow/preimage-semantic-critic/attempt-1-result-evidence.json",
+    "request_sha256": "bffe36507ee2c1f9b718cf17a0d4324129b57b8b0f3509878bbec7a6765bbfe8",
+    "request_sha256_valid": true,
+    "request_snapshot_sha256": "555459836304da1c1b23846623eda121dc6e2613329d37f8374896decb85f302",
+    "request_snapshot_sha256_valid": true,
+    "health_before": {
+      "WORK": "UNKNOWN",
+      "codex_user_runner": "UNKNOWN",
+      "codex_cli_subscription": "UNKNOWN"
+    },
+    "health_after": {
+      "WORK": "UNKNOWN",
+      "codex_user_runner": "HEALTHY",
+      "codex_cli_subscription": "UNKNOWN"
+    },
+    "duplicate_dispatch_count": 0,
+    "authority_writes": 0,
+    "episode_transitions": 0,
+    "image_generation_count": 0
+  },
+  "validation": {
+    "focused": {
+      "command_scope": [
+        "test_capability_router.py",
+        "test_config_consumer_contract.py",
+        "test_preimage_semantic_critic_adapter.py",
+        "test_p4_runtime_dispatch_consumer.py",
+        "test_story_semantic_critic_adapter.py",
+        "test_final_semantic_critic_adapter.py",
+        "test_p4_production_router.py",
+        "test_p4_cutover_validation.py",
+        "test_runtime_dag_scheduler.py",
+        "test_runtime_review_persistence.py",
+        "test_codex_execution_telemetry.py",
+        "test_runtime_guardian_facade.py"
+      ],
+      "passed": 160,
+      "failed": 0
+    },
+    "broad": {
+      "command": "python -m pytest -q tests/system",
+      "passed": 1595,
+      "failed": 21,
+      "skipped": 1,
+      "subtests_passed": 98,
+      "known_baseline_failures": [
+        "tests/system/test_archive_relocation.py::RealArchiveRegressionTest::test_ep003_relocation_entry_verifies",
+        "tests/system/test_canonical_full_auto_integration.py::OneSentenceChainCaseTest::test_case1_modern_real_life_selects_m00_and_enters_the_chain",
+        "tests/system/test_canonical_full_auto_integration.py::OneSentenceChainCaseTest::test_case2_ancient_ordinary_life_selects_m01_and_enters_the_chain",
+        "tests/system/test_canonical_full_auto_integration.py::OneSentenceChainCaseTest::test_case3_heaven_ordinary_worker_selects_m02_and_enters_the_chain",
+        "tests/system/test_canonical_full_auto_integration.py::OneSentenceChainCaseTest::test_case4_jiangnan_immersive_selects_m03_and_enters_the_chain",
+        "tests/system/test_canonical_full_auto_integration.py::OneSentenceChainCaseTest::test_case5_intent_conflict_stops_at_the_human_gate",
+        "tests/system/test_canonical_full_auto_integration.py::HumanGateCaseTest::test_case6_refused_delegated_confirmation_cannot_produce",
+        "tests/system/test_canonical_full_auto_integration.py::HumanGateCaseTest::test_case6_unconfirmed_visual_lock_cannot_produce",
+        "tests/system/test_canonical_full_auto_integration.py::MachineGateCaseTest::test_case7_machine_gate_failure_is_never_reported_as_success",
+        "tests/system/test_canonical_full_auto_integration.py::RepairLoopCaseTest::test_case8_review_repair_required_uses_the_canonical_repair_lane",
+        "tests/system/test_canonical_full_auto_integration.py::RepairLoopCaseTest::test_case8b_human_owned_evidence_gap_stops_at_needs_user",
+        "tests/system/test_canonical_full_auto_integration.py::RepairLoopCaseTest::test_case8c_authorized_repair_in_flight_reports_repairing",
+        "tests/system/test_canonical_full_auto_integration.py::RepairLoopCaseTest::test_case9_exhausted_repair_budget_stops_for_a_person",
+        "tests/system/test_canonical_full_auto_integration.py::RepairLoopCaseTest::test_case9b_zero_repair_budget_never_dispatches",
+        "tests/system/test_canonical_full_auto_integration.py::ResumeCaseTest::test_case10_resume_reuses_the_episode_and_the_checkpoint",
+        "tests/system/test_canonical_full_auto_integration.py::ProductionGateCaseTest::test_case12_first_committed_asset_freezes_the_visual_profile",
+        "tests/system/test_canonical_full_auto_integration.py::ProductionGateCaseTest::test_case13_repair_after_frozen_never_rewrites_the_visual_profile",
+        "tests/system/test_canonical_full_auto_integration.py::ProductionGateCaseTest::test_case14_success_is_publish_ready_with_a_clean_machine_gate",
+        "tests/system/test_canonical_full_auto_integration.py::ProductionGateCaseTest::test_case14b_worker_rc_zero_without_publish_ready_is_not_success",
+        "tests/system/test_series_master_git_tracking.py::SeriesMasterGitTrackingTests::test_this_repository_has_no_untracked_series_master",
+        "tests/system/test_visual_profile_assets.py::GovernedProfileSchemaTest::test_legacy_m00_asset_is_not_rewritten"
+      ],
+      "new_failures": [],
+      "resolved_baseline_failures": [],
+      "known_failure_groups": [
+        "canonical full-auto visual profile cleanup / invalidated old Episode references",
+        "archive relocation cleanup",
+        "missing series master assets",
+        "legacy visual profile asset hash"
+      ]
+    },
+    "py_compile": "PASS",
+    "git_diff_check": "PASS_WITH_UNRELATED_CRLF_WARNING"
+  },
+  "p3_closure": {
+    "sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+    "unchanged": true,
+    "critic_production_flags": false
+  },
+  "p5": {
+    "status": "GUARDIAN_SHADOW_VALIDATED",
+    "gate_sha256": "ff77e9424b4b6d07cc17c7be81d80abb785fcb240cd1769afd57551f9c355c35",
+    "source_hashes_unchanged": true,
+    "shadow_enabled": true,
+    "production_enabled": false
+  },
+  "final_config": {
+    "path": "config/storyos.yaml",
+    "sha256": "74e90acd6ad2004c229b25e99c4b2bd35f1c363ab9be1d06a6cd57721f5592dd",
+    "production_mode": "COLLABORATIVE",
+    "p4_shadow_enabled": true,
+    "p4_production_enabled": true,
+    "p3_critic_production_enabled": false,
+    "p5_guardian_production_enabled": false,
+    "codex_managed_enabled": false
+  },
+  "safety": {
+    "total_real_preimage_model_calls": 1,
+    "additional_model_calls": 0,
+    "network_probes": 0,
+    "image_calls": 0,
+    "authority_writes": 0,
+    "episode_transitions": 0,
+    "formal_episode_used": false,
+    "p5_modified": false
+  },
+  "production_enabled": true,
+  "production_mode": "COLLABORATIVE",
+  "p3_closure_sha256": "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347",
+  "p5_status": "GUARDIAN_SHADOW_VALIDATED",
+  "observed_at": "2026-09-29T12:10:00+08:00"
+}

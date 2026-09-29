@@ -28,7 +28,9 @@ class P4ProductionRouterTests(unittest.TestCase):
                               statuses=statuses, production=production, required=required)
 
     def test_production_flag_defaults_false(self):
-        self.assertFalse(router.effective_router_config()["production_enabled"])
+        config = copy.deepcopy(storyos_config.load_config())
+        config["agent_runtime"]["task_capability_router"].pop("production_enabled", None)
+        self.assertFalse(router.effective_router_config(config)["production_enabled"])
 
     def test_yaml_config_controls_router_mode(self):
         config = impl._config(True)
@@ -149,9 +151,16 @@ class P4ProductionRouterTests(unittest.TestCase):
                             for row in audit["source_files"].values()))
 
     def test_implementation_gate_accepts_verified_dispatch_consumer(self):
-        gate = impl.build_implementation_gate(regression={
-            "focused_pass": True, "broad_pass": True,
-        })
+        production_config = router.effective_router_config()
+        original_effective_config = router.effective_router_config
+        def disabled_runtime_config(config=None):
+            if config is not None:
+                return original_effective_config(config)
+            return {**production_config, "production_enabled": False}
+        with patch.object(router, "effective_router_config", side_effect=disabled_runtime_config):
+            gate = impl.build_implementation_gate(regression={
+                "focused_pass": True, "broad_pass": True,
+            })
         self.assertTrue(gate["mandatory_checks"]["adapter_dispatch_consumer_present"])
         self.assertNotIn("adapter_dispatch_consumer_present", gate["blockers"])
         self.assertEqual(gate["p4_status"], "CUTOVER_IMPLEMENTATION_READY")
@@ -199,8 +208,11 @@ class P4ProductionRouterTests(unittest.TestCase):
         self.assertFalse(prepared["actual_dispatch_changed"])
 
     def test_cutover_recheck_never_enables_production(self):
-        result = router.cutover_recheck(gate_path=ROOT / "missing-p4-gate.json",
-                                        p3_closure_sha256="frozen")
+        production_config = router.effective_router_config()
+        with patch.object(router, "effective_router_config",
+                          return_value={**production_config, "production_enabled": False}):
+            result = router.cutover_recheck(gate_path=ROOT / "missing-p4-gate.json",
+                                            p3_closure_sha256="frozen")
         self.assertEqual(result["status"], "BLOCKED")
         self.assertFalse(result["production_enabled"])
 
