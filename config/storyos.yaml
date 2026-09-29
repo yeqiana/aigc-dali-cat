@@ -289,6 +289,11 @@ agent_runtime:
       - preimage_semantic_critic
       - final_semantic_critic
 
+  # P5 observes existing runtime failures; recovery ownership stays with current modules.
+  guardian_facade:
+    shadow_enabled: true
+    production_enabled: false
+
 execution:
   # 可替换执行能力，与 production.mode（整链控制方式）相互独立。
   workspace:

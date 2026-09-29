@@ -213,6 +213,23 @@ def progress_marker(episode:Path):
     )
 
 
+def guardian_shadow_for_cycle(return_code, decision, *, attempt, max_attempts):
+    """Observe one existing runner decision without changing its recovery path."""
+    try:
+        import runtime_guardian_facade
+        if runtime_guardian_facade.config().get("shadow_enabled") is not True or return_code == 0:
+            return None
+        return runtime_guardian_facade.observe_failure(
+            return_code, note=decision.reason, existing_category=decision.category,
+            existing_recovery={"next_action": decision.action},
+            attempt=attempt, max_attempts=max_attempts,
+        )
+    except Exception as exc:
+        return {"status": "OBSERVATION_ERROR", "error": str(exc)[:300],
+                "shadow_only": True, "recovery_executed": False,
+                "authority_writes": 0, "llm_calls": 0, "network_calls": 0}
+
+
 def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = None,
                 resume: bool = False, max_attempts: int = 3,
                 codex: str | None = None, timeout: int | None = None) -> int:
@@ -263,8 +280,11 @@ def run_episode(episode: Path, *, interval: int = 10, max_loops: int | None = No
         rc = execute_cycle(episode, codex=codex, timeout=timeout)
         cycles += 1
         decision = runtime_failure_classifier.classify(rc)
+        guardian_shadow = guardian_shadow_for_cycle(
+            rc, decision, attempt=failures + 1, max_attempts=max_attempts)
         record_event(episode, {"type": "cycle", "return_code": rc, "cycle": cycles,
-                               "category": decision.category})
+                               "category": decision.category,
+                               "guardian_shadow": guardian_shadow})
         if rc != 0:
             failures += 1
             runtime_resume_token.save(episode, stage=str(state), step=decision.action,

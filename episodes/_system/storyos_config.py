@@ -293,6 +293,13 @@ def validate(data: dict | None = None) -> list[str]:
                 or any(not isinstance(task, str) or task not in allowed_tasks for task in supported)
                 or len(supported) != len(set(supported))):
             errors.append("agent_runtime.task_capability_router.supported_task_types must be a non-empty unique allowlist of registered Critic task types")
+    guardian = get_path(cfg, "agent_runtime.guardian_facade")
+    if not isinstance(guardian, dict):
+        errors.append("agent_runtime.guardian_facade must be a mapping")
+    else:
+        for key in ("shadow_enabled", "production_enabled"):
+            if not isinstance(guardian.get(key), bool):
+                errors.append(f"agent_runtime.guardian_facade.{key} must be a bool")
     preferred_runtime = str(get_path(cfg, "runtime.preferred_runtime", "")).upper()
     if preferred_runtime not in {"WORK", "WEB", "CODEX"}:
         errors.append("runtime.preferred_runtime must be WORK, WEB or CODEX")
