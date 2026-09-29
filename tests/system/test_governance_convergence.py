@@ -4,6 +4,7 @@ import asyncio
 from contextlib import ExitStack
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -11,6 +12,7 @@ import threading
 import time
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'episodes/_system'))
@@ -35,6 +37,11 @@ from test_repair_concurrency_lane import make_episode
 
 class EntryBehavior(unittest.TestCase):
     def exercise(self, lane, failures=()):
+        # This test owns an isolated file-backed queue; the production config
+        # uses Redis hot-state authority and intentionally has no file fallback.
+        hot_state_mode = patch.dict(os.environ, {'STORYOS_HOT_STATE_MODE': 'file'})
+        hot_state_mode.start()
+        self.addCleanup(hot_state_mode.stop)
         td, ep = make_episode([{'frame': i} for i in range(1, 7)])
         self.addCleanup(td.cleanup)
         q = scheduler_core.load_queue(ep)
@@ -81,6 +88,19 @@ class EntryBehavior(unittest.TestCase):
             return {'decision': 'UNCERTAIN'}
 
         with ExitStack() as stack:
+            # Workers intentionally emit non-image bytes; these cases exercise
+            # scheduler refill/barrier semantics, not candidate image validity.
+            stack.enter_context(patch.object(lane, 'local_visual_triage', SimpleNamespace(
+                inspect_candidate=lambda *_a, **_k: {
+                    'status': 'PASS', 'block_commit': False, 'issue_codes': [],
+                    'candidate_sha256': '0' * 64, 'diagnostic_path': None,
+                },
+                queue_summary=lambda report: {
+                    'status': report['status'], 'block_commit': False,
+                    'failure_code': None, 'issue_codes': [], 'diagnostic_path': None,
+                    'candidate_sha256': report['candidate_sha256'],
+                },
+            )))
             for name, replacement in (
                 ('ledger_begin', lambda *a: (True, '')),
                 ('ledger_success', lambda *a: (True, '')),

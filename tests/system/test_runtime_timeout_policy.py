@@ -93,6 +93,8 @@ class RuntimeTimeoutPolicyTests(unittest.TestCase):
             "image_probe": 900,
             "deep_semantic_review": 1800,
             "release_semantic": 1800,
+            "isolated_ml_probe": 30,
+            "isolated_ml_worker": 180,
         }
         self.assertEqual(ttp.DEFAULT_SECONDS, expected)
         self.assertEqual(ttp.REQUIRED_ROLES, tuple(expected))

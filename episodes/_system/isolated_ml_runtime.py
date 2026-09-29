@@ -20,6 +20,8 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
+import runtime_timeout_policy
+
 ROOT = Path(__file__).resolve().parents[2]
 WORKDIR = ROOT / ".storyos_cache" / "ml-runtime"
 VENV_PYTHON = ROOT / ".storyos_cache" / "ml-venv" / "Scripts" / "python.exe"
@@ -79,7 +81,7 @@ def dependency_status(names: tuple[str, ...]) -> dict[str, bool]:
         encoding="utf-8",
         errors="replace",
         capture_output=True,
-        timeout=30,
+        timeout=runtime_timeout_policy.seconds("isolated_ml_probe"),
         check=False,
     )
     if completed.returncode != 0:
@@ -116,7 +118,7 @@ print(json.dumps(data))
         encoding="utf-8",
         errors="replace",
         capture_output=True,
-        timeout=30,
+        timeout=runtime_timeout_policy.seconds("isolated_ml_probe"),
         check=False,
     )
     if completed.returncode != 0:
@@ -174,10 +176,11 @@ def _readline_with_timeout(stream, timeout: int) -> str | None:
         return None
 
 
-def call(script: Path, payload: dict, *, timeout: int = 180) -> dict:
+def call(script: Path, payload: dict, *, timeout: int | None = None) -> dict:
     script = Path(script).resolve()
     if not script.is_file():
         return {"status": "FAILED", "diagnostic_only": True, "reason": "WORKER_SCRIPT_MISSING"}
+    worker_timeout = runtime_timeout_policy.resolve("isolated_ml_worker", timeout)
     row = _worker(script)
     process = row["process"]
     with row["lock"]:
@@ -186,7 +189,7 @@ def call(script: Path, payload: dict, *, timeout: int = 180) -> dict:
                 raise RuntimeError("isolated worker pipes unavailable")
             process.stdin.write(json.dumps(payload, ensure_ascii=False) + "\n")
             process.stdin.flush()
-            line = _readline_with_timeout(process.stdout, timeout)
+            line = _readline_with_timeout(process.stdout, worker_timeout)
             if line is None:
                 process.kill()
                 with _WORKERS_GUARD:

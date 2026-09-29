@@ -8,9 +8,10 @@ import json
 from pathlib import Path
 
 import story_json
+import runtime_observability
 
 ROOT = Path(__file__).resolve().parents[2]
-PERFORMANCE_REL = Path("meta/episode-performance-ledger.json")
+PERFORMANCE_REL = runtime_observability.EPISODE_PERFORMANCE_REL
 TRIAGE_REL = Path("meta/runtime/diagnostics/local-visual-triage-summary.json")
 CAPTION_REL = Path("meta/caption-image-audit.json")
 SEMANTIC_REL = Path("meta/frame-semantic-review.json")

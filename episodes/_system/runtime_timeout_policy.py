@@ -35,6 +35,8 @@ DEFAULT_SECONDS: dict[str, int] = {
     "image_probe": 900,             # image provider capability probe
     "deep_semantic_review": 1800,   # frame semantic / incremental review
     "release_semantic": 1800,       # recent5 / release critic semantic build
+    "isolated_ml_probe": 30,        # sidecar interpreter/dependency resolution
+    "isolated_ml_worker": 180,      # isolated local ML request response budget
 }
 REQUIRED_ROLES: tuple[str, ...] = tuple(DEFAULT_SECONDS)
 
