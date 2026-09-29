@@ -35,6 +35,27 @@ def sha_file(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def request_sha256(path: Path, request: dict) -> str:
+    """Hash the loaded request payload when persistence owns the logical path.
+
+    Runtime Review requests may live in MySQL/dual persistence and therefore
+    have no corresponding local file.  The caller already loaded this exact
+    request through product_review_adapter, so bind the report to that payload.
+    """
+    persistence = product_review_adapter.runtime_review_persistence
+    if persistence.is_request_path(path):
+        return digest(request)
+    return sha_file(path)
+
+
+def request_snapshot_sha256(path: Path) -> str:
+    """Hash the immutable request snapshot persisted beside the Critic attempt."""
+    snapshot = Path(path)
+    if not snapshot.is_file():
+        raise PreimageCriticError("PREIMAGE Critic immutable request snapshot missing")
+    return sha_file(snapshot)
+
+
 def adapter_config() -> dict:
     cfg = storyos_config.load_config()
     errors = storyos_config.validate(cfg)
@@ -435,8 +456,8 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
         "schema_version": 1,
         "kind": "preimage_semantic_critic_shadow_result",
         "request_id": request.get("request_id"),
-        "request_sha256": sha_file(path),
-        "request_snapshot_sha256": request.get("request_snapshot_sha256"),
+        "request_sha256": request_sha256(path, request),
+        "request_snapshot_sha256": request_snapshot_sha256(request_snapshot_path),
         "request_snapshot_path": snapshot_rel,
         "critic_provenance": provenance,
         "candidate_sha256": sha_file(candidate_path),
@@ -460,4 +481,6 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
     evidence_path = candidate_path.with_name(f"attempt-{attempt}-result-evidence.json")
     _write_immutable(evidence_path, report)
     product_review_adapter.mark_complete(ep, REQUEST_KIND, final_path=evidence_path, attempt=attempt)
+    import runtime_router
+    report["health_update"] = runtime_router.capability_route_record_execution_telemetry(telemetry)
     return report

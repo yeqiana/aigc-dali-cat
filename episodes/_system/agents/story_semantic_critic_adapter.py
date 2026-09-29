@@ -628,6 +628,8 @@ def execute_shadow_request(
         "episode_transition": False,
     }
     telemetry_sha = _write_immutable_json(telemetry_path, telemetry_evidence)
+    import runtime_router
+    health_update = runtime_router.capability_route_record_execution_telemetry(telemetry)
     return {
         "request_id": request.get("request_id"),
         "request_path": request_path.resolve().relative_to(ROOT).as_posix(),
@@ -647,6 +649,7 @@ def execute_shadow_request(
         "critic_issue_codes": decision["issue_codes"],
         "decision_schema_valid": True,
         "model_execution": telemetry,
+        "health_update": health_update,
         "telemetry_complete": telemetry["complete"],
         "critic_invoked": telemetry["real_model_execution"],
         "reflection": reflection,

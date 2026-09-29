@@ -600,6 +600,8 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int = 1, timeout: int 
     evidence_path = candidate_path.with_name(f"attempt-{attempt}-result-evidence.json")
     _write_immutable(evidence_path, report)
     product_review_adapter.mark_complete(ep, REQUEST_KIND, final_path=evidence_path, attempt=attempt)
+    import runtime_router
+    report["health_update"] = runtime_router.capability_route_record_execution_telemetry(telemetry)
     return report
 
 

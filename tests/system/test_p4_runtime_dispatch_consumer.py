@@ -12,7 +12,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "episodes/_system"))
 
 import codex_critic_runner
+import capability_router
 import runtime_dag
+import runtime_router
 import runtime_scheduler
 
 
@@ -130,6 +132,43 @@ class P4RuntimeDispatchConsumerTests(unittest.TestCase):
         self.assertEqual(result["action"], "FALLBACK")
         self.assertEqual(result["execution_target"], self.fallback)
         self.assertTrue(result["scheduler_authorized"])
+
+    def test_complete_execution_telemetry_refreshes_health_passively(self):
+        health = capability_router.HealthCache(300)
+        with patch.object(capability_router, "process_health_cache", return_value=health):
+            update = runtime_router.capability_route_record_execution_telemetry({
+                "real_model_execution": True, "complete": True,
+                "provider": "codex_user_runner", "model": "fixture-model",
+                "returncode": 0, "failure": False, "timeout": False,
+                "telemetry_source": "fixture_execution_receipt",
+            })
+        self.assertTrue(update["recorded"])
+        self.assertEqual(update["status"], "HEALTHY")
+        self.assertEqual(update["source"], "fixture_execution_receipt")
+        self.assertEqual(health.get("codex_user_runner", "fixture-model").status, "HEALTHY")
+
+    def test_incomplete_telemetry_does_not_become_health_evidence(self):
+        health = capability_router.HealthCache(300)
+        with patch.object(capability_router, "process_health_cache", return_value=health):
+            update = runtime_router.capability_route_record_execution_telemetry({
+                "real_model_execution": True, "complete": False,
+                "provider": "codex_user_runner", "model": "fixture-model",
+                "returncode": 0, "failure": False, "timeout": False,
+            })
+        self.assertFalse(update["recorded"])
+        self.assertEqual(health.get("codex_user_runner", "fixture-model").status, "UNKNOWN")
+
+    def test_fake_non_model_telemetry_does_not_become_health_evidence(self):
+        health = capability_router.HealthCache(300)
+        with patch.object(capability_router, "process_health_cache", return_value=health):
+            update = runtime_router.capability_route_record_execution_telemetry({
+                "real_model_execution": False, "complete": True,
+                "provider": "codex_user_runner", "model": "fixture-model",
+                "returncode": 0, "failure": False, "timeout": False,
+                "telemetry_source": "fake_executor",
+            })
+        self.assertFalse(update["recorded"])
+        self.assertEqual(health.get("codex_user_runner", "fixture-model").status, "UNKNOWN")
 
 
 if __name__ == "__main__":

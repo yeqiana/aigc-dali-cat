@@ -122,6 +122,23 @@ class PreimageSemanticCriticAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(critic.PreimageCriticError, "gate_pass"):
             critic.validate_decision(payload)
 
+    def test_request_sha_uses_persisted_payload_without_local_request_file(self):
+        logical_path = self.ep / "meta/runtime/reviews/preimage-semantic-critic-shadow-request.json"
+        request = {"request_id": "persisted-only", "task_type": "preimage_semantic_critic"}
+        self.assertFalse(logical_path.exists())
+        with patch.object(critic, "sha_file", side_effect=AssertionError("must not read logical path")):
+            actual = critic.request_sha256(logical_path, request)
+        self.assertEqual(actual, critic.digest(request))
+
+    def test_request_snapshot_sha_comes_from_immutable_file_when_not_inline(self):
+        snapshot = self.ep / "meta/runtime/agent-shadow/preimage-semantic-critic/attempt-1-request-snapshot.json"
+        snapshot.parent.mkdir(parents=True, exist_ok=True)
+        snapshot.write_text('{"request":{"request_id":"persisted-only"}}\n', encoding="utf-8")
+        expected = critic.sha_file(snapshot)
+        self.assertEqual(critic.request_snapshot_sha256(snapshot), expected)
+        with self.assertRaisesRegex(critic.PreimageCriticError, "snapshot missing"):
+            critic.request_snapshot_sha256(snapshot.with_name("missing.json"))
+
     def test_shadow_off_and_conflicting_flags_fail_closed(self):
         with patch.object(critic, "adapter_config", return_value={"shadow_enabled": False, "production_enabled": False}):
             self.assertIsNone(critic.prepare_after_candidate_set(self.ep, self.snapshot, self.rows))

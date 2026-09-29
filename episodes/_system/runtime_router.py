@@ -260,6 +260,29 @@ def capability_route_record_outcome(provider: str, model: str | None, *,
         failure_type=failure_type, source=source, reason=reason, observed_at=observed_at).to_dict()
 
 
+def capability_route_record_execution_telemetry(telemetry: dict) -> dict:
+    """Passively refresh P4 health from a complete, real Critic execution receipt."""
+    if (not isinstance(telemetry, dict)
+            or telemetry.get("real_model_execution") is not True
+            or telemetry.get("complete") is not True):
+        return {"recorded": False, "reason": "INCOMPLETE_OR_NON_MODEL_TELEMETRY"}
+    provider = str(telemetry.get("provider") or "").strip()
+    model = str(telemetry.get("model") or "").strip()
+    if not provider or not model:
+        return {"recorded": False, "reason": "PROVIDER_MODEL_MISSING"}
+    successful = (telemetry.get("returncode") == 0
+                  and telemetry.get("failure") is False
+                  and telemetry.get("timeout") is not True)
+    outcome = capability_route_record_outcome(
+        provider, model, successful=successful,
+        failure_type=None if successful else "technical_failure",
+        source=str(telemetry.get("telemetry_source") or "codex_execution_telemetry"),
+        reason=("successful Critic execution receipt" if successful
+                else "technical Critic execution failure receipt"),
+    )
+    return {"recorded": True, **outcome}
+
+
 def capability_router_config() -> dict:
     """Expose validated P4 task routing flags without changing global runtime selection."""
     import capability_router
