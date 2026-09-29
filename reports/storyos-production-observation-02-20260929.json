@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation",
+  "observation_id": "02",
+  "generated_at": "2026-09-29T05:15:10Z",
+  "status": "READY_FOR_STORY_PAYLOAD",
+  "production_observation_status": "NOT_STARTED",
+  "episode_id": null,
+  "title": "未交的答卷",
+  "production_mode": "COLLABORATIVE",
+  "config": {
+    "p4_shadow_enabled": true,
+    "p4_production_enabled": true,
+    "p5_shadow_enabled": true,
+    "p5_production_enabled": false,
+    "p3_story_semantic_critic_production_enabled": false,
+    "p3_preimage_semantic_critic_production_enabled": false,
+    "p3_final_semantic_critic_production_enabled": false,
+    "image_executor": "CODEX",
+    "vision_review_executor": "CODEX",
+    "vision_review_model": "gpt-5.6-terra",
+    "codex_managed_enabled": false,
+    "automatic_runtime_fallback": false
+  },
+  "git_baseline": {
+    "branch": "story-platform-v3-rever",
+    "head": "b3217b73a4f2b2695bc5d306ca3e8ad10133a497",
+    "origin": "b3217b73a4f2b2695bc5d306ca3e8ad10133a497",
+    "ahead": 0,
+    "behind": 0,
+    "preexisting_workspace": {
+      "tracked_unstaged": 2,
+      "untracked": 221,
+      "preserved": true
+    }
+  },
+  "host_handshake": {
+    "status": "PASS",
+    "provider": "webcodex",
+    "transport": "WEBCODEX",
+    "execution_mode": "host_mcp_runner",
+    "host_status_at_validation": "AVAILABLE",
+    "workspace_match": true,
+    "workspace_identity_sha256": "c0a3061cd7e0cab91fd11653f503e08b24eb31aac334b8ef2ccbf8ead6fc7450",
+    "project_id": "agent:renrp-fb517349aa0b41f0:storyos",
+    "host_instance_id": "renrp-fb517349aa0b41f0",
+    "runner_instance_id": "6788e3d1-7f92-445e-9b48-e46f46dac440",
+    "request_id": "wc-handshake-c685691d8f5fa448df4bafab",
+    "completion_sha256": "31e1a05faf1c1cfe1d6ced43e3b50a03c0f524fc187d324352ec9b0a83e1d394",
+    "attached_at": "2026-09-29T05:07:26Z",
+    "expires_at": "2026-09-29T05:08:26Z",
+    "ttl_seconds": 60,
+    "attachment_fresh_at_validation": true,
+    "evidence_age_seconds_at_runtime_capability_check": 1,
+    "attachment_status_at_report_time": "STALE_AFTER_EXPECTED_TTL",
+    "successful_reattach_count": 1,
+    "completion_count": 1,
+    "side_effects": {
+      "model_calls": 0,
+      "image_calls": 0,
+      "authority_writes": 0,
+      "episode_transitions": 0
+    }
+  },
+  "story_payload": {
+    "status": "MISSING_CURRENT_EXECUTION_CONTEXT",
+    "original_story_body_available": false,
+    "repository_exact_title_search": "Only prior observation metadata references the title/source; no original story body was found.",
+    "runtime_request_match_found": false,
+    "policy_applied": [
+      "Do not invent story content from the title.",
+      "Do not reuse old Episode content.",
+      "Do not invoke canonical create without the original story body."
+    ]
+  },
+  "canonical_entrypoint": {
+    "path": "episodes/_system/story_os.py",
+    "command_shape": "create <request> --full-auto",
+    "invoked": false,
+    "reason": "Stopped at READY_FOR_STORY_PAYLOAD before Episode creation because the original story body is unavailable in the current WebCodex execution context."
+  },
+  "runtime": {
+    "start_stage": null,
+    "final_stage": null,
+    "runtime_dag_nodes_executed": [],
+    "runtime_dag_observed": false,
+    "runtime_scheduler_observed": false,
+    "scheduler_dispatch_count": 0,
+    "work_host_requests": 0,
+    "work_completions": 0
+  },
+  "p4": {
+    "production_enabled": true,
+    "route_observations": [],
+    "scheduler_actual_match": "NOT_OBSERVED_NO_EPISODE",
+    "execution_receipt_count": 0,
+    "incomplete_receipts": 0,
+    "health_updates": []
+  },
+  "models": {
+    "text_calls": 0,
+    "image_calls": 0,
+    "vision_review_calls": 0
+  },
+  "checkpoint_resume": {
+    "checkpoint_count": 0,
+    "resume_count": 0,
+    "idempotent": "NOT_REQUIRED_NO_EPISODE",
+    "duplicate_dispatch_count": 0
+  },
+  "guardian": {
+    "shadow_enabled": true,
+    "production_enabled": false,
+    "observations": [],
+    "resident_llm_calls": 0,
+    "active_network_probes": 0,
+    "recovery_executions": 0,
+    "authority_writes": 0,
+    "stage_transitions_initiated": 0
+  },
+  "episode_authority": {
+    "canonical_state_source": "meta/episode-state.json",
+    "episode_created": false,
+    "episode_transitions": 0,
+    "unexpected_transitions": 0,
+    "router_authority_writes": 0,
+    "guardian_authority_writes": 0
+  },
+  "failures": {
+    "content": [],
+    "technical": [],
+    "architecture": []
+  },
+  "validation_incidents_not_production_failures": [
+    "An initial shell command used Bash syntax under PowerShell and failed before repository mutation.",
+    "One handshake challenge request was created but not claimed because the caller parsed request_id at the wrong JSON level; a new challenge was then completed successfully. No Episode/model/image/authority side effect occurred.",
+    "The first focused regression run inherited WEBCODEX_SERVICE_ROOT and invalidated a test's simulated no-host precondition; rerunning with legacy host-detection environment variables removed passed cleanly."
+  ],
+  "regression": {
+    "focused": {
+      "passed": 331,
+      "failed": 0,
+      "skipped": 1,
+      "subtests_passed": 6
+    },
+    "broad": {
+      "command": "python -m pytest -q tests/system",
+      "passed": 1606,
+      "failed": 21,
+      "skipped": 1,
+      "subtests_passed": 98,
+      "known_baseline_failures": 21,
+      "baseline_source": "reports/p4-capability-router-production-cutover-final-20260929.json",
+      "baseline_identity_match": true,
+      "new_failures": []
+    }
+  },
+  "final_status": "READY_FOR_STORY_PAYLOAD",
+  "notes": [
+    "Real WebCodex Host attachment was fresh and workspace-bound before the payload check.",
+    "No formal Episode was created; therefore this run is not PRODUCTION_OBSERVATION_PASS and is not an architecture BLOCKED result.",
+    "A fresh handshake must be repeated immediately before canonical Episode creation once the original story body is available."
+  ]
+}

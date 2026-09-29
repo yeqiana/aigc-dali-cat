@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "storyos_production_observation_gate",
+  "observation_id": "02",
+  "generated_at": "2026-09-29T05:15:10Z",
+  "status": "READY_FOR_STORY_PAYLOAD",
+  "production_observation_pass": false,
+  "production_observation_blocked": false,
+  "ready_for_story_payload": true,
+  "reason": "Real WebCodex Host readiness passed, but the current WebCodex execution context does not contain the original body of 《未交的答卷》. Per production policy, no Episode was created and canonical production was not invoked.",
+  "checks": {
+    "formal_episode_created": false,
+    "canonical_entrypoint_used": false,
+    "webcodex_host_real": true,
+    "workspace_match": true,
+    "runtime_dag_observed": false,
+    "runtime_scheduler_observed": false,
+    "p4_production_enabled": true,
+    "p4_dispatch_match": "NOT_OBSERVED_NO_EPISODE",
+    "p4_receipts_complete": "NOT_APPLICABLE_NO_COMPLETED_EXECUTIONS",
+    "image_executor_correct": true,
+    "vision_executor_correct": true,
+    "checkpoint_observed": false,
+    "resume_idempotent_or_not_required": true,
+    "duplicate_dispatch_zero": true,
+    "guardian_shadow_observed": "CONFIG_VERIFIED_NO_EPISODE_RUNTIME_OBSERVATION",
+    "guardian_recovery_zero": true,
+    "guardian_authority_zero": true,
+    "episode_authority_preserved": true,
+    "architecture_failures_zero": true
+  },
+  "host": {
+    "handshake": "PASS",
+    "request_id": "wc-handshake-c685691d8f5fa448df4bafab",
+    "provider": "webcodex",
+    "transport": "WEBCODEX",
+    "execution_mode": "host_mcp_runner",
+    "host_status_at_validation": "AVAILABLE",
+    "attachment_fresh_at_validation": true,
+    "workspace_match": true,
+    "successful_reattach_count": 1,
+    "attachment_ttl_seconds": 60,
+    "attachment_expired_after_stop": true
+  },
+  "episode": {
+    "title": "未交的答卷",
+    "episode_id": null,
+    "created": false,
+    "start_stage": null,
+    "final_stage": null,
+    "content_status": "READY_FOR_STORY_PAYLOAD"
+  },
+  "regression": {
+    "focused": {
+      "passed": 331,
+      "failed": 0
+    },
+    "broad": {
+      "passed": 1606,
+      "known_baseline_failures": 21,
+      "new_failures": 0,
+      "skipped": 1,
+      "subtests_passed": 98,
+      "baseline_identity_match": true
+    }
+  },
+  "failure_counts": {
+    "content": 0,
+    "technical_production": 0,
+    "architecture": 0
+  },
+  "next_required_action": "Provide the original story body for 《未交的答卷》 to the current execution context, then perform a new real WebCodex Host handshake and immediately invoke the canonical production entrypoint. Do not create a second Episode because none has been created yet."
+}
