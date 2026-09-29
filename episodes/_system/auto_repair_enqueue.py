@@ -82,7 +82,7 @@ def enqueue_marked_repairs(ep: Path) -> dict:
         if frame <= 0:
             continue
         findings: list[str] = []
-        for source in (row.get("work_batch_review"), row.get("scout"), row.get("repair_assessment")):
+        for source in (row.get("vision_batch_review"), row.get("work_batch_review"), row.get("scout"), row.get("repair_assessment")):
             if not isinstance(source, dict):
                 continue
             findings.extend(str(x) for x in (source.get("issue_codes") or []) if str(x))
@@ -335,11 +335,17 @@ def enqueue(
     if status == "REPAIR_READY":
         # A repaired candidate failed content review. The ordinary one-shot
         # budget is exhausted; Production Ledger must move it to NEEDS_USER.
-        ok, msg = ledger_call.review(ep, frame=frame, decision="repair", notes=review_note)
+        ok, msg = ledger_call.review(
+            ep, frame=frame, decision="repair", notes=review_note,
+            prevent_exhaustion_force_pass=True,
+        )
         return {"status": "NEEDS_USER" if ok else "ERROR", "frame": frame, "ledger": msg[-800:]}
 
     if status == "ORIGINAL_READY":
-        ok, msg = ledger_call.review(ep, frame=frame, decision="repair", notes=review_note)
+        ok, msg = ledger_call.review(
+            ep, frame=frame, decision="repair", notes=review_note,
+            prevent_exhaustion_force_pass=True,
+        )
         if not ok:
             return {"status": "ERROR", "frame": frame, "ledger": msg[-800:]}
         status = str(_ledger_frame(ep, frame).get("status") or "")

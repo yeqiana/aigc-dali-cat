@@ -476,6 +476,11 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         q=load_queue(ep)
         ready,_=ready_items(ep,q)
         admitted=[]
+        budget = raw_candidate_budget.summary(ep, pending=len(ready))
+        available = max(0, int(budget.get("available") or 0))
+        if available <= 0:
+            return []
+        limit = min(limit, available)
         busy_frames={int(x["frame"]) for x in q.get("items") or [] if x.get("status")=="running"}
         for item in ready:
             if len(admitted)>=limit:

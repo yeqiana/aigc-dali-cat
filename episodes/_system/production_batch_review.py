@@ -67,6 +67,10 @@ def final_path(ep: Path, batch_id: str) -> Path:
     return ep / REVIEW_DIR / f"{batch_id}.json"
 
 
+def response_path(ep: Path, batch_id: str, attempt: int) -> Path:
+    return ep / REVIEW_DIR / f"{batch_id}-attempt-{int(attempt)}-response.txt"
+
+
 def unit_binding(ep: Path, item: dict) -> dict:
     path = repo_file(str(item["output_path"]))
     contract = frame_contract.compile_frame(ep, int(item["frame"]), write_cache=False)
@@ -236,6 +240,23 @@ def _ledger_review(ep: Path, frame: int, decision: str, notes: str) -> None:
         raise RuntimeError(f"production ledger review failed frame={frame:02d}: {cp.stdout[-1000:]}")
 
 
+def _batch_repair_already_applied(ep: Path, batch_id: str, frame: int) -> bool:
+    """Return True when the existing V2.4 batch gate already put this frame in repair for the same batch."""
+    import production_ledger_core
+
+    ledger = production_ledger_core.load_authority(Path(ep).resolve(), default={}) or {}
+    row = ((ledger.get("frames") or {}).get(f"{int(frame):02d}") or {})
+    if str(row.get("status") or "") not in {"CONTENT_FAILED", "REPAIR_AUTHORIZED", "REPAIR_READY"}:
+        return False
+    token = f"batch={batch_id}"
+    return any(
+        isinstance(review, dict)
+        and str(review.get("decision") or "") == "repair"
+        and token in str(review.get("notes") or "")
+        for review in (row.get("reviews") or [])
+    )
+
+
 def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance: dict, attempt: int = 1,
                               mark_product_review_complete: bool = False) -> dict:
     ep = ep.resolve(); candidate = candidate_path(ep, batch_id)
@@ -265,8 +286,14 @@ def _apply_review_data_locked(ep: Path, batch_id: str, *, data: dict, provenance
             continue
         decision = review["decision"]
         item["vision_batch_review"] = {"decision": decision, "reason": review.get("reason"), "issue_codes": review.get("issue_codes") or []}
+        prior_batch_repair = _batch_repair_already_applied(ep, batch_id, int(frame))
         if decision == "REPAIR_NOW":
-            _ledger_review(ep, int(frame), "repair", "Codex Vision batch actual-pixel review: " + str(review.get("reason") or "clear visible defect"))
+            if not prior_batch_repair:
+                _ledger_review(ep, int(frame), "repair", "Codex Vision batch actual-pixel review: " + str(review.get("reason") or "clear visible defect"))
+            item["status"] = "scout_repair"
+        elif prior_batch_repair:
+            # An earlier same-batch V2.4 gate is already stricter than PASS_PREVIEW/UNCERTAIN.
+            # Preserve its repair lane; this early Vision layer is evidence, not authority to undo it.
             item["status"] = "scout_repair"
         else:
             item["status"] = "generated"
@@ -295,6 +322,99 @@ def finalize(ep: Path, batch_id: str, *, runtime: str = "WORK", attempt: int = 1
         return _finalize_locked(ep, batch_id, runtime=runtime, attempt=attempt)
 
 
+def _complete_bound_payload(ep: Path, batch_id: str, rows: list[dict], data: dict) -> dict | None:
+    if len(rows) == 1 and not data.get("batch_id") and data.get("frame"):
+        data = {"batch_id": batch_id, "frames": [data], "summary": "single-frame logical batch review normalized"}
+    if str(data.get("batch_id") or "") != batch_id or not isinstance(data.get("frames"), list):
+        return None
+    expected = {f"{int(row['frame']):02d}" for row in rows}
+    reviewed = data.get("frames") or []
+    by_frame = {str(x.get("frame") or "").zfill(2): x for x in reviewed if isinstance(x, dict)}
+    if not expected or set(by_frame) != expected or len(reviewed) != len(expected):
+        return None
+    for frame, unit in by_frame.items():
+        if not _valid_unit(unit):
+            return None
+        item = next((x for x in rows if f"{int(x['frame']):02d}" == frame), None)
+        if item is None or any(unit.get(k) != v for k, v in unit_binding(ep, item).items()):
+            return None
+    return data
+
+
+def _json_from_text(raw: str) -> dict | None:
+    text = str(raw or "").strip()
+    if not text:
+        return None
+    try:
+        data = json.loads(text)
+    except Exception:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def _recover_candidate_from_attempt_log(ep: Path, batch_id: str, *, rows: list[dict], attempt: int, candidate: Path) -> dict | None:
+    """Recover exact machine JSON previously emitted in the same attempt log.
+
+    This is only for process-tail/output-path failures. Every recovered payload is
+    revalidated against the current batch frame set, candidate pixel SHA and Frame
+    Contract SHA before it is restored.
+    """
+    log = ep / REVIEW_DIR / f"{batch_id}-attempt-{int(attempt)}.jsonl"
+    if not log.is_file():
+        return None
+    for line in reversed(log.read_text(encoding="utf-8", errors="replace").splitlines()):
+        try:
+            event = json.loads(line)
+        except Exception:
+            continue
+        item = event.get("item") or {}
+        for key in ("aggregated_output", "text"):
+            raw = item.get(key)
+            if not isinstance(raw, str):
+                continue
+            data = _json_from_text(raw)
+            if data is None:
+                continue
+            bound = _complete_bound_payload(ep, batch_id, rows, data)
+            if bound is not None:
+                write_json(candidate, bound)
+                return bound
+    return None
+
+
+def _complete_bound_candidate(ep: Path, batch_id: str, rows: list[dict], candidate: Path) -> dict | None:
+    """Return a complete current-SHA candidate payload, otherwise None."""
+    if not candidate.is_file():
+        return None
+    try:
+        data = read_json(candidate)
+    except Exception:
+        return None
+    bound = _complete_bound_payload(ep, batch_id, rows, data)
+    if bound is not None and bound is not data:
+        write_json(candidate, bound)
+    return bound
+
+
+def _recover_complete_candidate(ep: Path, batch_id: str, *, rows: list[dict], candidate: Path,
+                                attempt: int, process_returncode: int | None, basis: str) -> dict | None:
+    data = _complete_bound_candidate(ep, batch_id, rows, candidate)
+    if data is None:
+        return None
+    provenance = runtime_provenance.build_vision_critic_provenance(
+        attempt=attempt,
+        log=(ep / REVIEW_DIR / f"{batch_id}-attempt-{attempt}.jsonl").resolve().relative_to(ROOT.resolve()).as_posix(),
+        review_scope="EARLY_BATCH_ACTUAL_PIXELS",
+    )
+    provenance["recovered_from_persisted_complete_candidate"] = True
+    provenance["recovery_basis"] = basis
+    if process_returncode is not None:
+        provenance["process_returncode"] = int(process_returncode)
+        provenance["recovered_from_post_answer_process_failure"] = True
+    with image_scheduler.queue_transaction(ep):
+        return _apply_review_data_locked(ep, batch_id, data=data, provenance=provenance, attempt=attempt)
+
+
 def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: str | None = None,
                      timeout: int | None = None) -> dict:
     """Review one logical batch in a fresh isolated Codex Vision session."""
@@ -306,7 +426,17 @@ def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: st
         raise ValueError(f"batch has no generated reviewable items: {batch_id}")
     contracts = review_contracts(ep, rows)
     candidate = candidate_path(ep, batch_id)
+    if _complete_bound_candidate(ep, batch_id, rows, candidate) is None:
+        _recover_candidate_from_attempt_log(ep, batch_id, rows=rows, attempt=attempt, candidate=candidate)
+    recovered = _recover_complete_candidate(
+        ep, batch_id, rows=rows, candidate=candidate, attempt=attempt,
+        process_returncode=None, basis="persisted_complete_candidate_resume",
+    )
+    if recovered is not None:
+        return recovered
     candidate.unlink(missing_ok=True)
+    response = response_path(ep, batch_id, attempt)
+    response.unlink(missing_ok=True)
     before = {f"{int(row['frame']):02d}": unit_binding(ep, row) for row in rows}
     staging = codex_user_runner.workspace_path(prefix="story-os-batch-review-")
     attachments: list[Path] = []
@@ -323,7 +453,7 @@ def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: st
             codex=codex,
             root=ROOT,
             timeout=timeout,
-            output_path=candidate,
+            output_path=response,
             attachments=attachments,
             model=runtime_router.vision_review_model(),
             reasoning_effort=runtime_router.vision_review_effort("default"),
@@ -332,25 +462,34 @@ def run_codex_review(ep: Path, batch_id: str, *, attempt: int = 1, codex_raw: st
         )
     finally:
         shutil.rmtree(staging, ignore_errors=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"Codex Vision batch critic failed rc={result.returncode}; log={result.log_path}")
-    if not candidate.is_file():
-        raise RuntimeError("Codex Vision batch critic did not produce candidate JSON")
+    if _complete_bound_candidate(ep, batch_id, rows, candidate) is None and response.is_file():
+        try:
+            response_data = _json_from_text(response.read_text(encoding="utf-8-sig", errors="replace"))
+        except Exception:
+            response_data = None
+        bound_response = _complete_bound_payload(ep, batch_id, rows, response_data or {}) if response_data else None
+        if bound_response is not None:
+            write_json(candidate, bound_response)
+    if _complete_bound_candidate(ep, batch_id, rows, candidate) is None:
+        _recover_candidate_from_attempt_log(ep, batch_id, rows=rows, attempt=attempt, candidate=candidate)
+    if not candidate.is_file() or _complete_bound_candidate(ep, batch_id, rows, candidate) is None:
+        if result.returncode != 0:
+            raise RuntimeError(f"Codex Vision batch critic failed rc={result.returncode}; log={result.log_path}")
+        raise RuntimeError("Codex Vision batch critic did not produce complete current-bound candidate JSON")
     after = {f"{int(row['frame']):02d}": unit_binding(ep, row) for row in rows}
     if after != before:
         raise RuntimeError("Codex Vision batch critic source bindings drifted")
-    data = read_json(candidate)
-    # A logical Codex batch may contain one frame while the provider capability
-    # probe is still warming up.  Some isolated critics return the requested
-    # unit directly despite the envelope requested above; normalize that
-    # single-unit shape without accepting a partial multi-frame review.
-    if len(rows) == 1 and not data.get("batch_id") and data.get("frame"):
-        data = {
-            "batch_id": batch_id,
-            "frames": [data],
-            "summary": "single-frame logical batch review normalized",
-        }
-        write_json(candidate, data)
+    if result.returncode != 0:
+        recovered = _recover_complete_candidate(
+            ep, batch_id, rows=rows, candidate=candidate, attempt=attempt,
+            process_returncode=result.returncode, basis="complete_candidate_after_process_failure",
+        )
+        if recovered is not None:
+            return recovered
+        raise RuntimeError(f"Codex Vision batch critic failed rc={result.returncode}; incomplete or stale candidate; log={result.log_path}")
+    data = _complete_bound_candidate(ep, batch_id, rows, candidate)
+    if data is None:
+        raise RuntimeError("Codex Vision batch critic produced incomplete, invalid, or stale candidate JSON")
     provenance = runtime_provenance.build_vision_critic_provenance(
         attempt=attempt,
         log=result.log_path.resolve().relative_to(ROOT.resolve()).as_posix(),
@@ -368,7 +507,11 @@ def pending(ep: Path) -> list[str]:
     result = []
     for batch_id in batch_ids:
         rows = batch_items(ep, batch_id)
-        if rows and len(reusable_units(ep, batch_id, rows)) != len(rows):
+        if not rows:
+            continue
+        # Candidate JSON is recoverable evidence, not final review authority.
+        # Keep the batch pending until a final SHA-bound review is persisted.
+        if not final_path(ep, batch_id).is_file() or len(reusable_units(ep, batch_id, rows)) != len(rows):
             result.append(batch_id)
     return result
 

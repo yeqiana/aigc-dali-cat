@@ -449,6 +449,83 @@ class EvidenceRecovery(unittest.TestCase):
                 self.assertEqual(batch_review.prepare(self.ep, runtime)['status'], 'FINALIZED')
                 self.assertEqual(queue.read_bytes(), before)
 
+    def test_batch_pending_keeps_complete_candidate_pending_until_final_persisted(self):
+        row = self.batch_fixture('TAIL')
+        with patch.object(batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract'}):
+            unit = {'frame': '01', **batch_review.unit_binding(self.ep, row), 'checks': {'whole_image': 'pass', 'key_regions': 'pass'},
+                    'decision': 'PASS_PREVIEW', 'unresolved': [], 'issue_codes': []}
+            batch_review.write_json(batch_review.candidate_path(self.ep, 'TAIL'), {'batch_id': 'TAIL', 'frames': [unit]})
+            self.assertEqual(batch_review.pending(self.ep), ['TAIL'])
+            batch_review.write_json(batch_review.final_path(self.ep, 'TAIL'), {'batch_id': 'TAIL', 'frames': [unit]})
+            self.assertEqual(batch_review.pending(self.ep), [])
+
+    def test_batch_review_resumes_complete_candidate_without_duplicate_codex_launch(self):
+        row = self.batch_fixture('RECOVER')
+        with patch.object(batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}):
+            unit = {'frame': '01', **batch_review.unit_binding(self.ep, row), 'checks': {'whole_image': 'pass', 'key_regions': 'pass'},
+                    'decision': 'PASS_PREVIEW', 'unresolved': [], 'issue_codes': []}
+            batch_review.write_json(batch_review.candidate_path(self.ep, 'RECOVER'), {'batch_id': 'RECOVER', 'frames': [unit]})
+            with patch.object(batch_review.codex_critic_runner, 'launch', side_effect=AssertionError('must not duplicate Vision review')), \
+                    patch.object(batch_review.product_review_adapter, 'mark_complete'):
+                final = batch_review.run_codex_review(self.ep, 'RECOVER', attempt=1)
+            self.assertEqual(final['frames'][0]['decision'], 'PASS_PREVIEW')
+            self.assertTrue(final['critic_provenance']['recovered_from_persisted_complete_candidate'])
+            self.assertFalse(batch_review.candidate_path(self.ep, 'RECOVER').exists())
+            self.assertTrue(batch_review.final_path(self.ep, 'RECOVER').is_file())
+
+    def test_batch_review_separates_final_response_from_candidate_file(self):
+        row = self.batch_fixture('SEPARATE')
+        log = self.ep / batch_review.REVIEW_DIR / 'SEPARATE-attempt-1.jsonl'
+        def fake_launch(*_args, **kwargs):
+            self.assertNotEqual(Path(kwargs['output_path']), batch_review.candidate_path(self.ep, 'SEPARATE'))
+            unit = {'frame': '01', **batch_review.unit_binding(self.ep, row),
+                    'checks': {'whole_image': 'pass', 'key_regions': 'pass'},
+                    'decision': 'PASS_PREVIEW', 'unresolved': [], 'issue_codes': []}
+            batch_review.write_json(batch_review.candidate_path(self.ep, 'SEPARATE'), {'batch_id': 'SEPARATE', 'frames': [unit]})
+            Path(kwargs['output_path']).parent.mkdir(parents=True, exist_ok=True)
+            Path(kwargs['output_path']).write_text('human readable summary', encoding='utf-8')
+            log.parent.mkdir(parents=True, exist_ok=True); log.write_text('', encoding='utf-8')
+            return SimpleNamespace(returncode=0, log_path=log)
+        with patch.object(batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract', 'prompt_contract': 'locked scene'}), \
+                patch.object(batch_review.codex_critic_runner, 'resolve_codex', return_value='codex'), \
+                patch.object(batch_review.codex_critic_runner, 'launch', side_effect=fake_launch):
+            final = batch_review.run_codex_review(self.ep, 'SEPARATE', attempt=1)
+        self.assertEqual(final['frames'][0]['decision'], 'PASS_PREVIEW')
+        self.assertTrue(batch_review.final_path(self.ep, 'SEPARATE').is_file())
+        self.assertFalse(batch_review.candidate_path(self.ep, 'SEPARATE').exists())
+        self.assertEqual(batch_review.response_path(self.ep, 'SEPARATE', 1).read_text(encoding='utf-8'), 'human readable summary')
+
+    def test_batch_review_recovers_bound_candidate_from_attempt_log(self):
+        row = self.batch_fixture('LOGRECOVER')
+        with patch.object(batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract'}):
+            unit = {'frame': '01', **batch_review.unit_binding(self.ep, row),
+                    'checks': {'whole_image': 'pass', 'key_regions': 'pass'},
+                    'decision': 'PASS_PREVIEW', 'unresolved': [], 'issue_codes': []}
+            log = self.ep / batch_review.REVIEW_DIR / 'LOGRECOVER-attempt-1.jsonl'
+            log.parent.mkdir(parents=True, exist_ok=True)
+            event = {'type': 'item.completed', 'item': {'type': 'command_execution', 'aggregated_output': json.dumps({'batch_id': 'LOGRECOVER', 'frames': [unit]})}}
+            log.write_text(json.dumps(event) + '\n', encoding='utf-8')
+            candidate = batch_review.candidate_path(self.ep, 'LOGRECOVER')
+            candidate.write_text('not json', encoding='utf-8')
+            recovered = batch_review._recover_candidate_from_attempt_log(self.ep, 'LOGRECOVER', rows=[row], attempt=1, candidate=candidate)
+            self.assertIsNotNone(recovered)
+            self.assertEqual(batch_review.read_json(candidate)['frames'][0]['candidate_sha256'], unit['candidate_sha256'])
+
+    def test_batch_review_preserves_same_batch_prior_repair_without_duplicate_ledger_write(self):
+        row = self.batch_fixture('PRIOR')
+        with patch.object(batch_review.frame_contract, 'compile_frame', return_value={'contract_sha256': 'contract'}):
+            unit = {'frame': '01', **batch_review.unit_binding(self.ep, row),
+                    'checks': {'whole_image': 'pass', 'key_regions': 'pass'},
+                    'decision': 'UNCERTAIN', 'unresolved': ['prior gate already requires repair'], 'issue_codes': []}
+            with patch.object(batch_review, '_batch_repair_already_applied', return_value=True), \
+                    patch.object(batch_review, '_ledger_review') as ledger:
+                final = batch_review._apply_review_data_locked(
+                    self.ep, 'PRIOR', data={'batch_id': 'PRIOR', 'frames': [unit]}, provenance={'runtime': 'test'})
+                ledger.assert_not_called()
+        self.assertEqual(final['frames'][0]['decision'], 'UNCERTAIN')
+        queue = batch_review.read_json(self.ep / batch_review.QUEUE_REL)
+        self.assertEqual(queue['items'][0]['status'], 'scout_repair')
+
     def test_batch_finalization_rejects_missing_fields_duplicates_and_invalid_checks(self):
         row = self.batch_fixture()
         with patch.object(batch_review.runtime_router, 'detect', return_value=('WORK', 'test')), patch.object(

@@ -26,6 +26,7 @@ import image_blocked_recovery
 import preproduction_handoff
 import production_batch_review
 import production_ledger
+import production_ledger_persistence
 import product_review_adapter
 import product_runtime_adapter
 import raw_candidate_budget
@@ -41,7 +42,9 @@ import visual_lock_baseline_gate
 import visual_lock_candidate_pool
 import visual_lock_v21
 import story_json
+import storyos_config
 import episode_lifecycle
+import episode_contract_persistence
 import episode_state_persistence
 import hot_state_bridge
 import runtime_review_persistence
@@ -298,7 +301,10 @@ def _represented_original_frames(q: dict, ep: Path | None = None) -> set[int]:
         and row.get("kind") == "original"
         and str(row.get("scope") or "") in {"visual_lock", "batch"}
         and int(row.get("frame") or 0) > 0
-        and row.get("status") != "superseded"
+        and (
+            row.get("status") != "superseded"
+            or bool(str(row.get("output_path") or "").strip())
+        )
     }
     # Visual Lock frames are already durable production representations even
     # when they are intentionally absent from the production queue.  Count
@@ -311,10 +317,24 @@ def _represented_original_frames(q: dict, ep: Path | None = None) -> set[int]:
             for key, row in ledger.items()
             if str(key).isdigit()
             and isinstance(row, dict)
-            and str(row.get("status") or "") in production_ledger.READY_LEDGER_STATES
+            and (
+                str(row.get("status") or "") in production_ledger.READY_LEDGER_STATES
+                or bool((row.get("current_candidate") or {}).get("sha256"))
+            )
             and int(key) > 0
         )
     return represented
+
+
+def _ordinary_patch_review_frames(ep: Path, ledger_frames: dict) -> list[int]:
+    expected = _expected_frames(ep)
+    return sorted(
+        frame for frame in range(1, expected + 1)
+        if isinstance(ledger_frames.get(f"{frame:02d}"), dict)
+        and str(ledger_frames[f"{frame:02d}"].get("status") or "") == "REPAIR_READY"
+        and not _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-continuation-")
+        and not _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-exception-")
+    )
 
 
 def _current_candidate_capture_id(frame: dict) -> str:
@@ -354,6 +374,9 @@ def _handoff_valid(ep: Path) -> bool:
         return False
 
 
+@storyos_config.operation_cached
+@production_ledger_persistence.operation_cached
+@episode_contract_persistence.operation_cached
 def derive(ep: Path) -> dict:
     ep = Path(ep).resolve()
     runtime_portability.assert_episode_directory(ep)
@@ -555,6 +578,21 @@ def derive(ep: Path) -> dict:
                 if str(row.get("technical_failure_code") or "").upper() in raw_candidate_budget.BUDGET_BLOCK_CODES
             ]
             if budget_blocked:
+                # Reviewing already-generated repair candidates costs no image
+                # budget and can reduce the amount of follow-up generation needed.
+                # Always review those fresh pixels before asking the user to raise
+                # the episode image budget for still-blocked siblings.
+                review_ready = _ordinary_patch_review_frames(ep, ledger_frames)
+                if review_ready and frame_semantic_review.ordinary_patch_eligible(
+                    ep, [f"{frame:02d}" for frame in review_ready]
+                ):
+                    return action_result(
+                        action="REVIEW_FINAL_PATCH",
+                        executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
+                        attempt=_final_semantic_attempt(ep),
+                        frames=review_ready,
+                        reason="fresh bounded repair candidates exist while sibling generation is budget-blocked; review existing pixels before requesting more image budget",
+                    )
                 budget_context = raw_candidate_budget.blocked_queue_context(ep, budget_blocked)
                 resumable = list(budget_context.get("resumable_frames") or [])
                 if resumable:
@@ -809,13 +847,7 @@ def derive(ep: Path) -> dict:
                     frames=exception_review_frames,
                     reason="direct-user exception candidates must receive their dedicated attempt-3 semantic review before generic final production review",
                 )
-            ordinary_patch_frames=sorted(
-                frame for frame in range(1, expected+1)
-                if isinstance(ledger_frames.get(f"{frame:02d}"), dict)
-                and str(ledger_frames[f"{frame:02d}"].get("status") or "") == "REPAIR_READY"
-                and not _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-continuation-")
-                and not _current_candidate_capture_id(ledger_frames[f"{frame:02d}"]).startswith("user-exception-")
-            )
+            ordinary_patch_frames=_ordinary_patch_review_frames(ep, ledger_frames)
             if ordinary_patch_frames and frame_semantic_review.ordinary_patch_eligible(
                 ep, [f"{frame:02d}" for frame in ordinary_patch_frames]
             ):
