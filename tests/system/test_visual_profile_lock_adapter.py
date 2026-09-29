@@ -303,12 +303,13 @@ class VisualLockAdapterBoundaryTest(AdapterBase):
         # authority documents (release-manifest.json, story-gates.json). All of them must
         # stay inside the new episode; nothing outside episodes/ may be created.
         expected_extra = {
-            "episodes", "episodes/scoped_episode", "episodes/scoped_episode/meta",
-            "episodes/scoped_episode/meta/episode-state.json",
-            "episodes/scoped_episode/meta/release-manifest.json",
-            "episodes/scoped_episode/meta/story-gates.json",
-            "episodes/scoped_episode/meta/visual-profile.json",
-            "episodes/scoped_episode/meta/runtime-request.json",
+            "episodes", "episodes/00_独立篇", "episodes/00_独立篇/01_scoped_episode",
+            "episodes/00_独立篇/01_scoped_episode/meta",
+            "episodes/00_独立篇/01_scoped_episode/meta/episode-state.json",
+            "episodes/00_独立篇/01_scoped_episode/meta/release-manifest.json",
+            "episodes/00_独立篇/01_scoped_episode/meta/story-gates.json",
+            "episodes/00_独立篇/01_scoped_episode/meta/visual-profile.json",
+            "episodes/00_独立篇/01_scoped_episode/meta/runtime-request.json",
         }
         before = snapshot()
         self.create("scoped_episode", selector_input=REAL_DAILY)

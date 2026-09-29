@@ -59,7 +59,9 @@ def load_runtime_env_file(path: Path, env: dict[str, str]) -> tuple[dict[str, st
     """Load local runtime connection settings without exposing values in evidence.
 
     The default location lives under ``.storyos/runtime-launcher`` which is
-    git-ignored. Only the explicit allowlist above is accepted.
+    git-ignored. Only the explicit allowlist above is accepted. Explicit process
+    environment values win over the file, matching normal .env override semantics
+    and allowing tests/services to select hermetic storage without file mutation.
     """
     if not path.is_file():
         return env, ()
@@ -74,6 +76,8 @@ def load_runtime_env_file(path: Path, env: dict[str, str]) -> tuple[dict[str, st
         key = key.strip()
         if key not in RUNTIME_ENV_KEYS:
             raise ValueError(f"unsupported runtime env key: {key}")
+        if key in env:
+            continue
         env[key] = value.strip()
         loaded.append(key)
     return env, tuple(sorted(set(loaded)))

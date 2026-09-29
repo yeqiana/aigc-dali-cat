@@ -30,9 +30,59 @@ from visual_profile_lock_adapter import (
 from visual_profile_resolver import infer_profile, resolve_profile
 
 
+DEFAULT_STANDALONE_SERIES = "00_独立篇"
+
+
 def slugify(title: str) -> str:
     title = re.sub(r"[^\w\u4e00-\u9fff]+", "_", title).strip("_")
     return title or "untitled_episode"
+
+
+def _canonical_identity_for_path(root: Path, episode: Path, title: str) -> tuple[str, str]:
+    """Return the human business id + series for a canonical two-level Episode path.
+
+    Legacy/test callers may still pass a flat or external Episode directory; those
+    retain the historical title-derived identity so compatibility helpers do not
+    become a migration engine by accident.
+    """
+    episodes_root = (Path(root) / "episodes").resolve()
+    try:
+        rel = Path(episode).resolve().relative_to(episodes_root)
+    except ValueError:
+        return slugify(title), ""
+    if len(rel.parts) != 2:
+        return slugify(title), ""
+    series_match = re.match(r"^(\d{2})_.+$", rel.parts[0])
+    episode_match = re.match(r"^(\d{2})_.+$", rel.parts[1])
+    if not series_match or not episode_match:
+        return slugify(title), ""
+    return f"{series_match.group(1)}-{episode_match.group(1)}", rel.parts[0]
+
+
+def _standalone_episode_path(root: Path, title: str) -> Path:
+    """Resolve a stable numbered path for a new one-sentence standalone Episode."""
+    series_dir = Path(root) / "episodes" / DEFAULT_STANDALONE_SERIES
+    slug = slugify(title)
+    matches = []
+    numbers = []
+    if series_dir.is_dir():
+        for child in series_dir.iterdir():
+            if not child.is_dir():
+                continue
+            match = re.match(r"^(\d{2})_(.+)$", child.name)
+            if not match:
+                continue
+            numbers.append(int(match.group(1)))
+            if match.group(2) == slug:
+                matches.append(child)
+    if len(matches) > 1:
+        raise RuntimeError(f"duplicate canonical standalone Episode title: {title}")
+    if matches:
+        return matches[0]
+    next_no = max(numbers, default=0) + 1
+    if next_no > 99:
+        raise RuntimeError("standalone Episode numbering exhausted (00-99)")
+    return series_dir / f"{next_no:02d}_{slug}"
 
 
 def ensure_episode_core_documents(
@@ -54,9 +104,10 @@ def ensure_episode_core_documents(
     episode = Path(episode)
     meta = episode / "meta"
     meta.mkdir(parents=True, exist_ok=True)
+    business_episode_id, series_id = _canonical_identity_for_path(root, episode, title)
     state, manifest, gates = episode_state.initial_documents(
-        episode_id=slugify(title),
-        series="",
+        episode_id=business_episode_id,
+        series=series_id,
         title=title,
         frame_count=frame_count,
         note="一句话入口创建 Episode；后续阶段只由 canonical state transition 推进",
@@ -150,7 +201,7 @@ def create_episode(
     re-selected and never overwritten.
     """
     root = Path(root)
-    episode = root / "episodes" / slugify(title)
+    episode = _standalone_episode_path(root, title)
     existing_lock, existing_source = read_visual_lock(episode)
 
     if existing_lock is not None:

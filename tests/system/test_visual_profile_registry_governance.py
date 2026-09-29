@@ -2,7 +2,7 @@
 """Visual Profile Registry tests (Visual Profile Governance Phase 2.1).
 
 Before this phase a runtime-request could declare an arbitrary visual_profile id
-(real case: episodes/江南卖花姑娘的一天/meta/runtime-request.json declared
+(real case: episodes/00_独立篇/03_江南卖花姑娘的一天/meta/runtime-request.json declared
 M00_ANCIENT_DAILY_LIFE_V1, which has no document under standards/visual_profiles/).
 The resolver did not fail: it returned the default M00 profile and production
 continued. Configuration presence was treated as evidence.
@@ -249,6 +249,13 @@ class VisualProfileCreatorTest(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="vp-create-ok-") as tmp:
             root = self._root(tmp)
             episode = story_creator.create_episode(root, "普通的周末", M00)
+            self.assertEqual(
+                episode.relative_to(root).as_posix(),
+                "episodes/00_独立篇/01_普通的周末",
+            )
+            state = json.loads((episode / "meta/episode-state.json").read_text(encoding="utf-8"))
+            self.assertEqual(state["episode_id"], "00-01")
+            self.assertEqual(state["series"], "00_独立篇")
             request = json.loads((episode / "meta/runtime-request.json").read_text(encoding="utf-8"))
             self.assertEqual(request["visual_profile"], M00)
             resolution = request["visual_profile_resolution"]
@@ -257,6 +264,18 @@ class VisualProfileCreatorTest(unittest.TestCase):
             self.assertIs(resolution["registered"], True)
             self.assertIs(resolution["fallback"], False)
             self.assertEqual(resolution["registry"], "standards/visual_profiles/index.json")
+
+    def test_standalone_numbering_is_sequential_and_stable(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="vp-create-numbering-") as tmp:
+            root = self._root(tmp)
+            first = story_creator.create_episode(root, "第一篇", M00)
+            second = story_creator.create_episode(root, "第二篇", M00)
+            repeated = story_creator.create_episode(root, "第一篇", M00)
+
+            self.assertEqual(first.relative_to(root).as_posix(), "episodes/00_独立篇/01_第一篇")
+            self.assertEqual(second.relative_to(root).as_posix(), "episodes/00_独立篇/02_第二篇")
+            self.assertEqual(repeated, first)
+            self.assertFalse((root / "episodes" / "00_独立篇" / "03_第一篇").exists())
 
     def test_list_registered_profiles_reads_registry(self) -> None:
         listed = {p["profile_id"]: p for p in visual_profile.list_registered_profiles()}

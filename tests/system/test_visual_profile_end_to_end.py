@@ -333,14 +333,16 @@ class GateBoundaryTest(EndToEndBase):
         # Canonical bootstrap also writes the Runtime DAG authority documents; the point
         # of this test is that every one of them lands inside the episode.
         self.assertEqual(added, {
-            "episodes", "episodes/e2e_scoped", "episodes/e2e_scoped/meta",
-            "episodes/e2e_scoped/meta/episode-state.json",
-            "episodes/e2e_scoped/meta/release-manifest.json",
-            "episodes/e2e_scoped/meta/story-gates.json",
-            "episodes/e2e_scoped/meta/visual-profile.json",
-            "episodes/e2e_scoped/meta/runtime-request.json",
+            "episodes", "episodes/00_独立篇", "episodes/00_独立篇/01_e2e_scoped",
+            "episodes/00_独立篇/01_e2e_scoped/meta",
+            "episodes/00_独立篇/01_e2e_scoped/meta/episode-state.json",
+            "episodes/00_独立篇/01_e2e_scoped/meta/release-manifest.json",
+            "episodes/00_独立篇/01_e2e_scoped/meta/story-gates.json",
+            "episodes/00_独立篇/01_e2e_scoped/meta/visual-profile.json",
+            "episodes/00_独立篇/01_e2e_scoped/meta/runtime-request.json",
         })
-        self.assertEqual(episode.parent, self.root / "episodes")
+        self.assertEqual(episode.parent, self.root / "episodes" / "00_独立篇")
+        self.assertEqual(episode.parent.parent, self.root / "episodes")
         self.assertFalse((self.root / "runtime").exists(), "no Runtime file may be touched")
         self.assertFalse((self.root / "meta").exists(), "the repository episode-state must not be touched")
 

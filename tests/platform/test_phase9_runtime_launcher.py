@@ -105,6 +105,26 @@ def test_runtime_env_file_loads_only_allowed_storyos_keys(tmp_path):
     )
 
 
+def test_runtime_env_file_preserves_explicit_process_override(tmp_path):
+    path = tmp_path / "runtime.env"
+    path.write_text(
+        "STORYOS_EPISODE_META_STORE_MODE=mysql\n"
+        "STORYOS_HOT_STATE_MODE=redis\n",
+        encoding="utf-8",
+    )
+    env, keys = load_runtime_env_file(
+        path,
+        {
+            "STORYOS_EPISODE_META_STORE_MODE": "json",
+            "STORYOS_HOT_STATE_MODE": "file",
+        },
+    )
+
+    assert env["STORYOS_EPISODE_META_STORE_MODE"] == "json"
+    assert env["STORYOS_HOT_STATE_MODE"] == "file"
+    assert keys == ()
+
+
 def test_runtime_env_file_rejects_unknown_keys(tmp_path):
     path = tmp_path / "runtime.env"
     path.write_text("NOT_ALLOWED=value\n", encoding="utf-8")
