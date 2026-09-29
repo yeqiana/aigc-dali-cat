@@ -7,6 +7,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -191,7 +192,18 @@ class RecoveryTests(unittest.TestCase):
             self.assertEqual(proc.stdout.readline().strip(),"True")
             self.assertFalse(store.acquire_lock(self.ep))
             proc.kill(); proc.wait(timeout=10)
-            self.assertTrue(store.acquire_lock(self.ep))
+            # Windows can release the kernel byte-range lock a few scheduler ticks
+            # after the process handle becomes signaled. Preserve the invariant
+            # (the lock becomes reacquirable after owner death) without requiring
+            # an unrealistically zero-latency release.
+            deadline = time.monotonic() + 1.0
+            reacquired = False
+            while time.monotonic() < deadline:
+                if store.acquire_lock(self.ep):
+                    reacquired = True
+                    break
+                time.sleep(0.02)
+            self.assertTrue(reacquired)
             self.assertFalse(store.acquire_lock(self.ep))
             store.release_lock(self.ep)
         finally:
