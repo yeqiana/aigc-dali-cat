@@ -414,6 +414,19 @@ class VisionAutoRepairTests(unittest.TestCase):
                 patch.object(visual_lock_baseline_gate.character_visual_contract, "validate_pixel_master", return_value=[]):
             self.assertFalse(visual_lock_baseline_gate.approved(Path("ep")))
 
+    def test_exhausted_auto_pixel_repair_never_uses_legacy_force_pass(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            with patch.object(auto_repair_enqueue, "repair_pending", return_value=False), \
+                    patch.object(auto_repair_enqueue, "_ledger_frame", return_value={"status": "REPAIR_READY", "content_repairs_used": 1}), \
+                    patch.object(auto_repair_enqueue.ledger_call, "review", return_value=(True, "NEEDS_USER")) as review:
+                result = auto_repair_enqueue.enqueue(
+                    ep, frame=18, findings=["ANOMALY_SCALE_DELIVERY"], source="VISUAL_LOCK",
+                    review_note="repair pixels failed actual-pixel review",
+                )
+        self.assertEqual(result["status"], "NEEDS_USER")
+        self.assertTrue(review.call_args.kwargs["prevent_exhaustion_force_pass"])
+
     def test_ordinary_repair_replaces_historical_authority_refresh_queue_identity(self):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
@@ -542,6 +555,96 @@ class VisionAutoRepairTests(unittest.TestCase):
         self.assertEqual(result["status"], "REPAIR_ENQUEUED")
         enqueue.assert_called_once()
         self.assertIn("reality_first", enqueue.call_args.kwargs["findings"])
+
+    def test_visual_lock_resume_reuses_persisted_fail_without_duplicate_critic(self):
+        persisted = [{
+            "id": "V-H", "frame": 18,
+            "checks": {"not_cinematic": False},
+            "issues": ["CINEMATIC_CONCEPT_ART"],
+        }]
+        repair = {"status": "NEEDS_USER", "frame": 18}
+        with tempfile.TemporaryDirectory() as td, \
+                patch.object(vision_review_executor, "_require_capability", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "bind_from_queue", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "verify", return_value=["dirty"]), \
+                patch.object(vision_review_executor.visual_lock_v21, "run_critic", side_effect=AssertionError("must not duplicate Vision review")), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor.visual_lock_candidate_pool, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor, "_persisted_current_visual_lock_fail_rows", return_value=persisted), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "enqueue", return_value=repair) as enqueue:
+            result = vision_review_executor.execute(
+                Path(td),
+                {"action": "REVIEW_VISUAL_LOCK", "executor": "CODEX_VISION", "frames": [18]},
+            )
+        self.assertEqual(result["status"], "NEEDS_USER")
+        enqueue.assert_called_once()
+
+    def test_visual_lock_candidate_fail_reopens_passed_ledger_for_next_bounded_candidate(self):
+        persisted = [{
+            "id": "V-A", "frame": 3,
+            "checks": {"anomaly_scale_delivery": False},
+            "issues": ["ANOMALY_NOT_READABLE"],
+        }]
+        with tempfile.TemporaryDirectory() as td, \
+                patch.object(vision_review_executor, "_require_capability", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "bind_from_queue", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "verify", return_value=["dirty"]), \
+                patch.object(vision_review_executor.visual_lock_v21, "run_critic", side_effect=AssertionError("must reuse persisted result")), \
+                patch.object(vision_review_executor.visual_lock_v21, "calibration_assets", return_value=[{"id": "V-A", "frame": 3, "sha256": "sha", "frame_contract_sha256": "fc"}]), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor.visual_lock_candidate_pool, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor, "_persisted_current_visual_lock_fail_rows", return_value=persisted), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "enqueue", return_value={"status": "NOT_REPAIRABLE", "frame": 3, "ledger_status": "PASSED"}), \
+                patch.object(vision_review_executor.visual_lock_admission_state, "restore_ledger_fail", return_value=True) as reconcile:
+            result = vision_review_executor.execute(
+                Path(td),
+                {"action": "REVIEW_VISUAL_LOCK", "executor": "CODEX_VISION", "frames": [3]},
+            )
+        self.assertEqual(result["status"], "NEEDS_USER")
+        self.assertTrue(result["repairs"][0]["reconciled_from_visual_lock_fail"])
+        reconcile.assert_called_once()
+
+    def test_visual_lock_post_result_transport_failure_uses_current_sha_bound_fail(self):
+        persisted = [{
+            "id": "V-A", "frame": 3,
+            "checks": {"anomaly_scale_delivery": False},
+            "issues": ["ANOMALY_NOT_READABLE"],
+        }]
+        repair = {"status": "NEEDS_USER", "frame": 3}
+        with tempfile.TemporaryDirectory() as td, \
+                patch.object(vision_review_executor, "_require_capability", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "bind_from_queue", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "verify", return_value=["dirty"]), \
+                patch.object(vision_review_executor.visual_lock_v21, "run_critic", return_value=11), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor.visual_lock_candidate_pool, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor, "_persisted_current_visual_lock_fail_rows", return_value=persisted), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "enqueue", return_value=repair) as enqueue:
+            result = vision_review_executor.execute(
+                Path(td),
+                {"action": "REVIEW_VISUAL_LOCK", "executor": "CODEX_VISION", "frames": [3]},
+            )
+        self.assertEqual(result["status"], "NEEDS_USER")
+        self.assertEqual(result["returncode"], 2)
+        enqueue.assert_called_once()
+        self.assertIn("ANOMALY_NOT_READABLE", enqueue.call_args.kwargs["findings"])
+
+    def test_visual_lock_transport_failure_without_bound_result_stays_technical(self):
+        with tempfile.TemporaryDirectory() as td, \
+                patch.object(vision_review_executor, "_require_capability", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "bind_from_queue", return_value=None), \
+                patch.object(vision_review_executor.visual_lock_v21, "verify", return_value=["dirty"]), \
+                patch.object(vision_review_executor.visual_lock_v21, "run_critic", return_value=11), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor.visual_lock_candidate_pool, "review_attempt", return_value=3), \
+                patch.object(vision_review_executor, "_persisted_current_visual_lock_fail_rows", return_value=[]), \
+                patch.object(vision_review_executor.auto_repair_enqueue, "enqueue") as enqueue:
+            result = vision_review_executor.execute(
+                Path(td),
+                {"action": "REVIEW_VISUAL_LOCK", "executor": "CODEX_VISION", "frames": [3]},
+            )
+        self.assertEqual(result["status"], "TECHNICAL_FAILURE")
+        enqueue.assert_not_called()
 
     def test_visual_lock_human_present_requires_identity_even_without_name_token(self):
         with tempfile.TemporaryDirectory() as td:

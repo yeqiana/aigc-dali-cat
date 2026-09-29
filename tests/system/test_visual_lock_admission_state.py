@@ -238,6 +238,60 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
         self.assertLessEqual(len(prompt), 245)
         self.assertLessEqual(len(prompt.encode("utf-8")), 850)
 
+    def test_candidate_pool_allows_next_slot_after_bound_candidate_fail_even_if_ledger_is_passed(self):
+        frame = 5
+        sha = "c" * 64
+        fc = "d" * 64
+        capture_id = f"visual-lock-candidate-{candidate_pool.CANDIDATE_POLICY_REVISION}-05-01"
+        _write(self.ep / "meta/visual-lock-plan.json", {"items": [{"role": "ordinary_baseline", "frame": 1}]})
+        _write(self.ep / "meta/production-ledger.json", {"frames": {"05": {
+            "status": "PASSED",
+            "current_candidate": {"sha256": sha},
+            "attempts": [{"result": "success", "request": {"capture_id": capture_id}, "candidate": {"sha256": sha}}],
+        }}})
+        _write(self.ep / "meta/production-queue.json", {"items": [{
+            "frame": frame, "kind": "baseline_candidate", "capture_id": capture_id,
+            "status": "generated", "output_path": "candidate-1.png",
+        }]})
+        failed = {"id": "V-A", "frame": frame, "role": "first_major_anomaly", "sha256": sha,
+                  "frame_contract_sha256": fc, "checks": {"anomaly_scale_delivery": False},
+                  "issues": ["ANOMALY_NOT_READABLE"]}
+        _write(self.ep / "meta/visual-profile-review.json", {"calibration": [failed]})
+        _write(self.ep / "meta/visual-lock-admissions.json", {"schema_version": 1, "items": {"V-A": {
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly", "sha256": sha,
+            "frame_contract_sha256": fc, "status": "FAIL", "review_row": failed,
+        }}})
+        with patch.object(candidate_pool, "enabled", return_value=True), \
+                patch.object(candidate_pool, "max_additional_candidates_per_frame", return_value=2):
+            self.assertEqual(candidate_pool.prepareable_frames(self.ep), [frame])
+
+    def test_candidate_pool_rejects_stale_fail_when_ledger_candidate_sha_changed(self):
+        frame = 5
+        old_sha = "c" * 64
+        new_sha = "e" * 64
+        fc = "d" * 64
+        capture_id = f"visual-lock-candidate-{candidate_pool.CANDIDATE_POLICY_REVISION}-05-01"
+        _write(self.ep / "meta/visual-lock-plan.json", {"items": [{"role": "ordinary_baseline", "frame": 1}]})
+        _write(self.ep / "meta/production-ledger.json", {"frames": {"05": {
+            "status": "PASSED", "current_candidate": {"sha256": new_sha},
+            "attempts": [{"result": "success", "request": {"capture_id": capture_id}, "candidate": {"sha256": new_sha}}],
+        }}})
+        _write(self.ep / "meta/production-queue.json", {"items": [{
+            "frame": frame, "kind": "baseline_candidate", "capture_id": capture_id,
+            "status": "generated", "output_path": "candidate-1.png",
+        }]})
+        failed = {"id": "V-A", "frame": frame, "role": "first_major_anomaly", "sha256": old_sha,
+                  "frame_contract_sha256": fc, "checks": {"anomaly_scale_delivery": False},
+                  "issues": ["ANOMALY_NOT_READABLE"]}
+        _write(self.ep / "meta/visual-profile-review.json", {"calibration": [failed]})
+        _write(self.ep / "meta/visual-lock-admissions.json", {"schema_version": 1, "items": {"V-A": {
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly", "sha256": old_sha,
+            "frame_contract_sha256": fc, "status": "FAIL", "review_row": failed,
+        }}})
+        with patch.object(candidate_pool, "enabled", return_value=True), \
+                patch.object(candidate_pool, "max_additional_candidates_per_frame", return_value=2):
+            self.assertEqual(candidate_pool.prepareable_frames(self.ep), [])
+
     def test_candidate_prompt_slot2_hard_fits_local_prompt_budget(self):
         row = {
             "frame": 5,
@@ -299,6 +353,23 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
         _write(self.ep / "meta/production-queue.json", {"items": [legacy, current]})
         self.assertEqual(candidate_pool.historical_successful_slots(self.ep, frame), 2)
         self.assertEqual(candidate_pool.successful_slots(self.ep, frame), 1)
+
+    def test_episode_can_explicitly_disable_visual_lock_weak_pass(self):
+        frame = 5
+        sha = "c" * 64
+        _write(self.ep / "meta/production-ledger.json", {"frames": {"05": {
+            "status": "NEEDS_USER", "current_candidate": {"sha256": sha},
+            "attempts": [{"result": "success"}] * 4,
+        }}})
+        _write(self.ep / "meta/visual-profile-review.json", {"calibration": [{
+            "id": "V-A", "frame": frame, "role": "first_major_anomaly",
+            "checks": {"anomaly_scale_delivery": False}, "issues": ["ANOMALY_NOT_READABLE"],
+        }]})
+        _write(self.ep / "meta/story-gates.json", {"visual": {"calibration": {"allow_weak_pass": False}}})
+        result = candidate_pool.weak_pass_eligibility(self.ep, frame)
+        self.assertFalse(result["eligible"])
+        self.assertFalse(result["policy_allowed"])
+        self.assertEqual(candidate_pool.weak_pass_eligible_frames(self.ep), [])
 
     def test_weak_pass_counts_only_successful_content_outputs_not_technical_failures(self):
         frame = 5

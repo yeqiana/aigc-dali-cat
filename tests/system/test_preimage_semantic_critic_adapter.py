@@ -51,6 +51,14 @@ class PreimageSemanticCriticAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(critic.PreimageCriticError, "stale"):
             self.capsule()
 
+    def test_frozen_candidate_files_survive_expected_post_commit_authority_advance(self):
+        capsule = self.capsule()
+        gates = self.ep / "meta/story-gates.json"
+        gates.write_text(json.dumps({"schema_version": 1, "story": {"source": "post-commit"}, "visual": {"committed": True}}), encoding="utf-8")
+        with self.assertRaisesRegex(critic.PreimageCriticError, "stale"):
+            critic.build_frozen_candidate_set(self.ep, self.snapshot, self.rows)
+        critic.verify_frozen_candidate_files_unchanged(self.ep, capsule)
+
     def test_applicability_not_applicable_scope_is_not_flagged(self):
         capsule = self.capsule()
         world = capsule["candidate_set"]["WORLD_PREPARE"]["candidate"]["payload"]

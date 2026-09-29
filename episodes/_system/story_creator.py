@@ -84,6 +84,17 @@ def _standalone_episode_path(root: Path, title: str) -> Path:
         raise RuntimeError("standalone Episode numbering exhausted (00-99)")
     return series_dir / f"{next_no:02d}_{slug}"
 
+def resolve_episode_path(root: Path, title: str) -> Path:
+    """Resolve an existing legacy/canonical Episode, otherwise allocate canonical standalone path."""
+    root = Path(root)
+    canonical = _standalone_episode_path(root, title)
+    if canonical.exists():
+        return canonical
+    legacy = root / "episodes" / slugify(title)
+    if legacy.exists():
+        return legacy
+    return canonical
+
 
 def ensure_episode_core_documents(
     root: Path,
@@ -201,7 +212,7 @@ def create_episode(
     re-selected and never overwritten.
     """
     root = Path(root)
-    episode = _standalone_episode_path(root, title)
+    episode = resolve_episode_path(root, title)
     existing_lock, existing_source = read_visual_lock(episode)
 
     if existing_lock is not None:

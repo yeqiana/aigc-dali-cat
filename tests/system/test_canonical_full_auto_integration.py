@@ -478,6 +478,9 @@ class OneSentenceChainCaseTest(CanonicalFullAutoBase):
         self.assertEqual(len(calls), 1, calls)
         episode = self.episode_of(document)
         self.assertEqual(calls[0]['episode'], episode)
+        self.assertEqual(episode.parent.name, story_creator.DEFAULT_STANDALONE_SERIES)
+        self.assertFalse((self.root / 'episodes' / story_creator.slugify(idea)).exists(),
+                         'canonical full-auto must not create or read the legacy title-only path')
         self.assertIn(profile_id, document['visual_profile'])
         self.assertEqual(document['visual_lock'], 'LOCKED')
         self.assertEqual(document['current_stage'], 'IDEA_LOCKED')

@@ -1156,7 +1156,10 @@ Return one row for EVERY attached frame. If any hard check fails, mark it false,
 def _prepare_final_semantic_shadow_best_effort(ep: Path, attempt: int) -> dict | None:
     """Prepare the advisory lane without allowing it to block canonical review."""
     try:
-        import final_semantic_critic_adapter
+        try:
+            import final_semantic_critic_adapter
+        except ModuleNotFoundError:
+            from agents import final_semantic_critic_adapter
         return final_semantic_critic_adapter.schedule_shadow_best_effort(ep, attempt=attempt)
     except Exception as exc:  # pragma: no cover - defensive fallback around a non-authoritative lane
         print(f"WARN: Final Semantic Critic Shadow wiring unavailable: {type(exc).__name__}: {exc}")

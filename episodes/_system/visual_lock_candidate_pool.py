@@ -157,6 +157,60 @@ def _ledger_frame(ep: Path, frame: int) -> dict:
     return row if isinstance(row, dict) else {}
 
 
+def _current_policy_candidate_fail_is_bound(ep: Path, frame: int, review_row: dict, ledger: dict | None = None) -> bool:
+    ep = Path(ep).resolve()
+    ledger = ledger if isinstance(ledger, dict) else _ledger_frame(ep, frame)
+    if str(ledger.get("status") or "") != "PASSED":
+        return False
+    current = ledger.get("current_candidate") or {}
+    current_sha = str(current.get("sha256") or "").lower()
+    if not current_sha:
+        return False
+    rid = str(review_row.get("id") or "")
+    admission = ((visual_lock_admission_state.load(ep).get("items") or {}).get(rid) or {})
+    if not isinstance(admission, dict) or admission.get("status") != "FAIL":
+        return False
+    if int(admission.get("frame") or 0) != int(frame):
+        return False
+    if str(admission.get("sha256") or "").lower() != current_sha:
+        return False
+    row_sha = str(review_row.get("sha256") or "").lower()
+    if row_sha and row_sha != current_sha:
+        return False
+    row_fc = str(review_row.get("frame_contract_sha256") or "").lower()
+    admission_fc = str(admission.get("frame_contract_sha256") or "").lower()
+    if row_fc and admission_fc != row_fc:
+        return False
+    prefix = f"visual-lock-candidate-{CANDIDATE_POLICY_REVISION}-{int(frame):02d}-"
+    for attempt in reversed(ledger.get("attempts") or []):
+        if not isinstance(attempt, dict) or attempt.get("result") != "success":
+            continue
+        candidate_sha = str(((attempt.get("candidate") or {}).get("sha256")) or "").lower()
+        capture_id = str(((attempt.get("request") or {}).get("capture_id")) or "")
+        if candidate_sha == current_sha and capture_id.startswith(prefix):
+            return True
+    return False
+
+
+def _candidate_lane_ready(ep: Path, frame: int, review_row: dict, ledger: dict | None = None) -> bool:
+    ledger = ledger if isinstance(ledger, dict) else _ledger_frame(ep, frame)
+    return (
+        str(ledger.get("status") or "") == "NEEDS_USER"
+        or _current_policy_candidate_fail_is_bound(ep, frame, review_row, ledger)
+    )
+
+
+def weak_pass_allowed(ep: Path) -> bool:
+    """Episode-level opt-out for low-score Visual Lock acceptance.
+
+    Default preserves legacy behavior. A production pilot may explicitly set
+    visual.calibration.allow_weak_pass=false when strict quality is required.
+    """
+    gates = _read(Path(ep).resolve() / GATES_REL)
+    calibration = ((gates.get("visual") or {}).get("calibration") or {})
+    return calibration.get("allow_weak_pass") is not False
+
+
 def weak_pass_eligibility(ep: Path, frame: int) -> dict:
     """Return auditable low-score eligibility; technical attempts never count as content tries."""
     ep = Path(ep).resolve()
@@ -174,8 +228,10 @@ def weak_pass_eligibility(ep: Path, frame: int) -> dict:
         if any(token in issue.upper() for token in WEAK_PASS_HARD_ISSUE_TOKENS)
     })
     candidate = ledger.get("current_candidate") or {}
+    policy_allowed = weak_pass_allowed(ep)
     eligible = (
-        bool(row)
+        policy_allowed
+        and bool(row)
         and str(ledger.get("status") or "") == "NEEDS_USER"
         and content_attempts > WEAK_PASS_CONTENT_ATTEMPT_THRESHOLD
         and bool(candidate.get("sha256"))
@@ -185,6 +241,7 @@ def weak_pass_eligibility(ep: Path, frame: int) -> dict:
     )
     return {
         "eligible": eligible,
+        "policy_allowed": policy_allowed,
         "frame": int(frame),
         "content_attempts": content_attempts,
         "technical_attempts": technical_attempts,
@@ -304,7 +361,7 @@ def prepareable_frames(ep: Path) -> list[int]:
         if frame == base:
             continue
         ledger = _ledger_frame(ep, frame)
-        if str(ledger.get("status") or "") != "NEEDS_USER":
+        if not _candidate_lane_ready(ep, frame, row, ledger):
             continue
         if active_candidate(ep, frame) is not None:
             continue
@@ -332,7 +389,7 @@ def exhausted_frames(ep: Path) -> list[int]:
         if frame == base:
             continue
         ledger = _ledger_frame(ep, frame)
-        if str(ledger.get("status") or "") != "NEEDS_USER":
+        if not _candidate_lane_ready(ep, frame, row, ledger):
             continue
         if active_candidate(ep, frame) is not None:
             continue
@@ -422,7 +479,8 @@ def candidate_prompt(ep: Path, frame: int, slot: int) -> str:
 def enqueue_frame(ep: Path, frame: int) -> dict:
     ep = Path(ep).resolve()
     ledger = _ledger_frame(ep, frame)
-    if str(ledger.get("status") or "") != "NEEDS_USER":
+    review_row = _row_for_frame(ep, frame)
+    if not _candidate_lane_ready(ep, frame, review_row, ledger):
         return {"status": "NOT_READY", "frame": frame, "ledger_status": ledger.get("status")}
     active = active_candidate(ep, frame)
     if active:

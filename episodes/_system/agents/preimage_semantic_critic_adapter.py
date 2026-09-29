@@ -68,7 +68,10 @@ def adapter_config() -> dict:
 
 
 def validate_decision(payload: Any) -> dict:
-    import story_semantic_critic_adapter as shared
+    try:
+        import story_semantic_critic_adapter as shared
+    except ModuleNotFoundError:
+        from agents import story_semantic_critic_adapter as shared
     try:
         return shared.validate_decision(payload)
     except shared.CriticDecisionError as exc:
@@ -168,6 +171,21 @@ def verify_capsule_integrity(capsule: Any) -> dict:
     if not expected or expected != actual:
         raise PreimageCriticError("PREIMAGE capsule obligation/candidate-set SHA mismatch")
     return capsule
+
+
+def verify_frozen_candidate_files_unchanged(episode_dir: Path, capsule: dict) -> None:
+    """Verify frozen candidate bytes without requiring the pre-commit snapshot to stay current."""
+    ep = Path(episode_dir).resolve()
+    verify_capsule_integrity(capsule)
+    rows = capsule.get("candidate_set") or {}
+    if set(rows) != set(preimage_task_contract.TASK_TYPES):
+        raise PreimageCriticError("PREIMAGE frozen candidate set is incomplete")
+    for task_type, row in rows.items():
+        filename = preimage_task_contract.TASK_SPECS[task_type]["candidate"]
+        path = ep / preimage_task_contract.CANDIDATE_REL / filename
+        expected = str(row.get("candidate_sha256") or "")
+        if not path.is_file() or not expected or sha_file(path).lower() != expected.lower():
+            raise PreimageCriticError(f"PREIMAGE frozen candidate changed after freeze: {task_type}")
 
 
 _CROSS_SCOPE_FACT_KEYS = frozenset({
@@ -410,9 +428,7 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
     candidate_path = (ROOT / request["candidate_path"]).resolve()
     if candidate_path.exists():
         raise PreimageCriticError("duplicate PREIMAGE Critic dispatch rejected")
-    current = build_frozen_candidate_set(ep)
-    if current["capsule_sha256"] != capsule.get("capsule_sha256"):
-        raise PreimageCriticError("PREIMAGE source/candidate set changed before model execution")
+    verify_frozen_candidate_files_unchanged(ep, capsule)
     model, effort = configured_cli_model()
     if not model or not effort:
         raise PreimageCriticError("active Codex model and reasoning effort are not observable")
@@ -448,8 +464,7 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
     )
     if validate_decision(finalized_candidate) != decision:
         raise PreimageCriticError("finalized PREIMAGE Critic decision differs from Host candidate")
-    if build_frozen_candidate_set(ep)["capsule_sha256"] != capsule["capsule_sha256"]:
-        raise PreimageCriticError("PREIMAGE frozen source changed during Critic execution")
+    verify_frozen_candidate_files_unchanged(ep, capsule)
     existing = {"decision": "ACCEPT_CANDIDATE", "issue_codes": []}
     comparison = _comparison_evidence(existing, decision)
     report = {

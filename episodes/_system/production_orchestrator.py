@@ -207,8 +207,8 @@ def plan(
         )
 
     episode_title = str(title or idea).strip() or intent["source_text"]
-    episode_id = story_creator.slugify(episode_title)
-    episode_rel = (Path("episodes") / episode_id).as_posix()
+    episode_dir = story_creator.resolve_episode_path(Path(root), episode_title)
+    episode_rel = _rel(episode_dir, Path(root))
 
     candidates = [
         str(candidate.get("profile"))
@@ -230,6 +230,7 @@ def plan(
         lifecycle_state = str(adapter.lifecycle_of_lock(lock) or "")
         lock_path = LOCK_REL.as_posix()
         created = True
+    episode_id = Path(episode_dir).name
 
     needs_confirmation = lifecycle_state == adapter.LIFECYCLE_NEEDS_CONFIRMATION
     status = STATUS_NEEDS_CONFIRMATION if needs_confirmation else STATUS_PLANNED
@@ -659,7 +660,7 @@ def run_full_auto(root, idea, *, title=None, frames: int = DEFAULT_FRAME_COUNT,
         )
 
     episode_title = str(title or idea).strip() or intent["source_text"]
-    episode_dir = Path(root) / "episodes" / story_creator.slugify(episode_title)
+    episode_dir = story_creator.resolve_episode_path(Path(root), episode_title)
 
     if dry_run:
         draft = adapter.create_visual_lock_draft(payload, selection, story_root=repo)

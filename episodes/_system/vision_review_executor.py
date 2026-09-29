@@ -19,6 +19,7 @@ import story_json
 import runtime_timeout_policy
 import visual_lock_baseline_gate
 import visual_lock_candidate_pool
+import visual_lock_admission_state
 import visual_lock_v21
 import visual_profile_review_persistence
 import production_ledger
@@ -51,6 +52,53 @@ def _require_capability() -> None:
     runtime, _ = runtime_router.vision_review_runtime()
     if runtime != "CODEX" or not runtime_router.local_codex_vision_allowed():
         raise VisionReviewError(f"Codex Vision review is not enabled: runtime={runtime}")
+
+
+def _persisted_current_visual_lock_fail_rows(ep: Path, *, frames: list[int], attempt: int) -> list[dict]:
+    """Return current SHA-bound FAIL rows already persisted for this review attempt.
+
+    A Codex Vision process can emit and persist a complete content decision, then
+    lose its transport before the terminal event. In that narrow case the content
+    result is authoritative for the reviewed pixels; the trailing process failure
+    must not force a duplicate review. Any missing/mismatched binding keeps the
+    caller fail-closed as a technical failure.
+    """
+    try:
+        contract = visual_lock_v21.compile_prompt_contract(ep)
+        profile_sha256 = str(contract.get("profile_sha256") or "").lower()
+        story_os_version = visual_lock_v21.episode_version(ep)
+        assets = visual_lock_v21.calibration_assets(ep)
+        by_frame = {int(asset.get("frame") or 0): asset for asset in assets}
+        items = (visual_lock_admission_state.load(ep).get("items") or {})
+        rows: list[dict] = []
+        for frame in frames:
+            asset = by_frame.get(int(frame))
+            if asset is None:
+                return []
+            entry = items.get(str(asset.get("id") or ""))
+            if not isinstance(entry, dict) or entry.get("status") != "FAIL":
+                return []
+            if int(entry.get("attempt") or 0) != int(attempt):
+                return []
+            expected = visual_lock_admission_state.binding(
+                asset,
+                profile_sha256=profile_sha256,
+                story_os_version=story_os_version,
+            )
+            for key, value in expected.items():
+                actual = entry.get(key)
+                if key in {"sha256", "frame_contract_sha256", "profile_sha256"}:
+                    actual = str(actual or "").lower()
+                    value = str(value or "").lower()
+                if actual != value:
+                    return []
+            row = entry.get("review_row")
+            if not isinstance(row, dict):
+                return []
+            rows.append(dict(row))
+        return rows
+    except Exception:
+        return []
 
 
 def execute(ep: Path, action: dict) -> dict:
@@ -109,16 +157,35 @@ def execute(ep: Path, action: dict) -> dict:
             max([auto_repair_enqueue.review_attempt(ep, frame) for frame in frames] or [1]),
             visual_lock_candidate_pool.review_attempt(ep),
         ))
-        rc = visual_lock_v21.run_critic(
+        persisted_fail_rows = _persisted_current_visual_lock_fail_rows(
             ep,
+            frames=frames,
             attempt=attempt,
-            codex_raw=None,
-            timeout=runtime_timeout_policy.seconds("review_critic"),
         )
-        if rc == 11:
-            return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "returncode": rc, "attempt": attempt}
+        if persisted_fail_rows:
+            # Resume an already completed SHA-bound content decision instead of
+            # dispatching the same pixels to Vision again after a process-tail failure.
+            rc = 2
+        else:
+            rc = visual_lock_v21.run_critic(
+                ep,
+                attempt=attempt,
+                codex_raw=None,
+                timeout=runtime_timeout_policy.seconds("review_critic"),
+            )
+            if rc == 11:
+                persisted_fail_rows = _persisted_current_visual_lock_fail_rows(
+                    ep,
+                    frames=frames,
+                    attempt=attempt,
+                )
+                if not persisted_fail_rows:
+                    return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "returncode": rc, "attempt": attempt}
+                # The current pixels already have a complete SHA-bound FAIL decision.
+                # Continue the normal content-failure closure without re-reviewing them.
+                rc = 2
         if rc != 0:
-            review = visual_profile_review_persistence.load(ep) or {}
+            review = {"calibration": persisted_fail_rows} if persisted_fail_rows else (visual_profile_review_persistence.load(ep) or {})
             repairs = []
             for row in review.get("calibration") or []:
                 checks = row.get("checks") or {}
@@ -138,6 +205,22 @@ def execute(ep: Path, action: dict) -> dict:
                     source="VISUAL_LOCK",
                     review_note="Phase5 Visual Lock critic failed actual-pixel admission",
                 )
+                if repair.get("status") == "NOT_REPAIRABLE" and repair.get("ledger_status") == "PASSED":
+                    asset = next(
+                        (item for item in visual_lock_v21.calibration_assets(ep)
+                         if int(item.get("frame") or 0) == frame),
+                        None,
+                    )
+                    if asset is not None and visual_lock_admission_state.restore_ledger_fail(
+                        ep,
+                        asset=asset,
+                        evidence_note="Current SHA-bound Visual Lock admission failed; reopen bounded candidate lane",
+                    ):
+                        repair = {
+                            "status": "NEEDS_USER",
+                            "frame": frame,
+                            "reconciled_from_visual_lock_fail": True,
+                        }
                 repairs.append(repair)
             if repairs and all(r.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING", "NOT_REPAIRABLE"} for r in repairs):
                 enqueued = [r for r in repairs if r.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING"}]

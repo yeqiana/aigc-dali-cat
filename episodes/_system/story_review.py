@@ -478,7 +478,10 @@ def schedule_critic_shadow(
     canonical_source_files: list[dict] | None = None,
 ) -> dict:
     """Schedule the advisory Critic beside, never inside, canonical Story Review."""
-    import story_semantic_critic_adapter as critic_shadow
+    try:
+        import story_semantic_critic_adapter as critic_shadow
+    except ModuleNotFoundError:
+        from agents import story_semantic_critic_adapter as critic_shadow
 
     config = critic_shadow.adapter_config()
     if config.get("shadow_enabled") is not True:

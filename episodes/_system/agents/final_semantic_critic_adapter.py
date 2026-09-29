@@ -65,7 +65,10 @@ def adapter_config() -> dict:
 
 def validate_decision(payload: Any) -> dict:
     """Reuse the shared P3 wire validator and reject any non-decision metadata."""
-    import story_semantic_critic_adapter as shared
+    try:
+        import story_semantic_critic_adapter as shared
+    except ModuleNotFoundError:
+        from agents import story_semantic_critic_adapter as shared
     try:
         return shared.validate_decision(payload)
     except shared.CriticDecisionError as exc:
