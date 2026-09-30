@@ -46,6 +46,43 @@ def test_prompt_package_reads_legacy_then_writes_workspace(monkeypatch, tmp_path
     assert runtime_workspace.source_kind(ep, rel) == "runtime_workspace"
 
 
+def test_projection_migration_uses_authority_cache_without_physical_file(monkeypatch, tmp_path):
+    ep = _episode(monkeypatch, tmp_path)
+    old = {
+        "frame": "01",
+        "contract_sha256": "old",
+        "hash_material": {
+            "stable": {"scene": "same"},
+            "authenticity_card": {"story_era": None},
+            "continuity": {"anchors": {"protagonist": None}},
+        },
+    }
+    new = {
+        "frame": "01",
+        "contract_sha256": "new",
+        "hash_material": {
+            "stable": {"scene": "same"},
+            "authenticity_card": {"story_era": "2026"},
+            "continuity": {"anchors": {"protagonist": "P01"}},
+        },
+    }
+    written = {}
+    monkeypatch.setattr(frame_contract, "frame_count", lambda _ep: 1)
+    monkeypatch.setattr(frame_contract, "load_cached_contract", lambda _ep, _frame: old)
+    monkeypatch.setattr(frame_contract, "compile_frame", lambda _ep, _frame, write_cache=False: new)
+    monkeypatch.setattr(frame_contract.story_json, "read_json", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(frame_contract.story_json, "write_json", lambda _path, payload: written.update(payload))
+
+    result = frame_contract.record_projection_migrations(ep)
+
+    assert result["status"] == "PASS"
+    assert result["count"] == 1
+    assert result["added"][0]["from_contract_sha256"] == "old"
+    assert result["added"][0]["to_contract_sha256"] == "new"
+    assert result["added"][0]["reason"] == "machine_visual_projection_only"
+    assert written["items"][0]["frame"] == "01"
+
+
 def test_frame_contract_frame_cache_uses_workspace_but_index_stays_episode(monkeypatch, tmp_path):
     ep = _episode(monkeypatch, tmp_path)
     legacy = ep / frame_contract.cache_rel(1)

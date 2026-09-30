@@ -14,7 +14,7 @@ from pathlib import Path
 
 import frame_contract
 import frame_semantic_review as base
-from final_acceptance import allows as acceptance_allows
+from final_acceptance import allows as acceptance_allows, visual_asset_for_frame
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path("meta/visual-final-freeze.json")
@@ -22,10 +22,14 @@ REL = Path("meta/visual-final-freeze.json")
 def _row(ep: Path, frame: dict) -> dict:
     prov = frame_contract.provenance(ep, int(frame["frame"])) or {}
     phase3 = base.phase3_context_hashes(ep, frame["frame"])
+    accepted = visual_asset_for_frame(ep, frame["frame"])
+    asset_path = accepted["path"] if accepted is not None else frame["path_rel"]
+    asset_sha = accepted["sha256"] if accepted is not None else frame["sha256"]
     return {
         "frame": frame["frame"],
-        "asset_path": frame["path_rel"],
-        "asset_sha256": frame["sha256"],
+        "asset_path": asset_path,
+        "asset_sha256": asset_sha,
+        "asset_source": "direct_user_final_publish" if accepted is not None else "production_ledger",
         "frame_contract_sha256": prov.get("contract_sha256"),
         "visual_context": phase3,
     }

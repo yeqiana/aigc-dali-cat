@@ -31,6 +31,7 @@ import runtime_timeout_policy
 import runtime_workspace
 import episode_state_persistence
 import local_visual_triage
+import final_acceptance
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -327,6 +328,12 @@ def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
         return []
     errors: list[str] = []
     for frame in frames:
+        # A direct user final decision is a later authority than the historical
+        # generated candidate. Preserve that history, but do not reject the
+        # accepted publish file for differing from its former candidate SHA.
+        accepted = final_acceptance.visual_asset_for_frame(ep, frame["frame"])
+        if accepted and accepted.get("sha256", "").lower() == frame["sha256"].lower():
+            continue
         errors.extend(phase4_contract.verify_approved_asset_binding(ep, frame["frame"], frame["sha256"]))
     return errors
 
@@ -342,11 +349,20 @@ def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
         frame = frames[key]
         if not isinstance(frame, dict):
             raise ValueError(f"ledger frame {key} invalid")
-        if frame.get("status") not in production_ledger.ACCEPTED_LEDGER_STATES:
-            raise ValueError(f"frame {key} not production-passed: {frame.get('status')!r}")
-        asset = frame.get("approved_asset")
-        if not isinstance(asset, dict):
-            raise ValueError(f"frame {key} approved_asset missing")
+        accepted = None
+        try:
+            accepted = final_acceptance.visual_asset_for_frame(ep, key)
+        except (RuntimeError, ValueError):
+            if final_acceptance.allows(ep, "frame_semantic"):
+                raise
+        if accepted and final_acceptance.allows(ep, "frame_semantic"):
+            asset = accepted
+        else:
+            if frame.get("status") not in production_ledger.ACCEPTED_LEDGER_STATES:
+                raise ValueError(f"frame {key} not production-passed: {frame.get('status')!r}")
+            asset = frame.get("approved_asset")
+            if not isinstance(asset, dict):
+                raise ValueError(f"frame {key} approved_asset missing")
         raw_path = asset.get("path") or asset.get("asset_path")
         expected_sha = str(asset.get("sha256") or "").lower()
         if len(expected_sha) != 64:

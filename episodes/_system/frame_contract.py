@@ -793,10 +793,9 @@ def record_projection_migrations(ep: Path) -> dict:
     }
     added = []
     for frame in range(1, frame_count(ep) + 1):
-        path = cache_path(ep, frame)
-        if not path.is_file():
+        cached = load_cached_contract(ep, frame)
+        if not isinstance(cached, dict):
             continue
-        cached = read_json(path)
         current = compile_frame(ep, frame, write_cache=False)
         old_sha = str(cached.get("contract_sha256") or "").lower()
         new_sha = str(current.get("contract_sha256") or "").lower()

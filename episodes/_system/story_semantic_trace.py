@@ -353,6 +353,10 @@ def attach(ep, frame, *, method, source, confidence, story_role=None, beat_deliv
         lock["sha256"] = str(story_lock_sha256).lower()
     if frame_contract_sha256 is None:
         frame_contract_sha256 = _contract_sha(ep, frame)
+    if frame_contract_sha256 is None:
+        ledger = production_ledger.load_authority(ep, default={}) or {}
+        frame_data = (ledger.get("frames") or {}).get(f"{int(frame):02d}") or {}
+        frame_contract_sha256 = attempt_contract_sha(accepted_attempt(frame_data))
     trace = trace_from_review(review) or {}
     trace.update({
         "required": bool(requirement.get("required")),
