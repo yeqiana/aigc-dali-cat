@@ -439,7 +439,7 @@ class ModelFallbackConvergenceTests(unittest.TestCase):
                     codex_subscription_image.invoke_codex(
                         prompt, [], root / "raw.png", root / "attempt.log",
                         "1080x1350", 30, None)
-            self.assertIn("auth.json", str(ctx.exception))
+            self.assertIn("GENERATION_ATTEMPT_LEASE_REQUIRED", str(ctx.exception))
             run_codex.assert_not_called()
 
     def test_image_runtime_preflight_bridge_uses_runner_health_without_credential_contents(self):
