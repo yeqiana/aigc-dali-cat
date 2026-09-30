@@ -13,9 +13,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import capability_router as router
+import model_policy
 from capability_router_gate import evaluate_gate
 
 NOW = dt.datetime(2026, 9, 28, 12, 0, tzinfo=dt.timezone.utc)
+VISION_MODEL = str(model_policy.resolve_profile("vision_final")["model"])
+IMAGE_PAYLOAD_MODEL = str(model_policy.resolve_profile("image_payload")["model"])
 P3_CLOSURE_SHA = "90465e7c29474db3ca45de320ab6c466d54bd05ac6296300a3454e1ca81e7347"
 IMPLEMENTATION_REPORT = ROOT / "reports/p4-capability-router-shadow-implementation-20260928.json"
 TRIAGE_REPORT = ROOT / "reports/p4-preimplementation-regression-triage-20260928.json"
@@ -83,19 +86,19 @@ def paired_route_comparison():
     registry = _base_registry()
     specs = [
         ("story_critic_work_to_codex", "critic", ("text_input", "structured_output", "high_reasoning"), ("schema_output",), ("image_generation", "write_tools"), "WORK", "host-managed", "high", False, {}, "WORK", "host-managed"),
-        ("story_critic_codex", "critic", ("text_input", "structured_output", "high_reasoning"), (), ("image_generation", "write_tools"), "codex_user_runner", "gpt-6-luna", "high", False, {}, "codex_user_runner", "gpt-6-luna"),
+        ("story_critic_codex", "critic", ("text_input", "structured_output", "high_reasoning"), (), ("image_generation", "write_tools"), "codex_user_runner", VISION_MODEL, "high", False, {}, "codex_user_runner", VISION_MODEL),
         ("preimage_critic_work", "critic", ("text_input", "structured_output"), (), ("image_generation", "write_tools"), "WORK", "host-managed", None, False, {}, "WORK", "host-managed"),
-        ("final_critic_multimodal", "multimodal_review", ("text_input", "image_input", "structured_output", "high_reasoning"), (), ("image_generation", "write_tools"), "codex_user_runner", "gpt-6-luna", "high", True, {}, "codex_user_runner", "gpt-6-luna"),
+        ("final_critic_multimodal", "multimodal_review", ("text_input", "image_input", "structured_output", "high_reasoning"), (), ("image_generation", "write_tools"), "codex_user_runner", VISION_MODEL, "high", True, {}, "codex_user_runner", VISION_MODEL),
         ("ordinary_text_work", "text_generation", ("text_input",), (), ("image_generation",), "WORK", "host-managed", None, False, {}, "WORK", "host-managed"),
-        ("ordinary_text_codex", "text_generation", ("text_input",), (), ("image_generation",), "codex_user_runner", "gpt-6-luna", None, False, {}, "codex_user_runner", "gpt-6-luna"),
-        ("multimodal_review_codex", "multimodal_review", ("text_input", "image_input", "structured_output", "high_reasoning"), ("schema_output",), ("image_generation", "write_tools"), "codex_user_runner", "gpt-6-luna", "high", True, {}, "codex_user_runner", "gpt-6-luna"),
+        ("ordinary_text_codex", "text_generation", ("text_input",), (), ("image_generation",), "codex_user_runner", VISION_MODEL, None, False, {}, "codex_user_runner", VISION_MODEL),
+        ("multimodal_review_codex", "multimodal_review", ("text_input", "image_input", "structured_output", "high_reasoning"), ("schema_output",), ("image_generation", "write_tools"), "codex_user_runner", VISION_MODEL, "high", True, {}, "codex_user_runner", VISION_MODEL),
         ("provider_unavailable", "text_generation", ("text_input",), (), ("image_generation",), "WORK", "host-managed", None, False, {"WORK": "UNAVAILABLE"}, "WORK", "host-managed"),
-        ("preferred_provider_degraded", "text_generation", ("text_input",), (), ("image_generation",), "codex_user_runner", "gpt-6-luna", None, False, {"codex_user_runner": "DEGRADED"}, "codex_user_runner", "gpt-6-luna"),
+        ("preferred_provider_degraded", "text_generation", ("text_input",), (), ("image_generation",), "codex_user_runner", VISION_MODEL, None, False, {"codex_user_runner": "DEGRADED"}, "codex_user_runner", VISION_MODEL),
         ("expired_health_unknown", "text_generation", ("text_input",), (), ("image_generation",), "WORK", "host-managed", None, False, {"WORK": "HEALTHY"}, "WORK", "host-managed"),
         ("required_capability_missing", "text_generation", ("text_input", "p4_fixture_missing_capability"), (), ("image_generation",), "WORK", "host-managed", None, False, {}, "WORK", "host-managed"),
-        ("forbidden_capability_conflict", "text_generation", ("text_input",), (), ("image_generation", "structured_output"), "codex_cli_subscription", "gpt-image-2.5-flare", None, False, {}, "codex_cli_subscription", "gpt-image-2.5-flare"),
+        ("forbidden_capability_conflict", "text_generation", ("text_input",), (), ("image_generation", "structured_output"), "codex_cli_subscription", IMAGE_PAYLOAD_MODEL, None, False, {}, "codex_cli_subscription", IMAGE_PAYLOAD_MODEL),
         ("all_candidates_unavailable", "text_generation", ("text_input",), (), ("image_generation",), "WORK", "host-managed", None, False, {"WORK": "UNAVAILABLE", "codex_user_runner": "UNAVAILABLE"}, "WORK", "host-managed"),
-        ("final_image_input_unavailable", "multimodal_review", ("text_input", "image_input", "structured_output", "high_reasoning"), (), ("image_generation", "write_tools"), "codex_user_runner", "gpt-6-luna", "high", True, {"codex_user_runner": "UNAVAILABLE"}, "codex_user_runner", "gpt-6-luna"),
+        ("final_image_input_unavailable", "multimodal_review", ("text_input", "image_input", "structured_output", "high_reasoning"), (), ("image_generation", "write_tools"), "codex_user_runner", VISION_MODEL, "high", True, {"codex_user_runner": "UNAVAILABLE"}, "codex_user_runner", VISION_MODEL),
         ("preference_fallback_work_unhealthy", "text_generation", ("text_input",), (), ("image_generation",), "WORK", "host-managed", None, False, {"WORK": "DEGRADED"}, "WORK", "host-managed"),
         ("policy_disallowed_provider", "text_generation", ("text_input",), (), ("image_generation",), "WORK", "host-managed", None, False, {}, "WORK", "host-managed"),
     ]
@@ -163,18 +166,18 @@ def failure_injection():
     cache = router.HealthCache()
     tech_cases = {}
     for label, detail in (("429", "429 Too Many Requests"), ("5xx", "503 upstream failure"), ("timeout", "runner timeout")):
-        record = router.record_execution_outcome(cache, "codex_user_runner", "gpt-6-luna",
+        record = router.record_execution_outcome(cache, "codex_user_runner", VISION_MODEL,
                                                  successful=False, failure_type="technical_failure",
                                                  reason=detail, source="injected_execution_telemetry",
                                                  observed_at=NOW)
         tech_cases[label] = record.to_dict()
-    degraded = cache.get("codex_user_runner", "gpt-6-luna", now=NOW)
+    degraded = cache.get("codex_user_runner", VISION_MODEL, now=NOW)
     text_req = _route_request("injected-degraded-fallback", "text_generation", ("text_input",),
                               forbidden=("image_generation",), preferred_provider="codex_user_runner",
-                              preferred_model="gpt-6-luna")
+                              preferred_model=VISION_MODEL)
     fallback = router.resolve(text_req, registry=registry, health=cache, now=NOW)
     before_sha = sha(cache.snapshot(now=NOW))
-    recovered = router.record_execution_outcome(cache, "codex_user_runner", "gpt-6-luna",
+    recovered = router.record_execution_outcome(cache, "codex_user_runner", VISION_MODEL,
                                                 successful=True, reason="injected retry success",
                                                 source="injected_execution_telemetry",
                                                 observed_at=NOW + dt.timedelta(seconds=10))
@@ -194,7 +197,7 @@ def failure_injection():
     no_route_req = _route_request("injected-no-route-final", "multimodal_review",
                                   ("text_input", "image_input", "structured_output", "high_reasoning"),
                                   forbidden=("image_generation", "write_tools"),
-                                  preferred_provider="codex_user_runner", preferred_model="gpt-6-luna",
+                                  preferred_provider="codex_user_runner", preferred_model=VISION_MODEL,
                                   reasoning="high", multimodal=True)
     no_route = router.resolve(no_route_req, registry=registry, health=no_route_health, now=NOW)
     cycle_registry = tuple(_fixture_model("WORK", "duplicate", {"image_generation"}, "WORK") for _ in range(8))
@@ -245,8 +248,8 @@ def real_health_audit():
     rows = []
     for provider, model, capability_evidence in (
         ("WORK", "host-managed", "workspace_provider contract: model host-selected; reasoning not exposed; telemetry not exposed by transport"),
-        ("codex_user_runner", str(execution.get("model") or "gpt-6-luna"), "codex_user_runner receipt/config: model and reasoning_effort=high declared"),
-        ("codex_cli_subscription", "gpt-image-2.5-flare", "image.model configuration and subscription image producer; no generation health probe performed"),
+        ("codex_user_runner", str(execution.get("model") or VISION_MODEL), "codex_user_runner receipt/config: model and reasoning_effort=high declared"),
+        ("codex_cli_subscription", IMAGE_PAYLOAD_MODEL, "Model Policy image_payload profile and subscription image producer; no generation health probe performed"),
     ):
         match = provider == execution.get("provider") and model == execution.get("model")
         status = "HEALTHY" if match and fresh else "UNKNOWN"
@@ -272,7 +275,7 @@ def performance_and_determinism(iterations=1200):
     req = _route_request("p4-performance-fixed-request", "critic",
                          ("text_input", "structured_output", "high_reasoning"),
                          optional=("schema_output",), forbidden=("image_generation", "write_tools"),
-                         preferred_provider="codex_user_runner", preferred_model="gpt-6-luna", reasoning="high")
+                         preferred_provider="codex_user_runner", preferred_model=VISION_MODEL, reasoning="high")
     # Measure Router execution rather than ambient interpreter GC.  A raw per-call
     # max is otherwise vulnerable to an unrelated collection pause during the
     # full system suite even when median/p95 and isolated repeats are stable.

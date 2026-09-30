@@ -32,6 +32,7 @@ import visual_lock_baseline_gate
 import episode_performance
 import raw_candidate_budget
 import storyos_config
+import model_policy
 import scheduler_core
 import batch_scheduler
 import production_queue_store
@@ -51,7 +52,7 @@ QUEUE_REL = scheduler_core.QUEUE_REL
 SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 _CONFIG = storyos_config.load_config()
 MAX_SUPPORTED_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
-DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
+DEFAULT_IMAGE_QUALITY = str(model_policy.resolve("image.payload")["quality"])
 TECH_RETRY_MAX = int(storyos_config.get_path(_CONFIG, "production.technical_retry.max_attempts_per_item"))
 TECH_RETRY_BACKOFF = tuple(int(x) for x in storyos_config.get_path(_CONFIG, "production.technical_retry.backoff_seconds"))
 RETRYABLE_TECH_CODES = {
@@ -650,7 +651,7 @@ def _scheduler_terminal_rc(q:dict,*,has_block:bool,has_failure:bool,ep:Path|None
     # A provider/model is exhausted, but the system-default availability chain
     # still has another model. Keep the resident Driver in a retryable technical
     # state so the next cycle can apply the failover instead of exiting rc=24.
-    if external and any(availability_fallback_model(x) for x in external):
+    if external and any(availability_fallback_model(x, episode=ep) for x in external):
         return 21
     if external:
         return 24
@@ -682,22 +683,22 @@ def _retry_epoch_attempts(item:dict)->int:
     return max(0,int(item.get("attempts") or 0)-int(item.get("technical_retry_epoch_start_attempt") or 0))
 
 
-def availability_fallback_model(item:dict,code:str|None=None)->str|None:
+def availability_fallback_model(item:dict,code:str|None=None,*,episode:Path|None=None)->str|None:
     code=str(code or _technical_retry_code(item)).strip().upper()
     if code not in {image_model_policy.PROVIDER_CAPACITY,image_model_policy.MODEL_UNAVAILABLE}:
         return None
     return image_model_policy.next_fallback_model(
-        str(item.get("model") or ""),strict_model=bool(item.get("strict_model")))
+        str(item.get("model") or ""),strict_model=bool(item.get("strict_model")),episode=episode)
 
 
-def _apply_model_failover(item:dict,code:str)->str|None:
+def _apply_model_failover(item:dict,code:str,*,episode:Path|None=None)->str|None:
     """Advance one model after this model's bounded availability retries exhaust."""
     if code not in {image_model_policy.PROVIDER_CAPACITY,image_model_policy.MODEL_UNAVAILABLE}:
         return None
     if bool(item.get("strict_model")):
         return None
     current=str(item.get("model") or "").strip()
-    target=availability_fallback_model(item,code)
+    target=availability_fallback_model(item,code,episode=episode)
     if not target:
         return None
     stamp=now()
@@ -762,7 +763,7 @@ def retry_tech(ep:Path,frame:int|None=None,*,reset_exhausted:bool=False,sleep_fn
             if item.get("status")!="external_blocked" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
                 continue
             code=_technical_retry_code(item)
-            target=_apply_model_failover(item,code)
+            target=_apply_model_failover(item,code,episode=ep)
             if target:
                 item["status"]="tech_failed"
                 continue

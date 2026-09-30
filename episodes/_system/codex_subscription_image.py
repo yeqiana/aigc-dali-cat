@@ -20,6 +20,7 @@ from canvas_normalize import NormalizeError, normalize, normalize_provider_crop_
 from visual_profile_bridge_v224 import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import image_model_policy
+import model_policy
 import provider_capability
 import image_artifact_collector
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
@@ -30,9 +31,10 @@ import runtime_timeout_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
-CODEX_IMAGE_CONTROLLER_MODEL = str(storyos_config.get_path(_CONFIG, "runtime.codex_image_controller_model"))
-CODEX_IMAGE_REASONING_EFFORT = str(storyos_config.get_path(_CONFIG, "runtime.codex_image_reasoning_effort"))
-# 图片模型/质量回落的唯一配置源是 storyos.yaml 的 image.model / image.quality；
+_IMAGE_CONTROLLER_POLICY = model_policy.resolve("image.controller")
+CODEX_IMAGE_CONTROLLER_MODEL = str(_IMAGE_CONTROLLER_POLICY["model"])
+CODEX_IMAGE_REASONING_EFFORT = str(_IMAGE_CONTROLLER_POLICY["reasoning_effort"])
+# 图片 Payload 模型、质量与回落候选的唯一业务配置源是 storyos.yaml 的 models profiles；
 # 不在函数默认值里复制字面量，避免改 yaml 后 worker 仍按旧模型生成。
 DEFAULT_IMAGE_MODEL = image_model_policy.DEFAULT_MODEL
 DEFAULT_IMAGE_QUALITY = image_model_policy.DEFAULT_QUALITY
@@ -671,7 +673,8 @@ def main() -> int:
         from unittest.mock import patch
         with patch.dict(os.environ, {'STORY_OS_IMAGE_PROVIDER_ROUTE': 'subscription'}):
             assert controller_args() == [
-                '-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"',
+                '-m', CODEX_IMAGE_CONTROLLER_MODEL,
+                '-c', f'model_reasoning_effort="{CODEX_IMAGE_REASONING_EFFORT}"',
                 '-c', 'model_provider="openai"',
                 '-c', 'openai_base_url="https://chatgpt.com/backend-api/codex"',
             ]

@@ -4,12 +4,13 @@ import argparse, hashlib, json, time
 from pathlib import Path
 from PIL import Image
 import storyos_config
+import model_policy
 import provider_receipt_persistence
 import storage_config
 
 ROOT = Path(__file__).resolve().parents[2]
 _CONFIG = storyos_config.load_config()
-DEFAULT_MODEL = str(storyos_config.get_path(_CONFIG, "image.model"))
+DEFAULT_MODEL = str(model_policy.resolve("image.payload")["model"])
 PROVIDER_RAW_MIN_DIMENSION = int(storyos_config.get_path(_CONFIG, "normalize.provider_raw_min_dimension"))
 
 

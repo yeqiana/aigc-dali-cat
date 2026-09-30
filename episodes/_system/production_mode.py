@@ -13,7 +13,8 @@ def resolve(cfg: dict | None = None) -> dict:
     """Return configured/effective mode and runtime with explicit provenance.
 
     STORY_OS_PRODUCTION_MODE is the only normal production-mode override.
-    STORY_OS_RUNTIME remains a temporary low-level compatibility/debug override.
+    STORY_OS_RUNTIME is reported for legacy/debug consumers only. It never
+    changes production mode or the production runtime.
     Neither host availability nor the presence of a Codex binary changes mode.
     """
     cfg = cfg or storyos_config.load_config()
@@ -30,14 +31,9 @@ def resolve(cfg: dict | None = None) -> dict:
         source = "env:STORY_OS_PRODUCTION_MODE"
     else:
         legacy_runtime = os.getenv("STORY_OS_RUNTIME", "").strip().upper()
-        if legacy_runtime in RUNTIMES:
-            effective_runtime = legacy_runtime
-            effective_mode = "CODEX_MANAGED" if legacy_runtime == "CODEX" else "COLLABORATIVE"
-            source = "env:STORY_OS_RUNTIME"
-        else:
-            effective_mode = configured
-            effective_runtime = "CODEX" if configured == "CODEX_MANAGED" else "WORK"
-            source = "config/storyos.yaml#production.mode"
+        effective_mode = configured
+        effective_runtime = "CODEX" if configured == "CODEX_MANAGED" else "WORK"
+        source = "config/storyos.yaml#production.mode"
 
     return {
         "configured_mode": configured,

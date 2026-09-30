@@ -87,17 +87,16 @@ def governance_review_runtime() -> tuple[str, str]:
 
 
 def vision_review_model() -> str:
-    value = str(storyos_config.get_path(_CONFIG, 'runtime.review.vision.model') or '').strip()
-    if not value:
-        raise ValueError('runtime.review.vision.model is required')
-    return value
+    import model_policy
+    return str(model_policy.resolve_profile('vision_final')['model'])
 
 
 def vision_review_effort(kind: str = 'default') -> str:
-    suffix = {'fast': 'fast', 'final': 'final'}.get(str(kind).lower(), 'default')
-    value = str(storyos_config.get_path(_CONFIG, f'runtime.review.vision.reasoning_effort_{suffix}') or '').strip().lower()
+    import model_policy
+    profile = 'vision_fast' if str(kind).lower() == 'fast' else 'vision_final'
+    value = str(model_policy.resolve_profile(profile)['reasoning_effort'] or '').strip().lower()
     if value not in {'low', 'medium', 'high'}:
-        raise ValueError(f'invalid runtime.review.vision.reasoning_effort_{suffix}: {value!r}')
+        raise ValueError(f'invalid {profile} reasoning_effort: {value!r}')
     return value
 
 
@@ -140,8 +139,6 @@ def webcodex_available() -> tuple[bool, str]:
 def _runtime_with_reason() -> tuple[str, str]:
     resolution = production_mode.resolve(_CONFIG)
     source = resolution['source']
-    if source.startswith('env:STORY_OS_RUNTIME'):
-        return resolution['effective_runtime'], 'STORY_OS_RUNTIME override'
     if source.startswith('env:STORY_OS_PRODUCTION_MODE'):
         return resolution['effective_runtime'], 'STORY_OS_PRODUCTION_MODE override'
     return resolution['effective_runtime'], f"config production.mode={resolution['configured_mode']}"
@@ -181,6 +178,8 @@ def local_codex_vision_allowed(*, explicit: bool = False) -> bool:
 
 
 def capabilities() -> dict:
+    import model_policy
+
     override = os.getenv('STORY_OS_RUNTIME', '').strip().upper()
     codex = _codex_cli_path()
     preferred = preferred_runtime()
@@ -231,8 +230,8 @@ def capabilities() -> dict:
         'local_codex_spawn_allowed': effective == 'CODEX',
         'image_execution_runtime': image_runtime,
         'image_execution_runtime_reason': image_runtime_reason,
-        'codex_image_controller_model': storyos_config.get_path(_CONFIG, 'runtime.codex_image_controller_model'),
-        'codex_image_reasoning_effort': storyos_config.get_path(_CONFIG, 'runtime.codex_image_reasoning_effort'),
+        'codex_image_controller_model': model_policy.resolve_profile('image_controller')['model'],
+        'codex_image_reasoning_effort': model_policy.resolve_profile('image_controller')['reasoning_effort'],
         'local_codex_image_spawn_allowed': bool(codex) and local_codex_image_allowed(),
         'codex_subscription_image_eligible': bool(codex) and local_codex_image_allowed(),
         'text_review_runtime': text_runtime,
@@ -251,7 +250,7 @@ def capabilities() -> dict:
         'product_runtime_host_required': effective in {'WORK', 'WEB'},
         'product_runtime_image_host_required': effective in {'WORK', 'WEB'} and image_runtime in {'PRODUCT_RUNTIME', 'AUTO'},
         'automatic_runtime_fallback': False,
-        'note': 'production.mode selects the whole-chain mode. COLLABORATIVE remains WORK when the host is unavailable; switch to CODEX_MANAGED only by explicit config/env. STORY_OS_RUNTIME is a legacy low-level override.',
+        'note': 'production.mode selects the whole-chain mode. COLLABORATIVE remains WORK when the host is unavailable; switch to CODEX_MANAGED only by explicit config/env. STORY_OS_RUNTIME is diagnostics-only for production mode.',
     }
 
 

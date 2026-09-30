@@ -15,6 +15,7 @@ from canvas_spec import DEFAULT_ASPECT_RATIO, resolve_canvas_spec
 from visual_profile import compile_prompt_contract
 import frame_contract as resolved_frame_contract
 import storyos_config
+import model_policy
 import episode_lifecycle
 import episode_state_persistence
 import production_ledger_persistence
@@ -26,7 +27,7 @@ ENGINE_VERSION = "1.2"
 PROMPT_CHAR_LIMIT = 260
 PROMPT_BYTE_LIMIT = 900
 _CONFIG = storyos_config.load_config()
-DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
+DEFAULT_IMAGE_QUALITY = str(model_policy.resolve("image.payload")["quality"])
 FRAME_STATES = {
     "PENDING",
     "GENERATING",

@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Story OS image model policy.
-
-Default production alias comes from config/storyos.yaml (currently GPT-Image-2.5 Flare).
-The reproducible snapshot pins the current default family for deterministic reruns.
-"""
+"""Resolve image candidates from the unified StoryOS Model Policy profiles."""
 from __future__ import annotations
 import argparse, datetime as dt, hashlib, json
 from pathlib import Path
 import production_queue_store
 import scheduler_core
 import runtime_request
-import storyos_config
+import model_policy
 
-_CONFIG=storyos_config.load_config()
-DEFAULT_MODEL=str(storyos_config.get_path(_CONFIG,"image.model"))
-DEFAULT_QUALITY=str(storyos_config.get_path(_CONFIG,"image.quality"))
-FALLBACK_MODELS=tuple(str(x).strip() for x in storyos_config.get_path(_CONFIG,"image.fallback_models",[]) if str(x).strip())
+_IMAGE_PROFILE=model_policy.resolve("image.payload")
+DEFAULT_MODEL=str(_IMAGE_PROFILE["model"])
+DEFAULT_QUALITY=str(_IMAGE_PROFILE["quality"])
+FALLBACK_MODELS=tuple(str(x).strip() for x in _IMAGE_PROFILE.get("fallback_models",[]) if str(x).strip())
 REPRODUCIBLE_SNAPSHOT="gpt-image-2.5-flare-2026-09-08"
 MODEL_UNAVAILABLE="MODEL_UNAVAILABLE"
 PROVIDER_CAPACITY="PROVIDER_CAPACITY"
@@ -83,11 +79,12 @@ def for_episode(ep,*,explicit=None,explicit_quality=None,reproducible=False):
     return resolve_model(request=runtime_request.effective_for_episode(ep.resolve()),explicit=explicit,explicit_quality=explicit_quality,reproducible=reproducible)
 
 
-def next_fallback_model(current_model: str, *, strict_model: bool = False) -> str | None:
+def next_fallback_model(current_model: str, *, strict_model: bool = False, episode=None) -> str | None:
     """Next bounded availability fallback for a non-strict system-default model."""
     if strict_model:
         return None
-    chain=(DEFAULT_MODEL,*FALLBACK_MODELS)
+    profile = model_policy.resolve("image.payload", episode=episode)
+    chain=(str(profile["model"]),*(str(x) for x in profile.get("fallback_models", [])))
     current=str(current_model or "").strip()
     try:
         index=chain.index(current)

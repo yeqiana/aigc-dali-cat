@@ -16,6 +16,7 @@ import batch_repair_arbiter
 import scheduler_core
 import provider_capability
 import storyos_config
+import model_policy
 import image_provider_runtime
 import runtime_router
 import product_runtime_adapter
@@ -44,7 +45,7 @@ SUCCESS=0
 RECOVERABLE_FAILURE=21
 HUMAN_REQUIRED=22
 HARD_STOP=23
-DEFAULT_QUALITY=str(storyos_config.get_path(storyos_config.load_config(),"image.quality"))
+DEFAULT_QUALITY=str(model_policy.resolve("image.payload")["quality"])
 
 def now():
     return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds")

@@ -14,6 +14,7 @@ SYSTEM = ROOT / "episodes/_system"
 sys.path.insert(0, str(SYSTEM))
 
 import capability_router as router
+import model_policy
 import product_review_adapter
 import runtime_router
 import runtime_scheduler
@@ -213,6 +214,7 @@ class CapabilityRouterTests(unittest.TestCase):
                  patch.object(product_review_adapter, "_request_exists", return_value=False), \
                  patch.object(product_review_adapter, "_write_json"), \
                  patch.object(product_review_adapter.episode_performance, "safe_begin_named_span"), \
+                 patch.object(model_policy, "resolve", return_value={"model": "policy-model", "model_policy_sha256": "a" * 64}), \
                  patch.object(router, "effective_router_config",
                               return_value={**router.effective_router_config(), "production_enabled": False}), \
                  patch.object(runtime_router, "capability_route_shadow") as observe:
@@ -239,6 +241,7 @@ class CapabilityRouterTests(unittest.TestCase):
                  patch.object(product_review_adapter, "_request_exists", return_value=False), \
                  patch.object(product_review_adapter, "_write_json"), \
                  patch.object(product_review_adapter.episode_performance, "safe_begin_named_span"), \
+                 patch.object(model_policy, "resolve", return_value={"model": "policy-model", "model_policy_sha256": "a" * 64}), \
                  patch.object(runtime_router, "capability_route_shadow", side_effect=OSError("shadow unavailable")):
                 prepared = product_review_adapter.prepare(
                     ep, kind="preimage-semantic-critic-shadow", runtime="WORK", attempt=1,
@@ -256,6 +259,7 @@ class CapabilityRouterTests(unittest.TestCase):
                  patch.object(product_review_adapter, "_request_exists", return_value=False), \
                  patch.object(product_review_adapter, "_write_json"), \
                  patch.object(product_review_adapter.episode_performance, "safe_begin_named_span"), \
+                 patch.object(model_policy, "resolve", return_value={"model": "policy-model", "model_policy_sha256": "a" * 64}), \
                  patch.object(runtime_router, "capability_route_shadow") as observe:
                 prepared = product_review_adapter.prepare(
                     ep, kind="final-semantic-critic-shadow", runtime="WORK", attempt=1,

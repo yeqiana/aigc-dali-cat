@@ -56,6 +56,7 @@ class CapabilityRouteRequest:
     reasoning_requirement: str | None = "medium"
     multimodal_required: bool = False
     tools_allowed: bool = False
+    model_policy_bound: bool = False
 
     def __post_init__(self) -> None:
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", self.request_id):
@@ -178,54 +179,35 @@ _ROUTER_CONFIG_CACHE: tuple[int, int, dict] | None = None
 _ROUTER_CONFIG_LOCK = threading.RLock()
 
 
-def _configured_codex_model() -> tuple[str, str] | None:
-    """Read only the active CLI model selectors; never starts Codex or reads secrets."""
-    try:
-        import codex_user_runner
-        import tomllib
-
-        home, _source = codex_user_runner.codex_home()
-        config = tomllib.loads((home / "config.toml").read_text(encoding="utf-8"))
-        model = str(config.get("model") or "").strip()
-        effort = str(config.get("model_reasoning_effort") or "").strip().lower()
-        if model and effort in {"low", "medium", "high", "xhigh", "max"}:
-            return model, effort
-    except Exception:
-        return None
-    return None
-
-
 def build_registry(*, cli_model: tuple[str, str] | None = None) -> tuple[ModelCapability, ...]:
-    """Build an immutable registry from current StoryOS model configuration and real producers."""
-    config = storyos_config.load_config()
-    text_model = str(storyos_config.get_path(config, "runtime.review.text.model") or "") or None
+    """Build provider capability rows without selecting business models.
+
+    ``cli_model`` is retained as a compatibility argument for callers/tests but
+    is intentionally ignored. Model Policy owns the candidate; provider rows
+    describe only transport capability.
+    """
     rows = [
         ModelCapability(
-            "WORK", text_model, "WORK",
+            "WORK", None, "WORK",
             frozenset({"text_input", "structured_output", "schema_output", "read_only_mode"}),
-            (), True, True, None, "config/storyos.yaml:runtime.review.text + runtime.workspace; model and reasoning level are host-selected",
+            ("low", "medium", "high", "xhigh", "max"), True, True, None,
+            "WORK host transport capability; model and effort are Model Policy selections",
         ),
     ]
-    selected = cli_model if cli_model is not None else _configured_codex_model()
-    if selected:
-        model, effort = selected
-        codex_capabilities = {"text_input", "image_input", "structured_output", "schema_output",
-                              "tool_use", "read_only_mode"}
-        if effort in {"high", "xhigh", "max"}:
-            codex_capabilities.add("high_reasoning")
-        rows.append(ModelCapability(
-            "codex_user_runner", model, "CODEX",
-            frozenset(codex_capabilities),
-            tuple(dict.fromkeys((effort,))),
-            True, True, None, "codex_user_runner config.toml + existing read-only critic producer; availability is host supplied",
-        ))
+    codex_capabilities = {"text_input", "image_input", "structured_output", "schema_output",
+                          "tool_use", "read_only_mode", "high_reasoning"}
+    rows.append(ModelCapability(
+        "codex_user_runner", None, "CODEX",
+        frozenset(codex_capabilities),
+        ("low", "medium", "high", "xhigh", "max"),
+        True, True, None, "Codex user runner transport capability; model and effort are Model Policy selections",
+    ))
     # Registered as a real image provider for future capability work only. P4 V1
     # task policies never select image_generation.
-    image_model = str(storyos_config.get_path(config, "image.model") or "gpt-image-2.5-flare")
     rows.append(ModelCapability(
-        "codex_cli_subscription", image_model, "CODEX",
+        "codex_cli_subscription", None, "CODEX",
         frozenset({"image_generation"}), (), True, False, None,
-        "config/storyos.yaml:image.model + episodes/_system/codex_subscription_image.py",
+        "Codex subscription image-generation capability; candidate comes from Model Policy",
     ))
     return tuple(sorted(rows, key=lambda row: (row.provider, row.model or "", row.execution_runtime)))
 
@@ -292,7 +274,13 @@ def policy_sha256(config: dict | None = None, *, allowed_providers: tuple[str, .
 
 def _candidate_order(request: CapabilityRouteRequest, registry: tuple[ModelCapability, ...]) -> list[ModelCapability]:
     rank = {name: index for index, name in enumerate(_POLICY["fallback_order"])}
-    ordered = sorted(registry, key=lambda row: (
+    # Model selection belongs to Model Policy. A policy-bound candidate may
+    # route across providers/runners for that exact model, never another model.
+    # Legacy preference callers retain historical behavior until they bind.
+    eligible_registry = (tuple(row for row in registry
+                               if row.model in {None, request.preferred_model})
+                         if request.model_policy_bound and request.preferred_model else registry)
+    ordered = sorted(eligible_registry, key=lambda row: (
         0 if row.provider == request.preferred_provider else 1,
         0 if row.model == request.preferred_model else 1,
         rank.get(row.provider, len(rank)), row.provider, row.model or "",
@@ -358,7 +346,8 @@ def resolve(request: CapabilityRouteRequest, *, registry: Iterable[ModelCapabili
             rejected.append({"provider": model.provider, "model": model.model,
                              "reasons": ["multimodal_required"]})
             continue
-        health_row = health.get(model.provider, model.model or "host-managed", now=now)
+        candidate_model = request.preferred_model if request.model_policy_bound else model.model
+        health_row = health.get(model.provider, candidate_model or "host-managed", now=now)
         if health_row.status in {"DEGRADED", "UNAVAILABLE"}:
             rejected.append({"provider": model.provider, "model": model.model,
                              "reasons": ["provider_unhealthy"], "health_status": health_row.status})
@@ -366,21 +355,22 @@ def resolve(request: CapabilityRouteRequest, *, registry: Iterable[ModelCapabili
                 break
             continue
         eligible.append((model, health_row))
-        if request.preferred_provider == model.provider and request.preferred_model in {None, model.model}:
+        if request.preferred_provider == model.provider and request.preferred_model in {None, model.model, candidate_model}:
             break
         if not request.fallback_allowed:
             break
     health_ms = (time.perf_counter() - health_started) * 1000
     selected = eligible[0] if eligible else None
+    selected_model = (request.preferred_model if request.model_policy_bound else selected[0].model) if selected else None
     fallback_used = bool(selected and (
         (request.preferred_provider and selected[0].provider != request.preferred_provider)
-        or (request.preferred_model and selected[0].model != request.preferred_model)
+        or (request.preferred_model and selected_model != request.preferred_model)
     ))
     decision = {
         "request_id": request.request_id,
         "task_type": request.task_type,
         "selected_provider": selected[0].provider if selected else None,
-        "selected_model": selected[0].model if selected else None,
+        "selected_model": selected_model,
         "selected_runtime": selected[0].execution_runtime if selected else None,
         "status": "ROUTE" if selected else "NO_ROUTE",
         "selection_reason": "preferred capability match" if selected and not fallback_used else ("bounded capability-safe fallback" if selected else "no eligible candidate"),
@@ -475,7 +465,8 @@ def observe_shadow(request: CapabilityRouteRequest, *, legacy_provider: str,
 
 
 def critic_route_request(*, request_id: str, kind: str, stage: str, host_execution: str,
-                         legacy_provider: str, legacy_model: str | None) -> tuple[CapabilityRouteRequest, str, str | None, str]:
+                         legacy_provider: str, legacy_model: str | None,
+                         model_policy_bound: bool = False) -> tuple[CapabilityRouteRequest, str, str | None, str]:
     """Map the three current semantic Critic classes to deterministic requirements."""
     multimodal = "final-semantic" in kind
     preimage = "preimage-semantic" in kind
@@ -500,6 +491,7 @@ def critic_route_request(*, request_id: str, kind: str, stage: str, host_executi
         fallback_allowed=True, latency_class="interactive", cost_class="subscription",
         reasoning_requirement=None,
         multimodal_required=multimodal, tools_allowed=False,
+        model_policy_bound=bool(model_policy_bound),
     )
     return request, legacy_provider, legacy_model, "CODEX" if host_execution == "codex_user_runner_shadow" else "WORK"
 
@@ -524,9 +516,9 @@ def resolve_effective_route(request: CapabilityRouteRequest, *, legacy_provider:
     registry_sha = registry_sha256(rows)
 
     legacy_rows = [row for row in rows if row.provider == legacy_provider
-                   and (legacy_model is None or row.model == legacy_model)]
+                   and (legacy_model is None or row.model in {None, legacy_model})]
     legacy = legacy_rows[0] if legacy_rows else None
-    legacy_health_model = legacy_model or "host-managed"
+    legacy_health_model = (request.preferred_model if request.model_policy_bound else legacy_model) or "host-managed"
     legacy_health = health.get(legacy_provider, legacy_health_model, now=now)
     missing = sorted(required - set(legacy.capabilities)) if legacy else sorted(required)
     present_forbidden = sorted(forbidden & set(legacy.capabilities)) if legacy else []
@@ -539,7 +531,8 @@ def resolve_effective_route(request: CapabilityRouteRequest, *, legacy_provider:
     rejected: list[dict] = []
 
     def fresh_healthy(row: ModelCapability) -> bool:
-        evidence = health.get(row.provider, row.model or "host-managed", now=now)
+        model = request.preferred_model if request.model_policy_bound else row.model
+        evidence = health.get(row.provider, model or "host-managed", now=now)
         return evidence.status == "HEALTHY" and bool(evidence.observed_at) and bool(evidence.expires_at)
 
     def find_fallback() -> ModelCapability | None:
@@ -569,7 +562,8 @@ def resolve_effective_route(request: CapabilityRouteRequest, *, legacy_provider:
                 reasons.append("forbidden_capability_present")
             if request.reasoning_requirement and request.reasoning_requirement not in row.reasoning_levels:
                 reasons.append("reasoning_level_unsupported")
-            health_row = health.get(row.provider, row.model or "host-managed", now=now)
+            candidate_model = request.preferred_model if request.model_policy_bound else row.model
+            health_row = health.get(row.provider, candidate_model or "host-managed", now=now)
             if health_row.status != "HEALTHY" or not fresh_healthy(row):
                 reasons.append("fallback_requires_fresh_healthy")
             if reasons:
@@ -611,7 +605,7 @@ def resolve_effective_route(request: CapabilityRouteRequest, *, legacy_provider:
         warning = "LEGACY_HEALTH_UNKNOWN"
 
     selected_provider = selected.provider if selected else None
-    selected_model = selected.model if selected else None
+    selected_model = (request.preferred_model if request.model_policy_bound else selected.model) if selected else None
     selected_runtime = selected.execution_runtime if selected else None
     result = {
         "request_id": request.request_id, "task_type": request.task_type,
@@ -643,17 +637,21 @@ def refresh_cutover_health(*, observed_at: dt.datetime | None = None) -> dict:
     cfg = storyos_config.load_config()
     config_sha = _sha(cfg)
     codex_path = shutil.which("codex") or shutil.which("codex.exe")
-    configured_codex = _configured_codex_model()
+    import model_policy
+
+    try:
+        image_payload_model = str(model_policy.resolve_profile("image_payload")["model"])
+    except Exception:
+        image_payload_model = None
     rows = []
     providers = (
         ("WORK", "host-managed", bool(storyos_config.get_path(cfg, "runtime.workspace.provider")),
          "config/storyos.yaml:runtime.workspace"),
-        ("codex_user_runner", configured_codex[0] if configured_codex else None,
-         bool(codex_path and configured_codex),
-         "codex executable resolution + existing Codex model selector configuration"),
-        ("codex_cli_subscription", str(storyos_config.get_path(cfg, "image.model") or ""),
-         bool(codex_path and storyos_config.get_path(cfg, "image.model")),
-         "codex executable resolution + config/storyos.yaml:image.model"),
+        ("codex_user_runner", None, bool(codex_path),
+         "Codex executable resolution; business model and effort come from Episode-bound Model Policy"),
+        ("codex_cli_subscription", image_payload_model,
+         bool(codex_path and image_payload_model),
+         "Codex executable resolution + Model Policy image_payload capability candidate"),
     )
     ttl = effective_router_config(cfg)["health_ttl_seconds"]
     expires = (_utc(observed_at) + dt.timedelta(seconds=ttl)).isoformat(timespec="seconds")

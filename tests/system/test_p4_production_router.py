@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "episodes/_system"))
 import capability_router as router
+import model_policy
 import p4_capability_router_implementation as impl
 import runtime_router
 import runtime_scheduler
@@ -91,6 +92,36 @@ class P4ProductionRouterTests(unittest.TestCase):
             legacy_provider="WORK", legacy_model=None)
         self.assertNotIn("high_reasoning", req.required_capabilities)
         self.assertIn("high_reasoning", req.optional_capabilities)
+
+    def test_resolved_model_is_preserved_while_provider_can_route(self):
+        req = router.CapabilityRouteRequest(
+            "resolved-model-preservation", "critic", "P4", "STORY", "story-critic",
+            required_capabilities=("text_input", "structured_output"),
+            preferred_provider="WORK", preferred_model="policy-model",
+            fallback_allowed=True, reasoning_requirement="medium", model_policy_bound=True)
+        registry = (
+            router.ModelCapability("WORK", None, "WORK", frozenset({"text_input", "structured_output"}),
+                                   ("medium",), True, False, True, "test"),
+            router.ModelCapability("codex_user_runner", None, "CODEX", frozenset({"text_input", "structured_output"}),
+                                   ("medium",), True, False, True, "test"),
+            router.ModelCapability("codex_user_runner", "stale-registry-model", "CODEX", frozenset({"text_input", "structured_output"}),
+                                   ("medium",), True, False, True, "test"),
+        )
+        ordered = router._candidate_order(req, registry)
+        self.assertEqual({row.model for row in ordered}, {None})
+        self.assertEqual([row.provider for row in ordered], ["WORK", "codex_user_runner"])
+        health = router.HealthCache(300)
+        observed = NOW - dt.timedelta(seconds=1)
+        health.record("WORK", "policy-model", "HEALTHY", reason="test", source="test", observed_at=observed)
+        decision = router.resolve(req, registry=registry, health=health, now=NOW)
+        self.assertEqual(decision["status"], "ROUTE")
+        self.assertEqual(decision["selected_model"], "policy-model")
+        self.assertEqual(decision["selected_provider"], "WORK")
+
+    def test_registry_does_not_select_business_models_from_cli_config(self):
+        rows = router.build_registry(cli_model=("operator-cli-default", "max"))
+        self.assertEqual({row.provider for row in rows}, {"WORK", "codex_user_runner", "codex_cli_subscription"})
+        self.assertTrue(all(row.model is None for row in rows))
 
     def test_preimage_policy_required_capabilities(self):
         req, *_ = router.critic_route_request(request_id="preimage-contract",
@@ -177,11 +208,16 @@ class P4ProductionRouterTests(unittest.TestCase):
 
     def test_adapter_production_branch_returns_target_without_dispatch(self):
         source = ROOT / "tests/fixtures/p3_story_semantic/pass_ordinary/story.md"
-        registry = impl._registry()
+        registry = (
+            router.ModelCapability("WORK", None, "WORK", frozenset({"text_input", "structured_output"}),
+                                   ("low", "medium", "high"), True, True, None, "injected provider capability"),
+            router.ModelCapability("codex_user_runner", None, "CODEX", frozenset({"text_input", "structured_output"}),
+                                   ("low", "medium", "high"), True, True, None, "injected provider capability"),
+        )
         health = router.HealthCache(300)
         observed = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=1)
-        health.record("WORK", "host-managed", "UNAVAILABLE", reason="injected", source="fixture", observed_at=observed)
-        health.record("codex_user_runner", "fixture-model", "HEALTHY", reason="injected", source="fixture", observed_at=observed)
+        health.record("WORK", "policy-model", "UNAVAILABLE", reason="injected", source="fixture", observed_at=observed)
+        health.record("codex_user_runner", "policy-model", "HEALTHY", reason="injected", source="fixture", observed_at=observed)
         real_config = router.effective_router_config()
         production_config = {**real_config, "production_enabled": True}
         with tempfile.TemporaryDirectory(dir=ROOT / "tests") as temp:
@@ -197,6 +233,8 @@ class P4ProductionRouterTests(unittest.TestCase):
                   patch.object(product_review_adapter, "request_path", return_value=request_path),
                   patch.object(product_review_adapter, "_request_exists", return_value=False),
                   patch.object(product_review_adapter, "_write_json"),
+                  patch.object(model_policy, "resolve", return_value={
+                      "model": "policy-model", "model_policy_sha256": "a" * 64}),
                   patch.object(product_review_adapter.episode_performance, "safe_begin_named_span")):
                 prepared = product_review_adapter.prepare(
                     ep, kind="story-semantic-critic-shadow", runtime="WORK", attempt=1,

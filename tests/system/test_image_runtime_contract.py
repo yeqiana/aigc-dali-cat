@@ -23,7 +23,14 @@ import image_model_policy
 import image_scheduler
 import image_worker_pool
 import production_ledger
+import production_ledger_core
+import production_ledger_persistence
 import runtime_request
+import episode_contract_persistence
+import model_policy
+import model_policy_persistence
+import scheduler_core
+import storage_config
 
 
 class RuntimeRequestQualityTests(unittest.TestCase):
@@ -57,35 +64,52 @@ class ImageModelMigrationTests(unittest.TestCase):
             root = Path(td)
             ep = root / "episodes" / "ep"
             (ep / "meta/runtime").mkdir(parents=True)
-            request = {
-                "schema_version": 1,
-                "request_id": "old-request",
-                "created_at": "2026-09-01T00:00:00+08:00",
-                "mode": "full_auto",
-                "repository": {"branch": "story", "source": "system_default"},
-                "topic": {"title": "ep", "raw": "ep"},
-                "story_input": {"mode": "auto_create", "raw": None, "constraints": [], "rewrite_policy": "auto_create", "preserve_core_intent": True, "allow_structure_rewrite": True},
-                "image_model": "gpt-image-2",
-                "image_quality": "high",
-                "image": {"provider": "openai", "model": "gpt-image-2", "source": "system_default", "strict_model": False, "quality": "high"},
-                "runtime": {"execution_mode": "dag", "continuous_execution": True, "resume": True, "max_image_workers": 5, "fail_soft": True, "incremental_reuse": True},
-                "delivery": {"mode": "auto", "zip_required_for_completion": False},
-                "user_intent": {"full_auto_authorized": True, "allow_story_strengthening": True, "allow_story_rewrite": True, "ask_before_each_step": False},
-                "provenance": {"source": "natural_language", "original_request": "test"},
-            }
-            runtime_request.write_json(ep / "meta/runtime-request.json", request)
-            runtime_request.write_json(ep / "meta/production-queue.json", {"items": [
-                {"id": "done", "frame": 1, "status": "generated", "model": "gpt-image-2", "strict_model": False},
-                {"id": "retry", "frame": 2, "status": "external_blocked", "model": "gpt-image-2", "strict_model": False,
-                 "technical_failure_code": "IMAGE_BACKEND_ERROR", "last_error": "PROVIDER_CAPACITY: requested=gpt-image-2"},
-                {"id": "strict", "frame": 3, "status": "queued", "model": "gpt-image-2", "strict_model": True},
-            ]})
-            with mock.patch.object(runtime_request, "ROOT", root), mock.patch.object(runtime_request, "REQUESTS_DIR", root / "runtime/requests"):
-                result = image_model_policy.migrate_system_default(ep)
+            request = runtime_request.compile_request("全自动做一篇「legacy migration test」。")
+            request["request_id"] = "old-request"
+            request["image_model"] = "gpt-image-2"
+            request["image"]["model"] = "gpt-image-2"
+            self.assertEqual(runtime_request.validate_request(request), [])
+            bound_request = {"value": request}
+
+            # Model Policy is a separate immutable contract. The explicit legacy
+            # image operation may update the old Runtime Request, but must not
+            # rewrite the already frozen Model Policy record.
+            contract_records = {}
+            save_contract = lambda _ep, contract_type, _rel, payload, **_kw: contract_records.__setitem__(contract_type, dict(payload))
+            load_contract = lambda _ep, contract_type, **_kw: contract_records.get(contract_type)
+            with mock.patch.object(episode_contract_persistence, "save", side_effect=save_contract), \
+                    mock.patch.object(episode_contract_persistence, "load_latest", side_effect=load_contract), \
+                    mock.patch.object(model_policy_persistence.runtime_workspace, "write_json",
+                                      side_effect=AssertionError("mysql mode must not force a JSON projection")), \
+                    mock.patch.object(runtime_request, "authority_for_episode",
+                                      side_effect=lambda _ep: bound_request["value"]), \
+                    mock.patch.object(runtime_request, "bind_request",
+                                      side_effect=lambda path, _ep, force=False: bound_request.__setitem__(
+                                          "value", runtime_request.read_json(path))), \
+                    mock.patch.object(runtime_request, "REQUESTS_DIR", root / "runtime/requests"):
+                frozen = model_policy.freeze_for_episode(ep)
+                frozen_sha = frozen["policy_sha256"]
+                queue_authority = {"value": {"items": [
+                    {"id": "done", "frame": 1, "status": "generated", "model": "gpt-image-2", "strict_model": False},
+                    {"id": "retry", "frame": 2, "status": "external_blocked", "model": "gpt-image-2", "strict_model": False,
+                     "technical_failure_code": "IMAGE_BACKEND_ERROR", "last_error": "PROVIDER_CAPACITY: requested=gpt-image-2"},
+                    {"id": "strict", "frame": 3, "status": "queued", "model": "gpt-image-2", "strict_model": True},
+                ]}}
+                with mock.patch.object(storage_config, "hot_state_config", return_value={"mode": "redis"}), \
+                        mock.patch.object(scheduler_core.hot_state_bridge, "read",
+                                          side_effect=lambda _ep, _kind: {
+                                              "mode": "redis", "value": queue_authority["value"]}), \
+                        mock.patch.object(scheduler_core.hot_state_bridge, "mirror",
+                                          side_effect=lambda _ep, _kind, value: queue_authority.__setitem__(
+                                              "value", json.loads(json.dumps(value)))):
+                    scheduler_core.save_queue(ep, queue_authority["value"])
+                    result = image_model_policy.migrate_system_default(ep)
+                self.assertEqual(model_policy_persistence.load(ep)["policy_sha256"], frozen_sha)
+
             self.assertEqual(result["status"], "MIGRATED")
-            migrated = runtime_request.read_json(ep / "meta/runtime-request.json")
+            migrated = bound_request["value"]
             self.assertEqual(migrated["image_model"], image_model_policy.DEFAULT_MODEL)
-            queue = runtime_request.read_json(ep / "meta/production-queue.json")["items"]
+            queue = queue_authority["value"]["items"]
             self.assertEqual(queue[0]["model"], "gpt-image-2")
             self.assertEqual(queue[1]["model"], image_model_policy.DEFAULT_MODEL)
             self.assertEqual(queue[1]["technical_failure_code"], "PROVIDER_CAPACITY")
@@ -97,20 +121,12 @@ class ImageModelMigrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
             (ep / "meta").mkdir()
-            runtime_request.write_json(ep / "meta/runtime-request.json", {
-                "schema_version": 1,
-                "request_id": "strict",
-                "created_at": "2026-09-01T00:00:00+08:00",
-                "mode": "full_auto",
-                "topic": {"title": "ep"},
-                "story_input": {"mode": "auto_create"},
-                "image_model": "gpt-image-2",
-                "image_quality": "high",
-                "image": {"provider": "openai", "model": "gpt-image-2", "source": "user_explicit", "strict_model": True, "quality": "high"},
-                "runtime": {"max_image_workers": 5},
-            })
-            with self.assertRaisesRegex(ValueError, "MIGRATION_FORBIDDEN"):
-                image_model_policy.migrate_system_default(ep)
+            request = runtime_request.compile_request(
+                "全自动做一篇「strict migration test」，image=gpt-image-2。")
+            self.assertEqual(runtime_request.validate_request(request), [])
+            with mock.patch.object(runtime_request, "authority_for_episode", return_value=request):
+                with self.assertRaisesRegex(ValueError, "IMAGE_MODEL_MIGRATION_FORBIDDEN"):
+                    image_model_policy.migrate_system_default(ep)
 
 
 class NormalizePolicyTests(unittest.TestCase):
@@ -161,6 +177,29 @@ class NormalizePolicyTests(unittest.TestCase):
 
 
 class BackendAndLedgerContractTests(unittest.TestCase):
+    def setUp(self):
+        self.ledger_authority = {}
+        self._ledger_mode = mock.patch.object(
+            production_ledger_persistence, "mode", return_value="mysql")
+        self._ledger_persist = mock.patch.object(
+            production_ledger_persistence, "persist_authority",
+            side_effect=lambda ep, data: self.ledger_authority.__setitem__(
+                str(Path(ep).resolve()), json.loads(json.dumps(data))),
+        )
+        self._ledger_load = mock.patch.object(
+            production_ledger_persistence, "load_authority",
+            side_effect=lambda ep: json.loads(json.dumps(
+                self.ledger_authority[str(Path(ep).resolve())]))
+                if str(Path(ep).resolve()) in self.ledger_authority else None,
+        )
+        self._ledger_mode.start(); self._ledger_persist.start(); self._ledger_load.start()
+        self.addCleanup(self._ledger_mode.stop)
+        self.addCleanup(self._ledger_persist.stop)
+        self.addCleanup(self._ledger_load.stop)
+
+    def _read_ledger_authority(self, ep: Path) -> dict:
+        return production_ledger.load_authority(ep)
+
     def _ready_episode(self, td: str) -> Path:
         ep = Path(td)
         (ep / "meta").mkdir()
@@ -214,7 +253,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
             with self._no_spawn():
                 ok, msg = image_scheduler.ledger_begin(ep, item)
             self.assertTrue(ok, msg)
-            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            data = self._read_ledger_authority(ep)
             self.assertEqual(data["frames"]["01"]["status"], "GENERATING")
             self.assertEqual(data["frames"]["01"]["attempts"][-1]["provider_attempt"]["status"], "NOT_INVOKED")
             with self._no_spawn():
@@ -223,7 +262,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
             self.assertIn("cannot begin original", msg2)
             with self._no_spawn():
                 image_scheduler.ledger_tech_fail(ep, item, "WORKER_FAILED", "boom")
-            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            data = self._read_ledger_authority(ep)
             self.assertEqual(data["frames"]["01"]["status"], "TECH_FAILED")
             self.assertEqual(data["frames"]["01"]["attempts"][-1]["provider_attempt"]["status"], "NOT_INVOKED")
 
@@ -238,7 +277,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
                 ok, msg = image_scheduler.ledger_begin(ep, item)
                 self.assertTrue(ok, msg)
                 image_scheduler.ledger_tech_fail(ep, item, "PROVIDER_CAPACITY", "capacity")
-            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            data = self._read_ledger_authority(ep)
             receipt = data["frames"]["01"]["attempts"][-1]["provider_attempt"]
             self.assertEqual(receipt["status"], "INVOKED")
             self.assertEqual(receipt["runner_request_id"], "runner-123")
@@ -253,7 +292,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
             with self._no_spawn():
                 ok, msg = batch_scheduler.ledger_begin(ep, self._queue_item(prompt))
             self.assertTrue(ok, msg)
-            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            data = self._read_ledger_authority(ep)
             self.assertEqual(data["frames"]["01"]["status"], "GENERATING")
 
     def test_ledger_bridge_maps_cli_failure_to_false_without_exit(self):
@@ -283,7 +322,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
                     ep, frame=1, kind="original", prompt_file=prompt, capture_id="CP01",
                     model="gpt-image-2", quality="high", notes="bridge test")
             self.assertTrue(ok, msg)
-            canvas = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))["canvas"]
+            canvas = self._read_ledger_authority(ep)["canvas"]
             candidate = Path(td) / "candidate.png"
             Image.new("RGB", (canvas["width"], canvas["height"]), (30, 40, 50)).save(candidate, "PNG")
             with self._no_spawn():
@@ -292,7 +331,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
             with self._no_spawn():
                 ok2, msg2 = batch_repair_arbiter.authorize_single_repair(ep, 1, "unit bridge test")
             self.assertTrue(ok2, msg2)
-            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            data = self._read_ledger_authority(ep)
             self.assertEqual(data["frames"]["01"]["status"], "CONTENT_FAILED")
 
     def test_worker_consumes_exact_canvas_and_high_quality(self):
@@ -331,7 +370,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
                 reference=None, notes="test", allow_long_prompt=False,
             )
             production_ledger.cmd_begin(args)
-            data = json.loads((ep / "meta/production-ledger.json").read_text(encoding="utf-8"))
+            data = self._read_ledger_authority(ep)
             request = data["frames"]["01"]["attempts"][0]["request"]
             self.assertEqual(request["model"], "gpt-image-2")
             self.assertEqual(request["quality"], "high")
@@ -469,13 +508,9 @@ class ModelFallbackConvergenceTests(unittest.TestCase):
         import codex_auto_orchestrator
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
-            request = ep / "meta/runtime-request.json"
-            request.parent.mkdir(parents=True)
-            request.write_text(
-                json.dumps({"story_input": {"mode": "auto_create"}, "image": {}}, ensure_ascii=False),
-                encoding="utf-8",
-            )
-            block = codex_auto_orchestrator.runtime_request_block(ep)
+            request = runtime_request.compile_request("全自动做一篇「orchestrator policy fixture」。")
+            with mock.patch.object(runtime_request, "authority_for_episode", return_value=request):
+                block = codex_auto_orchestrator.runtime_request_block(ep)
             expected = f"requested={image_model_policy.DEFAULT_MODEL} quality={image_model_policy.DEFAULT_QUALITY}"
             self.assertIn(expected, block)
             self.assertIn("auto_create", block)

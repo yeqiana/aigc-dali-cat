@@ -112,8 +112,8 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.assertEqual(caps["effective_runtime"], "WORK")
         self.assertFalse(caps["local_codex_spawn_allowed"])
         self.assertEqual(caps["image_execution_runtime"], "CODEX")
-        self.assertEqual(caps["codex_image_controller_model"], "gpt-5.6-luna")
-        self.assertEqual(caps["codex_image_reasoning_effort"], "medium")
+        self.assertEqual(caps["codex_image_controller_model"], "gpt-6-luna")
+        self.assertEqual(caps["codex_image_reasoning_effort"], "high")
         self.assertTrue(caps["local_codex_image_spawn_allowed"])
         self.assertEqual(caps["text_review_runtime"], "WORK")
         self.assertEqual(caps["vision_review_runtime"], "CODEX")
@@ -166,7 +166,7 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         }, clear=False), mock.patch.object(runtime_router, "_codex_cli_path", return_value="C:/fake/codex.exe"):
             runtime, reason = runtime_router.detect()
         self.assertEqual(runtime, "WORK")
-        self.assertEqual(reason, "STORY_OS_RUNTIME override")
+        self.assertIn("production.mode", reason)
 
     def test_codex_requires_explicit_runtime_or_explicit_call(self) -> None:
         os.environ["STORY_OS_RUNTIME"] = "WORK"
@@ -175,6 +175,10 @@ class ProductRuntimeFirstTests(unittest.TestCase):
         self.assertTrue(runtime_router.local_codex_image_allowed())
         self.assertTrue(runtime_router.local_codex_vision_allowed())
         os.environ["STORY_OS_RUNTIME"] = "CODEX"
+        runtime, _ = runtime_router.detect()
+        self.assertEqual(runtime, "WORK")
+        self.assertFalse(runtime_router.local_codex_allowed())
+        os.environ["STORY_OS_PRODUCTION_MODE"] = "CODEX_MANAGED"
         runtime, _ = runtime_router.detect()
         self.assertEqual(runtime, "CODEX")
         self.assertTrue(runtime_router.local_codex_allowed())
@@ -272,9 +276,9 @@ class ProductRuntimeFirstTests(unittest.TestCase):
             [],
         )
 
-    def test_codex_image_controller_is_luna_medium(self) -> None:
+    def test_codex_image_controller_uses_policy_profile(self) -> None:
         args = codex_subscription_image.controller_args()
-        self.assertEqual(args[:4], ['-m', 'gpt-5.6-luna', '-c', 'model_reasoning_effort="medium"'])
+        self.assertEqual(args[:4], ['-m', 'gpt-6-luna', '-c', 'model_reasoning_effort="high"'])
         self.assertIn('model_provider="openai"', args)
         self.assertIn('openai_base_url="https://chatgpt.com/backend-api/codex"', args)
 
