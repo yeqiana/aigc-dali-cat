@@ -171,6 +171,10 @@ production:
 
   # 同时在途图片上限，不是固定波次大小。任一任务完成即补下一张。
   max_inflight_images: 5
+  review:
+    max_inflight: 2
+    queue_high_watermark: 6
+    queue_low_watermark: 2
   continuous_first_completed: true
   wave_barrier: false
   ledger_single_writer: true

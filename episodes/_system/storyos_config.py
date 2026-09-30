@@ -447,6 +447,16 @@ def validate(data: dict | None = None) -> list[str]:
     final_review_cap = get_path(cfg, "runtime.review.vision.max_inflight_final")
     if type(final_review_cap) is not int or not 1 <= final_review_cap <= 6:
         errors.append("runtime.review.vision.max_inflight_final must be an int between 1 and 6")
+    review_lane = get_path(cfg, "production.review", {})
+    review_cap = review_lane.get("max_inflight") if isinstance(review_lane, dict) else None
+    review_high = review_lane.get("queue_high_watermark") if isinstance(review_lane, dict) else None
+    review_low = review_lane.get("queue_low_watermark") if isinstance(review_lane, dict) else None
+    if type(review_cap) is not int or not 1 <= review_cap <= 3:
+        errors.append("production.review.max_inflight must be an int between 1 and 3")
+    if type(review_high) is not int or type(review_low) is not int or review_low < 0 or review_high <= review_low:
+        errors.append("production.review watermarks must be integers with HIGH > LOW >= 0")
+    if type(review_cap) is int and type(review_high) is int and review_high <= review_cap:
+        errors.append("production.review.queue_high_watermark must exceed max_inflight")
     if str(get_path(cfg, "runtime.review.governance.runtime", "")).upper() != "WORK":
         errors.append("runtime.review.governance.runtime must be WORK")
     if get_path(cfg, "runtime.review.allow_web_runtime") is not False:
