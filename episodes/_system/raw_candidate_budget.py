@@ -236,7 +236,7 @@ def override_status(ep: Path) -> dict:
     return {"exists": bool(data), "active": active, "status": data.get("status") if data else None,
             "effective_episode_budget": resolve_limit(Path(ep)), "override": data}
 
-def summary(ep: Path, *, pending: int = 0) -> dict:
+def _legacy_summary(ep: Path, *, pending: int = 0) -> dict:
     state = load(ep)
     claims = [row for *_prefix, row in _all_claims(state) if isinstance(row, dict)]
     committed = sum(row.get("committed") is True for row in claims)
@@ -333,6 +333,139 @@ def semantic_key_for_queue_item(item: dict) -> str | None:
     return None
 
 
+# Phase 1 compatibility facade. The legacy file functions above remain only for
+# reading historical projections; all new allow/deny decisions come from MySQL.
+_ATTEMPT_LEASES: dict[str, dict] = {}
+
+
+def claim(ep, frame, kind, reason="", token=None, semantic_key=None, generation_context=None):
+    import generation_attempt_authority as authority
+    ep = Path(ep).resolve()
+    import episode_lifecycle
+    episode_lifecycle.assert_writable(ep, "raw_candidate_budget.claim")
+    if kind not in KINDS:
+        raise ValueError(f"kind must be {sorted(KINDS)}")
+    token = str(token or f"compat-{int(dt.datetime.now().timestamp() * 1000000)}")
+    if token in _ATTEMPT_LEASES:
+        return True, {"decision": "REUSE_CLAIM", "token": token, "lease": _ATTEMPT_LEASES[token]}
+    key = authority.frame_key(ep, frame)
+    if kind == "authority_refresh":
+        auth = _authority_refresh_authorization(ep, f"{int(frame):02d}", str(semantic_key or "").lower())
+        if not semantic_key:
+            return False, {"decision": "AUTHORITY_REFRESH_SEMANTIC_KEY_REQUIRED", "token": token}
+        if not auth["approved"]:
+            return False, {"decision": "AUTHORITY_REFRESH_NOT_AUTHORIZED", "token": token, "semantic_key": semantic_key}
+    elif kind == "user_continuation":
+        auth = _user_continuation_authorization(ep, f"{int(frame):02d}", str(semantic_key or "").lower())
+        if not semantic_key:
+            return False, {"decision": "USER_CONTINUATION_SEMANTIC_KEY_REQUIRED", "token": token}
+        if not auth["approved"]:
+            return False, {"decision": "USER_CONTINUATION_NOT_AUTHORIZED", "token": token, "semantic_key": semantic_key}
+    context = dict(generation_context or {})
+    context.update({"scope": context.get("scope") or kind, "compat_token": token,
+                    "semantic_key": str(semantic_key).lower() if semantic_key else None,
+                    "reason": str(reason or "")[:500]})
+    try:
+        state = load(ep)
+        legacy_rows = [row for f, _k, _bucket, _token, row in _all_claims(state)
+                       if f == f"{int(frame):02d}" and isinstance(row, dict)]
+        legacy_used = len(legacy_rows)
+        ledger = production_ledger.load_authority(ep, default={}) or {}
+        frame_ledger = ((ledger.get("frames") or {}).get(f"{int(frame):02d}") or {})
+        provider_rows = [row for row in (frame_ledger.get("attempts") or []) if isinstance(row, dict)]
+        invoked = sum(str(((row.get("provider_attempt") or {}).get("status") or "")).upper()
+                      in {"INVOKED", "COMPLETED", "FAILED", "TIMEOUT", "UNKNOWN", "SUCCEEDED"}
+                      for row in provider_rows)
+        legacy_used = max(legacy_used, invoked)
+        if kind in {"authority_refresh", "user_continuation"} and authority.semantic_attempt_consumed(ep, key, str(semantic_key).lower()):
+            code = "AUTHORITY_REFRESH_CONTRACT_ALREADY_CLAIMED" if kind == "authority_refresh" else "USER_CONTINUATION_AUTHORIZATION_ALREADY_CLAIMED"
+            return False, {"decision": code, "token": token, "semantic_key": semantic_key}
+        lease = authority.reserve(ep, key, context, legacy_consumed=legacy_used)
+    except authority.AttemptDenied as exc:
+        return False, {"decision": exc.code, "detail": exc.detail, "frame": f"{int(frame):02d}", "kind": kind}
+    lease["compat_token"] = token
+    _ATTEMPT_LEASES[token] = lease
+    return True, {"decision": "ALLOW", "token": token, "frame": f"{int(frame):02d}",
+                  "kind": kind, "semantic_key": str(semantic_key).lower() if semantic_key else None,
+                  "used": lease["attempt_index"], "limit": 2, "lease": lease,
+                  "generation_key": lease["generation_key"]}
+
+
+def lease_for_token(token: str) -> dict | None:
+    return _ATTEMPT_LEASES.get(str(token or ""))
+
+
+def commit(ep, token, reason="candidate_file_committed"):
+    import generation_attempt_authority as authority
+    lease = lease_for_token(token)
+    if not lease:
+        return False, {"decision": "LEASE_NOT_FOUND", "token": str(token)}
+    try:
+        if lease.get("_phase") != "DISPATCH_COMMITTED":
+            return False, {"decision": "GENERATION_ATTEMPT_NOT_DISPATCHED", "token": str(token)}
+        result = authority.succeed(ep, lease, lease["fencing_token"], result_ref=str(reason or "")[:768])
+        lease["_phase"] = "TERMINAL"
+        _ATTEMPT_LEASES.pop(str(token), None)
+        return True, {"decision": "COMMITTED", "token": str(token), "attempt_index": lease["attempt_index"],
+                      "generation_key": lease["generation_key"], "authority": result}
+    except authority.AttemptDenied as exc:
+        return False, {"decision": exc.code, "detail": exc.detail, "token": str(token)}
+
+
+def release(ep, token, reason="technical_failure_before_candidate_commit"):
+    import generation_attempt_authority as authority
+    token = str(token or "")
+    lease = lease_for_token(token)
+    if not lease:
+        return False, {"decision": "LEASE_NOT_FOUND", "token": token}
+    try:
+        if lease.get("_phase") == "DISPATCH_COMMITTED":
+            result = authority.mark_outcome_unknown(ep, lease, lease["fencing_token"], str(reason or "OUTCOME_UNKNOWN"))
+            lease["_phase"] = "TERMINAL"
+            decision = "CONSUMED_OUTCOME_UNKNOWN"
+        elif lease.get("_phase") == "TERMINAL":
+            return False, {"decision": "ALREADY_TERMINAL", "token": token}
+        else:
+            result = authority.release_pre_dispatch(ep, lease, lease["fencing_token"], str(reason or "PRE_DISPATCH_FAILURE"))
+            lease["_phase"] = "TERMINAL"
+            decision = "RELEASED_PRE_DISPATCH"
+        _ATTEMPT_LEASES.pop(token, None)
+        return True, {"decision": decision, "token": token, "authority": result}
+    except authority.AttemptDenied as exc:
+        return False, {"decision": exc.code, "detail": exc.detail, "token": token}
+
+
+def summary(ep: Path, *, pending: int = 0) -> dict:
+    import generation_attempt_authority as authority
+    ep = Path(ep).resolve()
+    try:
+        from episode_state_persistence import load as load_state
+        state = load_state(ep) or {}
+        raw_frames = max(1, int(state.get("frame_count") or state.get("body_frame_count") or 20))
+        active = 0
+        consumed = 0
+        for frame in range(1, raw_frames + 1):
+            row = authority.load_asset_state(ep, authority.frame_key(ep, frame))
+            consumed += row["attempts_consumed"]
+            active += int(row["active_attempt_index"] is not None)
+        # This is a scheduler hint. Reserve remains the only ALLOW/DENY authority.
+        available = max(0, raw_frames * 2 - consumed - active)
+        return {"limit": raw_frames * 2, "source": "generation_attempt_authority_projection",
+                "override_applied": False, "committed": consumed, "inflight_reserved": active,
+                "available": available, "pending_generation": int(pending),
+                "episode_capacity": min(int(pending), available),
+                "additional_capacity_needed": max(0, int(pending) - available),
+                "per_frame_limits_still_apply": True, "authority": "mysql"}
+    except Exception as exc:
+        # Queue admission may continue to show work, but Provider dispatch will
+        # fail closed when it cannot reserve from MySQL.
+        return {"limit": 0, "source": "generation_attempt_authority_unavailable",
+                "override_applied": False, "committed": 0, "inflight_reserved": 0,
+                "available": 0, "pending_generation": int(pending),
+                "episode_capacity": 0, "additional_capacity_needed": int(pending),
+                "per_frame_limits_still_apply": True, "authority": "mysql", "error": str(exc)}
+
+
 def _policy_scoped_exception(kind: str, semantic_key: str | None) -> bool:
     return kind == "exception" and str(semantic_key or "").startswith(VISUAL_LOCK_POLICY_SEMANTIC_PREFIX)
 
@@ -354,17 +487,22 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
     user-continuation lanes keep their own explicit authorization contracts.
     """
     ep = Path(ep).resolve()
-    state = load(ep)
+    import generation_attempt_authority as authority
     rows = []
     for item in items:
         frame = int((item or {}).get("frame") or 0)
         key = f"{frame:02d}"
         kind = kind_for_queue_item(item)
-        bucket = (((state.get("frames") or {}).get(key) or {}).get(kind) or {})
-        bucket_used = int(bucket.get("used") or 0)
-        base_limit = int(limits().get(kind, 2))
+        try:
+            asset_state = authority.load_asset_state(ep, authority.frame_key(ep, frame))
+            authority_available = True
+        except Exception:
+            asset_state = {"attempts_consumed": 2, "active_attempt_index": None, "remaining_attempts": 0}
+            authority_available = False
+        bucket_used = int(asset_state.get("attempts_consumed") or 0)
+        base_limit = authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET
         semantic_key = semantic_key_for_queue_item(item)
-        used = _semantic_used(bucket, semantic_key) if _policy_scoped_exception(kind, semantic_key) else bucket_used
+        used = bucket_used
         semantic_authorized = False
         semantic_duplicate = False
         if kind in {"authority_refresh", "user_continuation"}:
@@ -374,21 +512,16 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
                 else _user_continuation_authorization(ep, key, semantic_key)
             ) if semantic_key else {"approved": False, "source": ""}
             semantic_authorized = bool(auth.get("approved"))
-            semantic_duplicate = bool(semantic_key) and any(
-                str((claim or {}).get("semantic_key") or "").lower() == str(semantic_key).lower()
-                for claim in (bucket.get("claims") or {}).values()
-                if isinstance(claim, dict)
-            )
-            # Semantic lanes deliberately have a configured base limit of zero.
-            # One machine/user authorization grants exactly one retained candidate
-            # for that semantic key; this mirrors claim() instead of treating zero
-            # as an unconditional hard stop in the read-side recovery decision.
-            semantic_capacity = 1 if semantic_authorized and not semantic_duplicate else 0
+            try:
+                semantic_duplicate = bool(semantic_key) and authority.semantic_attempt_consumed(
+                    ep, authority.frame_key(ep, frame), semantic_key)
+            except Exception:
+                semantic_duplicate = True
             raise_row = {"extra": 0, "sources": [str(auth.get("source") or "")[:200]] if semantic_authorized else []}
-            effective_limit = used + semantic_capacity
         else:
-            raise_row = authorized_frame_raise(ep, key, kind)
-            effective_limit = base_limit + int(raise_row.get("extra") or 0)
+            raise_row = {"extra": 0, "sources": []}
+        effective_limit = base_limit
+        active = asset_state.get("active_attempt_index") is not None
         rows.append({
             "frame": frame,
             "item_id": str((item or {}).get("id") or ""),
@@ -397,36 +530,20 @@ def blocked_queue_context(ep: Path, items: list[dict]) -> dict:
             "bucket_used": bucket_used,
             "base_limit": base_limit,
             "effective_limit": effective_limit,
-            "frame_capacity_available": max(0, effective_limit - used),
-            "frame_authorization_supported": kind in {"original", "repair", "exception", "user_exception"},
+            "frame_capacity_available": 0 if active or not authority_available else max(0, effective_limit - used),
+            "active_attempt_index": asset_state.get("active_attempt_index"),
+            "authority_available": authority_available,
+            "frame_authorization_supported": False,
             "authorization_sources": list(raise_row.get("sources") or []),
             "semantic_key": semantic_key,
             "semantic_authorization_approved": semantic_authorized,
             "semantic_duplicate": semantic_duplicate,
         })
     episode = summary(ep, pending=len(rows))
-    episode_available = int(episode.get("available") or 0)
     eligible = [row["frame"] for row in rows if row["frame_capacity_available"] > 0]
-    resumable = eligible[:max(0, episode_available)]
-    frame_needs = [row for row in rows if row["frame_capacity_available"] <= 0 and row["frame_authorization_supported"]]
+    # Aggregate Episode capacity is diagnostic only; per-asset Authority decides.
+    resumable = eligible
     options = []
-    if episode_available <= 0 and rows:
-        options.append({
-            "kind": "episode",
-            "command": "raw_candidate_budget.py authorize-episode",
-            "current_limit": int(episode.get("limit") or 0),
-            "minimum_new_limit": int(episode.get("limit") or 0) + max(1, len(rows)),
-            "requires_explicit_source": True,
-        })
-    for row in frame_needs:
-        options.append({
-            "kind": "frame",
-            "command": "raw_candidate_budget.py authorize-frame",
-            "frame": row["frame"],
-            "candidate_kind": row["kind"],
-            "minimum_additional": 1,
-            "requires_explicit_source": True,
-        })
     return {
         "episode": episode,
         "items": rows,
@@ -499,7 +616,7 @@ def _find_token(d: dict, token: str):
 def _reserved_total(d: dict) -> int:
     return sum(1 for *_prefix, row in _all_claims(d) if isinstance(row, dict))
 
-def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
+def _legacy_claim(ep, frame, kind, reason="", token=None, semantic_key=None):
     ep = Path(ep).resolve()
     import episode_lifecycle
     episode_lifecycle.assert_writable(ep, "raw_candidate_budget.claim")
@@ -612,7 +729,7 @@ def claim(ep, frame, kind, reason="", token=None, semantic_key=None):
     atomic.update_json(ep / REL, default_state, mutate)
     return result.get("decision") in {"ALLOW", "REUSE_CLAIM"}, result
 
-def commit(ep, token, reason="candidate_file_committed"):
+def _legacy_commit(ep, token, reason="candidate_file_committed"):
     ep = Path(ep).resolve()
     import episode_lifecycle
     episode_lifecycle.assert_writable(ep, "raw_candidate_budget.commit")
@@ -639,7 +756,7 @@ def commit(ep, token, reason="candidate_file_committed"):
     atomic.update_json(ep / REL, default_state, mutate)
     return result.get("decision") in {"COMMITTED", "ALREADY_COMMITTED"}, result
 
-def release(ep, token, reason="technical_failure_before_candidate_commit"):
+def _legacy_release(ep, token, reason="technical_failure_before_candidate_commit"):
     ep = Path(ep).resolve()
     token = str(token or "").strip()
     result = {}

@@ -64,7 +64,7 @@ def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duratio
             effective_model=binding.get("model"),reasoning_effort=binding.get("reasoning_effort"),
             model_policy_version=binding.get("policy_version"),model_policy_sha256=binding.get("model_policy_sha256"),
             provider=item.get("provider"),runner=item.get("runner"),worker_id=item.get("worker_id"),
-            attempt_index=max(1,int(item.get("attempts") or 1)),generation_key=f"{item.get('id')}:a{max(1,int(item.get('attempts') or 1))}",
+            attempt_index=max(1,int(item.get("attempts") or 1)),generation_key=None,
             queue_name="repair" if item.get("scope")=="repair" else "image",
             queue_depth=queue_depth,duration_ms=duration_ms,wait_ms=wait_ms,
             status=status,failure_class=failure_class,source="image_scheduler",
@@ -566,7 +566,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             row["status"]="running"
             row["attempts"]=int(row.get("attempts") or 0)+1
             row["started_at"]=now()
-            _telemetry_image(ep,row,"WORKER_DISPATCH_COMMITTED",queue_depth=max(0,len(ready)-len(admitted)-1),
+            _telemetry_image(ep,row,"WORKER_ADMITTED",queue_depth=max(0,len(ready)-len(admitted)-1),
                              wait_ms=_observed_ms(row.get("queued_at"),row.get("started_at")),status="committed")
             production_recovery.mark_worker_pending(ep,row)
             inflight+=1
