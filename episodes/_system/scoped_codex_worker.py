@@ -264,7 +264,8 @@ def codex_exec_command(codex, binding, image_paths=(), sandbox="workspace-write"
 
 def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeout=None,
                        run_id=None, trace_id=None, logical_asset_key=None, image_paths=(),
-                       call_id=None, output_handle=None, sandbox="workspace-write"):
+                       call_id=None, output_handle=None, sandbox="workspace-write",
+                       receipt_fields=None, persist_output_stream=False):
     """Run one real scoped Codex model call and persist its policy-bound receipt."""
     ep=Path(ep).resolve()
     call_id=call_id or uuid.uuid4().hex
@@ -321,6 +322,10 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         "codex_argv":cmd,
         "logical_asset_key":logical_asset_key,
     }
+    if isinstance(receipt_fields, dict):
+        receipt.update(receipt_fields)
+    if persist_output_stream and output_handle is not None and hasattr(output_handle,"getvalue"):
+        receipt["scoped_output_stream"]=output_handle.getvalue()
     receipt_path=runtime_observability.write_model_execution_receipt(ep,receipt=receipt)
     _model_event(ep,"MODEL_EXECUTION",step,binding,worker_id=worker_id,
         generation_key=call_id,duration_ms=duration_ms,status=status,run_id=run_id,
@@ -331,6 +336,95 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         generation_key=call_id,duration_ms=duration_ms,status=status.lower(),run_id=run_id,
         trace_id=trace_id,call_id=call_id,logical_asset_key=logical_asset_key)
     return rc,receipt
+
+
+def run_repair_prompt_task(ep, *, task_input, codex_raw=None, timeout=None):
+    """Run/reuse an internal prompt.repair task without adding a Runtime DAG node."""
+    import io
+    import json
+    import hashlib
+    import inflight_codex_task
+    import logical_asset_identity
+
+    ep=Path(ep).resolve()
+    binding=model_policy.resolve("prompt.repair",episode=ep)
+    required=("logical_asset_key","source_generation_key","source_artifact_sha256",
+              "review_receipt_sha256","policy_sha256")
+    missing=[key for key in required if not str(task_input.get(key) or "").strip()]
+    if missing:
+        raise ValueError("repair prompt task inputs missing: "+", ".join(missing))
+    if str(binding.get("model_policy_sha256") or "") != str(task_input["policy_sha256"]):
+        raise ValueError("repair prompt policy SHA differs from frozen task input")
+    text=("你是限定范围的图片返修提示词编写任务。只输出 JSON：{\\\"repair_instruction\\\":\\\"...\\\"}。"
+          "生成最小修改指令；保留所有已通过的人物身份、服装、场景、镜头、动作和连续性，仅修改明确失败维度。"
+          "不得重写故事或自由创作整帧。\n\n任务证据：\n"+
+          json.dumps(task_input,ensure_ascii=False,sort_keys=True,indent=2))
+    source_sha=hashlib.sha256(json.dumps(task_input,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode("utf-8")).hexdigest()
+    fingerprint=inflight_codex_task.fingerprint(
+        step="REPAIR_PROMPT",prompt=text,source_sha256=source_sha,
+        model_role="prompt.repair",effective_model=str(binding["model"]),
+        reasoning_effort=str(binding["reasoning_effort"]),
+        model_policy_sha256=str(binding["model_policy_sha256"]),
+        runtime_request_sha="",evidence_sha256=source_sha)
+    call_id=fingerprint[:32]
+    prompt_sha=hashlib.sha256(text.encode("utf-8")).hexdigest()
+    receipt_path=ep/"meta/provider-receipts/model-executions"/(call_id+".json")
+    output_path=ep/"meta/runtime/repair-prompts"/(call_id+".txt")
+    if receipt_path.is_file():
+        receipt=json.loads(receipt_path.read_text(encoding="utf-8"))
+        valid_receipt=(receipt.get("status")=="SUCCESS" and receipt.get("task_fingerprint")==fingerprint
+                and receipt.get("prompt_sha256")==prompt_sha
+                and receipt.get("source_artifact_sha256")==task_input["source_artifact_sha256"]
+                and receipt.get("review_receipt_sha256")==task_input["review_receipt_sha256"]
+                and receipt.get("model_policy_sha256")==binding.get("model_policy_sha256"))
+        output=output_path.read_text(encoding="utf-8").strip() if output_path.is_file() else ""
+        if valid_receipt and not output and receipt.get("scoped_output_stream"):
+            import codex_critic_runner
+            recovered=codex_critic_runner.recover_completed_agent_json(receipt["scoped_output_stream"])
+            output=str((recovered or {}).get("repair_instruction") or "").strip()
+            if output and len(output)<=250 and len(output.encode("utf-8"))<=860:
+                output_path.parent.mkdir(parents=True,exist_ok=True)
+                output_path.write_text(output+"\n",encoding="utf-8",newline="\n")
+                receipt["repair_output_sha256"]=hashlib.sha256(output.encode("utf-8")).hexdigest()
+                try:
+                    receipt["repair_prompt_path"]=str(output_path.relative_to(ROOT))
+                except ValueError:
+                    receipt["repair_prompt_path"]=str(output_path)
+                receipt_path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+        if valid_receipt and output:
+            return {"status":"REUSED","fingerprint":fingerprint,"prompt_path":str(output_path),"receipt_path":str(receipt_path),"receipt":receipt}
+    stream=io.StringIO()
+    rc,receipt=execute_model_call(
+        ep,"REPAIR_PROMPT",binding,text,codex_raw=codex_raw,timeout=timeout,
+        logical_asset_key=task_input["logical_asset_key"],call_id=call_id,output_handle=stream,
+        persist_output_stream=True,
+        receipt_fields={"task_fingerprint":fingerprint,"prompt_sha256":prompt_sha,
+            "source_generation_key":task_input["source_generation_key"],
+            "source_artifact_sha256":task_input["source_artifact_sha256"],
+            "review_receipt_sha256":task_input["review_receipt_sha256"]})
+    if rc != 0:
+        return {"status":"TECH_FAILED","fingerprint":fingerprint,"receipt":receipt}
+    import codex_critic_runner
+    result=codex_critic_runner.recover_completed_agent_json(stream.getvalue())
+    instruction=str((result or {}).get("repair_instruction") or "").strip()
+    if not instruction:
+        raise ValueError("repair prompt task returned no completed repair_instruction JSON")
+    if len(instruction)>250 or len(instruction.encode("utf-8"))>860:
+        raise ValueError("repair prompt exceeds Story OS image prompt byte budget")
+    output_path.parent.mkdir(parents=True,exist_ok=True)
+    output_path.write_text(instruction+"\n",encoding="utf-8",newline="\n")
+    try:
+        prompt_ref=str(output_path.relative_to(ROOT))
+    except ValueError:
+        prompt_ref=str(output_path)
+    receipt.update({"task_fingerprint":fingerprint,"prompt_sha256":prompt_sha,
+        "source_generation_key":task_input["source_generation_key"],
+        "source_artifact_sha256":task_input["source_artifact_sha256"],
+        "review_receipt_sha256":task_input["review_receipt_sha256"],
+        "repair_output_sha256":hashlib.sha256(instruction.encode("utf-8")).hexdigest(),
+        "repair_prompt_path":prompt_ref})
+    receipt_path.write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    return {"status":"SUCCESS","fingerprint":fingerprint,"prompt_path":str(output_path),"receipt_path":str(receipt_path),"receipt":receipt}
 
 def scoped_fingerprint(ep, step, text, binding, source_sha):
     request=runtime_request.authority_for_episode(ep) or {}
