@@ -24,6 +24,10 @@ episodes/_system/_tmp_*
 # Detached-driver contract tests use tempfile under episodes/_tests; Windows child
 # processes can briefly outlive cleanup and leave these smoke directories behind.
 episodes/_tests/driver-*/
+episodes/_tests/p4-production-canary-*/
+episodes/_tests/tmp*/
+# Some tests use Path("ep") as a repository-root scratch Episode; never version its outputs.
+/ep/
 
 # 归档豁免：.storyos/archive/ 下是有据可查的正式归档资产（带 README、走 git mv、
 # 逐文件 SHA-256 校验），不受上面 _tmp_* 等全局临时规则约束。
@@ -38,6 +42,8 @@ episodes/**/meta/rolling-review-workers/
 episodes/**/meta/scoped-workers/
 episodes/**/meta/runtime/driver-logs/
 episodes/**/meta/runtime/preimage-candidates/
+episodes/**/meta/runtime/batch-reviews/
+episodes/**/meta/runtime/diagnostics/
 # Keep Git ignore policy aligned with runtime_log_policy.LOCAL_ONLY_PATTERNS.
 episodes/**/meta/episode-performance-ledger.json
 episodes/**/meta/runtime-runner.lock
@@ -145,6 +151,10 @@ episodes/**/*.zip
 /.storyos/runtime-launcher/
 /.storyos/platform-console/
 /.storyos/auto-recovery/
+# P4/P5 shadow execution raw outputs and one-off production helper inputs are local runtime evidence.
+# Formal cutover / acceptance conclusions belong in reports/, not in these workbench paths.
+/.storyos/p4-capability-router/production/
+/.storyos/production-input/
 
 # .storyos 工作台 / 版面探查产物为本地派生证据，不入库。
 # 有意归档物在 .storyos/archive/ 下独立跟踪（见各 archive README）。
