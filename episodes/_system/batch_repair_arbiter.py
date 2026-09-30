@@ -22,13 +22,11 @@ def apply(ep:Path,assessment:dict)->dict:
     frame=int(assessment["frame"])
     if action not in {"EARLY_SINGLE_REPAIR","SINGLE_REPAIR"}:
         return {**assessment,"ledger_repair_authorized":False}
-    reason=(
-        f"V2.4 Batch Repair Gate batch={assessment['batch_id']} "
-        f"action={action} deviation={assessment['deviation_score']} "
-        f"criticality={assessment['criticality_score']}"
-    )
-    ok,msg=authorize_single_repair(ep,frame,reason)
-    return {**assessment,"ledger_repair_authorized":ok,"ledger_message":msg[-800:]}
+    # Fast Scout is a Production finding only. Phase 3's full-frame semantic
+    # review and repair aggregator own the barrier and the single repair wave.
+    # Keep the assessment as evidence; never transition the ledger here.
+    return {**assessment,"frame":frame,"ledger_repair_authorized":False,
+            "repair_deferred":"FIRST_PASS_REVIEW_BARRIER"}
 
 def write_batch_decision(ep:Path,batch_id:str,rows:list[dict])->Path:
     p=ep/"meta/batch-repair-decisions"/f"{batch_id.lower()}.json"

@@ -769,7 +769,11 @@ def derive(ep: Path) -> dict:
                     executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
                     batch_ids=sorted({str(x.get("batch_id")) for x in production_review_pending if x.get("batch_id")}),
                     reason="Production batch review request remains pending isolated actual-pixel review")
-        if qs["counts"].get("scout_repair"):
+        deferred_production_scout = any(
+            row.get("status") == "scout_repair" and str(row.get("scope") or "") in {"batch", "production"}
+            for row in q.get("items") or []
+        )
+        if qs["counts"].get("scout_repair") and not deferred_production_scout:
             return action_result(action="REPAIR_FAILED_IMAGES",
                     executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
                     reason="actual-pixel review authorized content repair")

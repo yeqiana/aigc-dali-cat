@@ -83,6 +83,16 @@ def enqueue_marked_repairs(ep: Path) -> dict:
         frame = int(row.get("frame") or 0)
         if frame <= 0:
             continue
+        production_review_marker = (
+            str(row.get("scope") or "") in {"batch", "production"}
+            or bool(row.get("batch_id"))
+            or isinstance(row.get("vision_batch_review"),dict)
+            or isinstance(row.get("work_batch_review"),dict)
+        )
+        if production_review_marker:
+            results.append({"status":"DEFERRED_FIRST_PASS_BARRIER","frame":frame,
+                            "queue_item_id":row.get("id")})
+            continue
         findings: list[str] = []
         for source in (row.get("vision_batch_review"), row.get("work_batch_review"), row.get("scout"), row.get("repair_assessment")):
             if not isinstance(source, dict):

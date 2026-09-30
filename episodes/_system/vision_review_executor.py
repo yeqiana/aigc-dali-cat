@@ -23,6 +23,7 @@ import visual_lock_admission_state
 import visual_lock_v21
 import visual_profile_review_persistence
 import production_ledger
+import scheduler_core
 
 ALLOWED_ACTIONS = {
     "REVIEW_ORDINARY_BASELINE",
@@ -266,6 +267,31 @@ def execute(ep: Path, action: dict) -> dict:
 
     if name == "REVIEW_FINAL_PRODUCTION":
         attempt = int(action.get("attempt") or 1)
+        wave_path = ep / "meta/runtime/repair-wave-1.json"
+        if wave_path.is_file():
+            import repair_aggregator
+            current_wave = repair_aggregator.load_wave(ep)
+            if current_wave.get("status") == "STARTED":
+                receipt_ref = (current_wave.get("source_review_receipts") or [{}])[0].get("path")
+                first_pass_evidence = story_json.read_json(ep / str(receipt_ref), default={}) if receipt_ref else {}
+                resumed = repair_aggregator.materialize_wave(ep, findings=first_pass_evidence)
+                q = scheduler_core.load_queue(ep)
+                repair_items = [row for row in q.get("items") or []
+                                if row.get("capture_id", "").startswith("repair-wave-1-")]
+                eligible_count = int((current_wave.get("summary") or {}).get("eligible_repairs") or 0)
+                if resumed.get("status") == "SECOND_AUTOMATIC_REPAIR_WAVE_FORBIDDEN":
+                    return {"status":"NEEDS_USER","action":name,"runtime":"CODEX_VISION","repair_wave":resumed}
+                if len(repair_items) < eligible_count or any(row.get("status") in {"queued","running","tech_failed","blocked"} for row in repair_items):
+                    return {"status":"REPAIR_ENQUEUED","action":name,"runtime":"CODEX_VISION",
+                            "attempt":attempt,"repair_wave":resumed}
+        if wave_path.is_file() and attempt > 1:
+            try:
+                import runtime_observability
+                import logical_asset_identity
+                runtime_observability.safe_record_runtime_event(ep,"REPAIR_REVIEW_STARTED",
+                    episode_id=logical_asset_identity.episode_id(ep),step="REPAIR_REVIEW",status="started")
+            except Exception:
+                pass
         rc = frame_semantic_review.run_critic(
             ep,
             attempt=attempt,
@@ -273,40 +299,51 @@ def execute(ep: Path, action: dict) -> dict:
             timeout=runtime_timeout_policy.seconds("deep_semantic_review"),
         )
         if rc == 0:
+            if wave_path.is_file() and attempt > 1:
+                import repair_aggregator
+                plan = repair_aggregator.load_wave(ep)
+                outcomes = {str(row.get("frame_id")):"PASS" for row in plan.get("frames") or [] if row.get("repairable")}
+                repair_aggregator.finalize_wave(ep,repair_reviews=outcomes)
+                try:
+                    runtime_observability.safe_record_runtime_event(ep,"REPAIR_REVIEW_FINISHED",
+                        episode_id=logical_asset_identity.episode_id(ep),step="REPAIR_REVIEW",status="PASS")
+                except Exception:
+                    pass
             return {"status": "PASS", "action": name, "runtime": "CODEX_VISION", "attempt": attempt}
         if rc not in {2, 3}:
             return {"status": "TECHNICAL_FAILURE", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "returncode": rc}
         evidence_path = ep / "meta" / f"frame-semantic-candidate-attempt-{attempt}.json"
         evidence = story_json.read_json(evidence_path, default={}) if evidence_path.is_file() else {}
         failed_frames = [str(x).zfill(2) for x in (evidence.get("failed_frames") or [])]
-        critic_rows = {
-            str(row.get("frame") or "").zfill(2): row
-            for row in ((evidence.get("critic_result") or {}).get("frames") or [])
-            if isinstance(row, dict)
-        }
-        repairs = []
-        for key in failed_frames:
-            row = critic_rows.get(key) or {}
-            findings = [str(x) for x in (row.get("issue_codes") or [])]
-            if row.get("notes"):
-                findings.append(str(row.get("notes")))
-            repairs.append(auto_repair_enqueue.enqueue(
-                ep,
-                frame=int(key),
-                findings=findings,
-                source="FINAL_SEMANTIC",
-                review_note="Final Frame Semantic Codex Vision content FAIL",
-            ))
-        if repairs and any(r.get("status") in {"REPAIR_ENQUEUED", "REPAIR_ALREADY_PENDING"} for r in repairs):
-            return {"status": "REPAIR_ENQUEUED", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "repairs": repairs}
+        if wave_path.is_file() and attempt > 1:
+            import repair_aggregator
+            plan = repair_aggregator.load_wave(ep)
+            failed = set(failed_frames)
+            outcomes = {str(row.get("frame_id")): ("NEEDS_USER" if str(row.get("frame_id")) in failed else "PASS")
+                        for row in plan.get("frames") or [] if row.get("repairable")}
+            finalized = repair_aggregator.finalize_wave(ep,repair_reviews=outcomes)
+            try:
+                runtime_observability.safe_record_runtime_event(ep,"REPAIR_REVIEW_FINISHED",
+                    episode_id=logical_asset_identity.episode_id(ep),step="REPAIR_REVIEW",status="NEEDS_USER")
+            except Exception:
+                pass
+            return {"status":"NEEDS_USER","action":name,"runtime":"CODEX_VISION",
+                    "attempt":attempt,"frames":failed_frames,"repair_wave":finalized}
+        import repair_aggregator
+        wave = repair_aggregator.materialize_wave(ep,attempt=attempt,evidence=evidence)
+        if wave.get("status") in {"STARTED","PLANNED"}:
+            return {"status":"REPAIR_ENQUEUED","action":name,"runtime":"CODEX_VISION",
+                    "attempt":attempt,"repair_wave":wave}
         ledger = production_ledger.load_authority(ep, default={}) or {}
         needs_user = [
             str(key).zfill(2) for key, value in ((ledger.get("frames") or {}).items())
             if isinstance(value, dict) and value.get("status") == "NEEDS_USER"
         ]
         if needs_user:
-            return {"status": "NEEDS_USER", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": needs_user, "repairs": repairs}
-        return {"status": "FAIL", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "returncode": rc, "repairs": repairs}
+            return {"status": "NEEDS_USER", "action": name, "runtime": "CODEX_VISION", "attempt": attempt, "frames": needs_user, "repair_wave": wave}
+        return {"status": "NEEDS_USER" if wave.get("status") == "COMPLETED" else "FAIL",
+                "action": name, "runtime": "CODEX_VISION", "attempt": attempt,
+                "returncode": rc, "repair_wave": wave}
 
     if name == "REVIEW_FINAL_PATCH":
         frames = [str(x).zfill(2) for x in (action.get("frames") or []) if str(x)]
