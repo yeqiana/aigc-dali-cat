@@ -331,41 +331,74 @@ class EvidenceRecovery(unittest.TestCase):
     def test_source_binding_change_invalidates_frame_review(self):
         out = self.ep / 'source.png'; out.write_bytes(b'source-pixels')
         frame = {'frame': '01', 'path_rel': out.relative_to(ROOT).as_posix(), 'sha256': 'a' * 64, 'path': out}
+        frame.update(semantic.current_generation_binding(
+            self.ep, '01', asset={'generation_key': 'TEST-GK-01'}))
         binding = {'story': {'path': 'story.md', 'sha256': 'b' * 64}, 'storyboard': {'path': 'board.md', 'sha256': 'c' * 64}, 'extraction_mode': 'text_frame', 'frame_sha256': 'd' * 64}
+        phase3_contexts = {'frame_contract_sha256': 'contract'}
+        policy_sha = 'e' * 64
+        identity = {**frame, 'source_binding': binding}
         payload = {
             'schema_version': semantic.SCHEMA_VERSION,
             'story_os_version': '2.0.3.6',
             'frame': '01',
             'asset_path': frame['path_rel'],
             'asset_sha256': frame['sha256'],
+            'logical_asset_key': frame['logical_asset_key'],
+            'generation_key': frame['generation_key'],
+            'model_policy_sha256': policy_sha,
+            'evidence_fingerprint': semantic.frame_evidence_fingerprint(
+                identity, contexts={}, phase3_contexts=phase3_contexts, policy_sha256=policy_sha),
             'critic_provenance': {'runtime': 'CODEX_ISOLATED', 'isolated_session': True, 'review_scope': 'FULL_FRAME_SET', 'attempt': 1},
             'checks': {key: True for key in semantic.checks_for_version('2.0.3.6')},
             'issue_codes': [],
             'decision': 'pass',
             'source_binding': binding,
+            **phase3_contexts,
         }
-        with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'episode_contract_version', return_value='2.0.3.6'), patch.object(semantic.phase4_contract, 'required', return_value=True), patch.object(semantic.phase4_contract, 'source_binding', return_value=binding), patch.object(semantic.phase3_env, 'required', return_value=False), patch.object(semantic.phase4_contract, 'verify_approved_asset_binding', return_value=[]):
-            self.assertEqual(semantic.validate_bound_review(payload, frame=frame, contexts={}, version='2.0.3.6', metadata_only=True, ep=self.ep), [])
+        with patch.object(semantic, 'review_required', return_value=True), patch.object(semantic, 'episode_contract_version', return_value='2.0.3.6'), patch.object(semantic.phase4_contract, 'required', return_value=True), patch.object(semantic.phase4_contract, 'source_binding', return_value=binding), patch.object(semantic.phase3_env, 'required', return_value=False), patch.object(semantic.phase4_contract, 'verify_approved_asset_binding', return_value=[]), patch.object(semantic, 'bound_review_policy_sha256', return_value=policy_sha):
+            self.assertEqual(semantic.validate_bound_review(payload, frame=frame, contexts={}, version='2.0.3.6', metadata_only=True, phase3_contexts=phase3_contexts, ep=self.ep), [])
+            stale_attempt = dict(payload, generation_key='TEST-GK-OLD')
+            stale_errors = semantic.validate_bound_review(stale_attempt, frame=frame, contexts={}, version='2.0.3.6', metadata_only=True, phase3_contexts=phase3_contexts, ep=self.ep)
+            self.assertTrue(any('generation_key' in error for error in stale_errors))
+            stale_policy = dict(payload, model_policy_sha256='f' * 64)
+            policy_errors = semantic.validate_bound_review(stale_policy, frame=frame, contexts={}, version='2.0.3.6', metadata_only=True, phase3_contexts=phase3_contexts, ep=self.ep)
+            self.assertTrue(any('model_policy_sha256' in error for error in policy_errors))
             changed_binding = {'story': dict(binding['story']), 'storyboard': dict(binding['storyboard']), 'extraction_mode': binding['extraction_mode'], 'frame_sha256': binding['frame_sha256']}
             changed_binding['storyboard']['sha256'] = 'e' * 64
             semantic.phase4_contract.source_binding.return_value = changed_binding
-            errors = semantic.validate_bound_review(payload, frame=frame, contexts={}, version='2.0.3.6', metadata_only=True, ep=self.ep)
+            errors = semantic.validate_bound_review(payload, frame=frame, contexts={}, version='2.0.3.6', metadata_only=True, phase3_contexts=phase3_contexts, ep=self.ep)
             self.assertTrue(any('source_binding' in x for x in errors))
 
     def test_incremental_noop_patch_full_and_unreadable_contract(self):
         frames = []
         binding = {'storyboard': {'sha256': 'b' * 64}}
+        policy_sha = 'c' * 64
+        phase3_contexts = {'frame_contract_sha256': 'contract'}
         for n in range(1, 9):
             out = self.ep / f'{n:02d}.png'; out.write_bytes(f'pixels {n}'.encode())
             frame = {'frame': f'{n:02d}', 'path_rel': out.relative_to(ROOT).as_posix(),
                      'sha256': semantic.sha256_file(out), 'path': out}
+            frame.update(semantic.current_generation_binding(
+                self.ep, frame['frame'], asset={'generation_key': f"TEST-GK-{frame['frame']}"}))
             frames.append(frame)
+            evidence_identity = {
+                'logical_asset_key': frame['logical_asset_key'],
+                'generation_key': frame['generation_key'],
+                'sha256': frame['sha256'],
+                'source_binding': binding,
+            }
             scheduler_core.write_json(self.ep / semantic.REVIEW_DIR / f'{n:02d}.json', {
                 'schema_version': semantic.SCHEMA_VERSION, 'story_os_version': '2.0.3.6',
                 'frame': frame['frame'], 'asset_path': frame['path_rel'], 'asset_sha256': frame['sha256'],
+                'logical_asset_key': frame['logical_asset_key'],
+                'generation_key': frame['generation_key'],
+                'model_policy_sha256': policy_sha,
+                'evidence_fingerprint': semantic.frame_evidence_fingerprint(
+                    evidence_identity, contexts={}, phase3_contexts=phase3_contexts,
+                    policy_sha256=policy_sha),
                 'critic_provenance': {'runtime': 'CODEX_ISOLATED', 'isolated_session': True,
                                      'review_scope': 'FULL_FRAME_SET', 'attempt': 1},
-                'source_binding': binding, 'frame_contract_sha256': 'contract',
+                'source_binding': binding, **phase3_contexts,
                 'checks': {key: True for key in semantic.checks_for_version('2.0.3.6')},
                 'issue_codes': [], 'decision': 'pass',
             })
@@ -374,11 +407,12 @@ class EvidenceRecovery(unittest.TestCase):
                 (incr, 'review_required', True), (semantic, 'frame_records', frames),
                 (semantic, 'context_hashes', {}), (semantic, 'episode_contract_version', '2.0.3.6'),
                 (semantic, 'directing_v3_required', False),
+                (semantic, 'bound_review_policy_sha256', policy_sha),
                 (incr, 'caption_state', {'mode': 'none', 'frame_sha256': {f['frame']: '' for f in frames}}),
             ):
                 stack.enter_context(patch.object(module, name, return_value=value))
             source = stack.enter_context(patch.object(semantic, 'source_binding', return_value=binding))
-            contract = stack.enter_context(patch.object(semantic, 'phase3_context_hashes', return_value={'frame_contract_sha256': 'contract'}))
+            contract = stack.enter_context(patch.object(semantic, 'phase3_context_hashes', return_value=phase3_contexts))
             self.assertEqual(incr.build_plan(self.ep)['action'], 'NOOP')
             review_path = self.ep / semantic.REVIEW_DIR / '01.json'
             original = batch_review.read_json(review_path)

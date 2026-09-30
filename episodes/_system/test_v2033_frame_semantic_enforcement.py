@@ -11,6 +11,7 @@ from unittest import mock
 from PIL import Image
 
 import frame_semantic_review as fsr
+import storage_config
 import story_json
 
 
@@ -30,6 +31,16 @@ class FrameSemanticEnforcementTest(unittest.TestCase):
         (self.ep / "meta/frame-reviews").mkdir(parents=True)
         self.old_root = fsr.ROOT
         fsr.ROOT = self.root
+        # This is an isolated unit fixture with a temporary Episode. Explicitly
+        # select the supported JSON ledger backend so the global workstation's
+        # MySQL authority mode cannot make the fixture's local file invisible.
+        self.meta_store_config = storage_config.episode_meta_store_config
+        self.ledger_mode_patch = mock.patch.object(
+            storage_config,
+            "episode_meta_store_config",
+            side_effect=lambda: {**self.meta_store_config(), "mode": "json"},
+        )
+        self.ledger_mode_patch.start()
 
         story = self.ep / "docs/story.md"
         board = self.ep / "docs/storyboard.md"
@@ -56,6 +67,7 @@ class FrameSemanticEnforcementTest(unittest.TestCase):
         })
 
     def tearDown(self) -> None:
+        self.ledger_mode_patch.stop()
         fsr.ROOT = self.old_root
         self.tmp.cleanup()
 
@@ -86,7 +98,9 @@ class FrameSemanticEnforcementTest(unittest.TestCase):
                 "lock": {"sha256": sha(path)},
                 "content_repairs_used": 0,
             }
-        write_json(self.ep / "meta/production-ledger.json", {"frames": frames})
+        # Route setup through the canonical ledger API instead of writing a
+        # compatibility JSON file behind load_authority's configured backend.
+        fsr.production_ledger.save_json(self.ep / "meta/production-ledger.json", {"frames": frames})
         return fsr.frame_records(self.ep, require_files=True)
 
     def write_pass_reviews(self, frames: list[dict]) -> None:
