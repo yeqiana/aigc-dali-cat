@@ -28,6 +28,7 @@ import provider_capability
 import raw_candidate_budget
 import runtime_router
 import episode_performance
+import generation_attempt_authority
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -120,24 +121,14 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
             raise ProductImageImportError("ledger begin failed: " + message[-1200:])
 
     token = str(item["id"])
-    budget_kind = raw_candidate_budget.kind_for_queue_item(item)
-    budget_semantic_key = raw_candidate_budget.semantic_key_for_queue_item(item)
-    claimed, budget_row = raw_candidate_budget.claim(
-        ep,
-        frame,
-        budget_kind,
-        reason=f"product_runtime_import runtime={base_runtime}",
-        token=token,
-        semantic_key=budget_semantic_key,
-    )
-    if not claimed:
-        image_scheduler.ledger_tech_fail(ep, item, "RAW_CANDIDATE_BUDGET_EXHAUSTED", str(budget_row)[:1000])
-        _set_queue_failure(ep, item, status="blocked", message="RAW_CANDIDATE_BUDGET_EXHAUSTED: " + str(budget_row))
-        episode_performance.safe_record_queue_image_attempt(
-            ep,item,status="blocked",error_code="RAW_CANDIDATE_BUDGET_EXHAUSTED")
-        raise ProductImageImportError("RAW_CANDIDATE_BUDGET_EXHAUSTED: " + str(budget_row))
-
-    budget_committed = bool(budget_row.get("committed"))
+    generation_key = str(item.get("generation_key") or "")
+    if not generation_key:
+        raise ProductImageImportError("GENERATION_ATTEMPT_EVIDENCE_MISSING")
+    budget_row = {"source": "generation_attempt_authority", "generation_key": generation_key,
+                  "attempt_consumed": True, "decision": "ALREADY_DISPATCH_COMMITTED"}
+    # WORK/WEB provider dispatch was committed before exposing the immutable host
+    # request. Import/normalize only closes that same attempt.
+    budget_committed = True
     try:
         width, height, aspect = read_canvas(ep)
         stamp = int(time.time())
@@ -158,6 +149,7 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
         # W-21: the host runtime got the queue item references in its image request;
         # record those source files on the same receipt contract as the provider lanes.
         receipt_data["references"] = provider_capability.reference_evidence(item.get("references") or [])
+        receipt_data["generation_key"] = generation_key
         receipt_info = provider_capability.write_receipt(ep, frame, receipt_data)
         try:
             norm = normalize(raw_store, output, width, height)
@@ -168,14 +160,10 @@ def _import_frame_locked(ep: Path, frame: int, raw: Path, *, item_id: str | None
         if not receipt_path.is_absolute():
             receipt_path = ROOT / receipt_path
         receipt_info = provider_capability.finalize_receipt(receipt_path, norm, output)
-        committed, commit_row = raw_candidate_budget.commit(
-            ep,
-            token,
-            reason="product_runtime_normalized_candidate_exists",
+        commit_row = generation_attempt_authority.complete_external_generation(
+            ep, generation_attempt_authority.frame_key(ep, frame), generation_key,
+            result_ref=repo_rel(output),
         )
-        if not committed:
-            raise ProductImageImportError("CANDIDATE_COMMIT_FAILED: " + str(commit_row))
-        budget_committed = True
 
         payload = {
             "ok": True,

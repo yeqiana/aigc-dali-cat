@@ -6,6 +6,7 @@ from urllib import request, error
 
 import image_artifact_collector
 import image_provider_runtime
+import image_generation_gateway
 
 class OpenAIImagesProviderError(RuntimeError):
     pass
@@ -108,6 +109,8 @@ def generate_native_batch(
     release_height: int,
     timeout: int,
     raw_paths: list[Path],
+    generation_attempt_leases: list[dict] | None = None,
+    episode_dir: Path | None = None,
 ) -> dict:
     if not 1 <= int(count) <= 10:
         raise OpenAIImagesProviderError("OPENAI_IMAGE_N_OUT_OF_RANGE: n must be 1..10")
@@ -145,7 +148,11 @@ def generate_native_batch(
         content_type = "application/json"
 
     req = request.Request(endpoint, data=body, headers=_headers(api_key, content_type=content_type), method="POST")
-    raw, headers = _request(req, timeout)
+    if not isinstance(generation_attempt_leases, list) or len(generation_attempt_leases) != int(count):
+        raise OpenAIImagesProviderError("GENERATION_ATTEMPT_LEASE_REQUIRED")
+    raw, headers = image_generation_gateway.provider_generate_many(
+        Path(episode_dir or Path.cwd()),
+        generation_attempt_leases, "openai_images_api", lambda: _request(req, timeout))
     images = _decode_response(raw, int(count))
     artifacts = []
     for path, data in zip(raw_paths, images):

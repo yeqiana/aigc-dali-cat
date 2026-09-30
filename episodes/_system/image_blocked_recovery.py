@@ -197,17 +197,9 @@ def _recover_locked(ep: Path, *, frames: list[int] | None = None) -> dict:
         output = Path(plan["output_path"])
         receipt_path = Path(plan["provider_receipt"])
         raw_path = Path(plan["raw_path"])
-        kind = raw_candidate_budget.kind_for_queue_item(item)
-        budget_token = str(item["id"])
-        budget_semantic_key = raw_candidate_budget.semantic_key_for_queue_item(item)
-        ok, budget_claim = raw_candidate_budget.claim(
-            ep, frame, kind,
-            reason="recover_preserved_provider_raw_via_explicit_ratio_exception",
-            token=budget_token,
-            semantic_key=budget_semantic_key,
-        )
-        if not ok:
-            return {"status": "BLOCKED", "recovered": len(recovered), "reason": "candidate_budget_claim_failed", "budget": budget_claim, "plans": plans}
+        generation_key = production_recovery.generation_key_for_item(ep, item)
+        if not generation_key:
+            return {"status": "BLOCKED", "recovered": len(recovered), "reason": "generation_attempt_evidence_missing", "plans": plans}
         try:
             width, height, _ = canvas_normalize.read_canvas(ep)
             normalization = canvas_normalize.normalize_provider_crop_exception(
@@ -221,9 +213,11 @@ def _recover_locked(ep: Path, *, frames: list[int] | None = None) -> dict:
                 ),
             )
             receipt_info = provider_capability.finalize_receipt(receipt_path, normalization, output)
-            committed, budget_commit = raw_candidate_budget.commit(ep, budget_token, reason="normalized_preserved_provider_raw_committed")
-            if not committed:
-                raise RuntimeError(f"candidate budget commit failed: {budget_commit}")
+            import generation_attempt_authority
+            budget_commit = generation_attempt_authority.complete_external_generation(
+                ep, generation_attempt_authority.frame_key(ep, frame), generation_key,
+                result_ref=str(output),
+            )
             production_ledger.cmd_recover_success(SimpleNamespace(
                 episode_dir=str(ep),
                 frame=f"{frame:02d}",
@@ -234,7 +228,6 @@ def _recover_locked(ep: Path, *, frames: list[int] | None = None) -> dict:
                 recovery_reason="provider_ratio_normalization_exception",
             ))
         except Exception:
-            raw_candidate_budget.release(ep, budget_token, reason="provider_ratio_recovery_failed_before_ledger_commit")
             raise
 
         item["status"] = "generated"

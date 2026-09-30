@@ -23,6 +23,7 @@ import image_model_policy
 import model_policy
 import provider_capability
 import image_artifact_collector
+import image_generation_gateway
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 import runtime_log_policy
 import runtime_router
@@ -341,7 +342,9 @@ def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
     return 'workspace-write'
 
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None) -> float:
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None) -> float:
+    if episode_dir is None or not isinstance(generation_attempt_lease, dict):
+        raise BackendError('GENERATION_ATTEMPT_LEASE_REQUIRED')
     scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
     if not scene:
         raise BackendError('prompt is empty')
@@ -404,21 +407,24 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             image_runtime_preflight(bridged=True)
         with log.open('w', encoding='utf-8', newline='\n') as log_handle:
             try:
-                completed = codex_user_runner.run_codex(
-                    cmd,
-                    env=worker_env,
-                    input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
-                    text=True,
-                    encoding="utf-8",
-                    errors="strict",
-                    stdout=log_handle,
-                    stderr=subprocess.STDOUT,
-                    cwd=workdir,
-                    timeout=timeout,
-                    check=False,
-                    task_type="image",
-                    codex_home_mode="inherit",
-                    request_id=runner_request_id,
+                completed = image_generation_gateway.provider_generate(
+                    episode_dir, generation_attempt_lease, generation_attempt_lease.get("fencing_token"),
+                    'codex_subscription', lambda: codex_user_runner.run_codex(
+                        cmd,
+                        env=worker_env,
+                        input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
+                        text=True,
+                        encoding="utf-8",
+                        errors="strict",
+                        stdout=log_handle,
+                        stderr=subprocess.STDOUT,
+                        cwd=workdir,
+                        timeout=timeout,
+                        check=False,
+                        task_type="image",
+                        codex_home_mode="inherit",
+                        request_id=runner_request_id,
+                    ),
                 )
             except subprocess.TimeoutExpired as exc:
                 raise BackendError(f'image worker timeout after {timeout}s; log={log}') from exc
@@ -530,7 +536,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         elapsed = 0.0
         backend_name = 'codex_desktop_interface_imagegen'
     else:
-        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None)
+        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame))
     # W-21: the receipt carries the reference files really sent to the provider, so
@@ -694,6 +700,7 @@ def main() -> int:
             if not ok:
                 print(json.dumps({'ok':False,'error':'RAW_CANDIDATE_BUDGET_EXHAUSTED','budget':budget_row},ensure_ascii=False));return 3
             budget_reserved=True
+            args._generation_attempt_lease = budget_row.get('lease')
         result = generate_for_frame(args) if args.cmd == 'generate-for-frame' else generate_legacy(args)
         if budget_reserved:
             commit_ok,commit_row=raw_candidate_budget.commit(args.episode_dir,budget_token,reason="direct_cli_normalized_candidate_exists")

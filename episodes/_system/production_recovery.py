@@ -166,11 +166,21 @@ def write_lifecycle(ep: Path, item: dict, state: str, **details: object) -> dict
         data["started_at"] = old["started_at"]
     elif state == "WORKER_STARTED":
         data["started_at"] = data["updated_at"]
+    if old.get("generation_key") and not data.get("generation_key"):
+        data["generation_key"] = old["generation_key"]
     atomic_write_json(path, data)
     transaction_id = str(data.get("transaction_id") or "")
     if transaction_id:
         _journal(ep, transaction_id, state, item_id=item.get("id"), frame=item.get("frame"), lifecycle=lifecycle_rel(item).as_posix())
     return data
+
+
+def generation_key_for_item(ep: Path, item: dict) -> str:
+    key = str(item.get("generation_key") or "")
+    if key:
+        return key
+    lifecycle = _read(lifecycle_path(ep, item))
+    return str(lifecycle.get("generation_key") or "")
 
 
 def _ledger_frame(ledger: dict, frame: int) -> dict:
@@ -670,22 +680,14 @@ def _recover_user_runner_success_locked(ep: Path, frame: int, request_id: str, *
     )
     payload = backend.generate_for_frame(ns)
 
-    token = str(item["id"])
-    budget_kind = raw_candidate_budget.kind_for_queue_item(item)
-    budget_semantic_key = raw_candidate_budget.semantic_key_for_queue_item(item)
-    claimed, claim_row = raw_candidate_budget.claim(
-        ep, int(frame), budget_kind,
-        reason="recover_durable_user_runner_success",
-        token=token,
-        semantic_key=budget_semantic_key,
+    generation_key = generation_key_for_item(ep, item)
+    if not generation_key:
+        raise RuntimeError("RECOVERY_GENERATION_ATTEMPT_EVIDENCE_MISSING")
+    import generation_attempt_authority
+    budget_row = generation_attempt_authority.complete_external_generation(
+        ep, generation_attempt_authority.frame_key(ep, frame), generation_key,
+        result_ref=str(output),
     )
-    if not claimed:
-        raise RuntimeError(f"RECOVERY_CANDIDATE_BUDGET_CLAIM_FAILED: {claim_row}")
-    committed, budget_row = raw_candidate_budget.commit(
-        ep, token, reason="recovered_interrupted_user_runner_success"
-    )
-    if not committed:
-        raise RuntimeError(f"RECOVERY_CANDIDATE_BUDGET_COMMIT_FAILED: {budget_row}")
     result = {
         "returncode": 0,
         "stdout": "",

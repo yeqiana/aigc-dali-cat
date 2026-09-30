@@ -70,11 +70,22 @@ def execute(ep,item,timeout,codex):
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
     budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
-    budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token,semantic_key=budget_semantic_key)
+    budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token,semantic_key=budget_semantic_key,
+        generation_context={"scope":item.get("scope"),"model_role":"image.payload","payload_model":model,
+            "payload_quality":quality,"model_policy_sha256":effective_model_policy.get("model_policy_sha256"),
+            "provider":item.get("provider") or "codex_subscription"})
     if not budget_ok:
         result={"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
         return result
+    generation_lease = budget_row.get("lease") or {}
+    item["generation_key"] = generation_lease.get("generation_key")
+    item["attempt_index"] = generation_lease.get("attempt_index")
+    production_recovery.write_lifecycle(
+        ep, item, "ATTEMPT_RESERVED", generation_key=generation_lease.get("generation_key"),
+        attempt_index=generation_lease.get("attempt_index"), fencing_token=generation_lease.get("fencing_token"),
+        lease_token_hash=generation_lease.get("lease_token_hash"),
+    )
     runner_request_id = uuid.uuid4().hex
     item.setdefault("execution", {})["runner_request_id"] = runner_request_id
     ns=argparse.Namespace(
@@ -82,6 +93,7 @@ def execute(ep,item,timeout,codex):
         reference=refs,timeout=timeout,codex=codex,image_model=model,image_quality=quality,overwrite=False,
         _image_model_policy=effective_model_policy,
         _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind,
+        _generation_attempt_lease=generation_lease,
         _runner_request_id=runner_request_id)
     # Resident Runner image workers do not always inherit a workflow trace
     # context. Keep the span evidence correlated instead of turning a missing

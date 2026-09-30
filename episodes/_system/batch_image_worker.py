@@ -13,12 +13,14 @@ import codex_logical_batch_worker
 import frame_contract
 import image_model_policy
 import image_provider_router
+import image_generation_gateway
 import openai_images_provider
 import openai_batch_prompt_compiler
 import provider_capability
 import runtime_log_policy
 import runtime_trace
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
+import production_recovery
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -38,7 +40,7 @@ def _shared_refs(items:list[dict])->list[Path]:
         if single_backend.valid_image(p): out.append(p)
     return out
 
-def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],timeout:int,codex_raw:str|None,log:Path)->tuple[list[dict],float]:
+def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],timeout:int,codex_raw:str|None,log:Path,leases:list[dict])->tuple[list[dict],float]:
     codex=single_backend.resolve_codex(codex_raw)
     started=time.monotonic()
     with codex_user_runner.workspace(prefix="story-os-batch-image-") as raw_dir:
@@ -57,8 +59,9 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
         log.parent.mkdir(parents=True,exist_ok=True)
         with log.open("w",encoding="utf-8",newline="\n") as h:
             try:
-                done=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
-                    timeout=timeout,check=False,task_type="image")
+                done=image_generation_gateway.provider_generate_many(ep,leases,"codex_subscription",lambda: codex_user_runner.run_codex(
+                    cmd,input=prompt_text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,
+                    timeout=timeout,check=False,task_type="image"))
             except subprocess.TimeoutExpired as exc:
                 raise BatchBackendError(f"TIMEOUT: batch image worker timeout after {timeout}s; log={log}") from exc
         raw_log_text=log.read_text(encoding="utf-8",errors="replace") if log.is_file() else ""
@@ -78,7 +81,7 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
             persisted.append({**row,"path":dst})
     return persisted,round(time.monotonic()-started,2)
 
-def _invoke_openai_native_n(ep:Path,contract:dict,prompt_text:str,refs:list[Path],timeout:int,model:str,quality:str,width:int,height:int)->tuple[list[dict],float,dict]:
+def _invoke_openai_native_n(ep:Path,contract:dict,prompt_text:str,refs:list[Path],timeout:int,model:str,quality:str,width:int,height:int,leases:list[dict])->tuple[list[dict],float,dict]:
     started=time.monotonic()
     raw_root=ep/"media/raw";raw_root.mkdir(parents=True,exist_ok=True)
     stamp=int(time.time())
@@ -88,7 +91,8 @@ def _invoke_openai_native_n(ep:Path,contract:dict,prompt_text:str,refs:list[Path
         raw_paths.append(raw_root/f"{frame:02d}-{contract['batch_id'].lower()}-{stamp}.png")
     evidence=openai_images_provider.generate_native_batch(
         prompt=prompt_text,references=refs,count=int(contract["planned_count"]),model=model,quality=quality,
-        release_width=width,release_height=height,timeout=timeout,raw_paths=raw_paths)
+        release_width=width,release_height=height,timeout=timeout,raw_paths=raw_paths,
+        generation_attempt_leases=leases,episode_dir=ep)
     persisted=[]
     for row,path in zip(contract["frames"],raw_paths):
         persisted.append({
@@ -145,20 +149,32 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
     t0=time.monotonic()
     provider_evidence={}
     budget_tokens=[]
+    leases=[]
     try:
         for item in items:
             budget_kind=raw_candidate_budget.kind_for_queue_item(item);token=str(item["id"])
             budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
-            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token,semantic_key=budget_semantic_key)
+            ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token,semantic_key=budget_semantic_key,
+                generation_context={"scope":item.get("scope"),"model_role":"image.payload","payload_model":model,
+                    "payload_quality":quality,"model_policy_sha256":image_model_policy.for_episode(ep).get("model_policy_sha256"),
+                    "provider":route["provider"],"batch_id":contract["batch_id"]})
             if not ok:
                 raise BatchBackendError("RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(row))
             budget_tokens.append(token)
+            leases.append(row["lease"])
+            item["generation_key"] = row["lease"].get("generation_key")
+            item["attempt_index"] = row["lease"].get("attempt_index")
+            production_recovery.write_lifecycle(
+                ep, item, "ATTEMPT_RESERVED", generation_key=item["generation_key"],
+                attempt_index=item["attempt_index"], fencing_token=row["lease"].get("fencing_token"),
+                lease_token_hash=row["lease"].get("lease_token_hash"),
+            )
         if route["provider"]=="openai_images_api":
             raw_rows,elapsed,provider_evidence=_invoke_openai_native_n(
-                ep,contract,compiled["text"],refs,timeout,model,quality,width,height)
+                ep,contract,compiled["text"],refs,timeout,model,quality,width,height,leases)
             backend_name="openai_images_api_native_n"
         else:
-            raw_rows,elapsed=_invoke_codex_once(ep,contract,compiled["text"],refs,timeout,codex,log)
+            raw_rows,elapsed=_invoke_codex_once(ep,contract,compiled["text"],refs,timeout,codex,log,leases)
             backend_name="codex_subscription_batch"
             provider_evidence={
                 "provider":"codex_subscription",

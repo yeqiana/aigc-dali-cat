@@ -1753,10 +1753,26 @@ def build_image_request(
     workspace = workspace_provider.current()
     rel = ep.resolve().relative_to(ROOT.resolve()).as_posix()
     items = []
+    attempt_leases = []
+    queue_by_id = {str(row.get("id")): row for row in queue_items}
+    import generation_attempt_authority as attempt_authority
+    import image_generation_gateway
+    from logical_asset_identity import frame_asset_key
+    import image_model_policy
     for row in queue_items:
+        frame = int(row.get("frame") or 0)
+        policy = image_model_policy.for_episode(ep)
+        context = {"scope": row.get("scope"), "model_role": "image.payload",
+                   "payload_model": row.get("model") or policy.get("model"),
+                   "payload_quality": row.get("quality") or policy.get("quality"),
+                   "model_policy_sha256": policy.get("model_policy_sha256"),
+                   "provider": "product_runtime_image"}
+        lease = attempt_authority.reserve(ep, frame_asset_key(ep, frame), context)
+        row["generation_key"] = lease["generation_key"]
+        attempt_leases.append(lease)
         items.append({
             "id": row.get("id"),
-            "frame": int(row.get("frame") or 0),
+            "frame": frame,
             "kind": row.get("kind"),
             "scope": row.get("scope"),
             "prompt_file": row.get("prompt_file"),
@@ -1764,6 +1780,7 @@ def build_image_request(
             "model": row.get("model"),
             "quality": row.get("quality"),
             "frame_contract": row.get("frame_contract"),
+            "generation_key": lease["generation_key"],
         })
     items.sort(key=lambda x: (int(x.get("frame") or 0), str(x.get("id") or "")))
     data = {
@@ -1785,7 +1802,18 @@ def build_image_request(
             "on_missing_file_transport": "pause as HOST_ACTION_REQUIRED; never fall back to local Codex",
         },
     }
-    stored = _persist_request(ep, data, category="image")
+    stored = image_generation_gateway.provider_generate_many(
+        ep, attempt_leases, "product_runtime_image",
+        lambda: _persist_request(ep, data, category="image"),
+    )
+    import image_scheduler
+    queue = image_scheduler.load_queue(ep)
+    for row in queue.get("items") or []:
+        source = queue_by_id.get(str(row.get("id")))
+        if source and source.get("generation_key"):
+            row["generation_key"] = source["generation_key"]
+            row["status"] = "running"
+    image_scheduler.save_queue(ep, queue)
     episode_performance.safe_begin_named_span(
         ep, "HOST_ACTION_IMAGE_GENERATION", source=source,
         metadata={"request_id": stored.get("request_id"), "runtime": runtime, "count": len(items)})
