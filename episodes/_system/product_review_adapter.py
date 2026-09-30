@@ -25,10 +25,38 @@ import story_json
 import runtime_timeout_policy
 import runtime_review_persistence
 import workspace_provider
+import runtime_observability
 
 ROOT = Path(__file__).resolve().parents[2]
 HOST_ACTION_REQUIRED_RC = 20
 NEW_REVIEW_RUNTIME = "WORK"
+
+
+def _record_review_event(ep: Path, event_type: str, req: dict, *, status=None) -> None:
+    """Best-effort review lifecycle event; missing host timings remain absent."""
+    try:
+        from logical_asset_identity import episode_id, frame_asset_key
+        metadata=req.get("request_metadata") or {}
+        role={"story-semantic-critic-shadow":"critic.story",
+              "preimage-semantic-critic-shadow":"critic.preimage",
+              "final-semantic-critic-shadow":"critic.final"}.get(str(req.get("review_kind") or ""))
+        binding={}
+        if role:
+            import model_policy
+            binding=model_policy.resolve(role,episode=ep)
+        frame=metadata.get("frame_id",metadata.get("frame"))
+        asset=frame_asset_key(ep,frame) if frame is not None else None
+        runtime_observability.safe_record_runtime_event(
+            ep,event_type,episode_id=episode_id(ep),run_id=req.get("run_id"),
+            step="REVIEW",logical_asset_key=asset,frame_id=f"{int(frame):02d}" if frame is not None else None,
+            model_role=role,profile=binding.get("profile"),effective_model=binding.get("model"),
+            reasoning_effort=binding.get("reasoning_effort"),model_policy_version=binding.get("policy_version"),
+            model_policy_sha256=binding.get("model_policy_sha256"),provider=req.get("workspace_provider"),
+            runner=req.get("host_execution"),attempt_index=int(req.get("attempt") or 1),
+            generation_key=req.get("request_fingerprint"),queue_name="review",queue_depth=None,
+            status=status,source="product_review_adapter",evidence_ref=req.get("request_id"))
+    except Exception:
+        return
 AWAITING = "AWAITING_PRODUCT_REVIEW"
 TERMINAL_REQUEST_STATUSES = frozenset({"FINALIZED", "EXPIRED", "CANCELLED", "SUPERSEDED"})
 REQUEST_TTL_ROLE = "review_critic"
@@ -589,6 +617,7 @@ def prepare(
             req = existing
     else:
         _write_json(attempt_path, req)
+        _record_review_event(ep, "REVIEW_ENQUEUED", req, status="queued")
     # Compatibility/current pointer. This alias may move, the attempt file may not.
     current = {**req, "attempt_request_path": _repo_rel(attempt_path)}
     _write_json(request_path(ep, kind), current)
@@ -740,6 +769,7 @@ def mark_complete(ep: Path, kind: str, *, final_path: Path, attempt: int | None 
     episode_performance.safe_end_named_span(
         ep, f"PRODUCT_REVIEW_{kind}", status="PASS",
         metadata={"attempt": attempt, "final_path": _repo_rel(final_path)})
+    _record_review_event(ep, "REVIEW_FINISHED", req, status="PASS")
     if kind == "frame-semantic":
         episode_performance.safe_end_review_span(
             ep, "FULL", attempt, status="PASS",

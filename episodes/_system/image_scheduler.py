@@ -41,6 +41,7 @@ import product_runtime_adapter
 import resource_library
 import runtime_portability
 import runtime_event_collector
+import runtime_observability
 import production_recovery
 import production_ledger
 import runtime_timeout_policy
@@ -48,6 +49,39 @@ import local_visual_triage
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
+
+
+def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duration_ms=None,wait_ms=None,status=None,failure_class=None)->None:
+    """Emit best-effort image lifecycle telemetry without changing scheduler decisions."""
+    try:
+        from logical_asset_identity import episode_id, frame_asset_key
+        binding=model_policy.resolve("image.payload",episode=ep)
+        controller=model_policy.resolve("image.controller",episode=ep)
+        runtime_observability.safe_record_runtime_event(
+            ep,event_type,episode_id=episode_id(ep),
+            run_id=item.get("run_id"),step="IMAGE_GENERATION",logical_asset_key=frame_asset_key(ep,item["frame"]),
+            frame_id=f"{int(item['frame']):02d}",model_role="image.payload",profile=binding.get("profile"),
+            effective_model=binding.get("model"),reasoning_effort=binding.get("reasoning_effort"),
+            model_policy_version=binding.get("policy_version"),model_policy_sha256=binding.get("model_policy_sha256"),
+            provider=item.get("provider"),runner=item.get("runner"),worker_id=item.get("worker_id"),
+            attempt_index=max(1,int(item.get("attempts") or 1)),generation_key=f"{item.get('id')}:a{max(1,int(item.get('attempts') or 1))}",
+            queue_name="repair" if item.get("scope")=="repair" else "image",
+            queue_depth=queue_depth,duration_ms=duration_ms,wait_ms=wait_ms,
+            status=status,failure_class=failure_class,source="image_scheduler",
+            evidence_ref=item.get("provider_receipt") or item.get("id"),
+            controller_model=controller.get("model"),controller_effort=controller.get("reasoning_effort"),
+            controller_profile=controller.get("profile"),controller_policy_sha256=controller.get("model_policy_sha256"),
+            payload_model=binding.get("model"),payload_quality=item.get("quality"))
+    except Exception:
+        return
+
+
+def _observed_ms(start,end):
+    try:
+        a=dt.datetime.fromisoformat(str(start));b=dt.datetime.fromisoformat(str(end))
+        return max(0.0,(b-a).total_seconds()*1000)
+    except Exception:
+        return None
 QUEUE_REL = scheduler_core.QUEUE_REL
 SCHEDULER_LOCK_REL = Path("meta/runtime-image-scheduler.lock")
 _CONFIG = storyos_config.load_config()
@@ -259,7 +293,12 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
             "last_error":None,
             "queued_at":now(),
         }
-        q.setdefault("items",[]).append(item);save_queue(ep,q);return item
+        q.setdefault("items",[]).append(item);save_queue(ep,q)
+        depth=sum(1 for row in q["items"] if row.get("status") in {"queued","running"})
+        _telemetry_image(ep,item,"IMAGE_GENERATION_REQUESTED",queue_depth=depth,status="queued")
+        if scope=="repair":
+            _telemetry_image(ep,item,"REPAIR_ENQUEUED",queue_depth=depth,status="queued")
+        return item
 
 
 def parse_ref(raw:str)->dict:
@@ -423,6 +462,9 @@ async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->di
     Convert those results into task failures so RuntimeImageEvent semantics stay
     truthful and the scheduler can close the active ledger attempt correctly.
     """
+    _telemetry_image(ep,item,"WORKER_DISPATCH_STARTED",status="started")
+    if item.get("scope")=="repair":
+        _telemetry_image(ep,item,"REPAIR_STARTED",status="started")
     result=await asyncio.to_thread(backend_worker,ep,item,timeout,codex)
     output=result.get("output")
     if result.get("returncode")!=0 or not output or not Path(output).is_file():
@@ -524,6 +566,8 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             row["status"]="running"
             row["attempts"]=int(row.get("attempts") or 0)+1
             row["started_at"]=now()
+            _telemetry_image(ep,row,"WORKER_DISPATCH_COMMITTED",queue_depth=max(0,len(ready)-len(admitted)-1),
+                             wait_ms=_observed_ms(row.get("queued_at"),row.get("started_at")),status="committed")
             production_recovery.mark_worker_pending(ep,row)
             inflight+=1
             admitted.append(row)
@@ -545,6 +589,19 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         item=next((x for x in q.get("items") or [] if x["id"]==image_event.item_id),None)
         if not item:
             return ""
+        observed_at=now()
+        observed_ms=_observed_ms(item.get("started_at"),observed_at)
+        observed_result=image_event.payload.get("result") or image_event.payload
+        observed_payload=observed_result.get("payload") if isinstance(observed_result,dict) else None
+        obs_item={**item}
+        if isinstance(observed_payload,dict):
+            obs_item["provider"]=observed_payload.get("backend")
+            obs_item["runner"]=(observed_result.get("worker_pool") or {}).get("mode")
+            receipt=observed_payload.get("provider_receipt") or {}
+            obs_item["provider_receipt"]=receipt.get("path") if isinstance(receipt,dict) else None
+        _telemetry_image(ep,obs_item,"WORKER_RESULT_RECEIVED",duration_ms=observed_ms,status=image_event.event)
+        _telemetry_image(ep,obs_item,"IMAGE_GENERATION_OBSERVED",duration_ms=observed_ms,
+                         wait_ms=_observed_ms(item.get("queued_at"),item.get("started_at")),status=image_event.event)
         if image_event.event=="IMAGE_SUCCESS":
             result=image_event.payload.get("result") or image_event.payload
             msg=str(result.get("stdout") or result.get("error") or "")
@@ -580,6 +637,10 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 item["prompt_package"]=result.get("prompt_package")
                 production_recovery.mark_terminal(ep,item,"COMMITTED")
                 episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
+                _telemetry_image(ep,obs_item,"IMAGE_GENERATION_SUCCEEDED",duration_ms=observed_ms,status="generated")
+                _telemetry_image(ep,obs_item,"ARTIFACT_COMMITTED",duration_ms=_observed_ms(observed_at,now()),status="committed")
+                if item.get("scope")=="repair":
+                    _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status="generated")
             else:
                 if not msg:
                     msg="image backend failed without terminal output"
@@ -596,6 +657,9 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED", code=code)
                 episode_performance.safe_record_queue_image_attempt(
                     ep,item,status=item["status"],error_code=code)
+                _telemetry_image(ep,obs_item,"IMAGE_GENERATION_FAILED",duration_ms=observed_ms,status=item["status"],failure_class=code)
+                if item.get("scope")=="repair":
+                    _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status=item["status"],failure_class=code)
         elif image_event.event=="IMAGE_FAILED":
             has_failure=True
             msg=str(image_event.payload.get("error") or "async worker failed")
@@ -610,6 +674,9 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             production_recovery.mark_terminal(ep,item,"BLOCKED" if item["status"]=="blocked" else "TECH_FAILED", code=code)
             episode_performance.safe_record_queue_image_attempt(
                 ep,item,status=item["status"],error_code=code)
+            _telemetry_image(ep,obs_item,"IMAGE_GENERATION_FAILED",duration_ms=observed_ms,status=item["status"],failure_class=code)
+            if item.get("scope")=="repair":
+                _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status=item["status"],failure_class=code)
         q.setdefault("runtime_events",[]).append({"event":image_event.event,"task_id":image_event.item_id,"payload":runtime_event_collector.json_safe(image_event.payload),"at":now()})
         save_queue(ep,q)
         return str(item.get("status") or "")

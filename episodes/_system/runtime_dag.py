@@ -36,6 +36,7 @@ import runtime_router
 import product_runtime_adapter
 import next_action
 import episode_performance
+import runtime_observability
 import runtime_timeout_policy
 import runtime_node_registry
 import runtime_node_execution
@@ -474,10 +475,29 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     if telemetry_owned:
         episode_performance.safe_transition_execution_state(ep,"ACTIVE",session_id=session,source="runtime_dag")
     rc=None
+    event_run_id=run_id or session or uuid.uuid4().hex
+    event_started=time.monotonic()
     try:
-        rc=_execute(ep,codex=codex,timeout=timeout,run_id=run_id,trace_id=trace_id,until=until)
+        import logical_asset_identity
+        runtime_observability.safe_record_runtime_event(
+            ep,"EPISODE_RUN_STARTED",episode_id=logical_asset_identity.episode_id(ep),run_id=event_run_id,
+            trace_id=trace_id,source="runtime_dag.execute")
+    except Exception:
+        pass
+    try:
+        rc=_execute(ep,codex=codex,timeout=timeout,run_id=run_id,trace_id=trace_id,until=until,
+                    telemetry_run_id=event_run_id)
         return rc
     finally:
+        try:
+            import logical_asset_identity
+            runtime_observability.safe_record_runtime_event(
+                ep,"EPISODE_RUN_FINISHED",episode_id=logical_asset_identity.episode_id(ep),run_id=event_run_id,
+                trace_id=trace_id,duration_ms=(time.monotonic()-event_started)*1000,
+                status="PASS" if rc==0 else ("HOST_WAIT" if rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else "FAILED"),
+                source="runtime_dag.execute")
+        except Exception:
+            pass
         if telemetry_owned:
             state=episode_performance.execution_state_for_result(rc if rc is not None else 1)
             episode_performance.safe_transition_execution_state(ep,state,session_id=session,source="runtime_dag")
@@ -485,7 +505,7 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 episode_performance.safe_finish_execution_session(ep,session_id=session,status="COMPLETE" if rc==0 else "BLOCKED")
 
 
-def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
+def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,telemetry_run_id=None):
     # W-11: a recorded production-owner switch only becomes effective when the
     # Production Kernel consumes it. Direct DAG execution is a production entry,
     # so fail closed before any reconcile/executor side effect.
@@ -499,6 +519,7 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
     # of allowing uncorrelatable SPAN_* events; the normal wrapper still owns
     # the durable TRACE_START/TRACE_END lifecycle.
     trace_run_id = run_id or "dag_" + uuid.uuid4().hex
+    event_run_id = telemetry_run_id or run_id or trace_run_id
     trace_id = trace_id or "ST_" + uuid.uuid4().hex[:16]
     blocked=reconcile_visual_profile_closure(ep)
     if blocked is not None:
@@ -654,9 +675,24 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 runtime_node_evidence.record(
                     ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
                     status="REUSED",attempt=attempt,output="target already valid",evidence=s.evidence_paths)
+                runtime_observability.safe_record_runtime_event(
+                    ep,"STEP_READY",run_id=event_run_id,trace_id=trace_id,step=s.step_id,
+                    timestamp=node_started,source="runtime_dag")
+                runtime_observability.safe_record_runtime_event(
+                    ep,"STEP_FINISHED",run_id=event_run_id,trace_id=trace_id,step=s.step_id,
+                    timestamp=res.finished_at,duration_ms=reused_elapsed*1000,status="REUSED",source="runtime_dag")
                 completed_nodes.add(s.step_id)
                 continue
         started_at=runtime_node_execution.now(); t0=time.monotonic(); rc=0; note=""
+        runtime_observability.safe_record_runtime_event(
+            ep,"STEP_READY",run_id=event_run_id,trace_id=trace_id,step=s.step_id,
+            timestamp=node_started,source="runtime_dag")
+        runtime_observability.safe_record_runtime_event(
+            ep,"STEP_STARTED",run_id=event_run_id,trace_id=trace_id,step=s.step_id,
+            timestamp=started_at,source="runtime_dag")
+        runtime_observability.safe_record_runtime_event(
+            ep,"STEP_DISPATCHED",run_id=event_run_id,trace_id=trace_id,step=s.step_id,
+            timestamp=started_at,source="runtime_dag")
         episode_performance.safe_begin_stage(ep,s.step_id,source="runtime_dag",metadata={"executor":s.executor,"target_state":s.target_state})
         trace_span=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"executor":s.executor,"target_state":s.target_state})
         if s.step_id=="PREIMAGE_COMPILE":
@@ -799,6 +835,10 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             ok,msg=validate_target(ep,s.target_state)
             if not ok: rc=4; note=(note+"\nPOSTCONDITION FAIL\n"+msg)[-5000:]
         status="PASS" if rc==0 else ("HOST_WAIT" if rc==product_runtime_adapter.HOST_ACTION_REQUIRED_RC else ("BLOCKED" if rc in {124,3,4} else "FAILED"))
+        runtime_observability.safe_record_runtime_event(
+            ep,"STEP_FINISHED" if rc==0 else "STEP_FAILED",run_id=event_run_id,trace_id=trace_id,
+            step=s.step_id,timestamp=runtime_node_execution.now(),duration_ms=elapsed*1000,
+            status=status,failure_class=None if rc==0 else str(rc),source="runtime_dag")
         out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
         res=proto.StepResult(s.step_id,status,attempt,started_at,runtime_node_execution.now(),elapsed,input_hash,out_hash,note,rc)
         proto.save_result(ep,res); checkpoint(ep,s.step_id,status,elapsed,note[-1200:],attempt,input_hash,out_hash,returncode=rc)

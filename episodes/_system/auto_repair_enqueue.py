@@ -14,6 +14,7 @@ remains the execution authority.
 from __future__ import annotations
 
 import datetime as dt
+import time
 from pathlib import Path
 
 import image_model_policy
@@ -22,6 +23,7 @@ import production_queue_store
 import scheduler_core
 import story_json
 import production_ledger
+import runtime_observability
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER_REL = Path("meta/production-ledger.json")
@@ -378,6 +380,7 @@ def enqueue(
     material = contract.get("hash_material") or {}
     directive = material.get("frame_directive") or {}
     capture = material.get("capture_event") or {}
+    prompt_started = time.monotonic()
     prompt_path.write_text(
         repair_prompt(
             frame,
@@ -389,6 +392,16 @@ def enqueue(
         encoding="utf-8",
         newline="\n",
     )
+    try:
+        import logical_asset_identity
+        runtime_observability.safe_record_runtime_event(
+            ep,"REPAIR_PROMPT_FINISHED",episode_id=logical_asset_identity.episode_id(ep),
+            step="REPAIR_PROMPT",logical_asset_key=logical_asset_identity.frame_asset_key(ep,frame),
+            frame_id=f"{frame:02d}",generation_key=f"{source}:{suffix}",
+            duration_ms=(time.monotonic()-prompt_started)*1000,status="written",
+            source="auto_repair_enqueue",evidence_ref=str(prompt_path.relative_to(ROOT)))
+    except Exception:
+        pass
 
     # Local import avoids a baseline_gate <-> image_scheduler import cycle.
     import image_scheduler

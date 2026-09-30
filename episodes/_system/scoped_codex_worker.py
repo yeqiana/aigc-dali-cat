@@ -21,9 +21,30 @@ import runtime_request
 import runtime_memory_advice
 import episode_state_persistence
 import model_policy
+import runtime_observability
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
+
+
+def _model_event(ep,event_type,step,binding,*,worker_id=None,generation_key=None,duration_ms=None,status=None,source="scoped_codex_worker",run_id=None,trace_id=None,call_id=None,requested_model=None,effective_model_source=None,started_at=None,finished_at=None,receipt_path=None,logical_asset_key=None,queue_name=None,wait_ms=None):
+    try:
+        from logical_asset_identity import episode_id
+        runtime_observability.safe_record_runtime_event(
+            ep,event_type,episode_id=episode_id(ep),
+            run_id=run_id,trace_id=trace_id,call_id=call_id,
+            logical_asset_key=logical_asset_key,queue_name=queue_name,wait_ms=wait_ms,
+            step=step,model_role=binding.get("role") or SCOPED_MODEL_ROLES.get(step),
+            profile=binding.get("profile"),effective_model=binding.get("model"),
+            requested_model=requested_model or binding.get("model"),
+            effective_model_source=effective_model_source,
+            reasoning_effort=binding.get("reasoning_effort"),
+            model_policy_version=binding.get("policy_version"),model_policy_sha256=binding.get("model_policy_sha256"),
+            provider="codex_subscription",runner="codex exec",worker_id=worker_id,
+            generation_key=generation_key,duration_ms=duration_ms,status=status,source=source,
+            started_at=started_at,finished_at=finished_at,evidence_ref=receipt_path)
+    except Exception:
+        return
 
 # The step's previous Codex task produced no usable result inside its own
 # deadline. Technical, retryable: nothing about the content failed.
@@ -231,11 +252,85 @@ def resolved_model(step, ep):
         raise ValueError(f"Model Policy did not resolve a complete binding for {role}")
     return result
 
-def codex_exec_command(codex, binding):
-    return prefix(codex)+["exec","--skip-git-repo-check","--ephemeral",
+def codex_exec_command(codex, binding, image_paths=(), sandbox="workspace-write"):
+    args=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral",
                           "-m",str(binding["model"]),
                           "-c",f'model_reasoning_effort="{binding["reasoning_effort"]}"',
-                          "-s","workspace-write","-C",str(ROOT),"--json","-"]
+                          "-s",str(sandbox),"-C",str(ROOT),"--json"]
+    for image in image_paths or ():
+        args.extend(["--image",str(Path(image).resolve())])
+    return args+["-"]
+
+
+def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeout=None,
+                       run_id=None, trace_id=None, logical_asset_key=None, image_paths=(),
+                       call_id=None, output_handle=None, sandbox="workspace-write"):
+    """Run one real scoped Codex model call and persist its policy-bound receipt."""
+    ep=Path(ep).resolve()
+    call_id=call_id or uuid.uuid4().hex
+    worker_id=uuid.uuid4().hex
+    run_id=run_id or "canary_"+uuid.uuid4().hex
+    trace_id=trace_id or "ST_"+uuid.uuid4().hex[:16]
+    started_at=runtime_observability.now()
+    started=time.monotonic()
+    status="FAILED"
+    cmd=[]
+    execution_started=False
+    try:
+        codex=resolve_codex(codex_raw)
+        cmd=codex_exec_command(codex,binding,image_paths=image_paths,sandbox=sandbox)
+        _model_event(ep,"WORKER_DISPATCH_STARTED",step,binding,worker_id=worker_id,
+                     generation_key=call_id,status="started",run_id=run_id,trace_id=trace_id,
+                     logical_asset_key=logical_asset_key)
+        _model_event(ep,"WORKER_DISPATCH_COMMITTED",step,binding,worker_id=worker_id,
+                     generation_key=call_id,status="committed",run_id=run_id,trace_id=trace_id,
+                     logical_asset_key=logical_asset_key,wait_ms=0.0)
+        sink=output_handle or subprocess.DEVNULL
+        execution_started=True
+        cp=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
+            stdout=sink,stderr=subprocess.STDOUT,timeout=timeout,check=False,
+            task_type="scoped_step")
+        rc=int(cp.returncode)
+        status="SUCCESS" if rc==0 else "FAILED"
+    except subprocess.TimeoutExpired:
+        if not execution_started:
+            raise
+        rc=124
+        status="TIMEOUT"
+    except Exception:
+        if not execution_started:
+            raise
+        rc=1
+        status="FAILED"
+    finished_at=runtime_observability.now()
+    duration_ms=round((time.monotonic()-started)*1000,3)
+    receipt={
+        "receipt_schema_version":1,
+        "episode_id":__import__("logical_asset_identity").episode_id(ep),
+        "run_id":run_id,"trace_id":trace_id,"step":step,"call_id":call_id,
+        "model_role":binding.get("role") or SCOPED_MODEL_ROLES.get(step),
+        "profile":binding.get("profile"),"requested_model":binding.get("model"),
+        "effective_model":binding.get("model"),
+        "reasoning_effort":binding.get("reasoning_effort"),
+        "model_policy_version":binding.get("policy_version"),
+        "model_policy_sha256":binding.get("model_policy_sha256"),
+        "provider":"codex_subscription","runner":"codex exec",
+        "started_at":started_at,"finished_at":finished_at,"duration_ms":duration_ms,
+        "status":status,"model_binding_source":"EPISODE_BOUND_MODEL_POLICY",
+        "effective_model_source":"EXPLICIT_RUNTIME_BINDING",
+        "codex_argv":cmd,
+        "logical_asset_key":logical_asset_key,
+    }
+    receipt_path=runtime_observability.write_model_execution_receipt(ep,receipt=receipt)
+    _model_event(ep,"MODEL_EXECUTION",step,binding,worker_id=worker_id,
+        generation_key=call_id,duration_ms=duration_ms,status=status,run_id=run_id,
+        trace_id=trace_id,call_id=call_id,requested_model=binding.get("model"),
+        effective_model_source="EXPLICIT_RUNTIME_BINDING",started_at=started_at,
+        finished_at=finished_at,receipt_path=str(receipt_path),logical_asset_key=logical_asset_key)
+    _model_event(ep,"WORKER_RESULT_RECEIVED",step,binding,worker_id=worker_id,
+        generation_key=call_id,duration_ms=duration_ms,status=status.lower(),run_id=run_id,
+        trace_id=trace_id,call_id=call_id,logical_asset_key=logical_asset_key)
+    return rc,receipt
 
 def scoped_fingerprint(ep, step, text, binding, source_sha):
     request=runtime_request.authority_for_episode(ep) or {}
@@ -367,7 +462,7 @@ def _deadline_epoch(record):
         return None
 
 
-def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
+def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None,run_id=None,trace_id=None):
     if step not in STEP_DIRECTIVES: raise ValueError(f"unknown scoped step: {step}")
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("codex_scoped_step")
@@ -392,8 +487,7 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
     request_id=None
     collected=False
     try:
-        codex=resolve_codex(codex_raw)
-        cmd=codex_exec_command(codex,binding)
+        resolve_codex(codex_raw)
         request_id=uuid.uuid4().hex if codex_user_runner.bridge_required() else None
         if request_id:
             # Written before submission on purpose: a record written afterwards
@@ -407,8 +501,12 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
                 source_sha256=attach_source_sha256(ep,step))
         with log.open("a",encoding="utf-8",newline="\n") as h:
             try:
-                cp=codex_user_runner.run_codex(cmd,input=text,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="scoped_step",request_id=request_id)
-                rc=cp.returncode; collected=True
+                worker_id=uuid.uuid4().hex
+                generation_key=request_id or worker_id
+                rc,_receipt=execute_model_call(ep,step,binding,text,codex_raw=codex_raw,
+                    timeout=timeout,run_id=run_id,trace_id=trace_id,
+                    call_id=generation_key,output_handle=h)
+                collected=True
             except subprocess.TimeoutExpired:
                 rc=124; collected=True
         return rc,str(log)
