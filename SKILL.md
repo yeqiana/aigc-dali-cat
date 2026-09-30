@@ -100,6 +100,8 @@
 
 Golden Path：`选题/去同质化 → Story Lock → 真实性卡/连续性锚点 → 四张 Visual Lock 准入 → Batch → 逐帧审核/必要返修 → Final Checklist → Release → 数据回填`。
 
+**Release 是 image-first 合同。** Canonical 最终产物是封面、正文 publish 图片、字幕/文案与 SHA-bound evidence；当前 Story OS 不包含视频导出能力，`PUBLISH_READY` 不要求也不依赖 MP4、FFmpeg 或任何视频编码。
+
 - 创作规则唯一权威仍是 `standards/制作规范_正式版.md`。
 - 阶段唯一事实源仍是 `meta/episode-state.json`。
 - `AUTHORITY_INDEX.json / story-gates / production-ledger / frame-reviews / FINAL_CHECKLIST` 都只是路由或证据，不得成为第二状态机。
