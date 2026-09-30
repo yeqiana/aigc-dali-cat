@@ -303,10 +303,23 @@ def transition_execution_state(ep,state,*,session_id=None,source="runtime",metad
     current=next((x for x in reversed(states) if not x.get("ended_at")),None)
     if current and current.get("state")==state:
         current.setdefault("metadata",{}).update(metadata or {});save(ep,d);return current
-    if current:_close_execution_state(session,at)
+    if current:
+        _close_execution_state(session,at)
+        if current.get("state")=="USER_WAIT":
+            runtime_observability.safe_record_runtime_event(
+                ep,"USER_WAIT_FINISHED",episode_id=__import__("logical_asset_identity").episode_id(ep),
+                run_id=str(session.get("session_id") or ""),step=str(current.get("source") or source),
+                timestamp=at,wait_ms=(seconds_between(current.get("started_at"),at) or 0.0)*1000,
+                status="finished",source="episode_performance")
     row={"state":state,"started_at":at,"ended_at":None,"duration_seconds":None,
          "source":str(source),"metadata":metadata or {}}
-    states.append(row);save(ep,d);return row
+    states.append(row);save(ep,d)
+    if state=="USER_WAIT":
+        runtime_observability.safe_record_runtime_event(
+            ep,"USER_WAIT_STARTED",episode_id=__import__("logical_asset_identity").episode_id(ep),
+            run_id=str(session.get("session_id") or ""),step=str(source),timestamp=at,
+            status="started",source="episode_performance")
+    return row
 
 def finish_execution_session(ep,session_id=None,status="COMPLETE",at=None):
     d=load(ep,True);at=at or now();sessions=d.setdefault("execution_sessions",[])
@@ -315,6 +328,14 @@ def finish_execution_session(ep,session_id=None,status="COMPLETE",at=None):
         session=next((x for x in reversed(sessions) if str(x.get("session_id") or "")==str(session_id) and not x.get("ended_at")),None)
     if session is None:session=next((x for x in reversed(sessions) if not x.get("ended_at")),None)
     if session is None:return None
+    current=next((x for x in reversed(session.get("states") or []) if not x.get("ended_at")),None)
+    if current and current.get("state")=="USER_WAIT":
+        _close_execution_state(session,at)
+        runtime_observability.safe_record_runtime_event(
+            ep,"USER_WAIT_FINISHED",episode_id=__import__("logical_asset_identity").episode_id(ep),
+            run_id=str(session.get("session_id") or ""),step=str(current.get("source") or "runtime"),
+            timestamp=at,wait_ms=(seconds_between(current.get("started_at"),at) or 0.0)*1000,
+            status="finished",source="episode_performance")
     _close_execution_session(session,at,status);save(ep,d);return session
 
 def safe_begin_execution_session(ep,**kwargs):
