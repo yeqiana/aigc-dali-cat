@@ -12,7 +12,7 @@ if str(SYSTEM) not in sys.path:
 import auto_repair_enqueue  # noqa: E402
 
 
-def test_marked_repair_carries_vision_review_findings(monkeypatch, tmp_path):
+def test_marked_production_scout_finding_waits_for_first_pass_barrier(monkeypatch, tmp_path):
     queue = {
         "items": [
             {
@@ -29,26 +29,14 @@ def test_marked_repair_carries_vision_review_findings(monkeypatch, tmp_path):
             }
         ]
     }
-    captured = {}
-
     monkeypatch.setattr(auto_repair_enqueue.scheduler_core, "load_queue", lambda _ep: queue)
-
-    def fake_enqueue(_ep, *, frame, findings, source, review_note):
-        captured.update(
-            frame=frame,
-            findings=list(findings),
-            source=source,
-            review_note=review_note,
-        )
-        return {"status": "NOT_REPAIRABLE", "frame": frame}
-
-    monkeypatch.setattr(auto_repair_enqueue, "enqueue", fake_enqueue)
-
-    result = auto_repair_enqueue.enqueue_marked_repairs(tmp_path)
+    monkeypatch.setattr(auto_repair_enqueue.scheduler_core,"queue_transaction",lambda _ep: __import__("contextlib").nullcontext())
+    monkeypatch.setattr(auto_repair_enqueue.scheduler_core,"save_queue",lambda *_args:None)
+    from unittest.mock import patch
+    with patch.object(auto_repair_enqueue,"enqueue") as enqueue:
+        result = auto_repair_enqueue.enqueue_marked_repairs(tmp_path)
 
     assert result["marked"] == 1
-    assert captured["frame"] == 16
-    assert captured["source"] == "PRODUCTION_REVIEW"
-    assert "GHOST_CAMERA_ALL_PARTICIPANTS_VISIBLE" in captured["findings"]
-    assert "P01_WARDROBE_AND_ROLE_DRIFT" in captured["findings"]
-    assert "camera authorship and wardrobe continuity failed" in captured["findings"]
+    assert result["repair_items_ready"] == 0
+    assert result["results"][0]["status"] == "DEFERRED_FIRST_PASS_BARRIER"
+    enqueue.assert_not_called()
