@@ -476,4 +476,3 @@ def semantic_attempt_consumed(ep: str | Path, logical_asset_key: str, semantic_k
         return bool(row)
     finally:
         connection.close()
-
