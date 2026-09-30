@@ -19,11 +19,12 @@ import codex_user_runner
 import preimage_authority_snapshot
 import preimage_task_contract
 import story_json
+import model_policy
 from scoped_codex_worker import STEP_DIRECTIVES
 
 DEFAULT_PROVIDER = "codex_cli_subscription"
-DEFAULT_MODEL = "gpt-5.6-luna"
-REASONING_EFFORT = "medium"
+DEFAULT_MODEL = model_policy.resolve_profile("authoring")["model"]
+REASONING_EFFORT = model_policy.resolve_profile("authoring")["reasoning_effort"]
 OUTPUT_SCHEMA_PATH = Path(__file__).with_name("visual_narrative_payload.schema.json")
 VISUAL_SCOPE_ORDER = (
     "visual.narrative_core", "visual.shot_progression", "visual.capture_grammar",
@@ -252,8 +253,11 @@ def _legacy_output_schema(task: dict) -> dict:
     }
 
 
-def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900, model: str = DEFAULT_MODEL) -> dict:
+def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900, model: str | None = None) -> dict:
     ep = Path(ep).resolve()
+    selected_policy = model_policy.resolve("preimage.visual_narrative", ep)
+    model = str(model or selected_policy["model"])
+    reasoning_effort = str(selected_policy["reasoning_effort"])
     frozen_task = task if (task.get("input_contract") or {}).get("visual_narrative_capsule") else freeze_task(ep, task)
     capsule = frozen_task["input_contract"]["visual_narrative_capsule"]
     # Reject stale source before dispatch; completion performs the same SHA check.
@@ -263,7 +267,7 @@ def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900, model: s
     codex, resolution = codex_user_runner.resolve_codex(None)
     command = [str(codex), "exec", "--json", "--ephemeral", "--ignore-rules", "--skip-git-repo-check",
                "-C", str(ROOT), "-s", "read-only",
-               "-c", f"model_reasoning_effort='{REASONING_EFFORT}'",
+               "-c", f"model_reasoning_effort='{reasoning_effort}'",
                "-m", str(model), "-"]
     if role in {"agent_shadow", "agent_production"}:
         if not OUTPUT_SCHEMA_PATH.is_file():
@@ -288,7 +292,7 @@ def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900, model: s
             schema_context.cleanup()
     telemetry = codex_execution_telemetry.model_execution(
         result, provider=DEFAULT_PROVIDER, model=str(model), authority_capsule_read_once=True)
-    telemetry.update({"reasoning_effort": REASONING_EFFORT, "shadow": role == "agent_shadow",
+    telemetry.update({"reasoning_effort": reasoning_effort, "shadow": role == "agent_shadow",
                       "canonical_write": False, "repeated_reads_scope": "frozen_authority_capsule",
                       "capsule_sha256": capsule["capsule_sha256"], "codex_resolution": resolution})
     payload = None

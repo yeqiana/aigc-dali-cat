@@ -6,7 +6,6 @@ from __future__ import annotations
 import hashlib
 import json
 import mimetypes
-import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -416,12 +415,11 @@ def prepare_shadow_request(episode_dir: Path, *, attempt: int = 1) -> dict | Non
             "request_snapshot_path": metadata["request_snapshot_path"]}
 
 
-def _configured_cli_model() -> tuple[str | None, str | None]:
+def _configured_cli_model(episode_dir: str | Path) -> tuple[str | None, str | None]:
     try:
-        import codex_user_runner
-        home, _ = codex_user_runner.codex_home()
-        config = tomllib.loads((home / "config.toml").read_text(encoding="utf-8"))
-        return str(config.get("model") or "").strip() or None, str(config.get("model_reasoning_effort") or "").strip() or None
+        import model_policy
+        resolved = model_policy.resolve("critic.final", Path(episode_dir).resolve())
+        return str(resolved["model"]), str(resolved["reasoning_effort"])
     except Exception:
         return None, None
 
@@ -447,10 +445,10 @@ def _comparison(existing: dict, critic: dict) -> dict:
     }
 
 
-def legacy_execution_target() -> dict[str, str]:
-    model, _effort = _configured_cli_model()
+def legacy_execution_target(episode_dir: str | Path) -> dict[str, str]:
+    model, _effort = _configured_cli_model(episode_dir)
     if not model:
-        raise FinalSemanticCriticError("active Codex model is not observable")
+        raise FinalSemanticCriticError("Episode-bound Final Semantic Critic Model Policy is not available")
     return {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
 
 
@@ -508,9 +506,9 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int = 1, timeout: int 
     candidate_path = (ROOT / request["candidate_path"]).resolve()
     if candidate_path.exists():
         raise FinalSemanticCriticError("duplicate Final Semantic Critic dispatch rejected")
-    model, effort = _configured_cli_model()
+    model, effort = _configured_cli_model(ep)
     if not model or not effort:
-        raise FinalSemanticCriticError("active Codex model and reasoning effort are not observable")
+        raise FinalSemanticCriticError("Episode-bound Final Semantic Critic model/reasoning effort is not available")
     legacy_target = {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
     execution_target = codex_critic_runner.consume_scheduler_authorization(
         task_type="final_semantic_critic", legacy_target=legacy_target,

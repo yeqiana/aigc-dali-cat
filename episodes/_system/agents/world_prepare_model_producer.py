@@ -24,11 +24,12 @@ import world_state
 import temporal_continuity_gate
 import wardrobe_contract
 import character_contract
+import model_policy
 from scoped_codex_worker import STEP_DIRECTIVES
 
 DEFAULT_PROVIDER = "codex_cli_subscription"
-DEFAULT_MODEL = "gpt-5.6-luna"
-REASONING_EFFORT = "medium"
+DEFAULT_MODEL = model_policy.resolve_profile("structured_text")["model"]
+REASONING_EFFORT = model_policy.resolve_profile("structured_text")["reasoning_effort"]
 WORLD_SCOPE_ORDER = (
     "visual.world_identity",
     "visual.world_state",
@@ -183,16 +184,19 @@ def _prompt(task: dict, role: str) -> str:
 
 
 def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900,
-        model: str = DEFAULT_MODEL) -> dict:
+        model: str | None = None) -> dict:
     """Execute one real read-only producer call and return Host-assembled evidence."""
     ep = Path(ep).resolve()
+    selected_policy = model_policy.resolve("preimage.world_prepare", ep)
+    model = str(model or selected_policy["model"])
+    reasoning_effort = str(selected_policy["reasoning_effort"])
     frozen_task = task if (task.get("input_contract") or {}).get("world_prepare_capsule") else freeze_task(ep, task)
     prompt = _prompt(frozen_task, role)
     codex, resolution = codex_user_runner.resolve_codex(None)
     command = [
         str(codex), "exec", "--json", "--ephemeral", "--ignore-rules",
         "--skip-git-repo-check", "-C", str(ROOT), "-s", "read-only",
-        "-c", f"model_reasoning_effort='{REASONING_EFFORT}'", "-m", str(model), "-",
+        "-c", f"model_reasoning_effort='{reasoning_effort}'", "-m", str(model), "-",
     ]
     request_id = uuid.uuid4().hex
     task_request = codex_user_runner.build_task(
@@ -208,7 +212,7 @@ def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900,
         result, provider=DEFAULT_PROVIDER, model=str(model), authority_capsule_read_once=True
     )
     telemetry.update({
-        "reasoning_effort": REASONING_EFFORT,
+        "reasoning_effort": reasoning_effort,
         "shadow": role == "agent_shadow",
         "canonical_write": False,
         "repeated_reads_scope": "frozen_authority_capsule",

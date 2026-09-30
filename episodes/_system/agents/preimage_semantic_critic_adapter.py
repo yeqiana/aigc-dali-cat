@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -344,12 +343,11 @@ def execution_telemetry(runner_result: Any, *, provider: str, model: str) -> dic
     return telemetry
 
 
-def configured_cli_model() -> tuple[str | None, str | None]:
+def configured_cli_model(episode_dir: str | Path) -> tuple[str | None, str | None]:
     try:
-        import codex_user_runner
-        home, _ = codex_user_runner.codex_home()
-        config = tomllib.loads((home / "config.toml").read_text(encoding="utf-8"))
-        return str(config.get("model") or "").strip() or None, str(config.get("model_reasoning_effort") or "").strip() or None
+        import model_policy
+        resolved = model_policy.resolve("critic.preimage", Path(episode_dir).resolve())
+        return str(resolved["model"]), str(resolved["reasoning_effort"])
     except Exception:
         return None, None
 
@@ -370,10 +368,10 @@ def _comparison_evidence(existing: dict, critic: dict) -> dict:
     }
 
 
-def legacy_execution_target() -> dict[str, str]:
-    model, _effort = configured_cli_model()
+def legacy_execution_target(episode_dir: str | Path) -> dict[str, str]:
+    model, _effort = configured_cli_model(episode_dir)
     if not model:
-        raise PreimageCriticError("active Codex model is not observable")
+        raise PreimageCriticError("Episode-bound PREIMAGE Critic Model Policy is not available")
     return {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
 
 
@@ -429,9 +427,9 @@ def execute_shadow_request(episode_dir: Path, *, attempt: int, timeout: int = 90
     if candidate_path.exists():
         raise PreimageCriticError("duplicate PREIMAGE Critic dispatch rejected")
     verify_frozen_candidate_files_unchanged(ep, capsule)
-    model, effort = configured_cli_model()
+    model, effort = configured_cli_model(ep)
     if not model or not effort:
-        raise PreimageCriticError("active Codex model and reasoning effort are not observable")
+        raise PreimageCriticError("Episode-bound PREIMAGE Critic model/reasoning effort is not available")
     legacy_target = {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
     execution_target = codex_critic_runner.consume_scheduler_authorization(
         task_type="preimage_semantic_critic", legacy_target=legacy_target,

@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import json
 import hashlib
-import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -459,24 +458,20 @@ def execution_telemetry(
     return telemetry
 
 
-def configured_cli_model() -> tuple[str | None, str | None]:
-    """Read only the active Codex model/effort selectors; never return config contents."""
+def configured_cli_model(episode_dir: str | Path) -> tuple[str | None, str | None]:
+    """Resolve this Episode's frozen Story Critic model and effort."""
     try:
-        import codex_user_runner
-        home, _source = codex_user_runner.codex_home()
-        config_path = home / "config.toml"
-        data = tomllib.loads(config_path.read_text(encoding="utf-8"))
-        model = str(data.get("model") or "").strip() or None
-        effort = str(data.get("model_reasoning_effort") or "").strip() or None
-        return model, effort
+        import model_policy
+        resolved = model_policy.resolve("critic.story", Path(episode_dir).resolve())
+        return str(resolved["model"]), str(resolved["reasoning_effort"])
     except Exception:
         return None, None
 
 
-def legacy_execution_target() -> dict[str, str]:
-    model, _effort = configured_cli_model()
+def legacy_execution_target(episode_dir: str | Path) -> dict[str, str]:
+    model, _effort = configured_cli_model(episode_dir)
     if not model:
-        raise CriticDecisionError("active Codex model is not observable")
+        raise CriticDecisionError("Episode-bound Story Critic Model Policy is not available")
     return {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
 
 
@@ -557,9 +552,9 @@ def execute_shadow_request(
     prompt = build_decision_prompt(attempt=attempt, story_text=story_text,
                                    storyboard_text=storyboard_text, rubric_text=rubric_text,
                                    applicability=applicability)
-    model, effort = configured_cli_model()
+    model, effort = configured_cli_model(ep)
     if not model or not effort:
-        raise CriticDecisionError("active Codex model/reasoning effort is not observable")
+        raise CriticDecisionError("Episode-bound Story Critic model/reasoning effort is not available")
     legacy_target = {"provider": "codex_user_runner", "model": model, "runtime": "CODEX"}
     execution_target = codex_critic_runner.consume_scheduler_authorization(
         task_type="story_semantic_critic", legacy_target=legacy_target,

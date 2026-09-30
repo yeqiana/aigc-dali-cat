@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import agent_shadow_compare
+import sys
 import uuid
 from pathlib import Path
 
@@ -12,8 +13,12 @@ import preimage_task_contract
 import story_json
 
 ROOT = Path(__file__).resolve().parents[3]
+SYSTEM = ROOT / "episodes/_system"
+sys.path[:0] = [str(SYSTEM), str(ROOT)]
+import model_policy
+
 DEFAULT_PROVIDER = "codex_cli_subscription"
-DEFAULT_MODEL = "codex-config-default"
+DEFAULT_MODEL = model_policy.resolve_profile("structured_text")["model"]
 
 
 def _embedded_authority(ep: Path, task: dict) -> dict:
@@ -86,7 +91,9 @@ def run(
     authority = _embedded_authority(ep, task)
     prompt = _prompt(task, authority, role)
     codex, resolution = codex_user_runner.resolve_codex(None)
-    selected_model = str(model or DEFAULT_MODEL)
+    selected_policy = model_policy.resolve("preimage.character_finalize", ep)
+    selected_model = str(model or selected_policy["model"])
+    reasoning_effort = str(selected_policy["reasoning_effort"])
     command = [
         str(codex),
         "exec",
@@ -99,10 +106,10 @@ def run(
         "-s",
         "read-only",
         "-c",
-        "model_reasoning_effort='medium'",
+        f"model_reasoning_effort='{reasoning_effort}'",
+        "-m",
+        selected_model,
     ]
-    if model:
-        command += ["-m", str(model)]
     command.append("-")
     request_id = uuid.uuid4().hex
     task_request = codex_user_runner.build_task(

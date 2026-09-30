@@ -524,17 +524,35 @@ def prepare(
         "preimage-semantic-critic-shadow": "preimage_semantic_critic",
         "final-semantic-critic-shadow": "final_semantic_critic",
     }
+    critic_role_by_kind = {
+        "story-semantic-critic-shadow": "critic.story",
+        "preimage-semantic-critic-shadow": "critic.preimage",
+        "final-semantic-critic-shadow": "critic.final",
+    }
+
+    def _bound_critic_model() -> str:
+        import model_policy
+        role = critic_role_by_kind.get(kind)
+        if not role:
+            raise ValueError(f"no Model Policy role for review kind: {kind}")
+        binding = model_policy.resolve(role, episode=ep)
+        if not binding.get("model") or not binding.get("model_policy_sha256"):
+            raise ValueError(f"incomplete Episode-bound Model Policy binding for {role}")
+        return str(binding["model"])
+
     task_type = str(metadata.get("capability_task_type") or task_by_kind.get(kind) or "")
     if task_type:
         try:
             import capability_router
             router_cfg = capability_router.effective_router_config()
             if router_cfg["production_enabled"] and task_type in router_cfg["supported_task_types"]:
+                policy_model = _bound_critic_model()
                 route_request, _, _, _ = capability_router.critic_route_request(
                     request_id=req["request_id"], kind=kind, stage=str(metadata.get("stage") or kind),
-                    host_execution="workspace_provider", legacy_provider="WORK", legacy_model=None)
+                    host_execution="workspace_provider", legacy_provider="WORK", legacy_model=policy_model,
+                    model_policy_bound=True)
                 decision = capability_router.resolve_effective_route(
-                    route_request, legacy_provider="WORK", legacy_model=None, legacy_runtime="WORK",
+                    route_request, legacy_provider="WORK", legacy_model=policy_model, legacy_runtime="WORK",
                     health=capability_router.process_health_cache())
                 req["capability_route_decision"] = decision
                 req["effective_execution_target"] = decision["effective_route"]
@@ -588,14 +606,11 @@ def prepare(
             import runtime_router
 
             legacy_provider = "codex_user_runner" if host_execution == "codex_user_runner_shadow" else "WORK"
-            legacy_model = None
-            if host_execution == "codex_user_runner_shadow":
-                configured = capability_router._configured_codex_model()
-                legacy_model = configured[0] if configured else None
+            legacy_model = _bound_critic_model()
             route_request, _provider, _model, legacy_runtime = capability_router.critic_route_request(
                 request_id=req["request_id"], kind=kind, stage=str(metadata.get("stage") or kind),
                 host_execution=host_execution, legacy_provider=legacy_provider,
-                legacy_model=legacy_model)
+                legacy_model=legacy_model, model_policy_bound=True)
             runtime_router.capability_route_shadow(
                 route_request, legacy_provider=legacy_provider, legacy_model=legacy_model,
                 legacy_runtime=legacy_runtime)
