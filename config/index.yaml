@@ -135,6 +135,17 @@ stage_read_sets:
     - meta/world-state.json
     - meta/temporal-continuity.json
     - meta/wardrobe-contract.json
+  PROMPT_AUTHORING:
+    - config/storyos.yaml
+    - meta/runtime-request.json
+    - meta/episode-state.json
+    - meta/story-gates.json
+    - meta/runtime/contracts/frame-contract-index.json
+    - meta/preproduction-handoff.json
+    - meta/character-contract.json
+    - meta/world-state.json
+    - meta/temporal-continuity.json
+    - prompts/production
   PREIMAGE_CHARACTER_FINALIZE:
     - config/storyos.yaml
     - meta/episode-state.json

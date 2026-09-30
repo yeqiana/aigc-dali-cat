@@ -285,9 +285,20 @@
       "does_not_create_episode_stage": true,
       "evidence": "meta/preproduction-handoff.json"
     },
-    "VISUAL_LOCK": {
+    "PROMPT_AUTHORING": {
       "depends_on": [
         "PREIMAGE_COMPILE"
+      ],
+      "cost": "MEDIUM",
+      "parallelizable": false,
+      "runtime_node_only": true,
+      "does_not_create_episode_stage": true,
+      "model_role": "prompt.production",
+      "evidence": "prompts/production"
+    },
+    "VISUAL_LOCK": {
+      "depends_on": [
+        "PROMPT_AUTHORING"
       ],
       "cost": "EXPENSIVE",
       "parallelizable": false,

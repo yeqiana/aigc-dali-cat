@@ -44,6 +44,7 @@ class StepSpec:
     target_state:str|None
     evidence_paths:tuple[str,...]
     expensive:bool=False
+    model_role:str|None=None
 
 @dataclass
 class StepResult:

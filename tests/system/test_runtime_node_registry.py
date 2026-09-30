@@ -23,7 +23,8 @@ class RuntimeNodeRegistryTest(unittest.TestCase):
         self.assertEqual(nodes["environment_prepare"]["depends_on"], ["story_lock"])
         self.assertEqual(nodes["frame_contract_compile"]["depends_on"],
                          ["preimage_authority_commit"])
-        self.assertEqual(nodes["image_generation"]["depends_on"], ["frame_contract_compile"])
+        self.assertEqual(nodes["prompt_authoring"]["depends_on"], ["frame_contract_compile"])
+        self.assertEqual(nodes["image_generation"]["depends_on"], ["prompt_authoring"])
 
     def test_split_preimage_preparation_is_parallel_safe(self):
         result = runtime_scheduler.schedule(
