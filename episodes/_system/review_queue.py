@@ -155,6 +155,7 @@ def reconcile_generated(q: dict, *, episode: Path, policy: dict,
                          artifact_sha256=sha256_file(artifact), policy=policy)
         if result.get("status") == "ENQUEUED":
             created.append(result["item"])
+            telemetry(episode, "REVIEW_ENQUEUED", result["item"], queue_depth=depth(q))
     return created
 
 

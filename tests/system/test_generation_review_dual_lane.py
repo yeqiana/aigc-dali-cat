@@ -64,13 +64,15 @@ def test_generated_without_enqueue_is_reconciled_once(tmp_path):
                     "generation_key": "GK-1", "attempt_index": 1,
                     "output_path": str(artifact)}]}
     policy = {"model": "gpt-6-luna", "model_policy_sha256": "a" * 64}
-    first = review_queue.reconcile_generated(
-        q, episode=tmp_path, policy=policy, sha256_file=lambda path: __import__("hashlib").sha256(path.read_bytes()).hexdigest())
-    second = review_queue.reconcile_generated(
-        q, episode=tmp_path, policy=policy, sha256_file=lambda path: __import__("hashlib").sha256(path.read_bytes()).hexdigest())
+    with patch.object(review_queue, "telemetry") as telemetry:
+        first = review_queue.reconcile_generated(
+            q, episode=tmp_path, policy=policy, sha256_file=lambda path: __import__("hashlib").sha256(path.read_bytes()).hexdigest())
+        second = review_queue.reconcile_generated(
+            q, episode=tmp_path, policy=policy, sha256_file=lambda path: __import__("hashlib").sha256(path.read_bytes()).hexdigest())
     assert len(first) == 1
     assert second == []
     assert len(q["review_work_items"]) == 1
+    telemetry.assert_called_once()
 
 
 def test_saved_receipt_survives_claim_recovery_without_re_review():
