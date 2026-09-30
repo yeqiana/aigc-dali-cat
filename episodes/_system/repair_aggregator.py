@@ -13,6 +13,7 @@ import model_policy
 import production_ledger
 import production_recovery
 import runtime_observability
+import incremental_closure
 import scheduler_core
 import story_json
 
@@ -353,6 +354,54 @@ def load_wave(ep: Path) -> dict:
     return _read(Path(ep).resolve() / PLAN_REL, {})
 
 
+def _ensure_incremental_verify_plan(ep: Path, plan: dict) -> dict:
+    """Attach one read-only incremental plan after Wave 1 reaches terminal state.
+
+    The plan does not dispatch model work or change any authority. Persisting it on
+    the wave makes resume idempotent and ensures repaired candidates are checked
+    against current evidence before any later release gate runs.
+    """
+    existing = plan.get("incremental_verify_plan")
+    if isinstance(existing, dict):
+        if not plan.get("incremental_verify_telemetry_finished"):
+            _record_incremental_verify_finished(ep, plan, existing)
+        return existing
+    _event(ep, "INCREMENTAL_VERIFY_STARTED", repair_wave_id=plan.get("repair_wave_id"),
+           dirty_frames=[str(row.get("frame_id") or "") for row in plan.get("frames") or [] if row.get("repairable")])
+    _event(ep, "INCREMENTAL_PLAN_STARTED", repair_wave_id=plan.get("repair_wave_id"),
+           reason="repair_wave_completion")
+    try:
+        result = incremental_closure.plan(ep)
+    except Exception as exc:
+        result = {"action": "ERROR", "reason": "PLANNER_EXCEPTION", "error": str(exc)}
+    plan["incremental_verify_plan"] = result
+    _write_plan(ep, plan)
+    _event(ep, "INCREMENTAL_PLAN_FINISHED", repair_wave_id=plan.get("repair_wave_id"),
+           action=result.get("action"), dirty_frames=result.get("dirty_frames") or [],
+           reused_frames=result.get("reused_frames") or [], status="PASS" if result.get("action") != "ERROR" else "FAILED")
+    _record_incremental_verify_finished(ep, plan, result)
+    return result
+
+
+def _record_incremental_verify_finished(ep: Path, wave: dict, incremental_plan: dict) -> None:
+    repair_frames = {str(row.get("frame_id") or "") for row in wave.get("frames") or [] if row.get("repairable")}
+    dirty_frames = {str(value).zfill(2) for value in incremental_plan.get("dirty_frames") or []}
+    invalid = incremental_plan.get("action") == "ERROR" or not repair_frames.issubset(dirty_frames)
+    if invalid:
+        status = "INVALIDATION_MISMATCH"
+        reason = f"required={','.join(sorted(repair_frames))};actual={','.join(sorted(dirty_frames))}"
+    else:
+        status = "PLANNED"
+        reason = None
+    _event(ep, "INCREMENTAL_VERIFY_FINISHED", repair_wave_id=wave.get("repair_wave_id"),
+           status=status, reason=reason, dirty_frames=sorted(dirty_frames),
+           context_frames=incremental_plan.get("context_frames") or [],
+           reused_frames=incremental_plan.get("reused_frames") or [])
+    wave["incremental_verify_telemetry_finished"] = True
+    wave["incremental_verify_status"] = status
+    _write_plan(ep, wave)
+
+
 def finalize_wave(ep: Path, *, repair_reviews: dict[str, str] | None = None) -> dict:
     """Close Wave 1 from terminal repair review outcomes; never enqueue Wave 2."""
     ep = Path(ep).resolve()
@@ -360,6 +409,7 @@ def finalize_wave(ep: Path, *, repair_reviews: dict[str, str] | None = None) -> 
     if not plan:
         return {"status": "NO_WAVE"}
     if plan.get("status") == "COMPLETED":
+        incremental_plan = _ensure_incremental_verify_plan(ep, plan)
         return {"status":"ALREADY_COMPLETED","plan":plan}
     outcomes = repair_reviews or {}
     for row in plan.get("frames") or []:
@@ -379,5 +429,6 @@ def finalize_wave(ep: Path, *, repair_reviews: dict[str, str] | None = None) -> 
     plan["status"] = "COMPLETED"
     _write_plan(ep, plan)
     _event(ep, "REPAIR_WAVE_COMPLETED", repair_wave_id=plan["repair_wave_id"], status="COMPLETED")
+    incremental_plan = _ensure_incremental_verify_plan(ep, plan)
     return {"status": "COMPLETED", "plan": plan}
 
