@@ -406,6 +406,48 @@ class VisionAutoRepairTests(unittest.TestCase):
         self.assertIsNone(frame["approved_asset"])
         self.assertEqual(frame["user_exception_authorizations"][-1]["approval_text"], "继续推进啊")
 
+    def test_user_can_accept_current_candidate_after_bounded_visual_pool_exhaustion(self):
+        sha = "a" * 64
+        data = {"frames": {"03": {
+            "status": "NEEDS_USER", "content_repairs_used": 1,
+            "current_candidate": {"sha256": sha, "path": "candidate.png"},
+            "attempts": [{"result": "success", "candidate": {"sha256": sha}, "request": {}}],
+        }}}
+        args = SimpleNamespace(
+            episode_dir="ep", frame="03", approval_text="接受当前03版本，不再重做，继续生产",
+            reason="user explicitly accepts the current Visual Lock candidate with known defects",
+        )
+        with patch.object(production_ledger_manage, "episode_dir", return_value=Path("ep")), \
+                patch.object(production_ledger_manage, "get_ledger", return_value=(Path("ledger.json"), data)), \
+                patch.object(production_ledger_manage, "repo_root", return_value=Path(".")), \
+                patch.object(production_ledger_manage, "sha256_file", return_value=sha), \
+                patch.object(Path, "is_file", return_value=True), \
+                patch.object(production_ledger_manage, "verify_attempt_frame_contract_provenance"), \
+                patch.object(production_ledger_manage, "verify_attempt_visual_provenance"), \
+                patch.object(production_ledger_manage, "_bounded_visual_candidate_acceptance_ready", return_value=(True, ["ANOMALY_NOT_READABLE"])), \
+                patch.object(production_ledger_manage, "save_json"):
+            production_ledger_manage.cmd_accept_user_exception_candidate(args)
+        frame = data["frames"]["03"]
+        self.assertEqual(frame["status"], "PASSED")
+        acceptance = frame["user_exception_acceptances"][-1]
+        self.assertEqual(acceptance["approval_basis"], "direct_user_review_exception_acceptance")
+        self.assertEqual(acceptance["acceptance_scope"], "bounded_visual_candidate_pool_exhausted")
+        self.assertEqual(acceptance["known_automatic_issues"], ["ANOMALY_NOT_READABLE"])
+        self.assertEqual(acceptance["candidate_sha256"], sha)
+
+    def test_bounded_visual_acceptance_refuses_without_exhausted_sha_bound_fail(self):
+        data = {"frames": {"03": {
+            "status": "NEEDS_USER", "content_repairs_used": 1,
+            "current_candidate": {"sha256": "a" * 64, "path": "candidate.png"},
+            "attempts": [],
+        }}}
+        args = SimpleNamespace(episode_dir="ep", frame="03", approval_text="接受", reason="continue")
+        with patch.object(production_ledger_manage, "episode_dir", return_value=Path("ep")), \
+                patch.object(production_ledger_manage, "get_ledger", return_value=(Path("ledger.json"), data)), \
+                patch.object(production_ledger_manage, "_bounded_visual_candidate_acceptance_ready", return_value=(False, [])):
+            with self.assertRaisesRegex(SystemExit, "exhausted SHA-bound Visual Lock candidate pool"):
+                production_ledger_manage.cmd_accept_user_exception_candidate(args)
+
     def test_reopened_baseline_cannot_satisfy_dependency_with_stale_review_or_pixel_master(self):
         with patch.object(visual_lock_baseline_gate, "baseline_frame", return_value=1), \
                 patch.object(visual_lock_baseline_gate, "read_json", return_value={"frames": {"01": {"status": "EXCEPTION_REPAIR_AUTHORIZED"}}}), \
@@ -1105,6 +1147,19 @@ class NextActionAutonomousBatchTests(unittest.TestCase):
         action = self._derive(state="VISUAL_CALIBRATED", queue=queue, ledger=ledger)
         self.assertEqual((action["action"], action["executor"]), ("PREPARE_PRODUCTION_BATCH", "MACHINE"))
         self.assertEqual(action["expected_frames"], 20)
+
+    def test_superseded_original_with_current_candidate_stays_represented_during_repair(self):
+        queue = {"items": [
+            *[{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21) if n != 16],
+            {"frame": 16, "kind": "original", "scope": "batch", "status": "superseded"},
+            {"frame": 16, "kind": "repair", "scope": "repair", "status": "queued"},
+        ]}
+        ledger = {f"{n:02d}": {"status": "ORIGINAL_READY", "current_candidate": {"sha256": f"sha-{n}"}} for n in range(1, 21)}
+        ledger["16"]["status"] = "REPAIR_AUTHORIZED"
+        with patch.object(image_scheduler, "ready_items", return_value=([{"frame": 16}], [])):
+            action = self._derive(state="VISUAL_CALIBRATED", queue=queue, ledger=ledger)
+        self.assertEqual((action["action"], action["executor"]), ("GENERATE_IMAGES", "CODEX_IMAGE"))
+        self.assertEqual(action["frames"], [16])
 
     def test_complete_candidates_route_to_final_semantic_vision(self):
         queue = {"items": [{"frame": n, "kind": "original", "scope": "batch", "status": "generated"} for n in range(1, 21)]}

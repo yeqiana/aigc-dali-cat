@@ -33,6 +33,14 @@ for _module in (_ledger_run, _ledger_manage):
     for _name, _value in vars(_ledger_core).items():
         if not _name.startswith("_") and _name not in _module.__dict__:
             setattr(_module, _name, _value)
+
+# The facade itself can also be imported partially during the same bootstrap cycle
+# (notably when this file is executed as the CLI script). Backfill its public core
+# helpers after production_ledger_core is complete so downstream imports such as
+# visual_lock_candidate_pool always see the canonical authority API.
+for _name, _value in vars(_ledger_core).items():
+    if not _name.startswith("_") and _name not in globals():
+        globals()[_name] = _value
 del _module, _name, _value, _ledger_core, _ledger_run, _ledger_manage
 
 
@@ -136,7 +144,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--reason", required=True)
     s.set_defaults(func=cmd_authorize_user_continuation_repair)
 
-    s = sub.add_parser("accept-user-exception-candidate", help="accept an existing NEEDS_USER exception candidate with direct user approval")
+    s = sub.add_parser("accept-user-exception-candidate", help="accept an existing NEEDS_USER visual candidate with direct user approval after a user-exception repair or exhausted bounded Visual Lock pool")
     s.add_argument("episode_dir")
     s.add_argument("--frame", required=True)
     s.add_argument("--approval-text", required=True)

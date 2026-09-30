@@ -105,6 +105,7 @@ def review(
     frame: int,
     decision: str,
     notes: str = "",
+    prevent_exhaustion_force_pass: bool = False,
 ) -> tuple[bool, str]:
     """Mirror ``production_ledger.py review`` for ready-candidate decisions."""
     namespace = SimpleNamespace(
@@ -112,6 +113,7 @@ def review(
         frame=f"{int(frame):02d}",
         decision=decision,
         notes=notes,
+        prevent_exhaustion_force_pass=bool(prevent_exhaustion_force_pass),
     )
     return _invoke(production_ledger.cmd_review, namespace)
 

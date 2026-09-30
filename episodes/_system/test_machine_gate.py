@@ -6,6 +6,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import machine_gate
 import story_json
@@ -187,6 +188,36 @@ class MachineGateTest(unittest.TestCase):
         self.populate_production()
         findings = machine_gate.validate(self.ep, "PRODUCTION_PASSED")
         self.assertFalse(any(x.level == "FAIL" for x in findings), [str(x) for x in findings])
+
+    def test_direct_user_final_publish_asset_resolves_historical_needs_user_frame(self) -> None:
+        gates = self.gates()
+        self.populate_calibration(gates)
+        write_json(self.ep / "meta/release-manifest.json", self.manifest())
+        write_json(self.ep / "meta/story-gates.json", gates)
+        self.populate_production()
+        ledger_path = self.ep / "meta/production-ledger.json"
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+        ledger["frames"]["01"].update({"status": "NEEDS_USER", "approved_asset": None})
+        write_json(ledger_path, ledger)
+        accepted = write_asset(
+            self.root,
+            "episodes/99_test/media/publish/01-final.png",
+            b"direct-user-final-publish-frame-01",
+        )
+        with patch.object(
+            machine_gate,
+            "acceptance_allows",
+            side_effect=lambda _ep, scope, frame=None: scope == "production_gate" and frame == "01",
+        ), patch.object(
+            machine_gate,
+            "visual_asset_for_frame",
+            side_effect=lambda _ep, frame: {**accepted, "frame": "01"} if str(frame).zfill(2) == "01" else None,
+        ):
+            findings = machine_gate.validate(self.ep, "PRODUCTION_PASSED")
+
+        scoped = [x for x in findings if "01" in x.message or x.code == "production_status_user_accepted"]
+        self.assertTrue(any(x.code == "production_status_user_accepted" for x in scoped), [str(x) for x in scoped])
+        self.assertFalse(any(x.level == "FAIL" and x.code in {"production_status", "approved_asset"} and "01" in x.message for x in findings), [str(x) for x in findings])
 
 
 if __name__ == "__main__":

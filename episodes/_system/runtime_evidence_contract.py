@@ -15,6 +15,7 @@ from pathlib import Path
 import story_json
 import runtime_observability
 import runtime_portability
+import storage_config
 
 REL = Path("meta/runtime/runtime-evidence-contract.json")
 SCHEMA_VERSION = 1
@@ -86,9 +87,24 @@ def verify(ep: Path) -> list[str]:
     if declared != REQUIRED_SINKS:
         return ["RUNTIME_EVIDENCE_CONTRACT_SINK_SET_DRIFT"]
     errors: list[str] = []
+    mysql_mode = storage_config.episode_meta_store_config()["mode"] in {"dual", "mysql"}
     for rel in REQUIRED_SINKS:
         path = ep / rel
         if not path.is_file() or path.stat().st_size <= 0:
+            # MySQL mode intentionally has no local JSON projection for these
+            # two observability sinks. Check their canonical durable stores;
+            # never synthesize or backfill evidence.
+            if mysql_mode and rel == runtime_observability.EPISODE_PERFORMANCE_REL.as_posix():
+                metric = runtime_observability.read_summary(
+                    ep, runtime_observability.EPISODE_PERFORMANCE_REL, default={}
+                )
+                if isinstance(metric, dict) and metric:
+                    continue
+            if mysql_mode and rel == runtime_observability.TRACE_EVENTS_REL.as_posix():
+                import runtime_fact_store
+                events = runtime_fact_store.load_trace_events(ep)
+                if events and all(isinstance(event, dict) for event in events):
+                    continue
             errors.append(f"RUNTIME_EVIDENCE_MISSING:{rel}")
             continue
         if rel in JSONL_SINKS and not _jsonl_valid(path):

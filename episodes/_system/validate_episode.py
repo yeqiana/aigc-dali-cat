@@ -21,7 +21,7 @@ from visual_lock_v21 import required as visual_lock_v21_required, verify as veri
 from fast_frame_scout import required as fast_scout_required, audit as audit_fast_scout
 from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
 from post_publish_review import REQUIRED_FOR_DATA_REVIEWED, required as post_publish_required, verify as verify_post_publish
-from final_acceptance import allows as acceptance_allows
+from final_acceptance import allows as acceptance_allows, visual_asset_for_frame
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -642,8 +642,28 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
             findings.append(Finding("FAIL", "visual_lock_v21_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and frame_contract_required(episode_dir):
-        for error in verify_frame_contracts(episode_dir):
-            findings.append(Finding("FAIL", "resolved_frame_contract_gate", error))
+        frame_contract_errors = verify_frame_contracts(episode_dir)
+        if frame_contract_errors and acceptance_allows(episode_dir, "frame_semantic"):
+            # Later direct-user SHA-bound image acceptance supersedes a stale
+            # generation contract for release. Keep the stale cache visible as
+            # a warning and require every accepted publish asset to verify.
+            try:
+                total = int(((manifest.get("release") or {}).get("body_frame_count")) or 0)
+                accepted_complete = total > 0 and all(
+                    visual_asset_for_frame(episode_dir, str(frame).zfill(2)) is not None
+                    for frame in range(1, total + 1)
+                )
+            except (RuntimeError, ValueError, TypeError):
+                accepted_complete = False
+            if accepted_complete:
+                for error in frame_contract_errors:
+                    findings.append(Finding("WARN", "resolved_frame_contract_user_accepted", f"stale generation contract retained as history; all {total} direct-user accepted publish assets verified: {error}"))
+            else:
+                for error in frame_contract_errors:
+                    findings.append(Finding("FAIL", "resolved_frame_contract_gate", error))
+        else:
+            for error in frame_contract_errors:
+                findings.append(Finding("FAIL", "resolved_frame_contract_gate", error))
 
     if effective and STATE_MIN[effective] >= STATE_MIN["PRODUCTION_PASSED"] and fast_scout_required(episode_dir):
         # Fast Scout is a pixel-triage gate over actual media and its audit

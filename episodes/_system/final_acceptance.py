@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import hashlib
 from pathlib import Path
 import story_json
 import runtime_portability
@@ -18,6 +19,7 @@ import approval_persistence
 
 REL = Path("meta/final-acceptance.json")
 EVENT_REL = Path("meta/runtime/final-acceptance-events.jsonl")
+ROOT = Path(__file__).resolve().parents[2]
 ALLOWED_SCOPES = frozenset({
     "production_gate",
     "frame_semantic",
@@ -67,6 +69,80 @@ def _append_event(ep: Path, payload: dict) -> None:
         handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def _normalized_visual_assets(values: object) -> dict[str, dict]:
+    if values is None:
+        return {}
+    if not isinstance(values, dict):
+        return {}
+    out: dict[str, dict] = {}
+    for raw_key, raw_row in values.items():
+        try:
+            key = f"{int(raw_key):02d}"
+        except (TypeError, ValueError):
+            return {}
+        if not isinstance(raw_row, dict):
+            return {}
+        path = str(raw_row.get("path") or "").strip()
+        sha = str(raw_row.get("sha256") or "").strip().lower()
+        if not path or len(sha) != 64 or any(ch not in "0123456789abcdef" for ch in sha):
+            return {}
+        row = {"path": path, "sha256": sha}
+        if isinstance(raw_row.get("size"), list) and len(raw_row["size"]) == 2:
+            try:
+                row["size"] = [int(raw_row["size"][0]), int(raw_row["size"][1])]
+            except (TypeError, ValueError):
+                pass
+        out[key] = row
+    return dict(sorted(out.items()))
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+def visual_asset_for_frame(episode_dir, frame) -> dict | None:
+    """Return a SHA-verified direct-user final publish asset for one frame."""
+    ep = Path(episode_dir).resolve()
+    data = valid(ep)
+    if data is None:
+        return None
+    assets = _normalized_visual_assets(data.get("accepted_visual_assets"))
+    if not assets:
+        return None
+    key = f"{int(frame):02d}"
+    if key not in assets:
+        raise RuntimeError(f"final acceptance visual asset missing for frame {key}")
+    row = assets[key]
+    raw = Path(row["path"])
+    path = raw.resolve() if raw.is_absolute() else (ROOT / raw).resolve()
+    publish_root = (ep / "media/publish").resolve()
+    try:
+        path.relative_to(publish_root)
+    except ValueError as exc:
+        raise RuntimeError(f"final acceptance visual asset must live under media/publish: {row['path']}") from exc
+    if not path.is_file():
+        raise RuntimeError(f"final acceptance visual asset missing: {row['path']}")
+    actual = _sha256_file(path)
+    if actual.lower() != row["sha256"].lower():
+        raise RuntimeError(
+            f"final acceptance visual asset SHA drift for frame {key}: expected={row['sha256']} actual={actual}")
+    return {**row, "frame": key}
+
+
+def visual_assets(episode_dir) -> dict[str, dict]:
+    data = valid(episode_dir)
+    if data is None:
+        return {}
+    assets = _normalized_visual_assets(data.get("accepted_visual_assets"))
+    if not assets:
+        return {}
+    return {key: visual_asset_for_frame(episode_dir, key) for key in assets}
+
+
 def valid(episode_dir) -> dict | None:
     """Return the acceptance payload when valid for gates, else None."""
     ep = Path(episode_dir).resolve()
@@ -93,7 +169,10 @@ def valid(episode_dir) -> dict | None:
     scopes = _normalized_scopes(data.get("accepted_scopes"), legacy_default=True)
     if not scopes:
         return None
-    return {**data, "known_defect_frames": frames, "accepted_scopes": scopes}
+    assets = _normalized_visual_assets(data.get("accepted_visual_assets"))
+    if data.get("accepted_visual_assets") is not None and not assets:
+        return None
+    return {**data, "known_defect_frames": frames, "accepted_scopes": scopes, "accepted_visual_assets": assets}
 
 
 def allows(episode_dir, scope: str, frame=None) -> bool:
@@ -117,7 +196,7 @@ def covers(episode_dir, frame) -> bool:
     return allows(episode_dir, "frame_semantic", frame)
 
 
-def record(episode_dir, *, user_statement: str, known_defect_frames: list[int], accepted_scopes: list[str], declared_at: str | None = None) -> dict:
+def record(episode_dir, *, user_statement: str, known_defect_frames: list[int], accepted_scopes: list[str], declared_at: str | None = None, accepted_visual_assets: dict | None = None) -> dict:
     """Record direct-user final acceptance and append the corresponding event.
 
     This is the only canonical writer. It never infers user approval: callers must
@@ -134,6 +213,9 @@ def record(episode_dir, *, user_statement: str, known_defect_frames: list[int], 
     scopes = _normalized_scopes(accepted_scopes)
     if not scopes or set(scopes) != {str(x) for x in accepted_scopes}:
         raise ValueError(f"accepted scopes must be explicit subset of {sorted(ALLOWED_SCOPES)}")
+    visual_assets = _normalized_visual_assets(accepted_visual_assets)
+    if accepted_visual_assets is not None and not visual_assets:
+        raise ValueError("accepted_visual_assets must be a non-empty frame->path/SHA mapping")
     at = str(declared_at or now()).strip()
     payload = {
         "schema_version": 1,
@@ -146,6 +228,8 @@ def record(episode_dir, *, user_statement: str, known_defect_frames: list[int], 
         "known_defect_frames": frames,
         "accepted_scopes": scopes,
     }
+    if accepted_visual_assets is not None:
+        payload["accepted_visual_assets"] = visual_assets
     event = {
         "schema_version": 1,
         "event": "FINAL_ACCEPTANCE_RECORDED",

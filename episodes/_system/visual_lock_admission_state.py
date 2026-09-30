@@ -450,6 +450,55 @@ def restore_ledger_pass(ep: Path, *, asset: dict, evidence_note: str) -> bool:
     return True
 
 
+def restore_ledger_fail(ep: Path, *, asset: dict, evidence_note: str) -> bool:
+    """Reconcile a current SHA-bound Visual Lock FAIL into NEEDS_USER.
+
+    Independent Visual Lock candidates are provider-successful images, so the
+    Production Ledger can temporarily be PASSED before the admission critic runs.
+    A current FAIL admission must be able to reopen only that exact candidate for
+    the bounded candidate pool. No stale pixel or Frame Contract binding is allowed.
+    """
+    ep = Path(ep)
+    registry = load(ep)
+    rid = str(asset.get("id") or "")
+    entry = (registry.get("items") or {}).get(rid)
+    if not isinstance(entry, dict) or entry.get("status") != "FAIL":
+        return False
+    if int(entry.get("frame") or 0) != int(asset.get("frame") or 0):
+        return False
+    if str(entry.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+        return False
+    if str(entry.get("frame_contract_sha256") or "").lower() != str(asset.get("frame_contract_sha256") or "").lower():
+        return False
+
+    path = ep / LEDGER_REL
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    frame_key = f"{int(asset.get('frame') or 0):02d}"
+    frame = (ledger.get("frames") or {}).get(frame_key)
+    if not isinstance(frame, dict):
+        return False
+    candidate = frame.get("current_candidate") or {}
+    if str(candidate.get("sha256") or "").lower() != str(asset.get("sha256") or "").lower():
+        return False
+    if frame.get("status") == "NEEDS_USER":
+        return True
+    if frame.get("status") != "PASSED":
+        return False
+    frame.setdefault("reviews", []).append({
+        "at": now(),
+        "decision": "repair",
+        "notes": evidence_note,
+        "reconciled": True,
+        "source": "visual_lock_admission_fail",
+        "candidate_sha256": str(asset.get("sha256") or "").lower(),
+        "frame_contract_sha256": str(asset.get("frame_contract_sha256") or "").lower(),
+    })
+    frame["status"] = "NEEDS_USER"
+    ledger["updated_at"] = now()
+    production_ledger.save_json(path, ledger)
+    return True
+
+
 def record_weak_pass(
     ep: Path,
     *,

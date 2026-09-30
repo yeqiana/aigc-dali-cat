@@ -392,6 +392,39 @@ def cmd_authorize_user_continuation_repair(args: argparse.Namespace) -> None:
     print(f"{key}: USER_CONTINUATION_REPAIR_AUTHORIZED")
 
 
+def _bounded_visual_candidate_acceptance_ready(ep: Path, key: str, frame: dict) -> tuple[bool, list[str]]:
+    """Return whether the current NEEDS_USER pixels exhausted the bounded Visual Lock pool.
+
+    This is a direct-user continuity lane, not a machine PASS. It is valid only when
+    the current candidate is the exact SHA that the latest Visual Lock admission
+    rejected and the automatic independent-candidate pool for the frame is exhausted.
+    """
+    import visual_lock_admission_state
+    import visual_lock_candidate_pool
+
+    frame_no = int(key)
+    if frame_no not in set(visual_lock_candidate_pool.exhausted_frames(ep)):
+        return False, []
+    candidate_sha = str(((frame.get("current_candidate") or {}).get("sha256")) or "").lower()
+    if not candidate_sha:
+        return False, []
+    admissions = visual_lock_admission_state.load(ep).get("items") or {}
+    admission = next(
+        (row for row in admissions.values()
+         if isinstance(row, dict) and int(row.get("frame") or 0) == frame_no),
+        None,
+    )
+    if not isinstance(admission, dict) or admission.get("status") != "FAIL":
+        return False, []
+    if str(admission.get("sha256") or "").lower() != candidate_sha:
+        return False, []
+    review_row = admission.get("review_row") or {}
+    issues = [str(x) for x in (review_row.get("issues") or []) if str(x).strip()]
+    if not issues:
+        return False, []
+    return True, issues
+
+
 def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:
     """Accept an already-generated exception candidate with direct user review.
 
@@ -404,8 +437,13 @@ def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:
     key, frame = frame_obj(data, args.frame)
     if frame["status"] != "NEEDS_USER":
         raise SystemExit(f"exception acceptance requires NEEDS_USER, got {frame['status']}")
-    if frame.get("content_repairs_used", 0) != 1 or frame.get("user_exception_repairs_used", 0) != 1:
-        raise SystemExit("exception acceptance requires one ordinary and one user-exception repair")
+    legacy_exception_lane = (
+        frame.get("content_repairs_used", 0) == 1
+        and frame.get("user_exception_repairs_used", 0) == 1
+    )
+    bounded_pool_lane, known_issues = _bounded_visual_candidate_acceptance_ready(ep, key, frame)
+    if not legacy_exception_lane and not bounded_pool_lane:
+        raise SystemExit("exception acceptance requires either one ordinary + one user-exception repair, or an exhausted SHA-bound Visual Lock candidate pool")
     approval = args.approval_text.strip()
     if not approval:
         raise SystemExit("direct user approval text is required")
@@ -432,12 +470,15 @@ def cmd_accept_user_exception_candidate(args: argparse.Namespace) -> None:
         "user_approved": True,
         "delegated_auto_review": False,
         "approval_basis": "direct_user_review_exception_acceptance",
+        "acceptance_scope": ("bounded_visual_candidate_pool_exhausted" if bounded_pool_lane else "user_exception_repair"),
         "candidate_sha256": candidate["sha256"],
+        "known_automatic_issues": known_issues,
     }
     frame.setdefault("user_exception_acceptances", []).append(acceptance)
     frame.setdefault("reviews", []).append({
-        "at": acceptance["at"], "decision": "pass", "notes": "Direct user accepted existing exception candidate: " + args.reason,
-        "approval_basis": acceptance["approval_basis"], "candidate_sha256": candidate["sha256"],
+        "at": acceptance["at"], "decision": "pass", "notes": "Direct user accepted existing exception candidate with known automatic issues preserved: " + args.reason,
+        "approval_basis": acceptance["approval_basis"], "acceptance_scope": acceptance["acceptance_scope"],
+        "candidate_sha256": candidate["sha256"], "known_automatic_issues": known_issues,
     })
     frame["status"] = "PASSED"
     data["updated_at"] = now_iso()

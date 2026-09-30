@@ -79,6 +79,41 @@ def test_final_acceptance_is_fail_closed_and_episode_local(tmp_path: Path):
     assert final_acceptance.valid(ep) is None
 
 
+def test_final_acceptance_can_sha_bind_user_publish_visuals(tmp_path: Path, monkeypatch):
+    ep = tmp_path / "episode"
+    publish = ep / "media/publish"
+    publish.mkdir(parents=True)
+    asset = publish / "01-edited.png"
+    asset.write_bytes(b"user-final")
+    import hashlib
+    sha = hashlib.sha256(b"user-final").hexdigest()
+    monkeypatch.setattr(final_acceptance, "ROOT", tmp_path)
+    saved = final_acceptance.record(
+        ep,
+        user_statement="use publish image as final and do not regenerate",
+        known_defect_frames=[1],
+        accepted_scopes=["frame_semantic", "production_gate"],
+        accepted_visual_assets={
+            "01": {
+                "path": "episode/media/publish/01-edited.png",
+                "sha256": sha,
+                "size": [1122, 1402],
+            }
+        },
+        declared_at="2026-09-30T11:02:00+08:00",
+    )
+    assert saved["accepted_visual_assets"]["01"]["sha256"] == sha
+    row = final_acceptance.visual_asset_for_frame(ep, 1)
+    assert row is not None and row["path"].endswith("01-edited.png")
+    asset.write_bytes(b"drift")
+    try:
+        final_acceptance.visual_asset_for_frame(ep, 1)
+    except RuntimeError as exc:
+        assert "SHA drift" in str(exc)
+    else:
+        raise AssertionError("publish asset drift must fail closed")
+
+
 def test_record_and_revoke_are_evented_and_scope_bounded(tmp_path: Path):
     ep = tmp_path / "episode"
     (ep / "meta").mkdir(parents=True)

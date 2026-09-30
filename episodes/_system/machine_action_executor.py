@@ -19,6 +19,7 @@ import episode_state
 import episode_state_persistence
 import frame_contract
 import frame_semantic_review
+import final_acceptance
 import image_blocked_recovery
 import image_scheduler
 import production_ledger
@@ -131,10 +132,16 @@ def _finalize_production_images(ep: Path) -> dict:
     if not frames:
         raise MachineActionError("production ledger frames missing")
     not_locked = [str(k).zfill(2) for k, row in frames.items() if isinstance(row, dict) and row.get("status") != "LOCKED"]
-    if not_locked:
-        raise MachineActionError("final production image finalizer requires every frame LOCKED: " + ",".join(not_locked[:8]))
+    unaccepted = [key for key in not_locked if not final_acceptance.allows(ep, "frame_semantic", key)]
+    if unaccepted:
+        raise MachineActionError("final production image finalizer requires LOCKED or direct-user accepted frames: " + ",".join(unaccepted[:8]))
+    accepted_visuals = final_acceptance.visual_assets(ep)
+    if accepted_visuals:
+        missing = [str(k).zfill(2) for k in frames if str(k).zfill(2) not in accepted_visuals]
+        if missing:
+            raise MachineActionError("direct-user final visual asset map incomplete: " + ",".join(missing[:8]))
     review_errors = frame_semantic_review.verify_episode(ep, metadata_only=False, write_audit=True)
-    if review_errors:
+    if review_errors and not final_acceptance.allows(ep, "frame_semantic"):
         raise MachineActionError("final semantic review invalid: " + "; ".join(review_errors[:8]))
     gates_path = ep / "meta/story-gates.json"
     gates = _read(ep, "meta/story-gates.json")
@@ -143,7 +150,7 @@ def _finalize_production_images(ep: Path) -> dict:
     reviews["continuity"] = "passed"
     reviews["authenticity"] = "passed"
     story_json.write_json(gates_path, gates)
-    return {"status": "PASS", "action": "FINALIZE_PRODUCTION_IMAGES", "locked_frames": len(frames), "state": _state(ep)}
+    return {"status": "PASS", "action": "FINALIZE_PRODUCTION_IMAGES", "locked_frames": len(frames) - len(not_locked), "user_accepted_frames": len(not_locked), "state": _state(ep)}
 
 
 def _finalize_visual_lock(ep: Path) -> dict:

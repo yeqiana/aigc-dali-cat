@@ -22,6 +22,7 @@ import baseline_candidate_pool
 import character_visual_contract
 import frame_contract
 import frame_semantic_review
+import final_acceptance
 import image_blocked_recovery
 import preproduction_handoff
 import production_batch_review
@@ -858,6 +859,21 @@ def derive(ep: Path) -> dict:
                     frames=ordinary_patch_frames,
                     reason="bounded ordinary repair candidates have fresh locked siblings; review dirty frames plus continuity context instead of re-reviewing the full frame set",
                 )
+            nonlocked_frames = sorted(
+                int(key) for key, value in ledger_frames.items()
+                if str(key).isdigit() and isinstance(value, dict) and value.get("status") != "LOCKED"
+            )
+            if (
+                complete_candidates
+                and nonlocked_frames
+                and all(final_acceptance.allows(ep, "frame_semantic", frame) for frame in nonlocked_frames)
+            ):
+                return action_result(
+                    action="FINALIZE_PRODUCTION_IMAGES",
+                    executor="MACHINE",
+                    frames=list(range(1, expected + 1)),
+                    reason="direct user final acceptance covers every non-LOCKED production frame; preserve known defects and stop image repair",
+                )
             if complete_candidates and not all_locked:
                 return action_result(action="REVIEW_FINAL_PRODUCTION",
                         executor="CODEX_VISION" if vision_runtime=="CODEX" else runtime,
@@ -872,11 +888,42 @@ def derive(ep: Path) -> dict:
                             reason="all production frames are semantic-reviewed and LOCKED; deterministic image-production gate finalization remains")
 
     ledger_frames = (production_ledger.load_authority(ep, default={}) or {}).get("frames") or {}
+    accepted_nonlocked_frames = sorted(
+        int(key) for key, value in ledger_frames.items()
+        if str(key).isdigit()
+        and isinstance(value, dict)
+        and value.get("status") != "LOCKED"
+    )
+    accepted_nonlocked_ready = (
+        bool(accepted_nonlocked_frames)
+        and all(final_acceptance.allows(ep, "frame_semantic", frame) for frame in accepted_nonlocked_frames)
+        and all(
+            isinstance(ledger_frames.get(f"{frame:02d}"), dict)
+            and (
+                isinstance(ledger_frames[f"{frame:02d}"].get("current_candidate"), dict)
+                or isinstance(ledger_frames[f"{frame:02d}"].get("approved_asset"), dict)
+            )
+            for frame in accepted_nonlocked_frames
+        )
+    )
+    reviews = (read_json(ep / "meta/story-gates.json").get("reviews") or {}) if (ep / "meta/story-gates.json").is_file() else {}
+    production_images_finalized = all(
+        reviews.get(name) == "passed" for name in ("production", "continuity", "authenticity")
+    )
+    if accepted_nonlocked_ready and not production_images_finalized:
+        expected = _expected_frames(ep)
+        return action_result(
+            action="FINALIZE_PRODUCTION_IMAGES",
+            executor="MACHINE",
+            frames=list(range(1, expected + 1)),
+            reason="direct user final acceptance covers every remaining non-LOCKED frame and final publish assets are SHA-bound",
+        )
+
     needs_user_frames = sorted(
         int(key) for key, value in ledger_frames.items()
         if str(key).isdigit() and isinstance(value, dict) and value.get("status") == "NEEDS_USER"
     )
-    if needs_user_frames:
+    if needs_user_frames and not (accepted_nonlocked_ready and production_images_finalized):
         # Visual Lock baseline is special: after the ordinary one-shot repair is
         # exhausted, full-auto may still try a bounded candidate competition.
         # This does not raise content_repairs_used and does not bypass Codex Vision.

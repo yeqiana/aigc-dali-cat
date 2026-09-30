@@ -11,7 +11,7 @@ from pathlib import Path
 from story_os_contract import canonical_stages
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
 from incremental_frame_review import review_required as semantic_frame_review_required, verify_episode as verify_frame_semantic_episode
-from final_acceptance import allows as acceptance_allows
+from final_acceptance import allows as acceptance_allows, visual_asset_for_frame
 import identity_continuity  # STORY_OS_P1_1_IDENTITY_CONTINUITY
 import character_visual_contract
 import character_appearance_anchor
@@ -670,16 +670,27 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
         if not isinstance(frame, dict):
             findings.append(Finding("FAIL", "missing_production_frame", f"ledger missing frame {key}"))
             continue
+        accepted_visual = None
+        if acceptance_allows(episode_dir, "production_gate", key):
+            try:
+                accepted_visual = visual_asset_for_frame(episode_dir, key)
+            except (OSError, RuntimeError, ValueError) as exc:
+                findings.append(Finding("FAIL", "accepted_visual_asset", f"{key}: {exc}"))
+        user_accepts_status = isinstance(accepted_visual, dict)
         if frame.get("status") not in ACCEPTED_LEDGER_STATES:
-            findings.append(Finding("FAIL", "production_status", f"{key}: status={frame.get('status')!r}, expected PASSED/WEAK_PASS/LOCKED"))
+            if user_accepts_status:
+                findings.append(Finding("WARN", "production_status_user_accepted", f"{key}: historical status={frame.get('status')!r}; current direct-user final publish asset accepted by SHA"))
+            else:
+                findings.append(Finding("FAIL", "production_status", f"{key}: status={frame.get('status')!r}, expected PASSED/WEAK_PASS/LOCKED"))
         if frame.get("content_repairs_used", 0) > content_repair_limit(ledger):
             findings.append(Finding("FAIL", "repair_limit", f"{key}: content_repairs_used exceeds frozen policy"))
-        approved = frame.get("approved_asset")
+        approved = accepted_visual if user_accepts_status else frame.get("approved_asset")
         if not isinstance(approved, dict):
             findings.append(Finding("FAIL", "approved_asset", f"{key}: approved_asset required"))
         else:
-            check_hashed_asset(repo_root, approved, findings, f"production.frames.{key}.approved_asset", metadata_only=metadata_only)
-        if frame.get("status") == "LOCKED":
+            where = "production.frames." + key + (".accepted_visual" if user_accepts_status else ".approved_asset")
+            check_hashed_asset(repo_root, approved, findings, where, metadata_only=metadata_only)
+        if frame.get("status") == "LOCKED" and not user_accepts_status:
             lock = frame.get("lock")
             if not isinstance(lock, dict) or not isinstance(approved, dict) or lock.get("sha256") != approved.get("sha256"):
                 findings.append(Finding("FAIL", "lock_hash", f"{key}: lock hash must equal approved asset hash"))
