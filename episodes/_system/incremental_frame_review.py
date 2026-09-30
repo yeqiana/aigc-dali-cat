@@ -208,7 +208,8 @@ def _scope_ok(data: dict) -> bool:
     }
 
 
-def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, caption_hash: str, version: str, directing_v3: bool) -> tuple[bool, list[str]]:
+def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, caption_hash: str,
+                  version: str, directing_v3: bool, *, policy_sha256: str | None = None) -> tuple[bool, list[str]]:
     reasons: list[str] = []
     if not isinstance(data, dict):
         return False, ["missing_review"]
@@ -227,11 +228,35 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
         if str(data.get(field) or "").lower() != str(expected).lower():
             reasons.append("phase3_frame_context_changed")
             break
+    expected_identity = {
+        "logical_asset_key": frame.get("logical_asset_key"),
+        "generation_key": frame.get("generation_key"),
+        "sha256": frame.get("sha256"),
+        "source_binding": base.source_binding(ep, frame["frame"]),
+    }
+    if not expected_identity["generation_key"]:
+        reasons.append("current_generation_missing")
+    elif str(data.get("generation_key") or "") != str(expected_identity["generation_key"]):
+        reasons.append("current_generation_changed")
+    if not expected_identity["logical_asset_key"] or data.get("logical_asset_key") != expected_identity["logical_asset_key"]:
+        reasons.append("logical_asset_binding_changed")
+    if not policy_sha256:
+        reasons.append("model_policy_binding_missing")
+    elif str(data.get("model_policy_sha256") or "").lower() != str(policy_sha256).lower():
+        reasons.append("policy_sha_changed")
+    expected_fingerprint = base.frame_evidence_fingerprint(
+        expected_identity, contexts=contexts, phase3_contexts=phase3,
+        policy_sha256=policy_sha256)
+    if not expected_fingerprint:
+        reasons.append("evidence_fingerprint_inputs_missing")
+    elif str(data.get("evidence_fingerprint") or "").lower() != expected_fingerprint:
+        reasons.append("evidence_fingerprint_invalid")
     # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME:
     # Caption changes are audited independently by caption_image_audit.py and MUST NOT dirty visual review.
     if not _scope_ok(data):
         reasons.append("review_scope_invalid")
-    if data.get("decision") != "pass" or data.get("issue_codes") not in ([], None):
+    issue_codes = data.get("issue_codes")
+    if data.get("decision") != "pass" or not isinstance(issue_codes, list) or issue_codes:
         reasons.append("review_not_pass")
     checks = data.get("checks") or {}
     for name in base.checks_for_version(version, directing_v3):
@@ -286,6 +311,8 @@ def _pending_ledger_plan(ep: Path) -> dict | None:
     return {
         "action": "AWAITING_AUTHORITY_REFRESH" if authority_refresh else "AWAITING_PRODUCTION",
         "dirty_frames": authority_refresh if authority_refresh else sorted(pending),
+        "reused_frames": [],
+        "missing_evidence_frames": [],
         "context_frames": [],
         "reasons": {key: [f"ledger_status:{status}"] for key, status in sorted(pending.items())},
         "pending_frames": sorted(pending),
@@ -299,7 +326,8 @@ def _pending_ledger_plan(ep: Path) -> dict | None:
 
 def build_plan(ep: Path) -> dict:
     if not review_required(ep):
-        return {"action": "NOT_REQUIRED", "dirty_frames": [], "context_frames": [], "reasons": ["legacy_contract"]}
+        return {"action": "NOT_REQUIRED", "dirty_frames": [], "reused_frames": [],
+                "missing_evidence_frames": [], "context_frames": [], "reasons": ["legacy_contract"]}
     pending_plan = _pending_ledger_plan(ep)
     if pending_plan is not None:
         return pending_plan
@@ -308,15 +336,36 @@ def build_plan(ep: Path) -> dict:
     captions = caption_state(ep, frames)
     version = base.episode_contract_version(ep)
     directing_v3 = base.directing_v3_required(ep)
+    policy_sha = base.bound_review_policy_sha256(ep)
     dirty: list[str] = []
+    reused: list[str] = []
+    missing: list[str] = []
     reasons: dict[str, list[str]] = {}
+    old_fingerprints: dict[str, str | None] = {}
+    new_fingerprints: dict[str, str | None] = {}
     accepted: list[str] = []
     accepted_reasons: dict[str, list[str]] = {}
     context_change = False
     for frame in frames:
         data = _review_data(ep, frame["frame"])
-        clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]], version, directing_v3)
+        phase3 = base.phase3_context_hashes(ep, frame["frame"])
+        identity = {
+            "logical_asset_key": frame.get("logical_asset_key"),
+            "generation_key": frame.get("generation_key"),
+            "sha256": frame.get("sha256"),
+            "source_binding": base.source_binding(ep, frame["frame"]),
+        }
+        new_fingerprint = base.frame_evidence_fingerprint(
+            identity, contexts=contexts, phase3_contexts=phase3, policy_sha256=policy_sha)
+        new_fingerprints[frame["frame"]] = new_fingerprint
+        old_fingerprints[frame["frame"]] = (
+            str(data.get("evidence_fingerprint")) if isinstance(data, dict)
+            and data.get("evidence_fingerprint") else None)
+        clean, why = _review_clean(ep, data, frame, contexts, captions["frame_sha256"][frame["frame"]],
+                                   version, directing_v3, policy_sha256=policy_sha)
         if not clean:
+            if data is None:
+                missing.append(frame["frame"])
             # A direct-user final acceptance (meta/final-acceptance.json) converts a
             # known-defect frame into an accepted one so it does not re-enter the repair
             # queue forever. It is recorded explicitly, never silently treated as clean.
@@ -328,10 +377,16 @@ def build_plan(ep: Path) -> dict:
             reasons[frame["frame"]] = why
             if {"story_visual_context_changed", "review_version_changed", "story_source_binding_changed"}.intersection(why):
                 context_change = True
+        else:
+            reused.append(frame["frame"])
     if not dirty:
         return {
             "action": "NOOP",
             "dirty_frames": [],
+            "reused_frames": reused,
+            "missing_evidence_frames": missing,
+            "old_fingerprints": old_fingerprints,
+            "new_fingerprints": new_fingerprints,
             "context_frames": [],
             "reasons": {},
             "accepted_known_defect_frames": accepted,
@@ -343,6 +398,10 @@ def build_plan(ep: Path) -> dict:
     return {
         "action": action,
         "dirty_frames": dirty,
+        "reused_frames": reused,
+        "missing_evidence_frames": missing,
+        "old_fingerprints": old_fingerprints,
+        "new_fingerprints": new_fingerprints,
         "context_frames": [row["frame"] for row in frames] if action == "FULL" else _context_frames([r["frame"] for r in frames], dirty),
         "reasons": reasons,
         "accepted_known_defect_frames": accepted,
@@ -357,13 +416,16 @@ def _prompt(ep: Path, selected: list[dict], dirty: list[str], candidate: Path, a
     version = base.episode_contract_version(ep)
     directing_v3 = base.directing_v3_required(ep)
     rel_ep = ep.relative_to(ROOT).as_posix()
-    mapping = "\n".join(f"- context frame {r['frame']}: {r['path_rel']}" for r in selected)
+    dirty_set = set(dirty)
+    mapping = "\n".join(
+        f"- {'DIRTY TARGET' if r['frame'] in dirty_set else 'CONTEXT ONLY'} frame {r['frame']}: {r['path_rel']}"
+        for r in selected)
     dirty_text = ", ".join(dirty)
     caption_source = captions.get("source_path") or "<no caption source>"
     return f"""You are an adversarial Story OS incremental Production Frame Semantic Critic in a FRESH isolated session.
 Do NOT generate or edit images. Do NOT trust previous PASS labels.
-Review only the supplied CONTEXT SET for {rel_ep}. The true dirty roots are: {dirty_text}.
-Neighbor frames are included only so continuity and information gain can be judged correctly.
+Review the dirty target frames for {rel_ep}: {dirty_text}.
+Neighbor frames marked CONTEXT ONLY are read-only evidence supplied only to judge continuity; do not re-review or return rows for them.
 
 Read:
 - {story.relative_to(ROOT).as_posix()}
@@ -376,11 +438,11 @@ Read:
 Attached mapping:
 {mapping}
 
-Attempt {attempt}. Judge ACTUAL pixels. Every supplied frame must pass all checks:
+Attempt {attempt}. Judge ACTUAL pixels for each DIRTY TARGET. Every target frame must pass all checks:
 {', '.join(base.checks_for_version(version, directing_v3))}
 Hard failures include wrong scene/beat/prop/person/wardrobe, illegal POV, ghost camera, broken space/time continuity, unreadable anomaly, caption inventing missing evidence, missing actual information gain, narrative redundancy, repeated shot grammar, unmotivated camera defects, impossible screen/UI physics, broken visual memory, wrong locked shot scale, visually repeated planned camera position, failed cinematic-structure translation, invented/non-matching light, or missing declared reflection/fog/light-shadow/occlusion anomaly carrier.
 Episode contract version: {version}. V2.2-only Visual Narrative checks and issue codes apply ONLY when version >= 2.2.0; legacy episodes must not fail on V2.2-only criteria.
-Return one row for EVERY supplied context frame, not only dirty roots.
+Return one row for EVERY dirty target frame and no rows for context-only frames.
 Use issue codes only from: {', '.join(sorted(base.ISSUE_CODES))}
 
 Write ONLY JSON to {candidate.relative_to(ROOT).as_posix()} with shape:
@@ -445,6 +507,7 @@ def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: 
         return 2
     by_key = {r["frame"]: r for r in all_frames}
     selected = [by_key[k] for k in plan["context_frames"]]
+    targets = [by_key[k] for k in plan["dirty_frames"]]
     contexts = base.context_hashes(ep)
     captions = caption_state(ep, all_frames)
     frozen_sources = base.review_source_bindings(ep, all_frames)
@@ -483,7 +546,7 @@ def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: 
     data = read_json(candidate)
     version = base.episode_contract_version(ep)
     directing_v3 = base.directing_v3_required(ep)
-    candidate_errors = base.validate_candidate_rows(data.get("frames"), selected, version=version, directing_v3=directing_v3)
+    candidate_errors = base.validate_candidate_rows(data.get("frames"), targets, version=version, directing_v3=directing_v3)
     global_codes = data.get("issue_codes")
     if not isinstance(global_codes, list):
         candidate_errors.append("global issue_codes must be list")
@@ -503,8 +566,16 @@ def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: 
         "dirty_roots": plan["dirty_frames"],
         "context_frames": plan["context_frames"],
     })
-    for frame in selected:
+    policy_sha = base.bound_review_policy_sha256(ep)
+    for frame in targets:
         source = rows_by_frame.get(frame["frame"], {})
+        phase3_contexts = base.phase3_context_hashes(ep, frame["frame"])
+        identity = {
+            "logical_asset_key": frame.get("logical_asset_key"),
+            "generation_key": frame.get("generation_key"),
+            "sha256": frame["sha256"],
+            "source_binding": frozen_sources["frames"][frame["frame"]].get("source_binding") or {},
+        }
         bound = {
             "schema_version": base.SCHEMA_VERSION,
             "story_os_version": version,
@@ -513,6 +584,12 @@ def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: 
             "asset_sha256": frame["sha256"],
             **contexts,
             **frozen_sources["frames"][frame["frame"]],
+            "logical_asset_key": frame.get("logical_asset_key"),
+            "generation_key": frame.get("generation_key"),
+            "model_policy_sha256": policy_sha,
+            "evidence_fingerprint": base.frame_evidence_fingerprint(
+                identity, contexts=contexts, phase3_contexts=phase3_contexts,
+                policy_sha256=policy_sha),
             "caption_sha256": captions["frame_sha256"][frame["frame"]],
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},
@@ -530,6 +607,7 @@ def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: 
             **provenance,
             "review_scope": "BASELINE_PLUS_PATCHES",
         },
+        "model_policy_sha256": policy_sha,
         "frames": [{"frame": r["frame"], "asset_sha256": r["sha256"]} for r in current],
         "caption_source": captions["source_path"],
         "caption_source_sha256": captions["source_sha256"],
@@ -544,6 +622,7 @@ def _run_patch_uninstrumented(ep: Path, plan: dict, *, attempt: int, codex_raw: 
             "mode": "baseline_plus_patches",
             "dirty_roots": plan["dirty_frames"],
             "context_frames": plan["context_frames"],
+            "reused_frames": plan.get("reused_frames", []),
         },
         "summary": {"passed": not candidate_errors},
     }

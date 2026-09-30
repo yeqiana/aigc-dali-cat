@@ -32,6 +32,9 @@ import runtime_workspace
 import episode_state_persistence
 import local_visual_triage
 import final_acceptance
+import model_policy
+import model_policy_persistence
+import generation_attempt_authority
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_DIR = Path("meta/frame-reviews")
@@ -323,6 +326,71 @@ def review_source_bindings(ep: Path, frames: list[dict]) -> dict:
     }
 
 
+def current_generation_binding(ep: Path, frame: str | int, asset: dict | None = None,
+                               ledger: dict | None = None) -> dict:
+    """Return the current frame identity used by semantic evidence reuse.
+
+    The production ledger selects the current candidate/approved artifact; the
+    generation key must come from that exact artifact or its bound attempt.
+    Missing generation identity is intentionally not guessed from frame number.
+    """
+    ledger = ledger if isinstance(ledger, dict) else (production_ledger.load_authority(ep, default={}) or {})
+    key = str(frame).zfill(2)
+    row = ((ledger.get("frames") or {}).get(key) or {})
+    selected = asset if isinstance(asset, dict) else None
+    if selected is None:
+        selected = row.get("approved_asset") if isinstance(row.get("approved_asset"), dict) else None
+        if selected is None:
+            selected = row.get("current_candidate") if isinstance(row.get("current_candidate"), dict) else None
+    generation_key = str((selected or {}).get("generation_key") or "")
+    if not generation_key:
+        attempt_id = str((selected or {}).get("attempt_id") or "")
+        for attempt in reversed([x for x in (row.get("attempts") or []) if isinstance(x, dict)]):
+            if attempt_id and str(attempt.get("attempt_id") or "") == attempt_id:
+                generation_key = str(attempt.get("generation_key") or "")
+                break
+    logical_key = generation_attempt_authority.frame_key(ep, key)
+    return {"logical_asset_key": logical_key, "generation_key": generation_key or None}
+
+
+def bound_review_policy_sha256(ep: Path) -> str | None:
+    """Read the Episode-frozen final vision role policy, never Global config."""
+    try:
+        policy = model_policy_persistence.load(Path(ep).resolve())
+        if not isinstance(policy, dict):
+            return None
+    except (RuntimeError, ValueError, KeyError, TypeError):
+        return None
+    # The whole Episode policy snapshot is the frozen authority identity. Do not
+    # resolve against current Global config during reuse or canonical verification.
+    value = str(policy.get("policy_sha256") or "").strip().lower()
+    return value or None
+
+
+def frame_evidence_fingerprint(frame: dict, *, contexts: dict, phase3_contexts: dict,
+                               policy_sha256: str | None, schema_version: int = SCHEMA_VERSION) -> str | None:
+    """Canonical fingerprint for semantic reuse; excludes timestamps and paths."""
+    logical_key = str(frame.get("logical_asset_key") or "")
+    generation_key = str(frame.get("generation_key") or "")
+    artifact_sha = str(frame.get("sha256") or "").lower()
+    policy_sha = str(policy_sha256 or "").lower()
+    if not all((logical_key, generation_key, artifact_sha, policy_sha)):
+        return None
+    payload = {
+        "evidence_type": "FRAME_SEMANTIC_REVIEW",
+        "logical_asset_key": logical_key,
+        "generation_key": generation_key,
+        "artifact_sha256": artifact_sha,
+        "source_binding": frame.get("source_binding") or {},
+        "context": contexts,
+        "phase3_context": phase3_contexts,
+        "model_policy_sha256": policy_sha,
+        "review_schema_version": int(schema_version),
+    }
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
 def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
     if not phase4_contract.required(ep):
         return []
@@ -377,6 +445,7 @@ def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
             "path": path,
             "path_rel": repo_rel(path),
             "sha256": expected_sha,
+            **current_generation_binding(ep, key, asset, ledger),
         })
     return rows
 
@@ -425,6 +494,7 @@ def reviewable_frame_records(ep: Path, *, require_files: bool) -> list[dict]:
             "sha256": expected_sha,
             "source_kind": source_kind,
             "ledger_status": status,
+            **current_generation_binding(ep, key, asset, ledger),
         })
     return rows
 
@@ -1032,6 +1102,30 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
         errors.append(f"frame review number mismatch for {key}")
     if str(data.get("asset_sha256") or "").lower() != frame["sha256"].lower():
         errors.append(f"frame {key} asset_sha256 does not bind current approved asset")
+    if ep is not None and phase4_contract.required(ep):
+        expected_logical_key = str(frame.get("logical_asset_key") or "")
+        expected_generation_key = str(frame.get("generation_key") or "")
+        if not expected_logical_key or str(data.get("logical_asset_key") or "") != expected_logical_key:
+            errors.append(f"frame {key} logical_asset_key does not bind the current logical asset")
+        if not expected_generation_key or str(data.get("generation_key") or "") != expected_generation_key:
+            errors.append(f"frame {key} generation_key does not bind the current candidate")
+        expected_policy_sha = bound_review_policy_sha256(ep)
+        recorded_policy_sha = str(data.get("model_policy_sha256") or "").lower()
+        if not expected_policy_sha or recorded_policy_sha != expected_policy_sha:
+            errors.append(f"frame {key} model_policy_sha256 does not bind the Episode-frozen policy")
+        expected_identity = {
+            "logical_asset_key": expected_logical_key,
+            "generation_key": expected_generation_key,
+            "sha256": frame["sha256"],
+            "source_binding": source_binding(ep, key),
+        }
+        expected_fingerprint = frame_evidence_fingerprint(
+            expected_identity, contexts=contexts,
+            phase3_contexts=phase3_contexts or phase3_context_hashes(ep, key),
+            policy_sha256=expected_policy_sha,
+        )
+        if not expected_fingerprint or str(data.get("evidence_fingerprint") or "").lower() != expected_fingerprint:
+            errors.append(f"frame {key} evidence_fingerprint does not bind current evidence identity")
     if str(data.get("asset_path") or "") != frame["path_rel"]:
         errors.append(f"frame {key} asset_path mismatch")
     for field, expected in contexts.items():
@@ -1908,6 +2002,7 @@ def _persist_candidate(
         raise RuntimeError("frame semantic review sources drifted during review; candidate cannot be rebound")
     version = episode_contract_version(ep)
     directing_v3 = directing_v3_required(ep)
+    policy_sha = bound_review_policy_sha256(ep)
     rows_by_frame = {str(row.get("frame") or "").zfill(2): row for row in (data.get("frames") or []) if isinstance(row, dict)}
     forced = {row["frame"]: (_forced_marker(ep, row["frame"], row["sha256"])
               if rows_by_frame.get(row["frame"], {}).get("decision") != "pass" else None) for row in current}
@@ -1924,6 +2019,13 @@ def _persist_candidate(
 
     for frame in current:
         source = rows_by_frame.get(frame["frame"], {})
+        phase3_contexts = phase3_context_hashes(ep, frame["frame"])
+        identity = {
+            "logical_asset_key": frame.get("logical_asset_key"),
+            "generation_key": frame.get("generation_key"),
+            "sha256": frame["sha256"],
+            "source_binding": frozen_sources["frames"][frame["frame"]].get("source_binding") or {},
+        }
         bound = {
             "schema_version": SCHEMA_VERSION,
             "story_os_version": version,
@@ -1932,6 +2034,12 @@ def _persist_candidate(
             "asset_sha256": frame["sha256"],
             **contexts,
             **frozen_sources["frames"][frame["frame"]],
+            "logical_asset_key": frame.get("logical_asset_key"),
+            "generation_key": frame.get("generation_key"),
+            "model_policy_sha256": policy_sha,
+            "evidence_fingerprint": frame_evidence_fingerprint(
+                identity, contexts=contexts, phase3_contexts=phase3_contexts,
+                policy_sha256=policy_sha),
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},
             "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
@@ -1946,6 +2054,7 @@ def _persist_candidate(
         "story_os_version": version,
         **contexts,
         "critic_provenance": provenance,
+        "model_policy_sha256": policy_sha,
         "frames": [{"frame": row["frame"], "asset_sha256": row["sha256"]} for row in current],
         "perceptual_hashes": phashes,
         "near_duplicate_pairs": [],
