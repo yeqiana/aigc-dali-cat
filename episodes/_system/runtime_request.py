@@ -16,6 +16,7 @@ import story_json
 import runtime_request_persistence
 import storage_config
 import model_policy
+import phase5a_collaborative_canary
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
@@ -290,6 +291,10 @@ def compile_request(text):
 
 def validate_request(data):
     errors=[]
+    try:
+        phase5a_collaborative_canary.reject_runtime_request_canary_fields(data)
+    except phase5a_collaborative_canary.CanaryContractError as exc:
+        errors.append(str(exc))
     if data.get("schema_version")!=1:errors.append("schema_version must be 1")
     if data.get("mode") not in {"full_auto","preproduction_only","image_continue","resume","repair_only","release_only","data_review"}:errors.append("invalid mode")
     story=data.get("story_input") or {}

@@ -1,0 +1,172 @@
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+SYSTEM = ROOT / "episodes" / "_system"
+if str(SYSTEM) not in sys.path:
+    sys.path.insert(0, str(SYSTEM))
+
+import phase5a_collaborative_canary as canary
+
+
+def test_contract_is_fixed_and_non_promotable():
+    value = canary.contract()
+    assert value == {
+        "canary_type": "PHASE5A_COLLABORATIVE_REGRESSION",
+        "production_mode": "COLLABORATIVE",
+        "scope": "PRODUCTION_SUBPATH",
+        "promotable": False,
+        "release_eligible": False,
+        "stage_authority": False,
+        "provider_generation_target": 1,
+        "provider_generation_hard_max": 2,
+        "requires_visual_lock_stage": False,
+    }
+    value["provider_generation_hard_max"] = 5
+    assert canary.contract()["provider_generation_hard_max"] == 2
+
+
+def test_dedicated_entry_accepts_normal_request_but_runtime_cannot_opt_in():
+    request = {"schema_version": 1, "topic": {"title": "Canary"}}
+    assert canary.authorize_entry(
+        entrypoint=canary.CANARY_ENTRYPOINT,
+        runtime_request=request,
+    )["scope"] == "PRODUCTION_SUBPATH"
+
+    for entrypoint in ("runtime_dag", "episode_runner", "story_os"):
+        try:
+            canary.authorize_entry(entrypoint=entrypoint, runtime_request=request)
+        except canary.CanaryContractError as exc:
+            assert str(exc) == "CANARY_ENTRYPOINT_REQUIRED"
+        else:
+            raise AssertionError(f"ordinary entrypoint unexpectedly authorized: {entrypoint}")
+
+    for request_with_bypass in (
+        {"skip_visual_lock": True},
+        {"runtime": {"canary_scope": "PRODUCTION_SUBPATH"}},
+        {"execution": {"requires_visual_lock_stage": False}},
+    ):
+        try:
+            canary.authorize_entry(
+                entrypoint=canary.CANARY_ENTRYPOINT,
+                runtime_request=request_with_bypass,
+            )
+        except canary.CanaryContractError as exc:
+            assert str(exc) == "RUNTIME_REQUEST_CANNOT_ENABLE_CANARY_BYPASS"
+        else:
+            raise AssertionError("Runtime Request must not grant canary bypass")
+
+
+def test_relaxed_or_user_supplied_contract_is_rejected():
+    for candidate in ({}, {**canary.contract(), "release_eligible": True}):
+        try:
+            canary.authorize_entry(
+                entrypoint=canary.CANARY_ENTRYPOINT,
+                runtime_request={},
+                candidate_contract=candidate,
+            )
+        except canary.CanaryContractError as exc:
+            assert str(exc) == "CANARY_CONTRACT_MISMATCH"
+        else:
+            raise AssertionError("relaxed contract must fail closed")
+
+
+def test_stage_visual_lock_and_release_mutations_are_denied():
+    for action in (
+        "STAGE_PROMOTION",
+        "WRITE_CANONICAL_STAGE",
+        "WRITE_VISUAL_LOCK_PASS",
+        "RELEASE_AUTHORITY_COMMIT",
+        "PUBLISH_READY_TRANSITION",
+        "PUBLISH",
+    ):
+        try:
+            canary.authorize_action(action)
+        except canary.CanaryContractError as exc:
+            assert str(exc) == "CANARY_STAGE_OR_RELEASE_MUTATION_FORBIDDEN"
+        else:
+            raise AssertionError(f"mutation must be denied: {action}")
+
+    assert canary.authorize_action("RUN_PRODUCTION_SUBPATH") == "RUN_PRODUCTION_SUBPATH"
+    try:
+        canary.authorize_action("UNKNOWN_ACTION")
+    except canary.CanaryContractError as exc:
+        assert str(exc) == "CANARY_ACTION_NOT_ALLOWLISTED"
+    else:
+        raise AssertionError("unknown actions must fail closed")
+
+
+def test_workspace_marker_and_hard_generation_ceiling():
+    marker = canary.workspace_marker("phase5a-20261001-a")
+    assert marker["workspace_class"] == "TEST_ONLY"
+    assert marker["promotion_class"] == "NON_PROMOTABLE"
+    assert marker["canary_type"] == canary.CANARY_TYPE
+
+    assert canary.validate_generation_count(0) == 0
+    assert canary.validate_generation_count(1) == 1
+    assert canary.validate_generation_count(2) == 2
+    for invalid in (-1, 3, True, 1.0):
+        try:
+            canary.validate_generation_count(invalid)
+        except canary.CanaryContractError:
+            pass
+        else:
+            raise AssertionError(f"invalid generation count accepted: {invalid!r}")
+
+
+def test_workspace_marker_must_be_exact_and_canary_id_is_path_safe(tmp_path, monkeypatch):
+    import json
+    import pytest
+
+    monkeypatch.setattr(canary, "ROOT", tmp_path)
+    canary_id = "phase5a-contract-test"
+    ep = canary.initialize_workspace(canary_id)
+    assert ep.is_relative_to((tmp_path / canary.WORKSPACE_REL).resolve())
+    assert canary.validate_workspace(ep, canary_id)[1] == canary.workspace_marker(canary_id)
+
+    marker_path = ep / canary.MARKER_REL
+    marker = json.loads(marker_path.read_text(encoding="utf-8"))
+    marker["stage_authority"] = True
+    marker_path.write_text(json.dumps(marker), encoding="utf-8")
+    with pytest.raises(canary.CanaryContractError, match="CANARY_WORKSPACE_MARKER_INVALID"):
+        canary.validate_workspace(ep, canary_id)
+
+    with pytest.raises(canary.CanaryContractError, match="INVALID_CANARY_ID"):
+        canary.workspace_marker("..\\outside")
+
+
+def test_bind_and_freeze_returns_episode_bound_policy_identity(tmp_path, monkeypatch):
+    import model_policy
+    import runtime_request
+
+    monkeypatch.setattr(canary, "ROOT", tmp_path)
+    request = {"schema_version": 1, "request_id": "request-1"}
+    frozen_payload = {
+        "policy_version": "test-policy-v1",
+        "policy_sha256": "f" * 64,
+    }
+    monkeypatch.setattr(runtime_request, "bind_data", lambda *_a, **_k: None)
+    monkeypatch.setattr(runtime_request, "effective_for_episode", lambda *_a: request)
+    monkeypatch.setattr(canary, "model_policy_persistence_load", lambda _ep: None)
+    monkeypatch.setattr(model_policy, "freeze_for_episode", lambda _ep: {
+        "policy": frozen_payload, "policy_sha256": frozen_payload["policy_sha256"], "created": True
+    })
+    monkeypatch.setattr(model_policy, "validate_bound_policy", lambda _ep: [])
+    events = []
+    monkeypatch.setattr(canary, "_telemetry", lambda _ep, event, **attrs: events.append((event, attrs)))
+
+    episode = tmp_path / canary.WORKSPACE_REL / "episode"
+    result = canary.bind_and_freeze(episode, request)
+    assert result == {
+        "runtime_request_id": "request-1",
+        "policy_version": "test-policy-v1",
+        "policy_sha256": "f" * 64,
+    }
+    assert [event for event, _ in events] == [
+        "STEP_FINISHED", "STEP_FINISHED"
+    ]
+    assert [attrs["step"] for _, attrs in events] == [
+        "RUNTIME_REQUEST_BIND", "MODEL_POLICY_FREEZE"
+    ]

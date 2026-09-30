@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import machine_gate
 import story_json
+import storage_config
 
 
 def write_json(path: Path, data: dict) -> None:
@@ -31,8 +32,19 @@ class MachineGateTest(unittest.TestCase):
         (self.ep / "meta").mkdir(parents=True)
         self.original_repo_root = machine_gate.repo_root_from_script
         machine_gate.repo_root_from_script = lambda: self.root
+        # These unit fixtures intentionally persist Episode metadata as local
+        # files. The developer's active environment may select MySQL authority;
+        # keeping that runtime setting would make the temp JSON ledger invisible
+        # to the production reader and couple this suite to a live DB.
+        self.meta_store_mode = patch.object(
+            storage_config,
+            "episode_meta_store_config",
+            return_value={"mode": "json"},
+        )
+        self.meta_store_mode.start()
 
     def tearDown(self) -> None:
+        self.meta_store_mode.stop()
         machine_gate.repo_root_from_script = self.original_repo_root
         self.tmp.cleanup()
 
