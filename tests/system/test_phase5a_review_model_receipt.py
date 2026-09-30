@@ -55,4 +55,3 @@ def test_critic_runner_records_bound_model_receipt_without_provider_attestation(
     assert receipt["trace_id"] == "canary-trace"
     assert receipt["effective_model_source"] == "EXPLICIT_RUNTIME_BINDING"
     assert receipt["model_binding_source"] == "EPISODE_BOUND_POLICY"
-

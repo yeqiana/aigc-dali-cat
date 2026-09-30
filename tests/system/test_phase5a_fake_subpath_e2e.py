@@ -236,4 +236,3 @@ def test_scheduler_worker_attempt_gateway_artifact_and_review_queue_fake_provide
         assert review_rows[0]["generation_key"] == generation_key
         assert len(review_calls) == 1
         assert attempt_authority.load_asset_state(ep, asset_key)["attempts_consumed"] == 1
-
