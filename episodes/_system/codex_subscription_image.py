@@ -169,12 +169,44 @@ def _codex_http_only_provider_args() -> list[str]:
     ]
 
 
-def controller_args() -> list[str]:
+def controller_args(episode: Path | str | None = None) -> list[str]:
+    if episode is None:
+        controller = _IMAGE_CONTROLLER_POLICY
+    else:
+        # Production workers must bind the controller to the same frozen
+        # Episode Policy used by the scheduler and payload resolver. The
+        # module-level policy remains only for legacy CLI/self-test callers.
+        errors = model_policy.validate_bound_policy(Path(episode).resolve())
+        if errors:
+            raise BackendError("MODEL_POLICY_NOT_FROZEN: " + "; ".join(errors))
+        controller = model_policy.resolve("image.controller", episode=Path(episode).resolve())
     return [
-        '-m', CODEX_IMAGE_CONTROLLER_MODEL,
-        '-c', f'model_reasoning_effort="{CODEX_IMAGE_REASONING_EFFORT}"',
+        '-m', str(controller["model"]),
+        '-c', f'model_reasoning_effort="{controller["reasoning_effort"]}"',
         *_codex_http_only_provider_args(),
     ]
+
+
+def provider_receipt_model_bindings(
+    episode: Path | str, payload_model: str, payload_quality: str
+) -> dict[str, object]:
+    """Return honest, Episode-bound controller and explicit payload evidence."""
+    ep = Path(episode).resolve()
+    errors = model_policy.validate_bound_policy(ep)
+    if errors:
+        raise BackendError("MODEL_POLICY_NOT_FROZEN: " + "; ".join(errors))
+    controller = model_policy.resolve("image.controller", episode=ep)
+    return {
+        "controller_model": controller.get("model"),
+        "controller_effort": controller.get("reasoning_effort"),
+        "controller_profile": controller.get("profile"),
+        "controller_policy_sha256": controller.get("model_policy_sha256"),
+        "controller_model_source": "EPISODE_BOUND_RUNTIME_POLICY",
+        "payload_model": str(payload_model),
+        "payload_quality": str(payload_quality),
+        "payload_model_source": "EXPLICIT_RUNTIME_BINDING",
+        "payload_provider_attestation": False,
+    }
 
 def worker_prompt(scene: str, refs: list[Path], size: str, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False) -> str:
     reference_lines = '\n'.join(f'- reference {i}: {p.name}' for i, p in enumerate(refs, 1)) or '- no references'
@@ -369,7 +401,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
             '-c', 'skills.include_instructions=false', '-c', 'project_doc_max_bytes=0',
             '--enable', 'image_generation',
-            *controller_args(), '-s', sandbox_mode, '-C', str(workdir), '--json'
+            *controller_args(episode_dir), '-s', sandbox_mode, '-C', str(workdir), '--json'
         ]
         for ref in local_refs:
             cmd.extend(['-i', str(ref)])
@@ -539,6 +571,8 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame))
+    receipt_data.update(provider_receipt_model_bindings(
+        ep, model_policy["model"], model_policy["quality"]))
     # W-21: the receipt carries the reference files really sent to the provider, so
     # the production ledger can record execution evidence, not only a declaration.
     # A manual desktop import never attaches them to a provider call, so it must not

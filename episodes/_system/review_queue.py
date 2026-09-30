@@ -1,4 +1,4 @@
-"""Attempt-scoped Fast Scout review queue stored in the shared production queue."""
+"""Attempt-scoped review queue stored in the shared production queue."""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -11,6 +11,9 @@ import logical_asset_identity
 QUEUE_KEY = "review_work_items"
 ACTIVE = {"queued", "running"}
 TERMINAL = {"finalized", "failed", "stale"}
+FAST_SCOUT = "FAST_SCOUT"
+FINAL_SEMANTIC = "FINAL_SEMANTIC"
+_REVIEW_ROLES = {FAST_SCOUT: "vision.fast", FINAL_SEMANTIC: "vision.final"}
 
 
 def now() -> str:
@@ -26,6 +29,13 @@ def item_key(*, episode_id: str, logical_asset_key: str, generation_key: str,
 
 def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
             artifact_sha256: str, policy: dict, review_kind: str = "FAST_SCOUT") -> dict:
+    review_kind = str(review_kind or FAST_SCOUT).upper()
+    model_role = _REVIEW_ROLES.get(review_kind)
+    if not model_role:
+        return {"status": "BLOCKED", "reason": "UNSUPPORTED_REVIEW_KIND"}
+    policy_role = str(policy.get("role") or "")
+    if policy_role and policy_role != model_role:
+        return {"status": "BLOCKED", "reason": "REVIEW_POLICY_ROLE_MISMATCH"}
     generation_key = str(source_item.get("generation_key") or "")
     if not generation_key:
         return {"status": "BLOCKED", "reason": "GENERATION_KEY_MISSING"}
@@ -51,7 +61,7 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
         "review_kind": review_kind,
         "source_scope": str(source_item.get("scope") or ""),
         "repair_wave_id": str(source_item.get("repair_wave_id") or ""),
-        "model_role": "vision.fast",
+        "model_role": model_role,
         "model_policy_sha256": str(policy.get("model_policy_sha256") or ""),
         "model": str(policy.get("model") or ""),
         "queued_at": now(),
@@ -60,10 +70,204 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
         "lease_expires_at": None,
         "receipt": None,
     }
+    if review_kind == FINAL_SEMANTIC:
+        item["profile"] = str(policy.get("profile") or "")
+        item["reasoning_effort"] = str(policy.get("reasoning_effort") or "")
     if not item["model_policy_sha256"] or not item["model"]:
         return {"status": "BLOCKED", "reason": "BOUND_REVIEW_POLICY_MISSING"}
     rows.append(item)
     return {"status": "ENQUEUED", "item": item}
+
+
+def enqueue_final_semantic(q: dict, *, episode: Path, source_item: dict,
+                           artifact: Path, artifact_path: str) -> dict:
+    """Enqueue the official final semantic review for one committed candidate.
+
+    The caller owns persistence/queue locking, just as with enqueue_generated.
+    Policy is resolved from the Episode-bound snapshot; global policy is never
+    used as a fallback.
+    """
+    import fast_frame_scout
+    import model_policy
+    import production_recovery
+
+    source = dict(source_item)
+    if not source.get("generation_key"):
+        source["generation_key"] = production_recovery.generation_key_for_item(episode, source)
+    if not source.get("attempt_index"):
+        lifecycle = production_recovery._read(production_recovery.lifecycle_path(episode, source))
+        source["attempt_index"] = (lifecycle.get("attempt_index") or lifecycle.get("attempt")
+                                   or source.get("attempts") or 1)
+    if not source.get("generation_key") or not artifact.is_file():
+        return {"status": "BLOCKED", "reason": "GENERATION_EVIDENCE_MISSING"}
+    policy = model_policy.resolve("vision.final", episode=episode)
+    result = enqueue(q, episode=episode, source_item=source,
+                     artifact_path=artifact_path,
+                     artifact_sha256=fast_frame_scout.sha256_file(artifact),
+                     policy=policy, review_kind=FINAL_SEMANTIC)
+    if result.get("status") == "ENQUEUED":
+        telemetry(episode, "REVIEW_ENQUEUED", result["item"], queue_depth=depth(q))
+    return result
+
+
+def _receipt_matches_item(item: dict, receipt: dict | None) -> bool:
+    if not isinstance(receipt, dict):
+        return False
+    if item.get("review_kind", FAST_SCOUT) == FAST_SCOUT:
+        return (receipt.get("generation_key") == item.get("generation_key")
+                and str(receipt.get("asset_sha256") or "").lower()
+                == str(item.get("artifact_sha256") or "").lower()
+                and receipt.get("model_policy_sha256") == item.get("model_policy_sha256"))
+    try:
+        attempt_matches = int(receipt.get("attempt_index") or 0) == int(item.get("attempt_index") or 0)
+    except (TypeError, ValueError):
+        return False
+    common = (
+        receipt.get("review_kind") == item.get("review_kind")
+        and receipt.get("episode_id") == item.get("episode_id")
+        and receipt.get("logical_asset_key") == item.get("logical_asset_key")
+        and receipt.get("generation_key") == item.get("generation_key")
+        and attempt_matches
+        and str(receipt.get("artifact_sha256") or "").lower() == str(item.get("artifact_sha256") or "").lower()
+        and receipt.get("model_role") == item.get("model_role")
+        and receipt.get("model") == item.get("model")
+        and receipt.get("profile") == item.get("profile")
+        and receipt.get("reasoning_effort") == item.get("reasoning_effort")
+        and receipt.get("model_policy_sha256") == item.get("model_policy_sha256")
+    )
+    if not common:
+        return False
+    if item.get("review_kind") == FINAL_SEMANTIC:
+        return receipt.get("status") in {"SUCCESS", "COMPLETED_WITH_FINDINGS"}
+    return False
+
+
+def _current_final_candidate_matches(ep: Path, item: dict) -> bool:
+    """Fail closed unless the official semantic-review binding is this item."""
+    import frame_semantic_review
+
+    try:
+        frame = next((row for row in frame_semantic_review.reviewable_frame_records(
+            ep, require_files=True) if str(row.get("frame") or "").zfill(2)
+            == f"{int(item.get('frame') or 0):02d}"), None)
+    except Exception:
+        return False
+    if not frame:
+        return False
+    return (
+        frame.get("logical_asset_key") == item.get("logical_asset_key")
+        and frame.get("generation_key") == item.get("generation_key")
+        and str(frame.get("sha256") or "").lower() == str(item.get("artifact_sha256") or "").lower()
+    )
+
+
+def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout: int) -> dict:
+    """Run or adopt the official final semantic evidence for a queue item."""
+    import frame_review_persistence
+    import frame_semantic_review
+    import model_policy
+    bound = model_policy.resolve("vision.final", episode=ep)
+    if (bound.get("model_policy_sha256") != item.get("model_policy_sha256")
+            or bound.get("model") != item.get("model")):
+        raise RuntimeError("FINAL_SEMANTIC_BOUND_POLICY_MISMATCH")
+    if not _current_final_candidate_matches(ep, item):
+        return {"status": "STALE_EVIDENCE", "review_outcome": "STALE_EVIDENCE"}
+
+    review_attempt = int(item.get("attempt_index") or 1)
+    if review_attempt not in {1, 2}:
+        raise RuntimeError("FINAL_SEMANTIC_ATTEMPT_INDEX_INVALID")
+
+    # If official evidence was committed before the queue completion write,
+    # adopt it. `verify_episode` checks the canonical receipt bindings and does
+    # not make another model call.
+    verified = not frame_semantic_review.verify_episode(ep, metadata_only=True)
+    current_review = frame_review_persistence.load(ep, int(item["frame"])) if verified else None
+    if (verified and isinstance(current_review, dict)
+            and current_review.get("generation_key") == item.get("generation_key")
+            and str(current_review.get("asset_sha256") or "").lower() == item["artifact_sha256"]
+            and current_review.get("logical_asset_key") == item.get("logical_asset_key")
+            and current_review.get("model_policy_sha256") == item.get("model_policy_sha256")):
+        critic_summary = frame_semantic_review.read_json(ep / frame_semantic_review.SUMMARY_REL)
+        critic_receipt = ((critic_summary.get("critic_provenance") or {}).get("model_execution_receipt")
+                          if isinstance(critic_summary, dict) else None)
+        rc = 0
+        reused = True
+    else:
+        reused = False
+        rc = frame_semantic_review.run_critic(
+            ep, attempt=review_attempt, codex_raw=codex, timeout=timeout)
+        pending = frame_semantic_review.pending_request_path(ep, review_attempt)
+        candidate = ep / frame_semantic_review.CANDIDATE_REL
+        if rc == 0 and pending.is_file() and candidate.is_file():
+            rc = frame_semantic_review.apply_pending_candidate(ep, attempt=review_attempt)
+        # A finding may be a legitimate completed semantic result (rc=2).
+        # Preserve that result as evidence; technical failures without a bound
+        # frame receipt remain failed queue items.
+        current_review = frame_review_persistence.load(ep, int(item["frame"]))
+        critic_summary = (frame_semantic_review.read_json(ep / frame_semantic_review.SUMMARY_REL)
+                          if (ep / frame_semantic_review.SUMMARY_REL).is_file() else {})
+        critic_receipt = ((critic_summary.get("critic_provenance") or {}).get("model_execution_receipt")
+                          if isinstance(critic_summary, dict) else None)
+        verify_errors = frame_semantic_review.verify_episode(ep, metadata_only=True)
+    if reused:
+        verify_errors = []
+
+    if not _current_final_candidate_matches(ep, item):
+        return {"status": "STALE_EVIDENCE", "review_outcome": "STALE_EVIDENCE"}
+    bound_review = isinstance(current_review, dict) and (
+        current_review.get("generation_key") == item.get("generation_key")
+        and str(current_review.get("asset_sha256") or "").lower() == item["artifact_sha256"]
+        and current_review.get("logical_asset_key") == item.get("logical_asset_key")
+        and current_review.get("model_policy_sha256") == item.get("model_policy_sha256")
+    )
+    if not bound_review:
+        raise RuntimeError("FINAL_SEMANTIC_EVIDENCE_BINDING_MISSING")
+
+    issues = current_review.get("issue_codes") or []
+    content_finding = bool(issues or current_review.get("decision") == "fail")
+    critic_receipt_valid = isinstance(critic_receipt, dict) and (
+        critic_receipt.get("status") == "SUCCESS"
+        and critic_receipt.get("model_role") == "vision.final"
+        and critic_receipt.get("effective_model") == bound.get("model")
+        and critic_receipt.get("reasoning_effort") == bound.get("reasoning_effort")
+        and critic_receipt.get("model_policy_sha256") == bound.get("model_policy_sha256")
+    )
+    passed = (current_review.get("decision") == "pass" and not issues and rc == 0
+              and not verify_errors and critic_receipt_valid)
+    outcome = ("PASS" if passed else "REPAIR_NEEDED" if content_finding and critic_receipt_valid
+               else "TECH_FAILED")
+    schema = int(frame_semantic_review.SCHEMA_VERSION)
+    evidence_fingerprint = str(current_review.get("evidence_fingerprint") or "")
+    return {
+        "schema_version": 1,
+        "review_kind": FINAL_SEMANTIC,
+        "status": "SUCCESS" if passed else "COMPLETED_WITH_FINDINGS" if outcome == "REPAIR_NEEDED" else "TECH_FAILED",
+        "decision": current_review.get("decision"),
+        "review_outcome": outcome,
+        "episode_id": item.get("episode_id"),
+        "logical_asset_key": item.get("logical_asset_key"),
+        "generation_key": item.get("generation_key"),
+        "attempt_index": review_attempt,
+        "artifact_sha256": item.get("artifact_sha256"),
+        "model_role": "vision.final",
+        "model": bound.get("model"),
+        "profile": bound.get("profile"),
+        "reasoning_effort": bound.get("reasoning_effort"),
+        "model_policy_sha256": bound.get("model_policy_sha256"),
+        "review_schema_version": schema,
+        "evidence_fingerprint": evidence_fingerprint,
+        "issue_codes": list(issues),
+        "notes": current_review.get("notes"),
+        "critic_receipt": critic_receipt,
+        "critic_receipt_ref": str(frame_semantic_review.SUMMARY_REL).replace("\\", "/"),
+        "reused_official_evidence": reused,
+        "verified_at": now(),
+    }
+
+
+def _final_semantic_timeout(timeout: int) -> int:
+    import runtime_timeout_policy
+    return runtime_timeout_policy.resolve("deep_semantic_review", timeout)
 
 
 def depth(q: dict) -> int:
@@ -251,30 +455,42 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
         event_item = dict(item)
         telemetry(ep, "REVIEW_STARTED", event_item, queue_depth=depth(scheduler_core.load_queue(ep)))
         result = item.get("receipt")
-        receipt_match = (isinstance(result, dict)
-                         and result.get("generation_key") == item["generation_key"]
-                         and str(result.get("asset_sha256") or "").lower() == item["artifact_sha256"]
-                         and result.get("model_policy_sha256") == item["model_policy_sha256"])
+        receipt_match = _receipt_matches_item(item, result)
         if not receipt_match:
             try:
-                image = image_scheduler.ROOT / item["artifact_path"]
-                result = await asyncio.to_thread(
-                    fast_frame_scout.evaluate_candidate, ep, int(item["frame"]),
-                    image, codex_raw=codex,
-                    timeout=runtime_timeout_policy_cap(timeout), persist_result=False,
-                    review_context={"generation_key": item["generation_key"],
-                                    "logical_asset_key": item["logical_asset_key"],
-                                    "attempt_index": item["attempt_index"],
-                                    "model_policy_sha256": item["model_policy_sha256"]})
+                if item.get("review_kind") == FINAL_SEMANTIC:
+                    result = await asyncio.to_thread(
+                        _final_semantic_receipt, ep, item, codex=codex,
+                        timeout=_final_semantic_timeout(timeout))
+                else:
+                    image = image_scheduler.ROOT / item["artifact_path"]
+                    result = await asyncio.to_thread(
+                        fast_frame_scout.evaluate_candidate, ep, int(item["frame"]),
+                        image, codex_raw=codex,
+                        timeout=runtime_timeout_policy_cap(timeout), persist_result=False,
+                        review_context={"generation_key": item["generation_key"],
+                                        "logical_asset_key": item["logical_asset_key"],
+                                        "attempt_index": item["attempt_index"],
+                                        "model_policy_sha256": item["model_policy_sha256"]})
             except Exception as exc:
-                result = {"decision": "DEFER_TO_FINAL", "issue_codes": [],
-                          "notes": f"Review technical failure: {exc}",
-                          "scout_status": "technical_defer", "model_called": False}
+                if item.get("review_kind") == FINAL_SEMANTIC:
+                    result = {"review_kind": FINAL_SEMANTIC, "status": "TECH_FAILED",
+                              "review_outcome": "TECH_FAILED", "issue_codes": [],
+                              "notes": f"Final semantic review technical failure: {exc}"}
+                else:
+                    result = {"decision": "DEFER_TO_FINAL", "issue_codes": [],
+                              "notes": f"Review technical failure: {exc}",
+                              "scout_status": "technical_defer", "model_called": False}
         result = dict(result or {})
         result.update(generation_key=item["generation_key"],
                       logical_asset_key=item["logical_asset_key"],
                       attempt_index=item["attempt_index"],
                       model_policy_sha256=item["model_policy_sha256"])
+        if item.get("review_kind") == FINAL_SEMANTIC:
+            result.update(artifact_sha256=item["artifact_sha256"],
+                          review_kind=FINAL_SEMANTIC,
+                          episode_id=item.get("episode_id"),
+                          model_role=item.get("model_role"))
         # Receipt first, completion second: restart adopts this result without another model call.
         with scheduler_core.queue_transaction(ep):
             q = scheduler_core.load_queue(ep)
@@ -285,11 +501,17 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                 scheduler_core.save_queue(ep, q)
         current_sha = current_artifact_sha(int(item["frame"]))
         stale = not current_sha or current_sha.lower() != item["artifact_sha256"]
-        decision = str(result.get("decision") or "DEFER_TO_FINAL")
-        technical = str(result.get("scout_status") or "") == "technical_defer"
-        outcome = ("STALE_EVIDENCE" if stale else "TECH_FAILED" if technical else
-                   "PASS" if decision == "PASS_FAST" else
-                   "REPAIR_NEEDED" if decision == "REPAIR_NOW" else "NEEDS_USER")
+        if item.get("review_kind") == FINAL_SEMANTIC:
+            stale = stale or not _current_final_candidate_matches(ep, item)
+            technical = result.get("review_outcome") == "TECH_FAILED"
+            outcome = ("STALE_EVIDENCE" if stale else
+                       str(result.get("review_outcome") or "TECH_FAILED"))
+        else:
+            decision = str(result.get("decision") or "DEFER_TO_FINAL")
+            technical = str(result.get("scout_status") or "") == "technical_defer"
+            outcome = ("STALE_EVIDENCE" if stale else "TECH_FAILED" if technical else
+                       "PASS" if decision == "PASS_FAST" else
+                       "REPAIR_NEEDED" if decision == "REPAIR_NOW" else "NEEDS_USER")
         result["review_outcome"] = outcome
         terminal = "stale" if stale else "failed" if technical else "finalized"
         with scheduler_core.queue_transaction(ep):
@@ -298,8 +520,8 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                         status=terminal, receipt=result)
             if ok:
                 scheduler_core.save_queue(ep, q)
-                # Keep the legacy latest-per-frame projection only for the current candidate.
-                if not stale:
+                # Keep the legacy latest-per-frame scout projection only for the current candidate.
+                if not stale and item.get("review_kind") != FINAL_SEMANTIC:
                     frame_scout_persistence.save(ep, result)
                 telemetry(ep, "REVIEW_FINISHED", {**item, "status": terminal}, queue_depth=depth(q))
         changed.set()

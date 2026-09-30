@@ -52,7 +52,7 @@ def _invoke_codex_once(ep:Path,contract:dict,prompt_text:str,refs:list[Path],tim
             shutil.copy2(source,target); local_refs.append(target)
         cmd=single_backend.command_prefix(codex)+[
             "exec","--skip-git-repo-check","--ephemeral","--enable","image_generation",
-            *single_backend.controller_args(),'-s',"workspace-write","-C",str(workdir),"--json"
+            *single_backend.controller_args(ep),'-s',"workspace-write","-C",str(workdir),"--json"
         ]
         for ref in local_refs: cmd.extend(["-i",str(ref)])
         cmd.append("-")
@@ -194,6 +194,8 @@ def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|N
             route_name=backend_name
             receipt_data=provider_capability.inspect(
                 row["path"],width,height,model=model,route=route_name,frame=frame)
+            receipt_data.update(single_backend.provider_receipt_model_bindings(
+                ep, model, quality))
             receipt_data["provider_request"]={
                 "batch_id":contract["batch_id"],
                 "provider":provider_evidence.get("provider") or route["provider"],

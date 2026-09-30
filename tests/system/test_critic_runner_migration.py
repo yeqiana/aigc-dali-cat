@@ -62,17 +62,22 @@ class CriticRunnerMigrationTests(unittest.TestCase):
             self.assertIn("critic_runner.launch(", self.source(module))
 
     def test_lane_effort_and_attachment_contracts_preserved(self):
-        # W-88: reasoning effort is no longer a per-lane source literal. Every vision lane
-        # reads it through runtime_router.vision_review_effort(kind), so the values live in
-        # config/storyos.yaml (runtime.review.vision.reasoning_effort_*) instead of drifting
-        # apart across five modules.
+        # Runtime Production fast/final critic calls bind model and effort from the
+        # Episode-frozen policy. Other legacy/review routes retain their lane router.
+        self.assertIn('model_policy.resolve("vision.fast",episode=ep)',
+                      self.source(fast_frame_scout))
+        self.assertIn('model_policy.resolve("vision.final", episode=ep)',
+                      self.source(frame_semantic_review))
+        self.assertIn('"model_policy_sha256":binding["model_policy_sha256"]',
+                      self.source(fast_frame_scout))
         for module, kind in (
-            (fast_frame_scout, "fast"),
-            (frame_semantic_review, "final"),
             (incremental_frame_review, "default"),
             (visual_lock_v21, "final"),
         ):
             self.assertIn(f'runtime_router.vision_review_effort("{kind}")', self.source(module))
+        # Remaining legacy/fallback final routes still use the lane router.
+        self.assertIn('runtime_router.vision_review_effort("final")',
+                      self.source(frame_semantic_review))
         # visual_review_legacy is the only lane still declaring an effort literal directly.
         self.assertIn('reasoning_effort_literal=\'model_reasoning_effort="high"\'',
                       self.source(visual_review_legacy))

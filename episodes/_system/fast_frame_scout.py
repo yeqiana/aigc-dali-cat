@@ -25,6 +25,7 @@ import story_json
 import runtime_timeout_policy
 import production_ledger
 import local_visual_triage
+import model_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_PATH = ("visual", "fast_frame_scout")
@@ -248,19 +249,31 @@ Allowed issue codes: {sorted(ISSUE_CODES)}
         return result
     try:
         codex=resolve_codex(codex_raw)
+        binding=model_policy.resolve("vision.fast",episode=ep)
         log=ep/"meta/frame-scouts"/f"{frame:02d}.jsonl"
         log.parent.mkdir(parents=True,exist_ok=True)
         done=critic_runner.launch(
             prompt,codex=codex,root=ROOT,timeout=timeout,
-            sandbox="workspace-write",model=runtime_router.vision_review_model(),
-            reasoning_effort=runtime_router.vision_review_effort("fast"),
-            attachments=[image],log_path=log)
+            sandbox="workspace-write",model=binding["model"],
+            reasoning_effort=binding["reasoning_effort"],
+            attachments=[image],log_path=log,
+            model_execution_context={
+                "episode":ep,"model_role":"vision.fast","profile":binding["profile"],
+                "model_policy_version":binding["policy_version"],
+                "model_policy_sha256":binding["model_policy_sha256"],
+                "logical_asset_key":(review_context or {}).get("logical_asset_key"),
+                "generation_key":(review_context or {}).get("generation_key"),
+                "attempt_index":(review_context or {}).get("attempt_index"),
+                "artifact_sha256":asset_sha,
+            })
         if done.returncode!=0 or not candidate.is_file():
             raise RuntimeError(f"scout critic failed rc={done.returncode}")
         model=read_json(candidate);candidate.unlink(missing_ok=True)
         errors=_validate_model(model)
         if errors:raise RuntimeError("; ".join(errors))
-        result={**base,**model,"model_called":True,"scout_status":"model_complete","critic_log":log.relative_to(ROOT).as_posix()}
+        result={**base,**model,"model_called":True,"scout_status":"model_complete",
+                "critic_log":log.relative_to(ROOT).as_posix(),
+                "model_execution_receipt":done.model_execution_receipt}
     except Exception as exc:
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":f"Scout technical defer: {exc}","model_called":True,"scout_status":"technical_defer"}
     save_result(ep,result)

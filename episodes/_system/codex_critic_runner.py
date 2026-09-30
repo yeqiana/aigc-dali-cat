@@ -20,12 +20,15 @@ attempt/technical-failure bookkeeping and their own prompts.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import codex_user_runner
 import json
 import os
 import shutil
 import subprocess
 import sys
+import time
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -44,6 +47,7 @@ class LaunchResult:
     actual_dispatch_target: dict | None = None
     scheduler_authorized_target: dict | None = None
     router_proposed_target: dict | None = None
+    model_execution_receipt: str | None = None
 
 
 class ExecutionTargetRejected(RuntimeError):
@@ -171,6 +175,7 @@ def launch(
     execution_target=None,
     dispatch_authorization=None,
     router_proposed_target=None,
+    model_execution_context=None,
 ):
     """Run one critic; returns rc plus the full attempt log text.
 
@@ -206,6 +211,8 @@ def launch(
         output_schema=output_schema,
         extra=extra,
     )
+    started_at = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
+    started_clock = time.perf_counter()
     with resolved_log.open("w", encoding="utf-8", newline="\n") as handle:
         # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: one execution contract for every
         # critic lane. Direct when Story OS already runs as the interactive user,
@@ -219,8 +226,67 @@ def launch(
             check=False,
             task_type="critic",
         )
+    finished_at = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
+    duration_ms = max(0, int((time.perf_counter() - started_clock) * 1000))
     log_text = resolved_log.read_text(encoding="utf-8-sig", errors="replace")
     remote = dict(getattr(done, "remote", {}) or {})
+    receipt_path = None
+    if isinstance(model_execution_context, dict):
+        context = dict(model_execution_context)
+        episode = Path(context.pop("episode")).resolve()
+        import logical_asset_identity
+        import runtime_observability
+        import runtime_trace
+
+        call_id = uuid.uuid4().hex
+        trace_context = runtime_trace.current(episode) or {}
+        selected_model = str(model or "").strip()
+        effort = str(reasoning_effort or "").strip()
+        policy_sha = str(context.pop("model_policy_sha256", "") or "").strip()
+        policy_version = str(context.pop("model_policy_version", "") or "").strip()
+        profile = str(context.pop("profile", "") or "").strip()
+        role = str(context.pop("model_role", "") or "").strip()
+        if not all((selected_model, effort, policy_sha, policy_version, profile, role)):
+            raise ValueError("model execution context requires bound role/profile/model/effort/policy")
+        receipt = {
+            "receipt_schema_version": 1,
+            "episode_id": logical_asset_identity.episode_id(episode),
+            "run_id": str(context.pop("run_id", "") or trace_context.get("run_id") or call_id),
+            "trace_id": str(context.pop("trace_id", "") or trace_context.get("trace_id") or call_id),
+            "step": role,
+            "call_id": call_id,
+            "model_role": role,
+            "profile": profile,
+            "requested_model": selected_model,
+            "effective_model": selected_model,
+            "reasoning_effort": effort,
+            "model_policy_version": policy_version,
+            "model_policy_sha256": policy_sha,
+            "provider": "codex",
+            "runner": "codex_user_runner",
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "duration_ms": duration_ms,
+            "status": "SUCCESS" if int(done.returncode) == 0 else "FAILED",
+            "model_binding_source": "EPISODE_BOUND_POLICY",
+            "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+            **context,
+        }
+        receipt_file = runtime_observability.write_model_execution_receipt(episode, receipt=receipt)
+        receipt_path = receipt_file.relative_to(Path(root).resolve()).as_posix()
+        runtime_observability.safe_record_runtime_event(
+            episode, "MODEL_EXECUTION", episode_id=receipt["episode_id"],
+            run_id=receipt["run_id"], trace_id=receipt["trace_id"],
+            step=role, call_id=call_id, model_role=role, profile=profile,
+            requested_model=selected_model, effective_model=selected_model,
+            reasoning_effort=effort, model_policy_version=policy_version,
+            model_policy_sha256=policy_sha, provider="codex", runner="codex_user_runner",
+            started_at=started_at, finished_at=finished_at, duration_ms=duration_ms,
+            status=receipt["status"], effective_model_source="EXPLICIT_RUNTIME_BINDING",
+            logical_asset_key=receipt.get("logical_asset_key"),
+            attempt_index=receipt.get("attempt_index"), generation_key=receipt.get("generation_key"),
+            source="codex_critic_runner", evidence_ref=receipt_path,
+        )
     authorized_target = ((dispatch_authorization or {}).get("execution_target")
                          if dispatch_authorization else None)
     return LaunchResult(returncode=done.returncode, log_path=resolved_log,
@@ -229,7 +295,8 @@ def launch(
                         execution_target=dict(execution_target) if execution_target else None,
                         actual_dispatch_target=dict(execution_target) if execution_target else None,
                         scheduler_authorized_target=dict(authorized_target) if authorized_target else None,
-                        router_proposed_target=dict(router_proposed_target) if router_proposed_target else None)
+                        router_proposed_target=dict(router_proposed_target) if router_proposed_target else None,
+                        model_execution_receipt=receipt_path)
 
 
 def parse_json_text(text):

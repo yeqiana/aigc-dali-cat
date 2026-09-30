@@ -2239,16 +2239,29 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
             phashes=phashes,
         )
     log = ep / "meta" / f"frame-semantic-critic-attempt-{attempt}.jsonl"
+    critic_binding = model_policy.resolve("vision.final", episode=ep)
+    critic_asset = frames[0] if frames else {}
     completed = critic_runner.launch(
         critic_prompt(ep, frames, candidate, attempt),
         codex=codex,
         root=ROOT,
         timeout=timeout,
         sandbox="workspace-write",
-        model=runtime_router.vision_review_model(),
-        reasoning_effort=runtime_router.vision_review_effort("final"),
+        model=critic_binding["model"],
+        reasoning_effort=critic_binding["reasoning_effort"],
         attachments=[row["path"] for row in frames],
         log_path=log,
+        model_execution_context={
+            "episode": ep,
+            "model_role": "vision.final",
+            "profile": critic_binding["profile"],
+            "model_policy_version": critic_binding["policy_version"],
+            "model_policy_sha256": critic_binding["model_policy_sha256"],
+            "logical_asset_key": critic_asset.get("logical_asset_key"),
+            "generation_key": critic_asset.get("generation_key"),
+            "attempt_index": attempt,
+            "artifact_sha256": critic_asset.get("sha256"),
+        },
     )
     if completed.returncode != 0:
         raise RuntimeError(f"isolated frame semantic critic failed rc={completed.returncode}; log={log}")
@@ -2271,6 +2284,7 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
         attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope="FULL_FRAME_SET"
     )
     provenance["anatomy_integrity_enforced"] = True
+    provenance["model_execution_receipt"] = completed.model_execution_receipt
     if candidate_gate:
         return _apply_candidate_gate(
             ep,
