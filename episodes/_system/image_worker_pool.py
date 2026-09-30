@@ -13,7 +13,6 @@ import uuid
 from pathlib import Path
 
 import codex_subscription_image as backend
-import fast_frame_scout as frame_scout
 import image_model_policy
 import prompt_package
 import runtime_trace
@@ -144,12 +143,9 @@ def execute(ep,item,timeout,codex):
         return result
     runtime_circuit_breaker.record_success(ep,"image")
 
+    # Review belongs to the independent durable Review Lane. Keep the worker
+    # critical path limited to generation and artifact commit.
     scout=None
-    if out.is_file() and frame_scout.required(ep) and not bool(item.get("_defer_scout")):
-        try:
-            scout=frame_scout.evaluate_candidate(ep,frame,out,codex_raw=codex,timeout=runtime_timeout_policy.clamp("fast_scout",timeout))
-        except Exception as exc:
-            scout={"decision":"UNCERTAIN","reason":"scout_technical_failure","error":str(exc),"candidate_committed":True}
     runtime_trace.end_span(ep,trace_span,name=f"image.generate.frame.{frame:02d}",category="image_generation",status="PASS",started_monotonic=trace_started,trace_id=trace_id,run_id=trace_run_id,attrs={"frame":frame,"backend":payload.get("backend"),"candidate_committed":True})
     result={"returncode":0,"stdout":"","payload":payload,"output":out,"log":log,"attempt":attempt,"scout":scout,"candidate_budget":commit_row,"prompt_package":{"package_sha256":package["package_sha256"],"scene_prompt_sha256":package["scene_prompt_sha256"],"frame_contract_sha256":package["frame_contract_sha256"]},"worker_pool":{"mode":MODE,"codex_session_reuse":False}}
     production_recovery.write_lifecycle(ep, item, "SUCCEEDED", worker_pid=os.getpid(), result=result)

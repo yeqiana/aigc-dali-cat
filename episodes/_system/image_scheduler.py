@@ -46,12 +46,14 @@ import production_recovery
 import production_ledger
 import runtime_timeout_policy
 import local_visual_triage
+import review_queue
+import logical_asset_identity
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
 
 
-def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duration_ms=None,wait_ms=None,status=None,failure_class=None)->None:
+def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duration_ms=None,wait_ms=None,status=None,failure_class=None,review_queue_depth=None)->None:
     """Emit best-effort image lifecycle telemetry without changing scheduler decisions."""
     try:
         from logical_asset_identity import episode_id, frame_asset_key
@@ -67,6 +69,7 @@ def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duratio
             attempt_index=max(1,int(item.get("attempts") or 1)),generation_key=None,
             queue_name="repair" if item.get("scope")=="repair" else "image",
             queue_depth=queue_depth,duration_ms=duration_ms,wait_ms=wait_ms,
+            review_queue_depth_at_dispatch=review_queue_depth if event_type in {"WORKER_ADMITTED", "WORKER_DISPATCH_COMMITTED"} else None,
             status=status,failure_class=failure_class,source="image_scheduler",
             evidence_ref=item.get("provider_receipt") or item.get("id"),
             controller_model=controller.get("model"),controller_effort=controller.get("reasoning_effort"),
@@ -495,9 +498,25 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
     q=load_queue(ep)
     production_recovery.reconcile_locked(ep,q)
     scheduler_core.terminalize_superseded_history(ep,q)
+    review_enabled=frame_scout.required(ep)
+    review_cfg=storyos_config.get_path(_CONFIG,"production.review",{})
+    review_changed=asyncio.Event();review_progress=asyncio.Event();review_stop=asyncio.Event()
+    if review_enabled:
+        review_queue.recover_claims(q)
+        try:
+            review_policy=model_policy.resolve("vision.fast",episode=ep)
+            review_queue.reconcile_generated(q,episode=ep,policy=review_policy,
+                sha256_file=frame_scout.sha256_file)
+        except Exception:
+            review_policy=None
     save_queue(ep,q)
     ready,_=ready_items(ep,q)
     if not ready:
+        if review_enabled and review_queue.depth(q):
+            review_stop.set();review_changed.set()
+            await review_queue.run_lane(ep,changed=review_changed,progress=review_progress,
+                stop=review_stop,codex=codex,timeout=timeout,
+                max_inflight=int(review_cfg.get("max_inflight",2)))
         statuses={x.get("status") for x in q.get("items") or []}
         return 22 if "blocked" in statuses else (22 if "interrupted_unknown" in statuses else (24 if "running" in statuses else (20 if "queued" in statuses else 0)))
 
@@ -509,6 +528,10 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC
     max_workers=max(1,min(MAX_SUPPORTED_WORKERS,max_workers))
     initial_workers=max_workers
+    review_task=(asyncio.create_task(review_queue.run_lane(
+        ep,changed=review_changed,progress=review_progress,stop=review_stop,codex=codex,
+        timeout=timeout,max_inflight=int(review_cfg.get("max_inflight",2))))
+        if review_enabled else None)
 
     # STORY_OS_EP002_G2_REPAIR_CONCURRENCY (image lane only):
     # Repair items are independent, already-authorized one-shot content repairs.
@@ -537,6 +560,32 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         if limit<=0:
             return []
         q=load_queue(ep)
+        if review_enabled:
+            paused,transition=review_queue.backpressure(
+                q,high=int(review_cfg.get("queue_high_watermark",6)),
+                low=int(review_cfg.get("queue_low_watermark",2)))
+            if transition:
+                event="GENERATION_REFILL_PAUSED" if transition=="PAUSED" else "GENERATION_REFILL_RESUMED"
+                runtime_observability.safe_record_runtime_event(ep,event,
+                    review_queue_depth=review_queue.depth(q),
+                    high_watermark=int(review_cfg.get("queue_high_watermark",6)),
+                    low_watermark=int(review_cfg.get("queue_low_watermark",2)),
+                    oldest_review_wait_ms=review_queue.oldest_wait_ms(q),source="image_scheduler")
+                save_queue(ep,q)
+            while paused:
+                review_progress.clear()
+                await review_progress.wait()
+                q=load_queue(ep)
+                paused,transition=review_queue.backpressure(
+                    q,high=int(review_cfg.get("queue_high_watermark",6)),
+                    low=int(review_cfg.get("queue_low_watermark",2)))
+                if transition:
+                    runtime_observability.safe_record_runtime_event(ep,"GENERATION_REFILL_RESUMED",
+                        review_queue_depth=review_queue.depth(q),
+                        high_watermark=int(review_cfg.get("queue_high_watermark",6)),
+                        low_watermark=int(review_cfg.get("queue_low_watermark",2)),
+                        oldest_review_wait_ms=review_queue.oldest_wait_ms(q),source="image_scheduler")
+                save_queue(ep,q)
         ready,_=ready_items(ep,q)
         admitted=[]
         budget = raw_candidate_budget.summary(ep, pending=len(ready))
@@ -566,8 +615,15 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             row["status"]="running"
             row["attempts"]=int(row.get("attempts") or 0)+1
             row["started_at"]=now()
+            row["review_queue_depth_at_dispatch"]=review_queue.depth(q)
             _telemetry_image(ep,row,"WORKER_ADMITTED",queue_depth=max(0,len(ready)-len(admitted)-1),
-                             wait_ms=_observed_ms(row.get("queued_at"),row.get("started_at")),status="committed")
+                             wait_ms=_observed_ms(row.get("queued_at"),row.get("started_at")),status="committed",
+                             review_queue_depth=review_queue.depth(q))
+            runtime_observability.safe_record_runtime_event(ep,"GENERATION_WORK_DISPATCHED",
+                logical_asset_key=logical_asset_identity.frame_asset_key(ep,row["frame"]),
+                generation_key=production_recovery.generation_key_for_item(ep,row),
+                queue_item_id=row.get("id"),
+                review_queue_depth_at_dispatch=review_queue.depth(q),source="image_scheduler")
             production_recovery.mark_worker_pending(ep,row)
             inflight+=1
             admitted.append(row)
@@ -641,6 +697,11 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 _telemetry_image(ep,obs_item,"ARTIFACT_COMMITTED",duration_ms=_observed_ms(observed_at,now()),status="committed")
                 if item.get("scope")=="repair":
                     _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status="generated")
+                if review_enabled:
+                    queued=review_queue.enqueue_generated(q,episode=ep,source_item=item,
+                        artifact=Path(result["output"]),artifact_path=item["output_path"])
+                    if queued.get("status")=="ENQUEUED":
+                        review_changed.set()
             else:
                 if not msg:
                     msg="image backend failed without terminal output"
@@ -697,6 +758,10 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
 
     await scheduler_core.run_execution_loop(
         [],handler,consume,workers=max_workers,admit=admit_more,completed=completed)
+
+    if review_task:
+        review_stop.set();review_changed.set()
+        await review_task
 
     final_q=load_queue(ep)
     rc=_scheduler_terminal_rc(final_q,has_block=has_block,has_failure=has_failure,ep=ep)

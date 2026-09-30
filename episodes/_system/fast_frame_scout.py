@@ -176,7 +176,8 @@ def _validate_model(data:dict)->list[str]:
     return errors
 
 
-def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=None,timeout:int|None=None)->dict:
+def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=None,timeout:int|None=None,
+                       persist_result:bool=True,review_context:dict|None=None)->dict:
     image=repo_file(str(image))
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("fast_scout")
@@ -192,13 +193,15 @@ def evaluate_candidate(ep:Path,frame:int,image:Path|str,*,codex_raw:str|None=Non
         "asset_sha256":asset_sha,
         "scouted_at":now(),
         "final_critic_still_required":True,
+        **(review_context or {}),
     }
+    save_result = _save_result if persist_result else (lambda _episode, _result: {"persisted": False})
     if not required(ep):
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":"Scout policy disabled for this episode.","model_called":False,"scout_status":"disabled"}
-        _save_result(ep,result);return result
+        save_result(ep,result);return result
     if risk["risk_level"]=="LOW":
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":"Low-risk frame: skip extra critic call; final critic remains authoritative.","model_called":False,"scout_status":"low_risk_defer"}
-        _save_result(ep,result);return result
+        save_result(ep,result);return result
 
     candidate=_candidate_path(ep,frame,asset_sha);candidate.unlink(missing_ok=True)
     rel_out=candidate.relative_to(ROOT).as_posix()
@@ -241,7 +244,7 @@ Allowed issue codes: {sorted(ISSUE_CODES)}
             "model_called":False,
             "scout_status":"vision_runtime_defer",
         }
-        _save_result(ep,result)
+        save_result(ep,result)
         return result
     try:
         codex=resolve_codex(codex_raw)
@@ -260,7 +263,7 @@ Allowed issue codes: {sorted(ISSUE_CODES)}
         result={**base,**model,"model_called":True,"scout_status":"model_complete","critic_log":log.relative_to(ROOT).as_posix()}
     except Exception as exc:
         result={**base,"decision":"DEFER_TO_FINAL","issue_codes":[],"notes":f"Scout technical defer: {exc}","model_called":True,"scout_status":"technical_defer"}
-    _save_result(ep,result)
+    save_result(ep,result)
     return result
 
 

@@ -31,6 +31,8 @@ import runtime_observability
 import runtime_timeout_policy
 import episode_performance
 import local_visual_triage
+import review_queue
+import logical_asset_identity
 CAPABILITY_WAIT=24
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -178,10 +180,54 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     q=load_queue(ep)
     production_recovery.reconcile_locked(ep,q)
     scheduler_core.terminalize_superseded_history(ep,q)
+    review_enabled=frame_scout.required(ep)
+    review_cfg=storyos_config.get_path(storyos_config.load_config(),"production.review",{})
+    review_changed=asyncio.Event();review_progress=asyncio.Event();review_stop=asyncio.Event()
+    if review_enabled:
+        review_queue.recover_claims(q)
+        try:
+            review_policy=model_policy.resolve("vision.fast",episode=ep)
+            review_queue.reconcile_generated(q,episode=ep,policy=review_policy,
+                sha256_file=frame_scout.sha256_file)
+        except Exception:
+            pass
     save_queue(ep,q)
     ready=ready_items(ep,q)
     if not ready:
+        if review_enabled and review_queue.depth(q):
+            review_stop.set();review_changed.set()
+            await review_queue.run_lane(ep,changed=review_changed,progress=review_progress,
+                stop=review_stop,codex=codex,timeout=timeout,
+                max_inflight=int(review_cfg.get("max_inflight",2)))
         return SUCCESS
+
+    review_task=None
+    if review_enabled:
+        high=int(review_cfg.get("queue_high_watermark",6))
+        low=int(review_cfg.get("queue_low_watermark",2))
+        paused,transition=review_queue.backpressure(q,high=high,low=low)
+        if transition:
+            runtime_observability.safe_record_runtime_event(ep,"GENERATION_REFILL_PAUSED",
+                review_queue_depth=review_queue.depth(q),high_watermark=high,
+                low_watermark=low,oldest_review_wait_ms=review_queue.oldest_wait_ms(q),
+                source="batch_scheduler")
+            save_queue(ep,q)
+        if paused:
+            review_task=asyncio.create_task(review_queue.run_lane(
+                ep,changed=review_changed,progress=review_progress,stop=review_stop,
+                codex=codex,timeout=timeout,max_inflight=int(review_cfg.get("max_inflight",2))))
+            review_changed.set()
+            while paused:
+                review_progress.clear()
+                await review_progress.wait()
+                q=load_queue(ep)
+                paused,transition=review_queue.backpressure(q,high=high,low=low)
+                if transition:
+                    runtime_observability.safe_record_runtime_event(ep,"GENERATION_REFILL_RESUMED",
+                        review_queue_depth=review_queue.depth(q),high_watermark=high,
+                        low_watermark=low,oldest_review_wait_ms=review_queue.oldest_wait_ms(q),
+                        source="batch_scheduler")
+                save_queue(ep,q)
 
     # V2.7 async runtime only executes workers. Scheduler still owns the
     # queue/ledger state transition. Never leave a successful worker event as
@@ -207,6 +253,10 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         q["image_lane"] = {"status": "CAPABILITY_WAIT", "reason": "IMAGE_TOOL_UNAVAILABLE", "at": now()}
         save_queue(ep,q)
         return CAPABILITY_WAIT
+    review_task=review_task or (asyncio.create_task(review_queue.run_lane(
+        ep,changed=review_changed,progress=review_progress,stop=review_stop,codex=codex,
+        timeout=timeout,max_inflight=int(review_cfg.get("max_inflight",2))))
+        if review_enabled else None)
     q.pop("image_lane", None)
     q_by_id={x["id"]:x for x in q.get("items") or []}
     started=[]
@@ -229,6 +279,12 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
         row["started_at"]=now()
         row["batch_id"]=batch_id
         row["_defer_scout"]=True
+        row["review_queue_depth_at_dispatch"]=review_queue.depth(q)
+        runtime_observability.safe_record_runtime_event(ep,"GENERATION_WORK_DISPATCHED",
+            logical_asset_key=logical_asset_identity.frame_asset_key(ep,row["frame"]),
+            generation_key=production_recovery.generation_key_for_item(ep,row),
+            queue_item_id=row.get("id"),
+            review_queue_depth_at_dispatch=review_queue.depth(q),source="batch_scheduler")
         production_recovery.mark_worker_pending(ep,row)
         started.append(row)
     save_queue(ep,q)
@@ -296,6 +352,10 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
                         successful_results+=1
                         production_recovery.mark_terminal(ep,item,"COMMITTED")
                         episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
+                        if review_enabled:
+                            review_queue.enqueue_generated(q,episode=ep,source_item=item,
+                                artifact=Path(result["output"]),artifact_path=item["output_path"])
+                            review_changed.set()
                     elif not triage.get("block_commit"):
                         # The backend already produced pixels; keep the open
                         # attempt/candidate for reconciliation, never regenerate.
@@ -384,25 +444,28 @@ async def _run_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
             single_http_request=native_completed,
         )
 
-    # Scout starts only after every submitted original is terminal. It cannot
-    # grant final PASS, and its own technical failure does not stop sibling work.
+    if review_task:
+        review_stop.set();review_changed.set()
+        await review_task
+    # Preserve the existing post-batch repair assessment. Review itself has
+    # already run asynchronously and is adopted by generation_key + artifact SHA.
     q=load_queue(ep)
     submitted={x["id"] for x in started}
     for item in q.get("items") or []:
         if item.get("id") not in submitted or item.get("status")!="generated": continue
-        if frame_scout.required(ep):
-            try:
-                scout=await asyncio.to_thread(frame_scout.evaluate_candidate,ep,int(item["frame"]),
-                    ROOT/item["output_path"],codex_raw=codex,timeout=runtime_timeout_policy.cap("fast_scout",timeout))
-                item["scout"]=scout
-                decision=batch_repair_arbiter.assess(ep,int(item["frame"]),scout,
-                    batch_complete=True,batch_id=str(item.get("batch_id") or "ASYNC"))
-                if decision["action"] in {"SINGLE_REPAIR","EARLY_SINGLE_REPAIR"}:
-                    applied=batch_repair_arbiter.apply(ep,decision)
-                    item["repair_assessment"]=applied
-                    if applied["ledger_repair_authorized"]: item["status"]="scout_repair"
-            except Exception as exc:
-                item["scout"]={"decision":"DEFER_TO_FINAL","notes":str(exc),"final_critic_still_required":True}
+        generation_key=production_recovery.generation_key_for_item(ep,item)
+        review_item=next((row for row in q.get(review_queue.QUEUE_KEY,[])
+                          if row.get("generation_key")==generation_key
+                          and row.get("artifact_sha256") and row.get("frame")==int(item["frame"])),None)
+        scout=(review_item or {}).get("receipt")
+        if scout:
+            item["scout"]=scout
+            decision=batch_repair_arbiter.assess(ep,int(item["frame"]),scout,
+                batch_complete=True,batch_id=str(item.get("batch_id") or "ASYNC"))
+            if decision["action"] in {"SINGLE_REPAIR","EARLY_SINGLE_REPAIR"}:
+                applied=batch_repair_arbiter.apply(ep,decision)
+                item["repair_assessment"]=applied
+                if applied["ledger_repair_authorized"]: item["status"]="scout_repair"
         item.pop("_defer_scout",None)
     save_queue(ep,q)
     perf=runtime_observability.read_summary(ep,runtime_observability.BATCH_RUNTIME_PERFORMANCE_REL,default={"schema_version":1,"batches":[]})
