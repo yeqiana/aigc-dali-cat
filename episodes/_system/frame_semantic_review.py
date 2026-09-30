@@ -887,6 +887,121 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
     )
 
 
+def recover_completed_shards_after_parent_timeout(ep: Path, *, attempt: int) -> int | None:
+    """Recover completed local-failure shards without re-running Vision.
+
+    The previous parent may have timed out after every shard wrote a valid
+    candidate but before the merged candidate/evidence was committed. Recovery
+    is allowed only when the pending request still binds the exact current
+    assets and Story/Storyboard/visual contexts. All-local-PASS still requires
+    the global closure critic and therefore is not synthesized here.
+    """
+    ep = Path(ep).resolve()
+    request_path = pending_request_path(ep, attempt)
+    if not request_path.is_file():
+        return None
+
+    current = reviewable_frame_records(ep, require_files=True)
+    pending = read_json(request_path)
+    expected_assets = pending.get("assets")
+    actual_assets = [
+        {"frame": row["frame"], "path": row["path_rel"], "sha256": row["sha256"]}
+        for row in current
+    ]
+    if expected_assets != actual_assets or pending.get("contexts") != context_hashes(ep):
+        return None
+    binding_errors = reviewable_phase4_binding_errors(ep, current)
+    if binding_errors:
+        return None
+
+    shards = _full_review_shards(current)
+    if len(shards) < 2:
+        return None
+
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    results = []
+    for shard in shards:
+        index = int(shard["index"])
+        candidate = ep / "meta" / f".frame-semantic-shard-{attempt}-{index}.candidate.json"
+        log = ep / "meta" / f"frame-semantic-critic-attempt-{attempt}-shard-{index}.jsonl"
+        if not candidate.is_file() or not log.is_file():
+            return None
+        data = read_json(candidate)
+        errors = validate_candidate_gate_rows(
+            data.get("frames"), shard["selected"], version, directing_v3)
+        global_codes = data.get("issue_codes")
+        if not isinstance(global_codes, list):
+            errors.append("global issue_codes must be list")
+        else:
+            unknown = [code for code in global_codes if code not in ISSUE_CODES]
+            if unknown:
+                errors.append(f"global issue_codes contain unknown values: {unknown}")
+        decisions = [
+            str(row.get("decision") or "")
+            for row in (data.get("frames") or [])
+            if isinstance(row, dict)
+        ]
+        expected_summary = bool(decisions) and all(value == "pass" for value in decisions)
+        if (data.get("summary") or {}).get("passed") is not expected_summary:
+            errors.append("critic summary.passed does not match shard frame decisions")
+        if errors:
+            return None
+        results.append({
+            "index": index,
+            "target_frames": list(shard["target_frames"]),
+            "context_frames": list(shard["context_frames"]),
+            "selected_frames": [row["frame"] for row in shard["selected"]],
+            "candidate_path": repo_rel(candidate),
+            "candidate_sha256": sha256_file(candidate),
+            "log_path": repo_rel(log),
+            "data": data,
+        })
+
+    merged = _merge_full_review_shards(results, current)
+    if bool((merged.get("summary") or {}).get("passed")):
+        # A local PASS still needs the global closure critic. Never fabricate it.
+        return None
+    merge_errors = validate_candidate_gate_rows(
+        merged.get("frames"), current, version, directing_v3)
+    if merge_errors:
+        return None
+
+    candidate = ep / CANDIDATE_REL
+    write_json(candidate, merged)
+    frozen_sources = review_source_bindings(ep, current)
+    evidence_path = ep / "meta" / f"frame-semantic-sharded-attempt-{attempt}.json"
+    write_json(evidence_path, {
+        "schema_version": 2,
+        "attempt": attempt,
+        "review_scope": "SHARDED_FULL_FRAME_SET",
+        "recorded_at": now(),
+        "shard_count": len(results),
+        # Parent timeout means the exact observed peak is unavailable here.
+        "max_review_inflight": 0,
+        "target_coverage": [row["frame"] for row in current],
+        "candidate_path": repo_rel(candidate),
+        "candidate_sha256": sha256_file(candidate),
+        "source_bindings_sha256": sha256_json(frozen_sources),
+        "recovered_after_parent_timeout": True,
+        "global_closure": {
+            "status": "SKIPPED_LOCAL_FAILURE",
+            "anchor_frames": [],
+            "reason": "one or more local shard observations already failed",
+        },
+        "shards": [{
+            "index": result["index"],
+            "target_frames": result["target_frames"],
+            "context_frames": result["context_frames"],
+            "selected_frames": result["selected_frames"],
+            "candidate_path": result["candidate_path"],
+            "candidate_sha256": result["candidate_sha256"],
+            "log_path": result["log_path"],
+        } for result in results],
+    })
+    return apply_pending_candidate(ep, attempt=attempt)
+
+
 def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False, ep: Path | None = None) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
@@ -1943,6 +2058,12 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
         "storyboard": sha256_file(storyboard),
         "visual": sha256_json(stable_visual_contract(ep)),
     }
+
+    if len(frames) >= FULL_REVIEW_FANOUT_MIN_FRAMES:
+        recovered = recover_completed_shards_after_parent_timeout(ep, attempt=attempt)
+        if recovered is not None:
+            print("FRAME SEMANTIC REVIEW RECOVERED: completed shards committed after parent timeout")
+            return recovered
 
     # Advisory Final Semantic Critic gets a distinct Product Review request.
     # It is prepared from the same frozen frame set before canonical review,

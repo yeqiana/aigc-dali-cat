@@ -397,6 +397,117 @@ def test_global_closure_fail_marks_only_affected_boundary_frames():
     assert out["summary"]["passed"] is False
 
 
+def test_completed_local_failure_shards_recover_after_parent_timeout(tmp_path):
+    ep = tmp_path
+    (ep / "meta").mkdir(parents=True)
+    frames = [
+        {"frame": "01", "path": ep / "01.png", "path_rel": "01.png", "sha256": "1" * 64},
+        {"frame": "02", "path": ep / "02.png", "path_rel": "02.png", "sha256": "2" * 64},
+    ]
+    for row in frames:
+        row["path"].write_bytes(row["frame"].encode())
+    shards = [
+        {"index": 1, "target_frames": ["01"], "context_frames": ["02"], "selected": frames},
+        {"index": 2, "target_frames": ["02"], "context_frames": ["01"], "selected": frames},
+    ]
+    first = {
+        "frames": [
+            _review_row("01", decision="fail", failed_check="visual_memory_continuity", code="VISUAL_MEMORY_BROKEN"),
+            _review_row("02"),
+        ],
+        "issue_codes": ["VISUAL_MEMORY_BROKEN"],
+        "summary": {"passed": False},
+    }
+    second = {
+        "frames": [_review_row("01"), _review_row("02")],
+        "issue_codes": [],
+        "summary": {"passed": True},
+    }
+    for index, data in [(1, first), (2, second)]:
+        (ep / "meta" / f".frame-semantic-shard-1-{index}.candidate.json").write_text(
+            json.dumps(data), encoding="utf-8")
+        (ep / "meta" / f"frame-semantic-critic-attempt-1-shard-{index}.jsonl").touch()
+
+    pending = {
+        "schema_version": 1,
+        "attempt": 1,
+        "contexts": {"story_sha256": "s"},
+        "assets": [
+            {"frame": row["frame"], "path": row["path_rel"], "sha256": row["sha256"]}
+            for row in frames
+        ],
+    }
+    (ep / "meta" / "frame-semantic-pending-attempt-1.json").write_text(
+        json.dumps(pending), encoding="utf-8")
+
+    with patch.object(frame_semantic_review, "reviewable_frame_records", return_value=frames), \
+            patch.object(frame_semantic_review, "context_hashes", return_value={"story_sha256": "s"}), \
+            patch.object(frame_semantic_review, "reviewable_phase4_binding_errors", return_value=[]), \
+            patch.object(frame_semantic_review, "_full_review_shards", return_value=shards), \
+            patch.object(frame_semantic_review, "episode_contract_version", return_value="test"), \
+            patch.object(frame_semantic_review, "directing_v3_required", return_value=False), \
+            patch.object(frame_semantic_review, "review_source_bindings", return_value={}), \
+            patch.object(frame_semantic_review, "repo_rel", side_effect=lambda p: str(Path(p))), \
+            patch.object(frame_semantic_review, "apply_pending_candidate", return_value=2) as apply:
+        rc = frame_semantic_review.recover_completed_shards_after_parent_timeout(ep, attempt=1)
+
+    assert rc == 2
+    apply.assert_called_once_with(ep.resolve(), attempt=1)
+    merged = json.loads((ep / frame_semantic_review.CANDIDATE_REL).read_text(encoding="utf-8"))
+    assert merged["summary"]["passed"] is False
+    evidence = json.loads((ep / "meta/frame-semantic-sharded-attempt-1.json").read_text(encoding="utf-8"))
+    assert evidence["recovered_after_parent_timeout"] is True
+    assert evidence["global_closure"]["status"] == "SKIPPED_LOCAL_FAILURE"
+    assert evidence["max_review_inflight"] == 0
+
+
+def test_completed_all_pass_shards_do_not_skip_global_closure(tmp_path):
+    ep = tmp_path
+    (ep / "meta").mkdir(parents=True)
+    frames = [
+        {"frame": "01", "path": ep / "01.png", "path_rel": "01.png", "sha256": "1" * 64},
+        {"frame": "02", "path": ep / "02.png", "path_rel": "02.png", "sha256": "2" * 64},
+    ]
+    for row in frames:
+        row["path"].write_bytes(row["frame"].encode())
+    shards = [
+        {"index": 1, "target_frames": ["01"], "context_frames": ["02"], "selected": frames},
+        {"index": 2, "target_frames": ["02"], "context_frames": ["01"], "selected": frames},
+    ]
+    data = {
+        "frames": [_review_row("01"), _review_row("02")],
+        "issue_codes": [],
+        "summary": {"passed": True},
+    }
+    for index in (1, 2):
+        (ep / "meta" / f".frame-semantic-shard-1-{index}.candidate.json").write_text(
+            json.dumps(data), encoding="utf-8")
+        (ep / "meta" / f"frame-semantic-critic-attempt-1-shard-{index}.jsonl").touch()
+    (ep / "meta" / "frame-semantic-pending-attempt-1.json").write_text(json.dumps({
+        "schema_version": 1,
+        "attempt": 1,
+        "contexts": {},
+        "assets": [
+            {"frame": row["frame"], "path": row["path_rel"], "sha256": row["sha256"]}
+            for row in frames
+        ],
+    }), encoding="utf-8")
+
+    with patch.object(frame_semantic_review, "reviewable_frame_records", return_value=frames), \
+            patch.object(frame_semantic_review, "context_hashes", return_value={}), \
+            patch.object(frame_semantic_review, "reviewable_phase4_binding_errors", return_value=[]), \
+            patch.object(frame_semantic_review, "_full_review_shards", return_value=shards), \
+            patch.object(frame_semantic_review, "episode_contract_version", return_value="test"), \
+            patch.object(frame_semantic_review, "directing_v3_required", return_value=False), \
+            patch.object(frame_semantic_review, "repo_rel", side_effect=lambda p: str(Path(p))), \
+            patch.object(frame_semantic_review, "apply_pending_candidate") as apply:
+        rc = frame_semantic_review.recover_completed_shards_after_parent_timeout(ep, attempt=1)
+
+    assert rc is None
+    apply.assert_not_called()
+    assert not (ep / frame_semantic_review.CANDIDATE_REL).exists()
+
+
 def test_run_critic_uses_sharded_path_for_large_full_review():
     frames = [
         {"frame": f"{i:02d}", "path": Path(f"{i}.png"), "path_rel": f"{i}.png", "sha256": f"{i:064x}"[-64:]}
