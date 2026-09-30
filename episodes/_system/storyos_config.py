@@ -71,25 +71,94 @@ def get_path(data: dict, dotted: str, default: Any = None) -> Any:
     return value
 
 
+_REQUIRED_MODEL_PROFILES = {
+    "orchestration", "authoring", "structured_text", "semantic_critic",
+    "final_semantic", "vision_fast", "vision_final", "image_controller",
+    "image_payload",
+}
+_REQUIRED_ROLE_ALIASES = {
+    "orchestration": "orchestration",
+    "story.authoring": "authoring",
+    "preimage.character_finalize": "structured_text",
+    "preimage.world_prepare": "structured_text",
+    "preimage.frame_contract": "structured_text",
+    "preimage.visual_narrative": "authoring",
+    "prompt.production": "structured_text",
+    "prompt.repair": "structured_text",
+    "release": "structured_text",
+    "critic.story": "semantic_critic",
+    "critic.preimage": "semantic_critic",
+    "critic.final": "final_semantic",
+    "vision.fast": "vision_fast",
+    "guardian": "vision_fast",
+    "vision.visual_lock": "vision_final",
+    "vision.final": "vision_final",
+    "image.controller": "image_controller",
+    "image.payload": "image_payload",
+}
+
+
+def _validate_model_policy(cfg: dict) -> list[str]:
+    errors: list[str] = []
+    policy = get_path(cfg, "models")
+    if not isinstance(policy, dict):
+        return ["models must be a mapping"]
+    if not isinstance(policy.get("policy_version"), str) or not policy["policy_version"].strip():
+        errors.append("models.policy_version must be a non-empty string")
+    profiles = policy.get("profiles")
+    if not isinstance(profiles, dict):
+        return errors + ["models.profiles must be a mapping"]
+    missing = _REQUIRED_MODEL_PROFILES - profiles.keys()
+    if missing:
+        errors.append("models.profiles missing required profiles: " + ", ".join(sorted(missing)))
+    for name, profile in profiles.items():
+        if not isinstance(profile, dict):
+            errors.append(f"models.profiles.{name} must be a mapping")
+            continue
+        model = profile.get("model")
+        if not isinstance(model, str) or not model.strip():
+            errors.append(f"models.profiles.{name}.model must be a non-empty model id")
+        if name == "image_payload":
+            if profile.get("quality") != "high":
+                errors.append("models.profiles.image_payload.quality must be high")
+            fallback = profile.get("fallback_models")
+            if not isinstance(fallback, list) or any(not isinstance(item, str) or not item.strip() for item in fallback):
+                errors.append("models.profiles.image_payload.fallback_models must be a list of non-empty model ids")
+            elif len(fallback) != len(set(fallback)) or model in fallback:
+                errors.append("models.profiles.image_payload.fallback_models must be unique and exclude the primary model")
+        else:
+            if profile.get("reasoning_effort") not in {"low", "medium", "high"}:
+                errors.append(f"models.profiles.{name}.reasoning_effort must be low, medium or high")
+    aliases = policy.get("role_aliases")
+    if not isinstance(aliases, dict):
+        errors.append("models.role_aliases must be a mapping")
+        return errors
+    for role, expected in _REQUIRED_ROLE_ALIASES.items():
+        if aliases.get(role) != expected:
+            errors.append(f"models.role_aliases.{role} must map to {expected}")
+    for role, profile in aliases.items():
+        if not isinstance(role, str) or not role.strip() or not isinstance(profile, str) or profile not in profiles:
+            errors.append(f"models.role_aliases.{role} must reference a configured profile")
+    missing_value = object()
+    for path in (
+        "image.model", "image.quality", "image.fallback_models",
+        "runtime.codex_image_controller_model", "runtime.codex_image_reasoning_effort",
+        "runtime.review.text.model", "runtime.review.vision.model",
+        "runtime.review.vision.reasoning_effort_default",
+        "runtime.review.vision.reasoning_effort_fast",
+        "runtime.review.vision.reasoning_effort_final",
+    ):
+        if get_path(cfg, path, missing_value) is not missing_value:
+            errors.append(f"{path} is a legacy business model selector; use models.profiles and models.role_aliases")
+    return errors
+
+
 def validate(data: dict | None = None) -> list[str]:
     cfg = data or _load(CONFIG_PATH)
     errors: list[str] = []
     if cfg.get("schema_version") != 1:
         errors.append("schema_version must be 1")
-    if not isinstance(get_path(cfg, "image.model"), str) or not get_path(cfg, "image.model").strip():
-        errors.append("image.model must be a non-empty model id")
-    fallback_models = get_path(cfg, "image.fallback_models", [])
-    if not isinstance(fallback_models, list) or any(
-            not isinstance(row, str) or not row.strip() for row in fallback_models):
-        errors.append("image.fallback_models must be a list of non-empty model ids")
-    else:
-        normalized = [row.strip() for row in fallback_models]
-        if len(normalized) != len(set(normalized)):
-            errors.append("image.fallback_models must not contain duplicates")
-        if str(get_path(cfg, "image.model") or "").strip() in normalized:
-            errors.append("image.fallback_models must not repeat image.model")
-    if get_path(cfg, "image.quality") != "high":
-        errors.append("image.quality must be high")
+    errors.extend(_validate_model_policy(cfg))
     default_ratio = str(get_path(cfg, "image.default_aspect_ratio", ""))
     canvases = get_path(cfg, "image.canvases", {})
     if default_ratio not in {"4:5", "9:16"} or default_ratio not in canvases:
@@ -348,10 +417,6 @@ def validate(data: dict | None = None) -> list[str]:
     image_execution_runtime = str(get_path(cfg, "runtime.image_execution_runtime", "")).upper()
     if image_execution_runtime not in {"CODEX", "PRODUCT_RUNTIME", "AUTO"}:
         errors.append("runtime.image_execution_runtime must be CODEX, PRODUCT_RUNTIME or AUTO")
-    if get_path(cfg, "runtime.codex_image_controller_model") != "gpt-5.6-luna":
-        errors.append("runtime.codex_image_controller_model must be gpt-5.6-luna")
-    if get_path(cfg, "runtime.codex_image_reasoning_effort") != "medium":
-        errors.append("runtime.codex_image_reasoning_effort must be medium")
     if get_path(cfg, "runtime.local_codex_fallback") != "explicit_only":
         errors.append("runtime.local_codex_fallback must be explicit_only")
     if not isinstance(get_path(cfg, "runtime.codex_fallback_when_webcodex_unavailable"), bool):
@@ -373,17 +438,12 @@ def validate(data: dict | None = None) -> list[str]:
         errors.append("runtime.review.vision.runtime must be CODEX")
     if str(get_path(cfg, "runtime.review.vision.runtime", "")).upper() != vision_executor:
         errors.append("runtime.review.vision.runtime compatibility alias must match execution.vision_review.executor")
-    if str(get_path(cfg, "runtime.review.vision.model", "")) != "gpt-5.6-terra":
-        errors.append("runtime.review.vision.model must be gpt-5.6-terra")
     if get_path(cfg, "runtime.review.vision.isolated_required") is not True:
         errors.append("runtime.review.vision.isolated_required must be true")
     if get_path(cfg, "runtime.review.vision.ephemeral") is not True:
         errors.append("runtime.review.vision.ephemeral must be true")
     if get_path(cfg, "runtime.review.vision.generation_session_reuse") is not False:
         errors.append("runtime.review.vision.generation_session_reuse must be false")
-    for key in ("reasoning_effort_default", "reasoning_effort_fast", "reasoning_effort_final"):
-        if str(get_path(cfg, f"runtime.review.vision.{key}", "")) not in {"low", "medium", "high"}:
-            errors.append(f"runtime.review.vision.{key} must be low, medium or high")
     final_review_cap = get_path(cfg, "runtime.review.vision.max_inflight_final")
     if type(final_review_cap) is not int or not 1 <= final_review_cap <= 6:
         errors.append("runtime.review.vision.max_inflight_final must be an int between 1 and 6")

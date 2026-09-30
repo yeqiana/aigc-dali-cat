@@ -25,8 +25,9 @@ class StoryOSConfigTests(unittest.TestCase):
 
     def test_current_image_configuration(self):
         config = storyos_config.load_config()
-        self.assertEqual(storyos_config.get_path(config, "image.model"), "gpt-image-2.5-flare")
-        self.assertEqual(storyos_config.get_path(config, "image.quality"), "high")
+        self.assertEqual(storyos_config.get_path(config, "models.profiles.image_payload.model"), "gpt-image-2.5-flare")
+        self.assertEqual(storyos_config.get_path(config, "models.profiles.image_payload.quality"), "high")
+        self.assertEqual(config["models"]["role_aliases"].get("image.payload"), "image_payload")
         self.assertEqual(storyos_config.get_path(config, "visual.default_profile_id"), "M00")
         self.assertEqual(storyos_config.get_path(config, "normalize.automatic_ratio_delta_max"), 0.01)
         self.assertEqual(storyos_config.get_path(config, "normalize.review_ratio_delta_max"), 0.03)
@@ -48,7 +49,7 @@ class StoryOSConfigTests(unittest.TestCase):
 
         self.assertEqual(calls["count"], 1)
         self.assertIs(first, second)
-        self.assertEqual(second["image"]["quality"], "high")
+        self.assertEqual(second["models"]["profiles"]["image_payload"]["quality"], "high")
 
     def test_stage_read_sets_start_with_config(self):
         index = storyos_config.load_index()
@@ -65,8 +66,8 @@ class StoryOSConfigTests(unittest.TestCase):
 
     def test_invalid_quality_fails_fast(self):
         config = copy.deepcopy(storyos_config.load_config())
-        config["image"]["quality"] = "medium"
-        self.assertIn("image.quality must be high", storyos_config.validate(config))
+        config["models"]["profiles"]["image_payload"]["quality"] = "medium"
+        self.assertIn("models.profiles.image_payload.quality must be high", storyos_config.validate(config))
 
     def test_image_worker_limit_rejects_values_above_five(self):
         config = copy.deepcopy(storyos_config.load_config())

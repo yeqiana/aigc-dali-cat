@@ -13,22 +13,62 @@
 schema_version: 1
 config_version: "1.0"
 
+# Unified business model policy; business consumers resolve roles through profiles.
+models:
+  policy_version: "lean-2026-09-30-v1"
+  profiles:
+    orchestration:
+      model: gpt-6-luna
+      reasoning_effort: medium
+    authoring:
+      model: gpt-6-luna
+      reasoning_effort: high
+    structured_text:
+      model: gpt-6-luna
+      reasoning_effort: high
+    semantic_critic:
+      model: gpt-6-luna
+      reasoning_effort: high
+    final_semantic:
+      model: gpt-6-luna
+      reasoning_effort: high
+    vision_fast:
+      model: gpt-6-luna
+      reasoning_effort: low
+    vision_final:
+      model: gpt-6-luna
+      reasoning_effort: high
+    image_controller:
+      model: gpt-6-luna
+      reasoning_effort: high
+    image_payload:
+      model: gpt-image-2.5-flare
+      quality: high
+      fallback_models:
+        - gpt-image-2.5-sunburst
+        - gpt-image-2
+  role_aliases:
+    orchestration: orchestration
+    story.authoring: authoring
+    story.rewrite: authoring
+    preimage.character_finalize: structured_text
+    preimage.world_prepare: structured_text
+    preimage.frame_contract: structured_text
+    preimage.visual_narrative: authoring
+    prompt.production: structured_text
+    prompt.repair: structured_text
+    release: structured_text
+    critic.story: semantic_critic
+    critic.preimage: semantic_critic
+    critic.final: final_semantic
+    vision.fast: vision_fast
+    guardian: vision_fast
+    vision.visual_lock: vision_final
+    vision.final: vision_final
+    image.controller: image_controller
+    image.payload: image_payload
+
 image:
-  # 正式生产默认模型。用户在 Runtime Request 显式指定时可覆盖，
-  # 但显式模型必须严格执行，禁止静默替换。
-  model: gpt-image-2.5-flare
-
-  # 仅供 system_default / strict=false 的技术可用性降级。当前模型在
-  # PROVIDER_CAPACITY / MODEL_UNAVAILABLE 下耗尽本模型技术重试后，才按顺序
-  # 切换；用户显式指定模型绝不自动替换。
-  fallback_models:
-    - gpt-image-2.5-sunburst
-    - gpt-image-2
-
-  # 正式生产质量。当前只允许 high；Scheduler、Worker 和 Ledger
-  # 必须记录同一个值。
-  quality: high
-
   # 新 Episode 未指定时采用的正文比例。
   default_aspect_ratio: "4:5"
 
@@ -321,8 +361,6 @@ runtime:
   # 迁移兼容别名；新配置入口为 execution.image.executor。
   # 环境变量优先级：STORY_OS_IMAGE_EXECUTOR > legacy STORY_OS_IMAGE_RUNTIME > YAML。
   image_execution_runtime: CODEX
-  codex_image_controller_model: gpt-5.6-luna
-  codex_image_reasoning_effort: medium
   local_codex_fallback: explicit_only
   # 兼容字段，必须关闭。COLLABORATIVE 的宿主不可用时暂停/阻塞，等待恢复或显式切换。
   codex_fallback_when_webcodex_unavailable: false
@@ -339,13 +377,9 @@ runtime:
       fresh_turn_required: true
     vision:
       runtime: CODEX
-      model: gpt-5.6-terra
       isolated_required: true
       ephemeral: true
       generation_session_reuse: false
-      reasoning_effort_default: medium
-      reasoning_effort_fast: medium
-      reasoning_effort_final: medium
       # Final Semantic FULL Review 的最大局部 Critic 并发。20 帧默认自适应到 4；
       # 更小帧集按 1/2/3 自动降档。只控制只读 Critic fan-out，Ledger 仍单写。
       max_inflight_final: 4

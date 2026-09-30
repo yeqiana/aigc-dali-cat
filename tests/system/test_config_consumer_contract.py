@@ -242,7 +242,7 @@ class ConsumerTests(unittest.TestCase):
 
     def test_active_agent_contracts_delegate_image_default_to_storyos_config(self) -> None:
         """Active entry docs must not freeze a second image-model default."""
-        authority = "config/storyos.yaml:image.model"
+        authority = "config/storyos.yaml:models.profiles.image_payload"
         stale_phrases = (
             "默认 `image_model=gpt-image-2`",
             "实际图片仍由 `gpt-image-2`",
@@ -250,7 +250,7 @@ class ConsumerTests(unittest.TestCase):
         )
         for rel in ("AGENTS.md", "START_HERE.md", "SKILL.md"):
             text = (ROOT / rel).read_text(encoding="utf-8-sig")
-            self.assertIn(authority, text, f"{rel} 没有委托 image.model 唯一配置入口")
+            self.assertIn(authority, text, f"{rel} 没有委托 image_payload profile 唯一配置入口")
             for phrase in stale_phrases:
                 self.assertNotIn(phrase, text, f"{rel} 又写死了旧图片模型：{phrase}")
 
