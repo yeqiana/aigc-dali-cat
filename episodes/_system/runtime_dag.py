@@ -64,10 +64,8 @@ RECONCILE_BLOCKED_RC=9
 # STORY_OS_V211_INCREMENTAL_PLAN_REUSE: the incremental planner's real input surface,
 # read off incremental_closure.plan(). The generic input_hash cannot be reused for this
 # step: its evidence_paths is meta/runtime-checkpoint.json, which checkpoint() rewrites
-# on every step of every pass, so that hash never repeats and would never hit. These are
-# the files plan() actually inspects -- episode-state, story-gates (via subtitle_required)
-# and the four evidence files. production-ledger.json belongs here because it moves with
-# the pixel assets, which is exactly when the plan does need recomputing.
+# on every step of every pass. These are the files plan() actually inspects, including
+# production-ledger.json because it moves with pixel assets and changes the frame plan.
 INCREMENTAL_PLAN_STEP="INCREMENTAL_PLAN"
 INCREMENTAL_PLAN_INPUTS=[
     "meta/episode-state.json","meta/story-gates.json","meta/story-semantic-review.json",
@@ -424,6 +422,244 @@ def plan(ep):
         out.append(row)
     return {"current_state":cur,"steps":out}
 
+
+def incremental_runtime_strategy(incremental_plan, step_id, current_state):
+    """Map the consumed incremental plan to the existing Runtime production step.
+
+    The planner remains advisory: only the existing production step may run frame
+    verification, and it does so through incremental_frame_review's canonical
+    verifier. Transitional ledger states continue through the normal scheduler.
+    """
+    if not isinstance(incremental_plan, dict):
+        return "RUN_WORKER"
+    if step_id in {"CREATIVE_STORY", "VISUAL_LOCK"}:
+        evidence_key = "story" if step_id == "CREATIVE_STORY" else "visual"
+        evidence_state = _plan_evidence_state(incremental_plan, evidence_key)
+        target_stage = "STORYBOARD_LOCKED" if evidence_key == "story" else "VISUAL_CALIBRATED"
+        # These DAG nodes also author/finalize their respective domains. Only
+        # narrow a reached-stage verifier failure to the existing critic path;
+        # do not skip authoring/calibration just because a review receipt exists.
+        if not stage_at_least(current_state, target_stage):
+            return "RUN_WORKER"
+        if evidence_state in {"DIRTY", "MISSING"}:
+            return "VERIFY_STORY_EVIDENCE" if evidence_key == "story" else "VERIFY_VISUAL_EVIDENCE"
+        return "RUN_WORKER"
+    if step_id != "PRODUCTION":
+        return "RUN_WORKER"
+    if not stage_at_least(current_state, "PRODUCTION_PASSED"):
+        return "RUN_WORKER"
+    frame_plan = incremental_plan.get("frame_plan")
+    if not isinstance(frame_plan, dict):
+        return "RUN_WORKER"
+    action = str(frame_plan.get("action") or "").upper()
+    if action in {"NOOP", "NOT_REQUIRED"}:
+        return "REUSE_FRAME_EVIDENCE"
+    if action in {"PATCH", "FULL"}:
+        return "VERIFY_INCREMENTALLY"
+    return "RUN_WORKER"
+
+
+def _plan_evidence_state(incremental_plan, key):
+    if not isinstance(incremental_plan, dict):
+        return ""
+    value = incremental_plan.get(key)
+    if isinstance(value, dict):
+        value = value.get("state") or value.get("status") or value.get("action")
+    return str(value or "").upper()
+
+
+def _unsupported_missing_evidence(incremental_plan):
+    """Fail closed when closure identifies missing authority with no narrow repair path."""
+    if not isinstance(incremental_plan, dict):
+        return "incremental plan unavailable"
+    known = {"meta/story-semantic-review.json", "meta/visual-profile-review.json",
+             "meta/production-ledger.json", "meta/subtitle-layout-audit.json"}
+    missing = [str(item) for item in incremental_plan.get("missing") or []]
+    unknown = sorted(set(missing) - known)
+    if unknown:
+        return "unsupported missing evidence: " + ", ".join(unknown)
+    # Production Ledger absence cannot be reconstructed by a review-only step.
+    if "meta/production-ledger.json" in missing:
+        return "missing production ledger requires explicit production recovery"
+    return None
+
+
+def _run_targeted_review(ep, *, kind, attempt, codex, timeout, run_id, trace_id):
+    """Resume an existing scoped request or dispatch only the requested critic."""
+    import product_review_adapter
+
+    request = product_review_adapter.request_path(Path(ep).resolve(), kind, attempt=attempt)
+    if product_review_adapter._request_exists(request):
+        saved = product_review_adapter._read_json(request)
+        candidate = (ROOT / str(saved.get("candidate_path") or "")).resolve()
+        if saved.get("status") == product_review_adapter.AWAITING:
+            if candidate.is_file():
+                command = "story_review.py" if kind == "story-semantic" else "visual_review.py"
+                argv = [sys.executable, SYSTEM / command, "finalize-review", ep,
+                        "--attempt", str(attempt), "--runtime", "WORK"]
+                result = run(argv)
+                return result.returncode, result.stdout[-5000:]
+            runtime_observability.safe_record_runtime_event(
+                ep, "INCREMENTAL_VERIFY_FINISHED", run_id=run_id, trace_id=trace_id,
+                step="INCREMENTAL_PLAN", status="HOST_WAIT", evidence_type=kind,
+                reason="existing scoped review request awaits host candidate",
+                evidence_ref=saved.get("request_id"), source="runtime_dag")
+            return product_review_adapter.HOST_ACTION_REQUIRED_RC, json.dumps(saved, ensure_ascii=False)
+        # Terminal or stale request cannot silently authorize a new attempt here.
+        return 4, f"scoped {kind} request is not awaiting: {saved.get('status')}"
+    cli = "story_review.py" if kind == "story-semantic" else "visual_review.py"
+    argv = [sys.executable, SYSTEM / cli, "run-critic", ep,
+            "--attempt", str(attempt), "--timeout", str(timeout)]
+    if codex:
+        argv.extend(["--codex", codex])
+    result = run(argv)
+    return result.returncode, result.stdout[-5000:]
+
+
+def _incremental_plan_policy_sha(ep):
+    try:
+        import model_policy_persistence
+        bound = model_policy_persistence.load(Path(ep).resolve()) or {}
+        return str(bound.get("policy_sha256") or "")
+    except Exception:
+        return ""
+
+
+def _record_incremental_plan_events(ep, incremental_plan, *, run_id, trace_id):
+    """Emit transparent reuse/invalidation/missing evidence observations."""
+    if not isinstance(incremental_plan, dict):
+        return
+    policy_sha = _incremental_plan_policy_sha(ep)
+    labels = (("story", "story-semantic-review"),
+              ("visual", "visual-profile-review"),
+              ("subtitle", "subtitle-layout-audit"))
+    for key, evidence_type in labels:
+        evidence_plan = incremental_plan.get("evidence_plan")
+        details = incremental_plan.get("details")
+        value = (evidence_plan.get(key) if isinstance(evidence_plan, dict) else None)
+        if not isinstance(value, dict):
+            value = details.get(key) if isinstance(details, dict) else None
+        if not isinstance(value, dict):
+            value = incremental_plan.get(key)
+        value = value if isinstance(value, dict) else {}
+
+        state_value = str(value.get("state") or value.get("status") or "").upper()
+        action_value = str(value.get("action") or "").upper()
+        if not state_value:
+            state_value = str(incremental_plan.get(key) or "").upper()
+        ref = (value.get("evidence_ref") or value.get("ref") or
+               value.get("receipt_ref") or {
+                   "story": "meta/story-semantic-review.json",
+                   "visual": "meta/visual-profile-review.json",
+                   "subtitle": "meta/subtitle-layout-audit.json",
+               }[key])
+        fingerprint = (value.get("evidence_fingerprint") or value.get("fingerprint"))
+        source_sha = (value.get("source_sha") or value.get("source_artifact_sha") or
+                      value.get("source_artifact_sha256") or value.get("source_sha256"))
+        if not source_sha and isinstance(value.get("source"), dict):
+            source = value["source"]
+            source_sha = (source.get("sha256") or source.get("source_sha") or
+                          source.get("artifact_sha256"))
+        item_policy_sha = (value.get("policy_sha") or value.get("policy_sha256") or
+                           value.get("model_policy_sha256") or policy_sha)
+        reason = value.get("reason")
+        if isinstance(reason, (list, tuple)):
+            reason = ",".join(str(item) for item in reason)
+        event = {"run_id": run_id, "trace_id": trace_id, "step": INCREMENTAL_PLAN_STEP,
+                 "evidence_type": evidence_type, "evidence_ref": ref,
+                 "evidence_fingerprint": fingerprint, "source_sha": source_sha,
+                 "policy_sha": item_policy_sha, "old_fingerprint": value.get("old_fingerprint"),
+                 "new_fingerprint": value.get("new_fingerprint") or fingerprint,
+                 "reason": reason, "source": "runtime_dag"}
+        if state_value in {"CLEAN", "REUSE", "REUSED"} or action_value in {"REUSE", "REUSED"}:
+            runtime_observability.safe_record_runtime_event(ep, "EVIDENCE_REUSED", **event)
+        elif state_value in {"DIRTY", "INVALID", "INVALIDATED"} or action_value in {
+                "VERIFY", "RECOMPUTE", "INVALIDATE"}:
+            runtime_observability.safe_record_runtime_event(ep, "EVIDENCE_INVALIDATED", **event)
+        elif state_value in {"MISSING", "MISSING_EVIDENCE"} or action_value in {
+                "GENERATE_EVIDENCE", "RECOVER_MISSING"}:
+            runtime_observability.safe_record_runtime_event(ep, "EVIDENCE_MISSING", **event)
+
+    frame_plan = incremental_plan.get("frame_plan")
+    if not isinstance(frame_plan, dict):
+        return
+    action = str(frame_plan.get("action") or "").upper()
+    dirty = list(frame_plan.get("dirty_frames") or [])
+    reused = list(frame_plan.get("reused_frames") or [])
+    context = list(frame_plan.get("context_frames") or [])
+    missing = list(frame_plan.get("missing_evidence_frames") or [])
+    frame_metadata = {}
+    if not reused or dirty:
+        try:
+            import frame_semantic_review
+            rows = frame_semantic_review.frame_records(Path(ep).resolve(), require_files=False)
+            frame_metadata = {str(row.get("frame")): row for row in rows}
+            if not reused:
+                accepted = {str(item).zfill(2) for item in
+                            frame_plan.get("accepted_known_defect_frames") or []}
+                changed = {str(item).zfill(2) for item in dirty}
+                reused = sorted(set(frame_metadata) - accepted - changed)
+        except Exception:
+            frame_metadata = {}
+    if action in {"NOOP", "NOT_REQUIRED"}:
+        runtime_observability.safe_record_runtime_event(
+            ep, "FRAME_REVIEW_REUSED", run_id=run_id, trace_id=trace_id,
+            step="PRODUCTION", evidence_type="frame-review", policy_sha=policy_sha,
+            reused_frames=reused, reuse_count=len(reused), reason=action,
+            source="runtime_dag")
+    elif action in {"PATCH", "FULL"}:
+        for frame in dirty:
+            runtime_observability.safe_record_runtime_event(
+                ep, "EVIDENCE_INVALIDATED", run_id=run_id, trace_id=trace_id,
+                step="INCREMENTAL_PLAN", evidence_type="frame-review",
+                evidence_ref=str(frame), frame_id=str(frame).zfill(2),
+                source_sha=(frame_metadata.get(str(frame).zfill(2)) or {}).get("sha256"),
+                generation_key=(frame_metadata.get(str(frame).zfill(2)) or {}).get("generation_key"),
+                policy_sha=policy_sha,
+                old_fingerprint=(frame_plan.get("old_fingerprints") or {}).get(str(frame).zfill(2)),
+                new_fingerprint=(frame_plan.get("new_fingerprints") or {}).get(str(frame).zfill(2)),
+                reason=",".join((frame_plan.get("reasons") or {}).get(str(frame), [])) or action,
+                source="runtime_dag")
+        runtime_observability.safe_record_runtime_event(
+            ep, "FRAME_REVIEW_RECOMPUTED", run_id=run_id, trace_id=trace_id,
+            step="PRODUCTION", evidence_type="frame-review", policy_sha=policy_sha,
+            dirty_frames=dirty, reused_frames=reused, context_frames=context,
+            missing_evidence_frames=missing, recompute_count=len(dirty),
+            reuse_count=len(reused), missing_count=len(missing),
+            full_review_count=1 if action == "FULL" else 0,
+            patch_review_count=1 if action == "PATCH" else 0,
+            reason=action, source="runtime_dag")
+    for frame in missing:
+        runtime_observability.safe_record_runtime_event(
+            ep, "EVIDENCE_MISSING", run_id=run_id, trace_id=trace_id,
+            step="INCREMENTAL_PLAN", evidence_type="frame-review",
+            evidence_ref=str(frame), policy_sha=policy_sha,
+            reason="MISSING_EVIDENCE", source="runtime_dag")
+
+
+def _run_incremental_frame_verification(ep, *, attempt, codex, timeout, run_id, trace_id,
+                                       command="review"):
+    started_monotonic = time.monotonic()
+    started = runtime_node_execution.now()
+    runtime_observability.safe_record_runtime_event(
+        ep, "INCREMENTAL_VERIFY_STARTED", run_id=run_id, trace_id=trace_id,
+        step="PRODUCTION", started_at=started, source="runtime_dag")
+    argv = [sys.executable, SYSTEM / "incremental_frame_review.py", command, ep]
+    if command == "review":
+        argv.extend(["--attempt", str(attempt), "--timeout", str(timeout)])
+    if command == "review" and codex:
+        argv.extend(["--codex", codex])
+    result = run(argv)
+    finished = runtime_node_execution.now()
+    runtime_observability.safe_record_runtime_event(
+        ep, "INCREMENTAL_VERIFY_FINISHED", run_id=run_id, trace_id=trace_id,
+        step="PRODUCTION", started_at=started, finished_at=finished,
+        duration_ms=(time.monotonic() - started_monotonic) * 1000,
+        status="PASS" if result.returncode == 0 else "FAILED",
+        failure_class=None if result.returncode == 0 else str(result.returncode),
+        source="runtime_dag")
+    return result.returncode, result.stdout[-5000:]
+
 def run_release_preflight_recovery(ep: Path, codex=None, timeout=None) -> tuple[int, str]:
     """Run targeted release evidence recovery after the scoped RELEASE worker.
 
@@ -566,6 +802,7 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
     completed_nodes=set()
     node_contract=runtime_node_registry.runtime_step_nodes(specs)
     scheduler_resources=production_scheduler_resources()
+    incremental_plan=None
     if until:
         # Already at or past the target: stopping is a no-op, so do not spawn INCREMENTAL_PLAN
         # or any other step merely to arrive back here.
@@ -639,27 +876,6 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
                     background.shutdown(wait=False,cancel_futures=True)
                     return 0
                 continue
-        # STORY_OS_V211_INCREMENTAL_PLAN_REUSE: the planner is a pure function of the files
-        # in INCREMENTAL_PLAN_INPUTS (all four subcommands it spawns are read-only) and
-        # incremental_closure.py:143 returns 0 unconditionally, so re-running it on unchanged
-        # inputs recomputes a verdict this DAG discards anyway. Skip the ~4 subprocess spawns.
-        if (s.step_id==INCREMENTAL_PLAN_STEP and prior.get("status") in {"PASS","REUSED"}
-                and prior.get("input_hash")==input_hash):
-            reason="plan inputs unchanged since last run"
-            out_hash=_evidence_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
-            reused_elapsed=time.monotonic()-node_t0
-            res=proto.StepResult(s.step_id,"REUSED",attempt,node_started,runtime_node_execution.now(),reused_elapsed,input_hash,out_hash,reason,0)
-            proto.save_result(ep,res); checkpoint(ep,s.step_id,"REUSED",reused_elapsed,reason,attempt,input_hash,out_hash)
-            if run_id: perf.record_step(ep,run_id,s.step_id,"REUSED",reused_elapsed,reason)
-            episode_performance.safe_end_stage(ep,s.step_id,status="REUSED",metadata={"reused":True,"reason":reason})
-            _t=time.monotonic()
-            _sp=runtime_trace.start_span(ep,s.step_id,category="workflow_step",trace_id=trace_id,run_id=trace_run_id,attrs={"reused":True})
-            runtime_trace.end_span(ep,_sp,name=s.step_id,category="workflow_step",status="REUSED",started_monotonic=_t,trace_id=trace_id,run_id=trace_run_id,attrs={"reason":reason})
-            runtime_node_evidence.record(
-                ep,node_id=s.step_id,start_time=res.started_at,end_time=res.finished_at,
-                status="REUSED",attempt=attempt,output=reason,evidence=s.evidence_paths)
-            completed_nodes.add(s.step_id)
-            continue
         if s.target_state and stage_at_least(cur,s.target_state):
             ok,msg=validate_target(ep,s.target_state)
             if ok:
@@ -699,7 +915,62 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
             resource_library.resolve(ep,write=True)
             intro_policy.resolve(ep,write=True)
         if s.executor=="machine_incremental_plan":
-            cp=run([sys.executable,SYSTEM/"incremental_closure.py","plan",ep,"--json"]); rc=cp.returncode; note=cp.stdout[-3000:]
+            runtime_observability.safe_record_runtime_event(
+                ep,"INCREMENTAL_PLAN_STARTED",run_id=event_run_id,trace_id=trace_id,
+                step=s.step_id,source="runtime_dag")
+            cp=run([sys.executable,SYSTEM/"incremental_closure.py","plan",ep,"--json"])
+            rc=cp.returncode; note=cp.stdout[-5000:]
+            try:
+                incremental_plan=json.loads(cp.stdout)
+            except (TypeError, ValueError):
+                incremental_plan=None
+                if rc==0:
+                    rc=4
+                    note="INCREMENTAL PLAN OUTPUT INVALID JSON: "+cp.stdout[-1000:]
+            runtime_observability.safe_record_runtime_event(
+                ep,"INCREMENTAL_PLAN_FINISHED",run_id=event_run_id,trace_id=trace_id,
+                step=s.step_id,status="PASS" if rc==0 else "FAILED",
+                failure_class=None if rc==0 else str(rc),
+                reason=(incremental_plan or {}).get("action"),source="runtime_dag")
+            if rc==0 and incremental_plan is not None:
+                _record_incremental_plan_events(
+                    ep,incremental_plan,run_id=event_run_id,trace_id=trace_id)
+                blocker=_unsupported_missing_evidence(incremental_plan)
+                if blocker:
+                    rc=4
+                    note="MISSING_EVIDENCE_FAIL_CLOSED: "+blocker
+        elif (s.step_id=="CREATIVE_STORY" and incremental_runtime_strategy(
+                incremental_plan,s.step_id,cur)=="VERIFY_STORY_EVIDENCE"):
+            rc,note=_run_targeted_review(
+                ep,kind="story-semantic",attempt=attempt,codex=codex,
+                timeout=timeout,run_id=event_run_id,trace_id=trace_id)
+        elif (s.step_id=="VISUAL_LOCK" and incremental_runtime_strategy(
+                incremental_plan,s.step_id,cur)=="VERIFY_VISUAL_EVIDENCE"):
+            try:
+                import visual_review
+                review_kind=("visual-lock" if visual_review.is_v21(Path(ep).resolve())
+                             else "visual-profile-legacy")
+                rc,note=_run_targeted_review(
+                    ep,kind=review_kind,attempt=attempt,codex=codex,
+                    timeout=timeout,run_id=event_run_id,trace_id=trace_id)
+            except Exception as exc:
+                rc=4
+                note="TARGETED VISUAL REVIEW ROUTING FAIL: "+str(exc)
+        elif (s.step_id=="RELEASE" and _plan_evidence_state(
+                incremental_plan,"subtitle") in {"MISSING","DIRTY"}):
+            cp=run([sys.executable,SYSTEM/"subtitle_layout.py","audit",ep])
+            rc=cp.returncode
+            note="TARGETED SUBTITLE AUDIT: "+cp.stdout[-4000:]
+        elif (s.step_id=="PRODUCTION" and incremental_runtime_strategy(
+                incremental_plan,s.step_id,cur)=="REUSE_FRAME_EVIDENCE"):
+            rc,note=_run_incremental_frame_verification(
+                ep,attempt=attempt,codex=codex,timeout=timeout,run_id=event_run_id,
+                trace_id=trace_id,command="verify")
+        elif (s.step_id=="PRODUCTION" and incremental_runtime_strategy(
+                incremental_plan,s.step_id,cur)=="VERIFY_INCREMENTALLY"):
+            rc,note=_run_incremental_frame_verification(
+                ep,attempt=attempt,codex=codex,timeout=timeout,run_id=event_run_id,
+                trace_id=trace_id,command="review")
         elif s.executor in {"scoped_model","scoped_codex"}:
             execution_capsule.compile_capsule(ep,s.step_id,write=True)
             active_runtime,_=runtime_router.detect()
@@ -892,7 +1163,10 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
 
 def self_test():
     rows=spec_rows()
-    assert [x.step_id for x in rows]==["INCREMENTAL_PLAN","CREATIVE_STORY","PREIMAGE_COMPILE","VISUAL_LOCK","PRODUCTION","RELEASE"]
+    assert [x.step_id for x in rows]==["INCREMENTAL_PLAN","CREATIVE_STORY","PREIMAGE_COMPILE","PROMPT_AUTHORING","VISUAL_LOCK","PRODUCTION","RELEASE"]
+    by_id={row.step_id:row for row in rows}
+    assert by_id["PROMPT_AUTHORING"].depends_on==("PREIMAGE_COMPILE",)
+    assert by_id["VISUAL_LOCK"].depends_on==("PROMPT_AUTHORING",)
     assert rows[-1].target_state=="PUBLISH_READY"
     # STORY_OS_V262_DAG_STOP_TARGET: --until takes a canonical stage, and every step's
     # declared target_state must be one, so a stop target and a step target are comparable.

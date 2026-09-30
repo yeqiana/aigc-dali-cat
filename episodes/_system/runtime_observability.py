@@ -53,6 +53,9 @@ RUNTIME_EVENT_TYPES = frozenset({
     "ATTEMPT_SUCCEEDED", "ATTEMPT_FAILED_AFTER_DISPATCH", "ATTEMPT_OUTCOME_UNKNOWN",
     "ATTEMPT_DENIED_BUDGET", "ATTEMPT_DENIED_ACTIVE", "ATTEMPT_DENIED_STALE_FENCE",
     "USER_ASSET_ADOPTED",
+    "INCREMENTAL_PLAN_STARTED", "INCREMENTAL_PLAN_FINISHED", "EVIDENCE_REUSED",
+    "EVIDENCE_INVALIDATED", "EVIDENCE_MISSING", "INCREMENTAL_VERIFY_STARTED",
+    "INCREMENTAL_VERIFY_FINISHED", "FRAME_REVIEW_REUSED", "FRAME_REVIEW_RECOMPUTED",
 })
 
 RUNTIME_EVENT_FIELDS = (
@@ -67,6 +70,10 @@ RUNTIME_EVENT_FIELDS = (
     "fencing_token", "lease_token_hash", "attempt_consumed", "review_queue_depth_at_dispatch",
     "repair_wave_id", "source_generation_key", "repair_generation_key", "failure_codes",
     "remaining_attempts", "high_watermark", "low_watermark", "oldest_review_wait_ms",
+    "evidence_type", "evidence_fingerprint", "source_sha", "policy_sha",
+    "old_fingerprint", "new_fingerprint", "dirty_frames", "reused_frames",
+    "context_frames", "missing_evidence_frames", "reuse_count", "recompute_count",
+    "missing_count", "full_review_count", "patch_review_count", "reason",
 )
 
 KNOWN_PATHS = {
@@ -235,30 +242,38 @@ def write_model_execution_receipt(ep: Path | str, *, receipt: dict) -> Path:
 
 def self_test() -> None:
     import tempfile
+    from unittest.mock import patch
+    import storage_config
 
     assert KNOWN_PATHS["episode_performance"].as_posix() == \
         "meta/episode-performance-ledger.json"
     assert TRACE_EVENTS_REL.as_posix() == "meta/runtime/trace-events.jsonl"
     with tempfile.TemporaryDirectory(prefix="observability self test ") as td:
         ep = Path(td)
-        out = write_summary(ep, EPISODE_PERFORMANCE_REL, kind="episode",
-                            payload={"active_wall_seconds": 12.5})
-        import story_json
+        # A temporary Episode has no durable MySQL episode identity. Select the
+        # existing JSON persistence mode for this isolated self-test so the
+        # authority writes the fixture inside the TemporaryDirectory lifecycle.
+        # Production mode and persistence fallback behavior remain untouched.
+        with patch.object(storage_config, "episode_meta_store_config",
+                          return_value={"mode": "json"}):
+            out = write_summary(ep, EPISODE_PERFORMANCE_REL, kind="episode",
+                                payload={"active_wall_seconds": 12.5})
+            import story_json
 
-        data = story_json.read_json(out)
-        assert data["kind"] == "episode"
-        assert data["schema_version"] == 1
-        assert "generated_at" in data
-        assert data["active_wall_seconds"] == 12.5
-        try:
-            write_summary(ep, Path("meta/other.json"), kind="x", payload={})
-            raise AssertionError("unregistered path must be rejected")
-        except ValueError:
-            pass
-        trace = append_trace_event(ep, {"event": "phase6.batch.start"})
-        append_trace_event(ep, {"event": "phase6.batch.done"})
-        lines = [x for x in trace.read_text(encoding="utf-8").splitlines() if x]
-        assert len(lines) == 2
+            data = story_json.read_json(out)
+            assert data["kind"] == "episode"
+            assert data["schema_version"] == 1
+            assert "generated_at" in data
+            assert data["active_wall_seconds"] == 12.5
+            try:
+                write_summary(ep, Path("meta/other.json"), kind="x", payload={})
+                raise AssertionError("unregistered path must be rejected")
+            except ValueError:
+                pass
+            trace = append_trace_event(ep, {"event": "phase6.batch.start"})
+            append_trace_event(ep, {"event": "phase6.batch.done"})
+            lines = [x for x in trace.read_text(encoding="utf-8").splitlines() if x]
+            assert len(lines) == 2
     print("RUNTIME OBSERVABILITY SELF-TEST PASS")
 
 

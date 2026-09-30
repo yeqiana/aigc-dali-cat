@@ -21,7 +21,8 @@ class SmartSchedulerTest(unittest.TestCase):
         nodes = {row["node_id"]: row for row in runtime_node_registry.first_batch_nodes()}
         self.assertEqual(set(nodes), {"story_lock", "character_finalize", "environment_prepare", "world_prepare",
                          "visual_narrative_prepare", "preimage_authority_commit", "frame_contract_compile",
-                         "image_generation", "review", "repair", "release"})
+                         "prompt_authoring", "image_generation", "review", "repair", "release"})
+        self.assertEqual(nodes["image_generation"]["depends_on"], ["prompt_authoring"])
         self.assertEqual(nodes["release"]["depends_on"], ["review", "repair"])
 
     def test_parallel_safe_wave_and_priority_score_are_deterministic(self):
