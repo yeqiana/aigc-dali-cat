@@ -45,6 +45,10 @@ RUNTIME_EVENT_TYPES = frozenset({
     "REPAIR_STARTED", "REPAIR_FINISHED", "REPAIR_PROMPT_FINISHED", "USER_WAIT_STARTED", "USER_WAIT_FINISHED",
     "CHECKPOINT_SAVED", "RESUME_STARTED", "MODEL_EXECUTION",
     "CANARY_RUN_STARTED", "CANARY_RUN_FINISHED",
+    "ATTEMPT_REQUESTED", "ATTEMPT_RESERVED", "ATTEMPT_RELEASED_PRE_DISPATCH",
+    "ATTEMPT_SUCCEEDED", "ATTEMPT_FAILED_AFTER_DISPATCH", "ATTEMPT_OUTCOME_UNKNOWN",
+    "ATTEMPT_DENIED_BUDGET", "ATTEMPT_DENIED_ACTIVE", "ATTEMPT_DENIED_STALE_FENCE",
+    "USER_ASSET_ADOPTED",
 })
 
 RUNTIME_EVENT_FIELDS = (
@@ -56,6 +60,7 @@ RUNTIME_EVENT_FIELDS = (
     "controller_model", "controller_effort", "controller_profile", "controller_policy_sha256",
     "payload_model", "payload_quality",
     "call_id", "requested_model", "effective_model_source", "started_at", "finished_at",
+    "fencing_token", "lease_token_hash", "attempt_consumed",
 )
 
 KNOWN_PATHS = {
