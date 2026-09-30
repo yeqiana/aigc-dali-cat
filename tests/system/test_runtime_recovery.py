@@ -640,7 +640,7 @@ class RecoveryTests(unittest.TestCase):
         self.queue()
         ready=batch.load_queue(self.ep)["items"][:1]
         async def fail(*args): return {"returncode":99,"stdout":"network timeout","output":None}
-        with patch.object(single.resource_library,"ensure_fresh"), patch.object(single,"ready_items",return_value=(ready,[])), patch.object(single,"ledger_begin",return_value=(True,"")), patch.object(single,"ledger_tech_fail"), patch.object(single,"async_backend_worker",side_effect=fail):
+        with patch.object(single.resource_library,"ensure_fresh"), patch.object(single,"ready_items",return_value=(ready,[])), patch.object(single.raw_candidate_budget,"summary",return_value={"available":10}), patch.object(single,"ledger_begin",return_value=(True,"")), patch.object(single,"ledger_tech_fail"), patch.object(single,"async_backend_worker",side_effect=fail):
             self.assertEqual(asyncio.run(single._run_scheduler_async(self.ep,3,60,None)),21)
         self.assertEqual(batch.load_queue(self.ep)["items"][0]["status"],"tech_failed")
 

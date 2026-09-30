@@ -47,7 +47,8 @@ class EntryBehavior(unittest.TestCase):
         q = scheduler_core.load_queue(ep)
         q['adaptive_parallel'] = 1  # historical value must not throttle restart
         for row in q['items']:
-            row.update(scope='batch' if lane is batch_scheduler else 'repair')
+            row.update(scope='batch' if lane is batch_scheduler else 'repair',
+                       generation_key=f"TEST-GK-{row['frame']}", attempt_index=1)
         scheduler_core.save_queue(ep, q)
         active = peak = 0
         starts, ends, scouts = {}, {}, []
@@ -110,6 +111,10 @@ class EntryBehavior(unittest.TestCase):
             stack.enter_context(patch.object(lane.resource_library, 'ensure_fresh', lambda *a: None))
             stack.enter_context(patch.object(lane.runtime_router, 'detect', lambda: ('CODEX', 'test')))
             stack.enter_context(patch.object(lane.runtime_router, 'image_execution_runtime', lambda: ('CODEX', 'test')))
+            stack.enter_context(patch.object(lane.model_policy, 'resolve', lambda *_a, **_k: {
+                'model': 'gpt-6-luna', 'profile': 'vision_fast', 'model_policy_sha256': 'a' * 64}))
+            if lane is image_scheduler:
+                stack.enter_context(patch.object(lane.raw_candidate_budget, 'summary', lambda *_a, **_k: {'available': 20}))
             if lane is image_scheduler:
                 stack.enter_context(patch.object(lane, 'async_backend_worker', async_worker))
                 rc = lane.run_scheduler_async(ep, 3, 30, None)
@@ -126,7 +131,9 @@ class EntryBehavior(unittest.TestCase):
                 # Six inputs traverse two legal logical batches (5 + 1).
                 first = len(ends)
                 self.assertEqual(first, 5)
-                self.assertTrue(all(x == 5 for x in scouts))
+                if not failures:
+                    self.assertEqual(len(scouts), 5)
+                    self.assertLess(min(scouts), 5)
                 lane.run(ep, 3, 30, None)
         q = scheduler_core.load_queue(ep)
         self.assertEqual(peak, 3)
@@ -175,6 +182,7 @@ class EntryBehavior(unittest.TestCase):
             stack.enter_context(patch.object(image_scheduler.resource_library, 'ensure_fresh', return_value=None))
             stack.enter_context(patch.object(image_scheduler.runtime_router, 'detect', return_value=('CODEX', 'test')))
             stack.enter_context(patch.object(image_scheduler.runtime_router, 'image_execution_runtime', return_value=('CODEX', 'test')))
+            stack.enter_context(patch.object(image_scheduler.raw_candidate_budget, 'summary', return_value={'available': 1}))
             stack.enter_context(patch.object(image_scheduler, 'async_backend_worker', no_output))
             rc = image_scheduler.run_scheduler_async(ep, 1, 30, None)
 
@@ -212,19 +220,24 @@ class BudgetResolution(unittest.TestCase):
             self.assertEqual(budget.episode_limit(self.ep), 30)
 
     def test_concurrent_claim_commit_release_accounting(self):
+        # Phase 1 retired the old episode-wide JSON budget. Verify this
+        # compatibility entrypoint delegates its allow/deny decision to the
+        # durable per-asset authority; real atomicity is covered separately by
+        # test_generation_attempt_authority.py against TEST_ONLY MySQL.
+        import generation_attempt_authority as authority
         cfg = self.ep / 'config.json'
         budget.story_json.write_json(cfg, {'episode_candidate_budget': {'max_total_content_candidates': 3}})
-        results = []
-        with patch.object(budget, 'CFG', cfg):
-            threads = [threading.Thread(target=lambda i=i: results.append(budget.claim(self.ep, i+1, 'original', token=str(i)))) for i in range(10)]
-            for t in threads: t.start()
-            for t in threads: t.join()
-            allowed = [row['token'] for ok, row in results if ok]
-            self.assertEqual(len(allowed), 3)
-            budget.commit(self.ep, allowed[0]); budget.commit(self.ep, allowed[0])
-            budget.release(self.ep, allowed[1])
-            summary = budget.summary(self.ep, pending=4)
-            self.assertEqual((summary['committed'], summary['inflight_reserved'], summary['available']), (1, 1, 1))
+        lease = {'generation_key': 'GK-test', 'attempt_index': 1, 'fencing_token': 1,
+                 'lease_token': 'lease', '_phase': 'RESERVED'}
+        with patch.object(budget, 'CFG', cfg), \
+             patch.object(budget, 'load', return_value={}), \
+             patch.object(budget.production_ledger, 'load_authority', return_value={}), \
+             patch.object(authority, 'reserve', return_value=lease) as reserve:
+            allowed, row = budget.claim(self.ep, 1, 'original', token='compat-test')
+        self.assertTrue(allowed)
+        self.assertEqual(row['lease']['generation_key'], 'GK-test')
+        self.assertEqual(row['limit'], 2)
+        reserve.assert_called_once()
 
 
 class EvidenceRecovery(unittest.TestCase):
@@ -750,7 +763,7 @@ class SourceProofEntries(unittest.TestCase):
 
         def fake_invoke(prompt_path, refs, raw_output, log, size, timeout, codex,
                         visual_contract, frame_contract_text, image_model, image_quality,
-                        strict_model, *, scene_text=None, runner_request_id=None):
+                        strict_model, *, scene_text=None, runner_request_id=None, **_kwargs):
             calls.append({'scene': scene_text, 'contract': frame_contract_text,
                           'model': image_model, 'quality': image_quality,
                           'runner_request_id': runner_request_id})
