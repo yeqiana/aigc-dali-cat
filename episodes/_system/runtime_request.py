@@ -15,6 +15,7 @@ import request_intent
 import story_json
 import runtime_request_persistence
 import storage_config
+import model_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 REQUESTS_DIR = ROOT / "runtime" / "requests"
@@ -22,8 +23,9 @@ EPISODE_REL = Path("meta/runtime-request.json")
 SCHEMA_VERSION = 1
 DEFAULT_BRANCH = "story"
 _CONFIG = storyos_config.load_config()
-DEFAULT_IMAGE_MODEL = str(storyos_config.get_path(_CONFIG, "image.model"))
-DEFAULT_IMAGE_QUALITY = str(storyos_config.get_path(_CONFIG, "image.quality"))
+_IMAGE_PROFILE = model_policy.resolve("image.payload")
+DEFAULT_IMAGE_MODEL = str(_IMAGE_PROFILE["model"])
+DEFAULT_IMAGE_QUALITY = str(_IMAGE_PROFILE["quality"])
 DEFAULT_MAX_IMAGE_WORKERS = int(storyos_config.get_path(_CONFIG, "production.max_inflight_images"))
 STORY_MODES = {"auto_create", "user_seed", "core_constraints", "locked_story"}
 LOCKED_SIGNALS = ("不要改剧情","剧情已锁定","剧情已经定了","严格按这个剧情","严格按这个故事","只能润色","故事结构不要动","不要改故事")
