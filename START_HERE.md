@@ -18,7 +18,7 @@ ChatGPT / Work + DevSpace
 → machine/evidence gates
 ```
 
-**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 默认唯一生产模式入口是 `config/storyos.yaml:production.mode=COLLABORATIVE`；执行器入口统一为 `execution.workspace.provider=webcodex`、`execution.image.executor=CODEX`、`execution.vision_review.executor=CODEX`。协作宿主不可用时不会自动切到本地 Codex。需要整条链由 Codex 管理时，显式设置 `production.mode=CODEX_MANAGED` 或单次覆盖 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED`。旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型固定 `gpt-5.6-luna` + `reasoning=medium`；实际图片模型读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。
+**本机存在 `codex.exe` 只代表“可用能力”，不再代表整个 Runtime=CODEX。** 默认唯一生产模式入口是 `config/storyos.yaml:production.mode=COLLABORATIVE`；执行器入口统一为 `execution.workspace.provider=webcodex`、`execution.image.executor=CODEX`、`execution.vision_review.executor=CODEX`。协作宿主不可用时不会自动切到本地 Codex。需要整条链由 Codex 管理时，显式设置 `production.mode=CODEX_MANAGED` 或单次覆盖 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED`。旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型与生图模型分别读取 `config/storyos.yaml:models.profiles.image_controller` 和 `models.profiles.image_payload`。
 
 Concept / Story / Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，均必须 fresh + SHA-bound。图片执行层可用 `STORY_OS_IMAGE_EXECUTOR=CODEX|PRODUCT_RUNTIME|AUTO` 覆盖；旧 `STORY_OS_IMAGE_RUNTIME` 暂作兼容。只有显式选择 `PRODUCT_RUNTIME` 时，缺文件传输能力才返回 `HOST_ACTION_REQUIRED / HOST_WAIT`。Host Action 以 request_id 保存历史，Product Review 以 attempt-scoped request 保存历史。WORK `--full-auto` 必须进入统一 Runtime DAG 连续推进；`PREIMAGE_COMPILE` 是独立 Runtime 节点但不是第八个 Episode stage。每次宿主/审图动作后读取派生 `meta/runtime/next-action.json` 自动继续，不得因为正常 Host Action 再询问用户。Visual Lock baseline 与每个 Production Logical Batch 生成后都必须回 WORK 做 actual-pixel review，再放行后续生成。
 
@@ -81,7 +81,7 @@ Phase 10：真实发布后记录 `meta/publish-event.json`，不要修改已被 
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_BEGIN -->
 ## Runtime Request P0
 
-新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认模型读取 `config/storyos.yaml:image.model`，`image_quality=high`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
+新篇自然语言入口先编译为 `runtime-request`。未提供剧情时必须 `auto_create`；粗剧情必须 `user_seed → strengthen_and_rewrite`；未指定 image 时默认模型与质量读取 `config/storyos.yaml:models.profiles.image_payload`；显式 image 禁止静默替换或降级 Quality。当前 Visual Lock 固定为 4 张准入帧。
 <!-- STORY_OS_RUNTIME_REQUEST_P0_CORE_END -->
 
 ## 0. 黄金路径（Golden Path）

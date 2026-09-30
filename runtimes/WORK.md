@@ -10,9 +10,9 @@ Story OS V2.6.1 起，**WORK 是默认 Runtime**。在 ChatGPT + DevSpace / Work
 
 - 默认生产模式为 `production.mode=COLLABORATIVE`，整体运行时为 WORK。宿主暂时不可用时保持 WORK 并等待/阻塞，不自动改走本地 Codex。
 - 执行器配置统一在 `execution`：工作区为 `execution.workspace.provider=webcodex`，图片为 `execution.image.executor=CODEX`，视觉复核为 `execution.vision_review.executor=CODEX`。
-- 默认图片执行 Runtime 为 CODEX：**只有图片生成 / 图片返修**显式使用本地 Codex；图片控制模型锁定 `gpt-5.6-luna` + `reasoning=medium`，实际图片模型读取 `config/storyos.yaml:image.model` 并使用 `quality=high`。
+- 默认图片执行 Runtime 为 CODEX：**只有图片生成 / 图片返修**显式使用本地 Codex；图片控制模型读取 `models.profiles.image_controller`（当前 `gpt-6-luna` + `high`），图片模型读取 `models.profiles.image_payload`（当前 `gpt-image-2.5-flare` + `quality=high`）。
 - Story、PREIMAGE、Critic、Review、Gate、Release 仍由 WORK 负责；图片 Runtime 不得升级成 Codex full-auto。
-- 若要显式切换整条生产链，在 `production.mode` 设为 `CODEX_MANAGED`，或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED`。`STORY_OS_RUNTIME` 仅保留为低层兼容/调试覆盖。
+- 若要显式切换整条生产链，在 `production.mode` 设为 `CODEX_MANAGED`，或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED`。`STORY_OS_RUNTIME` 只保留为兼容/诊断信息，不改变 Production 的 effective mode/runtime。
 - 图片执行可用 `STORY_OS_IMAGE_EXECUTOR=CODEX|PRODUCT_RUNTIME|AUTO` 临时覆盖；旧变量 `STORY_OS_IMAGE_RUNTIME` 暂保留为兼容别名。
 
 ## 执行方式
@@ -72,8 +72,8 @@ run-critic
 ```text
 Runtime=WORK
 + image_execution_runtime=CODEX
-→ Codex Subscription image worker (`gpt-5.6-luna`, reasoning=medium)
-→ image_generation (`gpt-image-2`, quality=high)
+→ Codex Subscription image worker (`models.profiles.image_controller`)
+→ image_generation (`models.profiles.image_payload`)
 → RAW / candidate 落本地
 → Story OS Normalize / Ledger
 → WORK / Story OS Review 与 Gate
