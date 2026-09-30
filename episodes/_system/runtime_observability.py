@@ -21,6 +21,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import threading
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +35,28 @@ QUOTA_OBSERVABILITY_REL = Path("meta/quota-observability.json")
 TRACE_SUMMARY_REL = Path("meta/runtime/trace-summary.json")
 TRACE_EVENTS_REL = Path("meta/runtime/trace-events.jsonl")
 _TRACE_LOCK = threading.Lock()
+
+RUNTIME_EVENT_TYPES = frozenset({
+    "EPISODE_RUN_STARTED", "EPISODE_RUN_FINISHED", "STEP_READY", "STEP_DISPATCHED",
+    "STEP_STARTED", "STEP_FINISHED", "STEP_FAILED", "WORKER_DISPATCH_STARTED",
+    "WORKER_DISPATCH_COMMITTED", "WORKER_RESULT_RECEIVED", "IMAGE_GENERATION_REQUESTED",
+    "IMAGE_GENERATION_OBSERVED", "IMAGE_GENERATION_SUCCEEDED", "IMAGE_GENERATION_FAILED", "ARTIFACT_COMMITTED",
+    "REVIEW_ENQUEUED", "REVIEW_STARTED", "REVIEW_FINISHED", "REPAIR_ENQUEUED",
+    "REPAIR_STARTED", "REPAIR_FINISHED", "REPAIR_PROMPT_FINISHED", "USER_WAIT_STARTED", "USER_WAIT_FINISHED",
+    "CHECKPOINT_SAVED", "RESUME_STARTED", "MODEL_EXECUTION",
+    "CANARY_RUN_STARTED", "CANARY_RUN_FINISHED",
+})
+
+RUNTIME_EVENT_FIELDS = (
+    "event_id", "timestamp", "episode_id", "run_id", "trace_id", "step", "event_type",
+    "logical_asset_key", "frame_id", "model_role", "profile", "effective_model",
+    "reasoning_effort", "model_policy_version", "model_policy_sha256", "provider", "runner",
+    "worker_id", "attempt_index", "generation_key", "queue_name", "queue_depth",
+    "duration_ms", "wait_ms", "status", "failure_class", "source", "evidence_ref",
+    "controller_model", "controller_effort", "controller_profile", "controller_policy_sha256",
+    "payload_model", "payload_quality",
+    "call_id", "requested_model", "effective_model_source", "started_at", "finished_at",
+)
 
 KNOWN_PATHS = {
     "episode_performance": EPISODE_PERFORMANCE_REL,
@@ -150,6 +173,52 @@ def append_trace_event(ep: Path | str, event: dict) -> Path:
     with _TRACE_LOCK:
         with target.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(line)
+    return target
+
+
+def runtime_event(ep: Path | str, event_type: str, **fields) -> dict:
+    """Return a normalized observation event; it never carries control authority."""
+    name = str(event_type or "").strip().upper()
+    if name not in RUNTIME_EVENT_TYPES:
+        raise ValueError(f"unknown runtime telemetry event: {name}")
+    row = {key: None for key in RUNTIME_EVENT_FIELDS}
+    row.update({
+        "event_id": uuid.uuid4().hex,
+        "timestamp": dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds"),
+        "event_type": name,
+        "source": fields.pop("source", "storyos_runtime"),
+        "telemetry_only": True,
+    })
+    unknown = set(fields) - set(RUNTIME_EVENT_FIELDS)
+    if unknown:
+        raise ValueError("unknown runtime telemetry fields: " + ", ".join(sorted(unknown)))
+    row.update(fields)
+    return row
+
+
+def safe_record_runtime_event(ep: Path | str, event_type: str, **fields) -> bool:
+    """Best-effort JSONL event write; telemetry errors never change production flow."""
+    try:
+        append_trace_event(ep, runtime_event(ep, event_type, **fields))
+        return True
+    except Exception:
+        return False
+
+
+def write_model_execution_receipt(ep: Path | str, *, receipt: dict) -> Path:
+    """Persist one per-call model execution receipt as evidence, not authority."""
+    required = (
+        "receipt_schema_version", "episode_id", "run_id", "trace_id", "step", "call_id",
+        "model_role", "profile", "requested_model", "effective_model", "reasoning_effort",
+        "model_policy_version", "model_policy_sha256", "provider", "runner", "started_at",
+        "finished_at", "duration_ms", "status", "model_binding_source", "effective_model_source",
+    )
+    missing = [key for key in required if receipt.get(key) in (None, "")]
+    if missing:
+        raise ValueError("model execution receipt missing: " + ", ".join(missing))
+    target = Path(ep).resolve() / "meta/provider-receipts/model-executions" / f"{receipt['call_id']}.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return target
 
 
