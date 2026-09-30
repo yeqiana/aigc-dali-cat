@@ -76,7 +76,18 @@ def _write(ep: Path, data: dict) -> None:
     hot_state_bridge.mirror(ep, "INFLIGHT", data)
 
 
-def fingerprint(*, step: str, prompt: str, source_sha256: str = "") -> str:
+def fingerprint(
+    *,
+    step: str,
+    prompt: str,
+    source_sha256: str = "",
+    model_role: str = "",
+    effective_model: str = "",
+    reasoning_effort: str = "",
+    model_policy_sha256: str = "",
+    runtime_request_sha: str = "",
+    evidence_sha256: str = "",
+) -> str:
     """Stable identity of the business question answered by one scoped task.
 
     ``source_sha256`` is the preferred v2 identity.  A scoped worker prompt embeds
@@ -89,11 +100,26 @@ def fingerprint(*, step: str, prompt: str, source_sha256: str = "") -> str:
     a broader attach surface accidentally.
     """
     source = str(source_sha256 or "").strip().lower()
-    if source:
+    identity = {
+        "step": str(step),
+        "source_sha256": source,
+        "model_role": str(model_role or "").strip(),
+        "effective_model": str(effective_model or "").strip(),
+        "reasoning_effort": str(reasoning_effort or "").strip(),
+        "model_policy_sha256": str(model_policy_sha256 or "").strip().lower(),
+        "runtime_request_sha": str(runtime_request_sha or "").strip().lower(),
+        "evidence_sha256": str(evidence_sha256 or "").strip().lower(),
+    }
+    has_policy_identity = any(identity[key] for key in (
+        "model_role", "effective_model", "reasoning_effort", "model_policy_sha256",
+        "runtime_request_sha", "evidence_sha256",
+    ))
+    if has_policy_identity:
+        material = {"identity_schema_version": 3, **identity}
+    elif source:
         material = {
             "identity_schema_version": 2,
-            "step": str(step),
-            "source_sha256": source,
+            **identity,
         }
     else:
         material = {
@@ -298,6 +324,13 @@ def status(ep: Path) -> dict:
 def self_test() -> None:
     assert fingerprint(step="A", prompt="p") != fingerprint(step="B", prompt="p")
     assert fingerprint(step="A", prompt="p") == fingerprint(step="A", prompt="p")
+    identity = {"source_sha256": "src", "model_role": "story.story", "effective_model": "m",
+                "reasoning_effort": "medium", "model_policy_sha256": "policy-a",
+                "runtime_request_sha": "request", "evidence_sha256": "evidence"}
+    baseline = fingerprint(step="A", prompt="p", **identity)
+    assert baseline != fingerprint(step="A", prompt="p", **{**identity, "model_policy_sha256": "policy-b"})
+    assert baseline != fingerprint(step="A", prompt="p", **{**identity, "model_role": "release"})
+    assert baseline != fingerprint(step="A", prompt="p", **{**identity, "effective_model": "m2"})
     ok, reason, out = validate_result(
         {"returncode": 0, "output_base64": base64.b64encode(b"hi").decode(),
          "output_bytes": 2, "output_sha256": hashlib.sha256(b"hi").hexdigest(),

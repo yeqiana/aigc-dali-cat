@@ -79,6 +79,14 @@ class InflightCodexAttachContractTests(unittest.TestCase):
         self._td = tempfile.TemporaryDirectory(prefix="inflight-", dir=base)
         self.ep = Path(self._td.name)
         (self.ep / "meta/runtime").mkdir(parents=True, exist_ok=True)
+        self.request = scoped_codex_worker.runtime_request.compile_request(
+            "全自动做一篇「Runtime Request Authority Test」。")
+        self.model_binding = {
+            "role": "story.authoring",
+            "model": "gpt-6-luna",
+            "reasoning_effort": "high",
+            "model_policy_sha256": "a" * 64,
+        }
         self.runtime = Path(self._td.name) / "runner-runtime"
         (self.runtime / codex_user_runner.RESULT_DIR_NAME).mkdir(parents=True, exist_ok=True)
         patcher = mock.patch.object(codex_user_runner, "runtime_dir", return_value=self.runtime)
@@ -90,8 +98,12 @@ class InflightCodexAttachContractTests(unittest.TestCase):
 
     # --- fixtures -----------------------------------------------------------
 
-    def fingerprint(self, prompt: str = PROMPT, step: str = STEP) -> str:
-        return inflight_codex_task.fingerprint(step=step, prompt=prompt)
+    def fingerprint(self, prompt: str = PROMPT, step: str = STEP, binding=None) -> str:
+        with mock.patch.object(scoped_codex_worker.runtime_request,
+                               "authority_for_episode", return_value=self.request):
+            source_sha = scoped_codex_worker.attach_source_sha256(self.ep, step)
+            return scoped_codex_worker.scoped_fingerprint(
+                self.ep, step, prompt, binding or self.model_binding, source_sha)
 
     def record_task(self, request_id: str, *, timeout_seconds: int = 0,
                     prompt: str = PROMPT, step: str = STEP, stdin_sha256: str = STDIN_SHA) -> dict:
@@ -107,7 +119,7 @@ class InflightCodexAttachContractTests(unittest.TestCase):
         path.write_text(json.dumps(payload), encoding="utf-8")
         return path
 
-    def classify(self, *, prompt: str = PROMPT, step: str = STEP, running=()) -> dict:
+    def classify(self, *, prompt: str = PROMPT, step: str = STEP, running=(), binding=None) -> dict:
         with mock.patch.object(
                 inflight_codex_task, "_runner_inflight_state",
                 side_effect=lambda rid: (
@@ -115,22 +127,39 @@ class InflightCodexAttachContractTests(unittest.TestCase):
                     if str(rid) in {str(x) for x in running}
                     else inflight_codex_task.RUNNER_TASK_NOT_RUNNING)):
             return inflight_codex_task.classify(
-                self.ep, step=step, fingerprint_value=self.fingerprint(prompt, step))
+                self.ep, step=step,
+                fingerprint_value=self.fingerprint(prompt, step, binding=binding))
 
     # --- in-flight request_id 有持久证据 ------------------------------------
 
     def test_the_record_is_durable_before_the_task_is_submitted(self):
-        self.record_task(RID(1), timeout_seconds=3600)
         path = self.ep / inflight_codex_task.REL
-        self.assertTrue(path.is_file(), "in-flight 记录没有落盘，Driver 死后无从领取")
+        authoritative = {}
 
-        # Read through a cold path: a restarted Driver has only the file.
-        fresh = json.loads(path.read_text(encoding="utf-8"))
-        row = fresh["steps"][STEP]
+        def mirror(_ep, kind, value):
+            authoritative[kind] = value
+            return {"mode": "redis", "redis_written": True}
+
+        with mock.patch.object(inflight_codex_task.hot_state_bridge, "mirror", side_effect=mirror), \
+                mock.patch.object(inflight_codex_task.hot_state_bridge,
+                                  "compatibility_write_allowed", return_value=False), \
+                mock.patch.object(
+                    inflight_codex_task.hot_state_bridge, "read",
+                    side_effect=lambda _ep, kind: {
+                        "mode": "redis", "value": authoritative.get(kind),
+                    },
+                ):
+            self.record_task(RID(1), timeout_seconds=3600)
+            self.assertFalse(path.exists(), "Redis hot-state 模式不能写 JSON 镜像")
+            fresh = inflight_codex_task.lookup(self.ep, STEP)
+
+        # A restarted Driver reads through the configured authority facade.
+        self.assertIsNotNone(fresh)
+        row = fresh
         self.assertEqual(row["request_id"], RID(1))
         self.assertEqual(row["fingerprint"], self.fingerprint())
         self.assertEqual(row["stdin_sha256"], STDIN_SHA)
-        self.assertEqual(inflight_codex_task.lookup(self.ep, STEP)["request_id"], RID(1))
+        self.assertEqual(row["request_id"], RID(1))
 
     def test_clearing_a_collected_task_leaves_nothing_to_attach(self):
         self.record_task(RID(2))
@@ -155,11 +184,12 @@ class InflightCodexAttachContractTests(unittest.TestCase):
     # --- source SHA 漂移不会误复用 ------------------------------------------
 
     def test_drifted_inputs_are_never_reused(self):
-        """The fingerprint pins step + prompt bytes + capsule source SHA."""
+        """A changed effective business model cannot reuse a prior task result."""
         self.record_task(RID(4))
         self.store_result(RID(4), result_payload(RID(4)))
 
-        self.assertEqual(self.classify(prompt=PROMPT + " (story changed)")["reason"],
+        changed_binding = {**self.model_binding, "model_policy_sha256": "b" * 64}
+        self.assertEqual(self.classify(binding=changed_binding)["reason"],
                          "FINGERPRINT_DRIFT")
         # A different step has no record of its own; either way nothing is reused.
         other = self.classify(step="VISUAL_LOCK")
@@ -181,28 +211,22 @@ class InflightCodexAttachContractTests(unittest.TestCase):
     def test_creative_story_attach_identity_excludes_its_own_prepared_outputs(self):
         """The real P0-D bug: prepare-time files must not make CREATIVE_STORY self-drift."""
         (self.ep / "meta").mkdir(exist_ok=True)
-        (self.ep / "meta/runtime-request.json").write_text(json.dumps({
-            "topic": {"title": "same story"},
-            "story_input": {"mode": "auto_create"},
-            "creative_hints": [],
-            "visual_profile": None,
-            "provenance": {"source": "natural_language", "original_request": "make same story"},
-        }), encoding="utf-8")
-        (self.ep / "meta/episode-state.json").write_text(
-            json.dumps({"current_state": "IDEA_LOCKED"}), encoding="utf-8")
-        first = scoped_codex_worker.attach_source_sha256(self.ep, STEP)
-        # These are all created/updated by prompt()/CREATIVE_STORY itself and were
-        # exactly what changed during the first real fault injection.
-        for name in ("character-contract.json", "resource-selection.json",
-                     "directing-quality.json", "story-gates.json"):
-            (self.ep / "meta" / name).write_text(json.dumps({"changed": name}), encoding="utf-8")
-        second = scoped_codex_worker.attach_source_sha256(self.ep, STEP)
-        self.assertEqual(first, second)
+        request = self.request
+        with mock.patch.object(scoped_codex_worker.runtime_request,
+                               "authority_for_episode", side_effect=lambda _ep: request), \
+                mock.patch.object(scoped_codex_worker.episode_state_persistence,
+                                  "load", return_value={"current_state": "IDEA_LOCKED"}):
+            first = scoped_codex_worker.attach_source_sha256(self.ep, STEP)
+            # These are all created/updated by prompt()/CREATIVE_STORY itself and were
+            # exactly what changed during the first real fault injection.
+            for name in ("character-contract.json", "resource-selection.json",
+                         "directing-quality.json", "story-gates.json"):
+                (self.ep / "meta" / name).write_text(json.dumps({"changed": name}), encoding="utf-8")
+            self.assertEqual(first, scoped_codex_worker.attach_source_sha256(self.ep, STEP))
 
-        request = json.loads((self.ep / "meta/runtime-request.json").read_text(encoding="utf-8"))
-        request["story_input"] = {"mode": "user_seed", "raw": "materially changed story"}
-        (self.ep / "meta/runtime-request.json").write_text(json.dumps(request), encoding="utf-8")
-        self.assertNotEqual(first, scoped_codex_worker.attach_source_sha256(self.ep, STEP))
+            request = scoped_codex_worker.runtime_request.compile_request(
+                "全自动做一篇「Runtime Request Authority Test」。剧情大概是：改变核心故事。")
+            self.assertNotEqual(first, scoped_codex_worker.attach_source_sha256(self.ep, STEP))
 
     def test_a_result_produced_from_different_bytes_is_not_adopted(self):
         """The runner's recorded stdin SHA pins the output to the exact prompt."""
@@ -303,6 +327,10 @@ class InflightCodexAttachContractTests(unittest.TestCase):
             raise AssertionError("Driver 重启后又提交了一次 Codex 任务")
 
         with mock.patch.object(scoped_codex_worker, "prompt", return_value=PROMPT), \
+                mock.patch.object(scoped_codex_worker, "resolved_model",
+                                  return_value=self.model_binding), \
+                mock.patch.object(scoped_codex_worker.runtime_request,
+                                  "authority_for_episode", return_value=self.request), \
                 mock.patch.object(scoped_codex_worker.runtime_router, "local_codex_allowed",
                                   return_value=True), \
                 mock.patch.object(codex_user_runner, "bridge_required", return_value=True), \
@@ -329,6 +357,9 @@ class InflightCodexAttachContractTests(unittest.TestCase):
 
         worker = scoped_codex_worker
         with mock.patch.object(worker, "prompt", return_value=PROMPT), \
+                mock.patch.object(worker, "resolved_model", return_value=self.model_binding), \
+                mock.patch.object(worker.runtime_request, "authority_for_episode",
+                                  return_value=self.request), \
                 mock.patch.object(worker.runtime_router, "local_codex_allowed", return_value=True), \
                 mock.patch.object(codex_user_runner, "bridge_required", return_value=True), \
                 mock.patch.object(worker, "resolve_codex", return_value=Path("codex")), \

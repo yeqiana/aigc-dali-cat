@@ -30,6 +30,7 @@ SYSTEM = ROOT / "episodes/_system"
 sys.path.insert(0, str(SYSTEM))
 
 import runtime_dag
+import model_policy
 import workflow_step_protocol as proto
 
 
@@ -120,10 +121,30 @@ class StopTargetWiringTest(unittest.TestCase):
         env.start()
         self.addCleanup(env.stop)
         self.dispatched: list[str] = []
+        self.lifecycle: list[str] = []
         self.rc_by_step: dict[str, int] = {}
         self.state_after_step: dict[str, str] = {}
 
+        # These wiring tests model an Episode whose immutable Runtime Request is
+        # already bound. Keep the Model Policy lifecycle external to the
+        # scheduler assertions and avoid touching the real metadata store.
+        patcher = patch.object(runtime_dag.runtime_request, "authority_for_episode",
+                               return_value={"request_id": "fixture-request"})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        def freeze_policy(ep):
+            self.lifecycle.append("freeze")
+            return {"policy_sha256": "fixture-policy"}
+
+        patcher = patch.object(model_policy, "freeze_for_episode", side_effect=freeze_policy)
+        self.freeze_policy = patcher.start()
+        self.addCleanup(patcher.stop)
+        patcher = patch.object(model_policy, "validate_bound_policy", return_value=[])
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
         def fake_run_step(ep, step_id, **kwargs):
+            self.lifecycle.append("executor")
             self.dispatched.append(step_id)
             rc = self.rc_by_step.get(step_id, 0)
             if rc == 0 and step_id in self.state_after_step:
@@ -175,6 +196,7 @@ class StopTargetWiringTest(unittest.TestCase):
         self.assertIn(runtime_dag.STOP_TARGET_REACHED, out)
         self.assertIn("after VISUAL_LOCK", out)
         self.assertEqual(self.dispatched, ["VISUAL_LOCK"], "PRODUCTION must not be dispatched")
+        self.assertLess(self.lifecycle.index("freeze"), self.lifecycle.index("executor"))
 
     def test_loop_continues_while_the_target_is_not_yet_reached(self):
         """A target further along the canonical order must let the loop keep going, and the

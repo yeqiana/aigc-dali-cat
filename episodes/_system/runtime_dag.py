@@ -106,7 +106,7 @@ def dispatch_pending_critic(task_type, *, adapter, episode_dir, attempt,
                 "request_id": request.get("request_id"), "adapter_called": False}
     return dispatch_critic_runnable(
         task_type, adapter=adapter, episode_dir=ep, attempt=attempt,
-        legacy_target=adapter.legacy_execution_target(),
+        legacy_target=adapter.legacy_execution_target(ep),
         route_decision=request.get("capability_route_decision"),
         adapter_kwargs=adapter_kwargs,
     )
@@ -149,11 +149,70 @@ def _evidence_input_hash(ep,paths):
     ).hexdigest()
 
 
-def _step_input_hash(ep, paths):
+def _model_identity(ep, resolved_role):
+    """Return the frozen Model Policy identity used by this step, if applicable."""
+    role = str(resolved_role or "").strip()
+    if not role:
+        return {"model_policy_sha256": "", "resolved_role": "", "effective_model": "",
+                "reasoning_effort": ""}
+    try:
+        import model_policy
+        import model_policy_persistence
+    except ModuleNotFoundError:
+        # Keeps this branch usable while the policy module is introduced in its
+        # own logical commit. New policy-aware results use a different hash shape.
+        return {"model_policy_sha256": "", "resolved_role": role, "effective_model": "",
+                "reasoning_effort": ""}
+    bound = model_policy_persistence.load(Path(ep).resolve())
+    policy_sha = str((bound or {}).get("policy_sha256") or "").lower()
+    # Real production requests are frozen before dispatch. The unbound branch
+    # supports planning/test fixtures and legacy Episodes; workers still refuse
+    # to execute without an Episode binding.
+    resolved = model_policy.resolve(role, episode=Path(ep).resolve()) if bound else model_policy.resolve(role)
+    if not isinstance(resolved, dict):
+        resolved = {}
+    return {
+        "model_policy_sha256": policy_sha or str(resolved.get("model_policy_sha256") or "").lower(),
+        "resolved_role": str(resolved.get("resolved_role") or role),
+        "effective_model": str(resolved.get("model") or resolved.get("effective_model") or ""),
+        "reasoning_effort": str(resolved.get("reasoning_effort") or ""),
+    }
+
+
+def _step_input_hash(ep, paths, *, resolved_role=""):
     evidence_hash=_evidence_input_hash(ep,paths)
     request=runtime_request.authority_for_episode(ep) or {}
     request_hash=runtime_request.authority_sha256(request)
-    return hashlib.sha256((request_hash+"|"+evidence_hash).encode("utf-8")).hexdigest()
+    identity = {
+        "identity_schema_version": 2,
+        "runtime_request_sha": request_hash,
+        "evidence_sha": evidence_hash,
+        **_model_identity(ep, resolved_role),
+    }
+    raw=json.dumps(identity,ensure_ascii=False,sort_keys=True,separators=(",",":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+MODEL_ROLE_BY_STEP = {
+    "CREATIVE_STORY": "story.authoring",
+    "PREIMAGE_COMPILE": "preimage.frame_contract",
+    "VISUAL_LOCK": "vision.visual_lock",
+    "PRODUCTION": "image.controller",
+    "RELEASE": "release",
+    "PROMPT_AUTHORING": "prompt.production",
+}
+
+
+def _freeze_model_policy_before_dispatch(ep):
+    """Freeze and validate policy after Request binding, before DAG model work."""
+    if not runtime_request.authority_for_episode(ep):
+        return ["Runtime Request is not bound; Model Policy cannot be frozen before dispatch"]
+    try:
+        import model_policy
+        model_policy.freeze_for_episode(ep)
+        return model_policy.validate_bound_policy(ep)
+    except Exception as exc:
+        return [str(exc)]
 
 
 def reconcile_visual_profile_closure(ep):
@@ -245,7 +304,8 @@ def spec_rows():
         rows.append(proto.StepSpec(
             step_id=x["id"],executor=x["executor"],depends_on=tuple(x.get("depends_on") or []),
             covers=tuple(x.get("covers") or []),target_state=x.get("target_state"),
-            evidence_paths=tuple(x.get("evidence_paths") or []),expensive=bool(x.get("expensive"))))
+            evidence_paths=tuple(x.get("evidence_paths") or []),expensive=bool(x.get("expensive")),
+            model_role=x.get("model_role")))
     return rows
 
 
@@ -456,6 +516,15 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
         print("RUNTIME_MODE_GUARD_FAIL")
         for err in mode_errors: print(err)
         return 8
+    if mode in {"repair_only", "release_only"} and not (
+            mode == "release_only" and state(ep) == "PUBLISH_READY"):
+        # Special repair/release modes dispatch a scoped model directly, bypassing
+        # the normal scheduler loop. Freeze at the common boundary first.
+        policy_errors=_freeze_model_policy_before_dispatch(ep)
+        if policy_errors:
+            print("MODEL POLICY BIND FAIL")
+            for err in policy_errors: print(err)
+            return 8
     special_rc=runtime_mode_router.dispatch_special(ep,mode,codex,timeout)
     if special_rc is not None: return special_rc
     if mode=="image_continue":
@@ -484,6 +553,15 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
             background.shutdown(wait=False,cancel_futures=True)
             print(STOP_TARGET_REACHED+" "+until+" (already valid)")
             return 0
+    if mode not in {"data_review", "repair_only", "release_only"}:
+        # Normal scheduler modes freeze after the no-op target check but before
+        # the scheduler can release its first model executor.
+        policy_errors=_freeze_model_policy_before_dispatch(ep)
+        if policy_errors:
+            background.shutdown(wait=False,cancel_futures=True)
+            print("MODEL POLICY BIND FAIL")
+            for err in policy_errors: print(err)
+            return 8
     while len(completed_nodes)<len(specs):
         wave=runtime_scheduler.schedule(
             node_contract,
@@ -513,7 +591,8 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 evidence=["meta/character-contract.json","meta/character-visual-contract.json"])
         prior=(proto.load_state(ep).get("steps") or {}).get(s.step_id) or {}
         attempt=int(prior.get("attempt") or 0)+1
-        input_hash=_step_input_hash(ep,["meta/episode-state.json",*s.evidence_paths])
+        resolved_role=getattr(s,"model_role",None) or MODEL_ROLE_BY_STEP.get(s.step_id,"")
+        input_hash=_step_input_hash(ep,["meta/episode-state.json",*s.evidence_paths],resolved_role=resolved_role)
         if s.step_id==INCREMENTAL_PLAN_STEP:
             input_hash=_evidence_input_hash(ep,INCREMENTAL_PLAN_INPUTS)
         if s.step_id=="PREIMAGE_COMPILE":

@@ -20,6 +20,7 @@ import runtime_timeout_policy
 import runtime_request
 import runtime_memory_advice
 import episode_state_persistence
+import model_policy
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -141,6 +142,13 @@ TARGET: keep STORYBOARD_LOCKED and finish every non-image asset required for a c
 - DO NOT invoke image_generation, DO NOT create Visual Lock images, DO NOT advance the Episode stage.
 Stop only when environment/frame contracts are machine-verifiable and image production can start without story work.
 """,
+"PROMPT_AUTHORING": """
+TARGET: author and validate production prompts, then stop before any image dispatch.
+- Story, Storyboard, Character Contract, Environment/Impact Contract and Resolved Frame Contracts are frozen inputs. Do not rewrite them.
+- Author or repair concise per-frame production prompt source files from the frozen Frame Contracts; preserve continuity and capture realism.
+- Use the existing prompt package compiler/validator and report unresolved contract conflicts instead of inventing missing authority.
+- Do NOT call image_generation, do NOT dispatch or repair images, and do NOT advance the Episode stage.
+""",
 "VISUAL_LOCK":"""
 TARGET: reach VISUAL_CALIBRATED and stop there.
 - create/verify Environment + Impact Contract.
@@ -199,6 +207,47 @@ STEP_DIRECTIVES.update({
 "PREIMAGE_VISUAL_NARRATIVE": """TARGET: produce only the VISUAL_NARRATIVE_PREPARE Candidate declared by the execution capsule/request. Cover visual narrative core, shot progression, capture grammar and anomaly progression. Do not own environment physics or character identity. Write only the declared candidate JSON; never modify shared authority, episode-state or gates.""",
 })
 
+SCOPED_MODEL_ROLES={
+    "CREATIVE_STORY":"story.authoring",
+    "PREIMAGE_COMPILE":"preimage.frame_contract",
+    "PROMPT_AUTHORING":"prompt.production",
+    "PREIMAGE_ENVIRONMENT":"preimage.world_prepare",
+    "PREIMAGE_WORLD":"preimage.world_prepare",
+    "PREIMAGE_CHARACTER_FINALIZE":"preimage.character_finalize",
+    "PREIMAGE_VISUAL_NARRATIVE":"preimage.visual_narrative",
+    "VISUAL_LOCK":"vision.visual_lock",
+    "PRODUCTION":"image.controller",
+    "RELEASE":"release",
+}
+
+def resolved_model(step, ep):
+    role=SCOPED_MODEL_ROLES.get(step)
+    if not role:
+        raise ValueError(f"no Model Policy role configured for scoped step: {step}")
+    result=model_policy.resolve(role,episode=ep)
+    model=str(result.get("model") or "").strip()
+    effort=str(result.get("reasoning_effort") or "").strip().lower()
+    if not model or not effort or not result.get("model_policy_sha256"):
+        raise ValueError(f"Model Policy did not resolve a complete binding for {role}")
+    return result
+
+def codex_exec_command(codex, binding):
+    return prefix(codex)+["exec","--skip-git-repo-check","--ephemeral",
+                          "-m",str(binding["model"]),
+                          "-c",f'model_reasoning_effort="{binding["reasoning_effort"]}"',
+                          "-s","workspace-write","-C",str(ROOT),"--json","-"]
+
+def scoped_fingerprint(ep, step, text, binding, source_sha):
+    request=runtime_request.authority_for_episode(ep) or {}
+    request_sha=runtime_request.authority_sha256(request) if request else ""
+    return inflight_codex_task.fingerprint(
+        step=step,prompt=text,source_sha256=source_sha,
+        model_role=str(binding.get("role") or SCOPED_MODEL_ROLES[step]),
+        effective_model=str(binding.get("model") or ""),
+        reasoning_effort=str(binding.get("reasoning_effort") or ""),
+        model_policy_sha256=str(binding.get("model_policy_sha256") or ""),
+        runtime_request_sha=request_sha,evidence_sha256=source_sha)
+
 def resolve_codex(raw):
     import codex_cli_contract
     return codex_cli_contract.resolve_path(raw)
@@ -255,7 +304,7 @@ Read the embedded FAST_RUNTIME_INDEX first. Do NOT recursively scan the reposito
 Stop when the bounded target is reached. The parent runtime independently verifies all gates.
 """
 
-def _attach(ep,step,text,timeout,log,poll_seconds=None):
+def _attach(ep,step,text,timeout,log,binding,poll_seconds=None):
     """Claim a Codex result a dead Driver already paid for, or wait for it.
 
     Returns (rc, handled). ``handled`` is False when there is nothing to attach
@@ -269,7 +318,7 @@ def _attach(ep,step,text,timeout,log,poll_seconds=None):
     if not codex_user_runner.bridge_required():
         return None,False
     source_sha=attach_source_sha256(ep,step)
-    fp=inflight_codex_task.fingerprint(step=step,prompt=text,source_sha256=source_sha)
+    fp=scoped_fingerprint(ep,step,text,binding,source_sha)
     verdict=inflight_codex_task.classify(ep,step=step,fingerprint_value=fp)
     if verdict["decision"]==inflight_codex_task.ADOPT:
         with log.open("ab") as h:
@@ -325,6 +374,7 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
     perf_run=episode_performance.safe_begin_stage(ep,step,source="scoped_codex_worker")
     rc=99;log=ep/"meta/scoped-workers"/f"{step.lower()}.jsonl";log.parent.mkdir(parents=True,exist_ok=True)
     text=prompt(ep,step)
+    binding=resolved_model(step,ep)
     if not runtime_router.local_codex_allowed(explicit=bool(codex_raw)):
         runtime,_=runtime_router.detect()
         request=product_runtime_adapter.build_request(
@@ -333,7 +383,7 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
         episode_performance.safe_end_stage(ep,step,perf_run,status="HOST_ACTION_REQUIRED",
                                            metadata={"timeout_seconds":timeout,"log":str(log)})
         return product_runtime_adapter.HOST_ACTION_REQUIRED_RC,str(log)
-    attached,handled=_attach(ep,step,text,timeout,log,poll_seconds=attach_poll_seconds)
+    attached,handled=_attach(ep,step,text,timeout,log,binding,poll_seconds=attach_poll_seconds)
     if handled:
         rc=int(attached)
         episode_performance.safe_end_stage(ep,step,perf_run,status="PASS" if rc==0 else f"RC_{rc}",
@@ -343,15 +393,15 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
     collected=False
     try:
         codex=resolve_codex(codex_raw)
-        cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
+        cmd=codex_exec_command(codex,binding)
         request_id=uuid.uuid4().hex if codex_user_runner.bridge_required() else None
         if request_id:
             # Written before submission on purpose: a record written afterwards
             # would be missing in exactly the case it exists for.
             inflight_codex_task.begin(
                 ep,step=step,request_id=request_id,
-                fingerprint_value=inflight_codex_task.fingerprint(
-                    step=step,prompt=text,source_sha256=attach_source_sha256(ep,step)),
+                fingerprint_value=scoped_fingerprint(
+                    ep,step,text,binding,attach_source_sha256(ep,step)),
                 stdin_sha256=hashlib.sha256(text.encode("utf-8")).hexdigest(),
                 timeout_seconds=int(timeout),
                 source_sha256=attach_source_sha256(ep,step))
@@ -372,7 +422,7 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None):
                                            metadata={"timeout_seconds":timeout,"log":str(log)})
 
 def self_test():
-    assert {"CREATIVE_STORY","PREIMAGE_COMPILE","PREIMAGE_ENVIRONMENT","PREIMAGE_WORLD","PREIMAGE_CHARACTER_FINALIZE","PREIMAGE_VISUAL_NARRATIVE","VISUAL_LOCK","PRODUCTION","RELEASE"}.issubset(STEP_DIRECTIVES)
+    assert {"CREATIVE_STORY","PREIMAGE_COMPILE","PROMPT_AUTHORING","PREIMAGE_ENVIRONMENT","PREIMAGE_WORLD","PREIMAGE_CHARACTER_FINALIZE","PREIMAGE_VISUAL_NARRATIVE","VISUAL_LOCK","PRODUCTION","RELEASE"}.issubset(STEP_DIRECTIVES)
     print("SCOPED CODEX WORKER SELF-TEST PASS")
 
 def main():
