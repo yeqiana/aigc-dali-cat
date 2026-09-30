@@ -21,6 +21,7 @@ import story_json
 import runtime_timeout_policy
 import episode_state_persistence
 import review_record_persistence
+import review_policy_binding
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
@@ -103,6 +104,7 @@ def save_review(
     decision: str,
     source_sha256: str | None = None,
 ) -> dict:
+    data = review_policy_binding.attach_bound_policy_sha(Path(ep).resolve(), data)
     provenance = data.get("critic_provenance") or {}
     return review_record_persistence.save(
         Path(ep).resolve(),

@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import review_record_persistence
+import review_policy_binding
 
 
 REVIEW_TYPE = "VISUAL_PROFILE"
@@ -37,6 +38,7 @@ def save(
     source_sha256: str | None = None,
 ) -> dict:
     ep = Path(ep).resolve()
+    payload = review_policy_binding.attach_bound_policy_sha(ep, payload)
     provenance = payload.get("critic_provenance") or {}
     return review_record_persistence.save(
         ep,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import sys
 from pathlib import Path
 
@@ -12,6 +13,20 @@ import approval_lock  # noqa: E402
 import golden_episode_regression as golden  # noqa: E402
 import incremental_closure  # noqa: E402
 import propagation_core_gate  # noqa: E402
+import storyos_config  # noqa: E402
+
+
+POLICY_SHA = "a" * 64
+
+
+def _frozen_policy():
+    return {
+        "schema_version": 1,
+        "policy_version": "fixture-v1",
+        "policy_sha256": POLICY_SHA,
+        "role_aliases": {"critic.story": "semantic_critic"},
+        "profiles": {"semantic_critic": {"model": "gpt-6-luna", "reasoning_effort": "high"}},
+    }
 
 
 def test_approval_lock_binds_story_review_authority(monkeypatch, tmp_path):
@@ -23,6 +38,8 @@ def test_approval_lock_binds_story_review_authority(monkeypatch, tmp_path):
 
 
 def test_incremental_closure_detects_story_review_from_owner(monkeypatch, tmp_path):
+    global_config_drift = copy.deepcopy(storyos_config.load_config())
+    global_config_drift["models"]["profiles"]["semantic_critic"]["model"] = "global-drift-model"
     monkeypatch.setattr(
         incremental_closure.episode_state_persistence,
         "load",
@@ -31,7 +48,26 @@ def test_incremental_closure_detects_story_review_from_owner(monkeypatch, tmp_pa
     monkeypatch.setattr(
         incremental_closure.story_review,
         "load_review",
-        lambda _ep: {"summary": {"passed": True}},
+        lambda _ep: {
+            "schema_version": 1,
+            "story_os_version": "2.1.0",
+            "story_sha256": "b" * 64,
+            "storyboard_sha256": "c" * 64,
+            "model_policy_sha256": POLICY_SHA,
+            "critic_provenance": {"model_policy_sha256": POLICY_SHA},
+            "issue_codes": [],
+            "summary": {"passed": True},
+        },
+    )
+    monkeypatch.setattr(
+        incremental_closure.model_policy_persistence,
+        "load",
+        lambda _ep: _frozen_policy(),
+    )
+    monkeypatch.setattr(
+        storyos_config,
+        "load_config",
+        lambda: global_config_drift,
     )
     monkeypatch.setattr(
         incremental_closure,
@@ -43,9 +79,20 @@ def test_incremental_closure_detects_story_review_from_owner(monkeypatch, tmp_pa
     try:
         result = incremental_closure.plan(ep)
         assert result["story"] == "CLEAN"
+        assert result["evidence_plan"]["story"]["policy_sha256"] == POLICY_SHA
     finally:
         import shutil
         shutil.rmtree(ep, ignore_errors=True)
+
+
+def test_unbound_policy_cannot_be_resolved_from_global_config(monkeypatch, tmp_path):
+    monkeypatch.setattr(incremental_closure.model_policy_persistence, "load", lambda _ep: None)
+    monkeypatch.setattr(
+        storyos_config,
+        "load_config",
+        lambda: (_ for _ in ()).throw(AssertionError("global config must not supply frozen policy SHA")),
+    )
+    assert incremental_closure._bound_policy_sha(tmp_path, "critic.story") is None
 
 
 def test_propagation_core_reads_story_review_owner(monkeypatch, tmp_path):
