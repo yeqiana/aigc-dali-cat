@@ -27,6 +27,7 @@ import rolling_frame_review
 import asset_lineage
 import character_visual_contract
 import reference_arbitrator
+import user_visual_reference_contract
 import visual_lock_baseline_gate
 import episode_performance
 import raw_candidate_budget
@@ -155,8 +156,27 @@ def narrative_escalation_from(ep:Path,frame:int)->int|None:
     except Exception:return None
 
 
+def _merge_execution_references(base:list[dict], overlays:list[dict])->list[dict]:
+    """Keep required identity continuity, then prefer explicit user overlays."""
+    limit=int(reference_arbitrator.MAX_REFS)
+    chosen=[]
+    identity=[x for x in base if isinstance(x,dict) and x.get("kind")=="identity"]
+    others=[x for x in base if not (isinstance(x,dict) and x.get("kind")=="identity")]
+    for row in [*identity, *overlays, *others]:
+        if not isinstance(row,dict) or not row.get("path"):
+            continue
+        if any(x.get("path")==row.get("path") for x in chosen):
+            continue
+        chosen.append(row)
+        if len(chosen)>=limit:
+            break
+    return chosen
+
+
 def contract_references(ep:Path,frame:int,scope:str="batch")->list[dict]:
     refs,_=reference_arbitrator.select(ep,frame,scope=scope)
+    overlays=user_visual_reference_contract.references_for_frame(ep,frame,scope)
+    refs=_merge_execution_references(refs,overlays)
     # Required reference anchors are execution contracts, not documentation only.
     gates_path=ep / "meta" / "story-gates.json"
     gates={}
