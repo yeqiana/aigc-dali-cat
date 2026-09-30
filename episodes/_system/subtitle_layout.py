@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 import production_ledger
+import final_acceptance
 
 from story_os_contract import story_os_version
 from canvas_spec import CANONICAL_SIZES
@@ -150,10 +151,53 @@ def resolve_repo_file(raw: object) -> Path:
     return p
 
 
-def render_one(base: Path, output: Path, caption: str, *, y: int | None, font_path: Path) -> dict:
+def resolve_frame_base(ep: Path, key: str, frame: dict) -> tuple[Path, str]:
+    accepted = final_acceptance.visual_asset_for_frame(ep, key)
+    if accepted is not None:
+        return resolve_repo_file(accepted["path"]), "direct_user_final_publish"
+    approved = frame.get("approved_asset")
+    if not isinstance(approved, dict) or not approved.get("path"):
+        raise RuntimeError(
+            f"frame {key} approved_asset missing; subtitles render only from approved or direct-user final bases")
+    return resolve_repo_file(approved["path"]), "approved_asset"
+
+
+def normalize_publish_canvas(base: Path, target_size: tuple[int, int]):
+    """Fit a user-accepted publish still without cropping it to the Episode canvas."""
+    from PIL import Image, ImageOps
+
+    source = Image.open(base).convert("RGB")
+    source_size = source.size
+    if source_size == target_size:
+        return source.convert("RGBA"), {
+            "operation": "NOOP", "source_size": list(source_size),
+            "target_size": list(target_size), "crop_applied": False,
+        }
+    width, height = source.size
+    edge_pixels = (
+        [source.getpixel((x, 0)) for x in range(width)]
+        + [source.getpixel((x, height - 1)) for x in range(width)]
+        + [source.getpixel((0, y)) for y in range(1, height - 1)]
+        + [source.getpixel((width - 1, y)) for y in range(1, height - 1)]
+    )
+    color = tuple(round(sum(pixel[channel] for pixel in edge_pixels) / len(edge_pixels)) for channel in range(3))
+    canvas = ImageOps.pad(
+        source, target_size, method=Image.Resampling.LANCZOS, color=color, centering=(0.5, 0.5)
+    )
+    return canvas.convert("RGBA"), {
+        "operation": "RESIZE_LANCZOS_PAD_NO_CROP", "source_size": list(source_size),
+        "target_size": list(target_size), "crop_applied": False,
+        "padding_rgb": list(color),
+    }
+
+
+def render_one(
+    base: Path, output: Path, caption: str, *, y: int | None, font_path: Path,
+    target_size: tuple[int, int],
+) -> dict:
     from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-    image = Image.open(base).convert("RGBA")
+    image, normalization = normalize_publish_canvas(base, target_size)
     width, height = image.size
     if (width, height) not in CANONICAL_SIZES:
         raise RuntimeError(f"subtitle renderer requires canonical canvas; got {width}x{height}")
@@ -202,6 +246,7 @@ def render_one(base: Path, output: Path, caption: str, *, y: int | None, font_pa
         "font": str(font_path),
         "font_size": 42,
         "stroke_width": 4,
+        "canvas_normalization": normalization,
     }
 
 
@@ -348,10 +393,7 @@ def render_all(
         if only_frames is not None and key not in only_frames:
             continue
         number = int(key)
-        approved = frame.get("approved_asset")
-        if not isinstance(approved, dict) or not approved.get("path"):
-            raise RuntimeError(f"frame {key} approved_asset missing; subtitles render only from approved bases")
-        base = resolve_repo_file(approved["path"])
+        base, base_source = resolve_frame_base(ep, key, frame)
         output = ep / "production" / "publish" / f"{key}.png"
         per = y_cfg.get(key) or y_cfg.get(str(number)) or {}
         y_value = per.get("y") if isinstance(per, dict) else None
@@ -363,8 +405,8 @@ def render_all(
             raise RuntimeError(f"frame {key} subtitle leaves left-middle safe zone without safe_zone_override_reason")
 
         if number in silent:
-            from PIL import Image
-            image = Image.open(base).convert("RGB")
+            image, normalization = normalize_publish_canvas(base, (canonical_width, canonical_height))
+            image = image.convert("RGB")
             output.parent.mkdir(parents=True, exist_ok=True)
             image.save(output, format="PNG")
             layout = {
@@ -376,13 +418,17 @@ def render_all(
                 "font": str(font_path),
                 "font_size": 42,
                 "stroke_width": 4,
+                "canvas_normalization": normalization,
             }
             caption = ""
         else:
             caption = str(frames.get(number) or "").strip()
             if not caption:
                 raise RuntimeError(f"frame {key} caption missing and not silent")
-            layout = render_one(base, output, caption, y=int(y_value), font_path=font_path)
+            layout = render_one(
+                base, output, caption, y=int(y_value), font_path=font_path,
+                target_size=(canonical_width, canonical_height),
+            )
             layout["silent"] = False
 
         rows[key] = {
@@ -390,6 +436,7 @@ def render_all(
             **layout,
             "base_path": base.relative_to(ROOT).as_posix(),
             "base_sha256": sha256_file(base),
+            "base_source": base_source,
             "output_path": output.relative_to(ROOT).as_posix(),
             "output_sha256": sha256_file(output),
             "y_ratio": round(int(y_value) / canonical_height, 4),

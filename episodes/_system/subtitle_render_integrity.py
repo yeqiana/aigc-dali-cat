@@ -17,7 +17,19 @@ def inspect(layout: dict) -> dict:
         if (ocr._sha(base) != str(layout.get("base_sha256") or "").lower()
                 or ocr._sha(output) != str(layout.get("output_sha256") or "").lower()):
             return {"status": "UNKNOWN", "reason": "SOURCE_SHA_DRIFT"}
-        with Image.open(base) as original, Image.open(output) as published:
+        with Image.open(output) as published:
+            with Image.open(base) as source:
+                original = source.convert("RGB")
+            normalization = layout.get("canvas_normalization") or {}
+            target = normalization.get("target_size")
+            if isinstance(target, list) and len(target) == 2:
+                from subtitle_layout import normalize_publish_canvas
+                normalized, expected_normalization = normalize_publish_canvas(
+                    base, (int(target[0]), int(target[1]))
+                )
+                if expected_normalization != normalization:
+                    return {"status": "UNKNOWN", "reason": "NORMALIZATION_CONTRACT_DRIFT"}
+                original = normalized.convert("RGB")
             if original.size != published.size:
                 return {"status": "FAIL", "reason": "CANVAS_CHANGED"}
             if original.mode != "RGB" or published.mode != "RGB":

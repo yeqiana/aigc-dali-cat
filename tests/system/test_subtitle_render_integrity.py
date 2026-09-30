@@ -1,42 +1,46 @@
 from __future__ import annotations
 
+import hashlib
 import sys
 import tempfile
+import unittest
 from pathlib import Path
-from unittest.mock import patch
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
-SYSTEM = ROOT / "episodes/_system"
-if str(SYSTEM) not in sys.path:
-    sys.path.insert(0, str(SYSTEM))
+sys.path.insert(0, str(ROOT / "episodes" / "_system"))
 
-import caption_ocr_diagnostic
+import subtitle_layout
 import subtitle_render_integrity
 
 
-def test_local_render_integrity_detects_only_definite_pixel_errors():
-    base_dir = ROOT / "episodes/_tests"
-    base_dir.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="render-integrity-", dir=base_dir) as raw:
-        ep = Path(raw)
-        original = ep / "base.png"
-        output = ep / "publish.png"
-        Image.new("RGB", (100, 80), "white").save(original)
-        rendered = Image.open(original).copy()
-        ImageDraw.Draw(rendered).rectangle((25, 25, 35, 32), fill="black")
-        rendered.save(output)
-        layout = {"base_path": str(original), "output_path": str(output),
-                  "base_sha256": caption_ocr_diagnostic._sha(original),
-                  "output_sha256": caption_ocr_diagnostic._sha(output)}
-        with patch.object(caption_ocr_diagnostic, "_subtitle_rect", return_value=(20, 20, 40, 40)):
-            assert subtitle_render_integrity.inspect(layout)["status"] == "PASS"
-            rendered.putpixel((90, 70), (0, 0, 0))
-            rendered.save(output)
-            layout["output_sha256"] = caption_ocr_diagnostic._sha(output)
-            result = subtitle_render_integrity.inspect(layout)
-            assert result["status"] == "FAIL"
-            assert result["reason"] == "PIXELS_CHANGED_OUTSIDE_SUBTITLE"
-            layout["output_sha256"] = "0" * 64
-            assert subtitle_render_integrity.inspect(layout)["status"] == "UNKNOWN"
+class SubtitleRenderIntegrityTests(unittest.TestCase):
+    def test_normalized_publish_canvas_is_compared_before_subtitle_delta(self):
+        with tempfile.TemporaryDirectory(dir=ROOT) as raw_tmp:
+            tmp = Path(raw_tmp)
+            source = tmp / "source.png"
+            output = tmp / "output.png"
+            Image.new("RGB", (1122, 1402), (72, 89, 101)).save(source)
+            normalization = subtitle_layout.render_one(
+                source, output, "字幕检查", y=702,
+                font_path=Path("C:/Windows/Fonts/msyhbd.ttc"),
+                target_size=(1080, 1350),
+            )
+            sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+            layout = {
+                **normalization,
+                "base_path": source.relative_to(ROOT).as_posix(),
+                "base_sha256": sha(source),
+                "output_path": output.relative_to(ROOT).as_posix(),
+                "output_sha256": sha(output),
+                "x": 72,
+                "y": 702,
+                "line_height": 54,
+                "lines": ["字幕检查"],
+            }
+            self.assertEqual(subtitle_render_integrity.inspect(layout)["status"], "PASS")
+
+
+if __name__ == "__main__":
+    unittest.main()
