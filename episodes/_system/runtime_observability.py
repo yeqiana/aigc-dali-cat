@@ -42,7 +42,11 @@ RUNTIME_EVENT_TYPES = frozenset({
     "WORKER_DISPATCH_COMMITTED", "WORKER_RESULT_RECEIVED", "IMAGE_GENERATION_REQUESTED",
     "IMAGE_GENERATION_OBSERVED", "IMAGE_GENERATION_SUCCEEDED", "IMAGE_GENERATION_FAILED", "ARTIFACT_COMMITTED",
     "REVIEW_ENQUEUED", "REVIEW_STARTED", "REVIEW_FINISHED", "REPAIR_ENQUEUED",
-    "REPAIR_STARTED", "REPAIR_FINISHED", "REPAIR_PROMPT_FINISHED", "USER_WAIT_STARTED", "USER_WAIT_FINISHED",
+    "REPAIR_STARTED", "REPAIR_FINISHED", "REPAIR_PROMPT_STARTED", "REPAIR_PROMPT_FINISHED",
+    "REPAIR_REVIEW_STARTED", "REPAIR_REVIEW_FINISHED", "REPAIR_GENERATION_STARTED",
+    "REPAIR_GENERATION_FINISHED", "FIRST_PASS_REVIEW_COMPLETE", "REPAIR_WAVE_PLANNED",
+    "REPAIR_WAVE_STARTED", "REPAIR_WAVE_COMPLETED", "REPAIR_WAVE_DENIED_SECOND_WAVE",
+    "USER_WAIT_STARTED", "USER_WAIT_FINISHED",
     "CHECKPOINT_SAVED", "RESUME_STARTED", "MODEL_EXECUTION",
     "CANARY_RUN_STARTED", "CANARY_RUN_FINISHED",
     "ATTEMPT_REQUESTED", "ATTEMPT_RESERVED", "ATTEMPT_RELEASED_PRE_DISPATCH",
@@ -60,7 +64,9 @@ RUNTIME_EVENT_FIELDS = (
     "controller_model", "controller_effort", "controller_profile", "controller_policy_sha256",
     "payload_model", "payload_quality",
     "call_id", "requested_model", "effective_model_source", "started_at", "finished_at",
-    "fencing_token", "lease_token_hash", "attempt_consumed",
+    "fencing_token", "lease_token_hash", "attempt_consumed", "review_queue_depth_at_dispatch",
+    "repair_wave_id", "source_generation_key", "repair_generation_key", "failure_codes",
+    "remaining_attempts", "high_watermark", "low_watermark", "oldest_review_wait_ms",
 )
 
 KNOWN_PATHS = {

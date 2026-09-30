@@ -59,6 +59,7 @@ def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duratio
         from logical_asset_identity import episode_id, frame_asset_key
         binding=model_policy.resolve("image.payload",episode=ep)
         controller=model_policy.resolve("image.controller",episode=ep)
+        generation_key=production_recovery.generation_key_for_item(ep,item)
         runtime_observability.safe_record_runtime_event(
             ep,event_type,episode_id=episode_id(ep),
             run_id=item.get("run_id"),step="IMAGE_GENERATION",logical_asset_key=frame_asset_key(ep,item["frame"]),
@@ -66,7 +67,7 @@ def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duratio
             effective_model=binding.get("model"),reasoning_effort=binding.get("reasoning_effort"),
             model_policy_version=binding.get("policy_version"),model_policy_sha256=binding.get("model_policy_sha256"),
             provider=item.get("provider"),runner=item.get("runner"),worker_id=item.get("worker_id"),
-            attempt_index=max(1,int(item.get("attempts") or 1)),generation_key=None,
+            attempt_index=max(1,int(item.get("attempts") or 1)),generation_key=generation_key or None,
             queue_name="repair" if item.get("scope")=="repair" else "image",
             queue_depth=queue_depth,duration_ms=duration_ms,wait_ms=wait_ms,
             review_queue_depth_at_dispatch=review_queue_depth if event_type in {"WORKER_ADMITTED", "WORKER_DISPATCH_COMMITTED"} else None,
@@ -74,7 +75,10 @@ def _telemetry_image(ep:Path,item:dict,event_type:str,*,queue_depth=None,duratio
             evidence_ref=item.get("provider_receipt") or item.get("id"),
             controller_model=controller.get("model"),controller_effort=controller.get("reasoning_effort"),
             controller_profile=controller.get("profile"),controller_policy_sha256=controller.get("model_policy_sha256"),
-            payload_model=binding.get("model"),payload_quality=item.get("quality"))
+            payload_model=binding.get("model"),payload_quality=item.get("quality"),
+            repair_wave_id=item.get("repair_wave_id"),
+            source_generation_key=item.get("source_generation_key"),
+            repair_generation_key=generation_key if item.get("scope")=="repair" else None)
     except Exception:
         return
 
@@ -468,6 +472,7 @@ async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->di
     _telemetry_image(ep,item,"WORKER_DISPATCH_STARTED",status="started")
     if item.get("scope")=="repair":
         _telemetry_image(ep,item,"REPAIR_STARTED",status="started")
+        _telemetry_image(ep,item,"REPAIR_GENERATION_STARTED",status="started")
     result=await asyncio.to_thread(backend_worker,ep,item,timeout,codex)
     output=result.get("output")
     if result.get("returncode")!=0 or not output or not Path(output).is_file():
@@ -697,6 +702,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 _telemetry_image(ep,obs_item,"ARTIFACT_COMMITTED",duration_ms=_observed_ms(observed_at,now()),status="committed")
                 if item.get("scope")=="repair":
                     _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status="generated")
+                    _telemetry_image(ep,obs_item,"REPAIR_GENERATION_FINISHED",duration_ms=observed_ms,status="generated")
                 if review_enabled:
                     queued=review_queue.enqueue_generated(q,episode=ep,source_item=item,
                         artifact=Path(result["output"]),artifact_path=item["output_path"])

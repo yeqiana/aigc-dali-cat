@@ -49,6 +49,8 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
         "artifact_path": str(artifact_path).replace("\\", "/"),
         "artifact_sha256": artifact_sha256.lower(),
         "review_kind": review_kind,
+        "source_scope": str(source_item.get("scope") or ""),
+        "repair_wave_id": str(source_item.get("repair_wave_id") or ""),
         "model_role": "vision.fast",
         "model_policy_sha256": str(policy.get("model_policy_sha256") or ""),
         "model": str(policy.get("model") or ""),
@@ -186,6 +188,7 @@ def telemetry(ep: Path, event: str, item: dict, *, queue_depth: int) -> None:
         runtime_observability.safe_record_runtime_event(
             ep, event, episode_id=item.get("episode_id"),
             logical_asset_key=item.get("logical_asset_key"),
+            frame_id=f"{int(item.get('frame') or 0):02d}",
             generation_key=item.get("generation_key"),
             attempt_index=item.get("attempt_index"),
             model_role=item.get("model_role"),
@@ -193,6 +196,24 @@ def telemetry(ep: Path, event: str, item: dict, *, queue_depth: int) -> None:
             queue_name="review", queue_depth=queue_depth,
             evidence_ref=item.get("review_key"), status=item.get("status"),
             source="review_queue")
+        if item.get("source_scope") == "repair":
+            repair_event = {"REVIEW_ENQUEUED":"REPAIR_ENQUEUED",
+                            "REVIEW_STARTED":"REPAIR_REVIEW_STARTED",
+                            "REVIEW_FINISHED":"REPAIR_REVIEW_FINISHED"}.get(event)
+            if repair_event:
+                runtime_observability.safe_record_runtime_event(
+                    ep, repair_event, episode_id=item.get("episode_id"),
+                    logical_asset_key=item.get("logical_asset_key"),
+                    frame_id=f"{int(item.get('frame') or 0):02d}",
+                    generation_key=item.get("generation_key"),
+                    repair_generation_key=item.get("generation_key"),
+                    repair_wave_id=item.get("repair_wave_id"),
+                    attempt_index=item.get("attempt_index"),
+                    model_role=item.get("model_role"),
+                    model_policy_sha256=item.get("model_policy_sha256"),
+                    queue_name="repair_review",queue_depth=queue_depth,
+                    evidence_ref=item.get("review_key"),status=item.get("status"),
+                    source="review_queue")
     except Exception:
         pass
 
