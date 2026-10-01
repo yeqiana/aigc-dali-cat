@@ -26,14 +26,14 @@ class IncrementalClosureFailClosedTests(unittest.TestCase):
             json.dumps({"current_state": "IDEA_LOCKED"}), encoding="utf-8")
         (ep / "meta/story-gates.json").write_text(
             json.dumps({"subtitles": {"required": False}}), encoding="utf-8")
-        (ep / "meta/production-ledger.json").write_text("{}", encoding="utf-8")
         return td, ep
 
     def test_inner_frame_planner_error_is_outer_error_not_incremental_work(self):
         td, ep = self.make_episode()
         self.addCleanup(td.cleanup)
         inner = json.dumps({"action": "ERROR", "raw": "planner traceback"})
-        with mock.patch.object(incremental_closure, "run", return_value=(0, inner)):
+        with mock.patch.object(incremental_closure.production_ledger, "load_authority", return_value={}), \
+             mock.patch.object(incremental_closure, "run", return_value=(0, inner)):
             result = incremental_closure.plan(ep)
         self.assertEqual(result["frames"], "ERROR")
         self.assertEqual(result["action"], "ERROR")
@@ -42,7 +42,8 @@ class IncrementalClosureFailClosedTests(unittest.TestCase):
     def test_nonzero_inner_planner_return_code_is_outer_error(self):
         td, ep = self.make_episode()
         self.addCleanup(td.cleanup)
-        with mock.patch.object(incremental_closure, "run", return_value=(7, "traceback")):
+        with mock.patch.object(incremental_closure.production_ledger, "load_authority", return_value={}), \
+             mock.patch.object(incremental_closure, "run", return_value=(7, "traceback")):
             result = incremental_closure.plan(ep)
         self.assertEqual(result["frames"], "ERROR")
         self.assertEqual(result["action"], "ERROR")

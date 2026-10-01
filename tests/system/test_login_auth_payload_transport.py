@@ -20,7 +20,7 @@ import image_payload_transport
 
 class LoginAuthPayloadTransportTests(unittest.TestCase):
     @staticmethod
-    def _catalog_payload(*models):
+    def _catalog_payload(*models, tool_capability_state="UNKNOWN"):
         rows = []
         for index, item in enumerate(models, start=1):
             model, effort = item if isinstance(item, tuple) else (item, "low")
@@ -32,7 +32,8 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                 "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
                 "catalog_sha256": "a" * 64,
                 "catalog_entry_count": len(models),
-                "image_tool_capability": "UNKNOWN",
+                "tool_capability_state": tool_capability_state,
+                "tool_capability_source": "TEST_INJECTED_ATTESTATION",
             })
         return {
             "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
@@ -52,7 +53,7 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
             "catalog_sha256": "a" * 64,
             "catalog_entry_count": 2,
-            "image_tool_capability": "UNKNOWN",
+            "tool_capability_state": "UNKNOWN",
         }
 
     def test_catalog_prefers_visible_provider_models_and_excludes_business_controller(self):
@@ -76,8 +77,8 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertTrue(all(row["candidate_catalog_member"] for row in rows))
         self.assertTrue(all(row["catalog_entry_count"] == 4 for row in rows))
         self.assertTrue(all(row["catalog_sha256"] == rows[0]["catalog_sha256"] for row in rows))
-        self.assertEqual(rows[0]["image_tool_capability"], "UNKNOWN")
-        self.assertEqual(rows[1]["image_tool_capability"], "AVAILABLE")
+        self.assertEqual(rows[0]["tool_capability_state"], "UNKNOWN")
+        self.assertEqual(rows[1]["tool_capability_state"], "UNKNOWN")
 
     def test_catalog_attestation_hash_is_stable_and_uses_safe_fields(self):
         payload = {"models": [
@@ -95,7 +96,7 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertRegex(first[0]["catalog_sha256"], r"^[0-9a-f]{64}$")
         self.assertNotIn("instructions_template", json.dumps(first))
 
-    def test_catalog_image_tool_capability_is_extracted_without_guessing(self):
+    def test_optional_catalog_tool_lists_do_not_prove_capability(self):
         rows = codex_subscription_image._catalog_candidates({"models": [
             {"slug": "tool-model", "visibility": "list", "priority": 1,
              "supported_tools": [{"name": "image_generation"}]},
@@ -103,24 +104,29 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
              "supported_tools": []},
             {"slug": "unknown-model", "visibility": "list", "priority": 3},
         ]})
-        self.assertEqual([row["image_tool_capability"] for row in rows],
-                         ["AVAILABLE", "UNAVAILABLE", "UNKNOWN"])
+        self.assertEqual([row["tool_capability_state"] for row in rows],
+                         ["UNKNOWN", "UNKNOWN", "UNKNOWN"])
+
+    def test_non_authoritative_catalog_metadata_does_not_claim_image_tool_support(self):
+        rows = codex_subscription_image._catalog_candidates({"models": [
+            {"slug": "omitted-experimental-tools", "visibility": "list", "priority": 1,
+             "tool_mode": "code_mode_only"},
+            {"slug": "empty-experimental-tools", "visibility": "list", "priority": 2,
+             "experimental_supported_tools": [], "tool_mode": "code_mode_only"},
+            {"slug": "experimental-image-tool", "visibility": "list", "priority": 3,
+             "experimental_supported_tools": ["image_generation"]},
+            {"slug": "authoritative-image-tool", "visibility": "list", "priority": 4,
+             "supported_tools": ["image_generation"]},
+            {"slug": "authoritative-no-tools", "visibility": "list", "priority": 5,
+             "supported_tools": []},
+        ]})
+        self.assertEqual(
+            [row["tool_capability_state"] for row in rows],
+            ["UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN"],
+        )
 
     def test_no_external_runner_for_fake_model_fixtures(self):
-        """Test catalog slugs stay behind an in-process probe mock."""
-        diagnostic = {
-            "status": "BLOCKED",
-            "failure_class": "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
-            "returncode": 0,
-            "timed_out": False,
-            "request_id": None,
-            "durable_result_found": False,
-            "sentinel_completed": False,
-            "turn_completed": True,
-            "image_generation_call_count": 0,
-            "codex_resolution": "user_runner",
-            "transport_model_source": "LOGIN_CATALOG_PROBE",
-        }
+        """Ordinary preflight cannot probe UNKNOWN fixture models or become READY."""
         with (
             patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
             patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
@@ -129,7 +135,8 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                          return_value=self._catalog_payload(
                              ("transport-a", "low"), ("transport-b", "medium"))),
             patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
-                         return_value=diagnostic) as in_process_probe,
+                         side_effect=AssertionError(
+                             "ordinary preflight must not probe UNKNOWN fixture candidates")) as in_process_probe,
             patch.object(codex_subscription_image.codex_user_runner, "run_codex",
                          side_effect=AssertionError(
                              "fake transport fixture reached the external Codex runner")) as external_runner,
@@ -138,16 +145,9 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                 model="gpt-image-2.5-flare", quality="high")
 
         self.assertEqual(row["status"], "BLOCKED")
-        self.assertEqual(in_process_probe.call_count, 2)
-        self.assertEqual(
-            [(call.args[1], call.args[2]) for call in in_process_probe.call_args_list],
-            [("transport-a", "low"), ("transport-b", "medium")],
-        )
-        for call in in_process_probe.call_args_list:
-            attestation = call.kwargs["candidate_provenance"]
-            self.assertTrue(attestation["candidate_catalog_member"])
-            self.assertEqual(attestation["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
-            self.assertEqual(attestation["catalog_sha256"], "a" * 64)
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN")
+        self.assertNotEqual(row["status"], "READY_FOR_REAL_CAPABILITY_PROOF")
+        in_process_probe.assert_not_called()
         external_runner.assert_not_called()
         self.assertFalse(row["image_attempt_authority_called"])
         self.assertFalse(row["image_generation_called"])
@@ -493,15 +493,18 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
 
     def test_login_preflight_selects_first_successful_catalog_transport(self):
         probes = []
+        visibility_probes = []
         with (
             patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
             patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
             patch.object(codex_subscription_image, "image_runtime_preflight", return_value={"transport": "user_runner"}),
             patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
                          return_value=self._catalog_payload(
-                             ("transport-a", "low"), ("transport-b", "medium"))),
+                             ("transport-a", "low"), ("transport-b", "medium"),
+                             tool_capability_state="EXPLICIT_SUPPORTED")),
             patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
-                         side_effect=lambda _c, model, effort, *, candidate_provenance: (
+                         side_effect=lambda _c, model, effort, *, candidate_provenance, tool_visibility_probe=False: (
+                             visibility_probes.append(tool_visibility_probe) or
                              probes.append((model, effort)) or {
                                  "status": "PASS" if model == "transport-b" else "BLOCKED",
                                  "failure_class": None if model == "transport-b"
@@ -532,6 +535,7 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertEqual(row["transport_model"], "transport-b")
         self.assertEqual(row["transport_effort"], "medium")
         self.assertEqual(probes, [("transport-a", "low"), ("transport-b", "medium")])
+        self.assertEqual(visibility_probes, [False, False])
         self.assertTrue(row["candidate_catalog_member"])
         self.assertEqual(row["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
         self.assertEqual(row["catalog_sha256"], "a" * 64)
@@ -553,7 +557,8 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
             patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
                          return_value=self._catalog_payload(
-                             ("transport-a", "low"), ("transport-b", "medium"))),
+                             ("transport-a", "low"), ("transport-b", "medium"),
+                             tool_capability_state="EXPLICIT_SUPPORTED")),
             patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
                          return_value=probe) as transport_probe,
             patch.object(codex_subscription_image.codex_user_runner, "run_codex") as external_runner,
@@ -582,7 +587,9 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                     patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
                     patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
                     patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
-                                 return_value=self._catalog_payload("transport-a", "transport-b")),
+                                 return_value=self._catalog_payload(
+                                     "transport-a", "transport-b",
+                                     tool_capability_state="EXPLICIT_SUPPORTED")),
                     patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
                                  return_value=probe) as transport_probe,
                     patch.object(codex_subscription_image.codex_user_runner, "run_codex") as external_runner,
@@ -600,7 +607,8 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
             patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
             patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
-                         return_value=self._catalog_payload("transport-a")),
+                         return_value=self._catalog_payload(
+                             "transport-a", tool_capability_state="EXPLICIT_SUPPORTED")),
             patch.object(codex_subscription_image, "_probe_transport_model_diagnostic", return_value={
                 "status": "BLOCKED",
                 "failure_class": "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT",

@@ -84,3 +84,48 @@ def test_model_execution_receipt_snapshot_detects_additions_and_changes(tmp_path
     after = canary._model_execution_receipt_snapshot(episode)
     assert set(after) == set(before)
     assert after != before
+
+
+def test_subscription_canary_claim_precedes_unknown_capability_preflight(monkeypatch):
+    import codex_subscription_image
+    import image_payload_transport
+    import model_policy
+
+    episode = Path("phase5a-test-workspace")
+    order = []
+    preflight = {
+        "episode": episode,
+        "episode_path": str(episode.resolve()),
+        "canary_id": "phase5a-test-canary",
+        "logical_asset_key": "_external/test/frame-01",
+        "policy_sha256": "a" * 64,
+        "runtime_request_id": "req-test",
+    }
+    monkeypatch.setattr(canary, "_preflight", lambda *_args: preflight)
+    monkeypatch.setattr(
+        canary, "claim_global_canary",
+        lambda *_args: order.append("claim") or {"canary_id": preflight["canary_id"]},
+    )
+    monkeypatch.setattr(image_payload_transport, "selected_route",
+                        lambda *_args: {"provider": "codex_subscription"})
+    monkeypatch.setattr(model_policy, "resolve",
+                        lambda *_args, **_kwargs: {"model": "gpt-image-2.5-flare", "quality": "high"})
+
+    def blocked_probe(**_kwargs):
+        assert order == ["claim"]
+        return {
+            "status": "BLOCKED",
+            "failure_class": "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN",
+            "image_attempt_authority_called": False,
+            "image_generation_called": False,
+        }
+
+    monkeypatch.setattr(codex_subscription_image, "payload_capability_preflight", blocked_probe)
+    monkeypatch.setattr(canary, "_telemetry", lambda *_args, **_kwargs: None)
+
+    result = canary.run_production_subpath(episode, canary_id=preflight["canary_id"])
+
+    assert result["status"] == "CANARY_PAYLOAD_PREFLIGHT_BLOCKED"
+    assert order == ["claim"]
+    assert result["image_attempt_reserve_called"] is False
+    assert result["image_scheduler_called"] is False
