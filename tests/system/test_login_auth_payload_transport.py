@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import base64
 import json
 import sys
 import unittest
@@ -64,6 +65,157 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertEqual(row["failure_class"], "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE")
         self.assertFalse(row["image_attempt_authority_called"])
         self.assertFalse(row["image_generation_called"])
+
+    def test_cleanup_timeout_adopts_completed_sentinel_without_image_call(self):
+        raw = (
+            '{"type":"thread.started"}\n'
+            '{"type":"turn.started"}\n'
+            '{"type":"item.completed","item":{"type":"agent_message","text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed","usage":{}}\n'
+        )
+        exc = codex_subscription_image.codex_user_runner.CodexUserRunnerTimeout(
+            ["codex"], 30, "cleanup timeout")
+        exc.remote = {"request_id": "abc123", "timed_out": True, "returncode": 124}
+        result = {
+            "output_base64": base64.b64encode(raw.encode("utf-8")).decode("ascii"),
+            "returncode": 124,
+        }
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex", side_effect=exc),
+            patch.object(codex_subscription_image.codex_user_runner, "read_task_result", return_value=result),
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            ok, evidence = codex_subscription_image._probe_transport_model(
+                Path("codex.exe"), "transport-a", "low")
+        self.assertTrue(ok)
+        self.assertEqual(evidence, "PASS_WITH_CLEANUP_TIMEOUT")
+
+    def test_normal_jsonl_exact_sentinel_and_completed_turn_passes(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"  STORYOS_TRANSPORT_OK  "}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        self.assertTrue(codex_subscription_image._transport_probe_completed(raw))
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex",
+                         return_value=SimpleNamespace(returncode=0, stdout=raw)) as run,
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            ok, evidence = codex_subscription_image._probe_transport_model(
+                Path("codex.exe"), "transport-a", "low")
+        self.assertTrue(ok)
+        self.assertEqual(evidence, "PASS")
+        run.assert_called_once()
+
+    def _timeout_probe(self, *, remote, result=None):
+        exc = codex_subscription_image.codex_user_runner.CodexUserRunnerTimeout(
+            ["codex"], 30, "cleanup timeout")
+        exc.remote = remote
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex", side_effect=exc) as run,
+            patch.object(codex_subscription_image.codex_user_runner, "read_task_result",
+                         return_value=result or {}) as read_result,
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            outcome = codex_subscription_image._probe_transport_model(
+                Path("codex.exe"), "transport-a", "low")
+        run.assert_called_once()
+        return outcome, read_result
+
+    def test_cleanup_timeout_without_request_id_fails_without_readback(self):
+        (ok, _), read_result = self._timeout_probe(remote={"timed_out": True})
+        self.assertFalse(ok)
+        read_result.assert_not_called()
+
+    def test_cleanup_timeout_reads_request_id_from_remote_object(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
+        (ok, evidence), read_result = self._timeout_probe(
+            remote=SimpleNamespace(request_id="request-object"),
+            result={"output_base64": encoded},
+        )
+        self.assertTrue(ok)
+        self.assertEqual(evidence, "PASS_WITH_CLEANUP_TIMEOUT")
+        read_result.assert_called_once_with("request-object")
+
+    def test_cleanup_timeout_without_durable_result_fails(self):
+        (ok, _), read_result = self._timeout_probe(remote={"request_id": "abc123"})
+        self.assertFalse(ok)
+        read_result.assert_called_once_with("abc123")
+
+    def test_cleanup_timeout_rejects_corrupt_durable_base64(self):
+        (ok, _), _ = self._timeout_probe(
+            remote={"request_id": "abc123"}, result={"output_base64": "%%%"})
+        self.assertFalse(ok)
+
+    def test_cleanup_timeout_rejects_invalid_utf8_durable_output(self):
+        encoded = base64.b64encode(b"\xff").decode("ascii")
+        (ok, _), _ = self._timeout_probe(
+            remote={"request_id": "abc123"}, result={"output_base64": encoded})
+        self.assertFalse(ok)
+
+    def test_cleanup_timeout_requires_turn_completed(self):
+        raw = '{"type":"item.completed","item":{"type":"agent_message","text":"STORYOS_TRANSPORT_OK"}}\n'
+        encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
+        (ok, _), _ = self._timeout_probe(
+            remote={"request_id": "abc123"}, result={"output_base64": encoded})
+        self.assertFalse(ok)
+
+    def test_cleanup_timeout_rejects_ordinary_text_sentinel(self):
+        raw = 'Some ordinary text says STORYOS_TRANSPORT_OK\n{"type":"turn.completed"}\n'
+        self.assertFalse(codex_subscription_image._transport_probe_completed(raw))
+        encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
+        (ok, _), _ = self._timeout_probe(
+            remote={"request_id": "abc123"}, result={"output_base64": encoded})
+        self.assertFalse(ok)
+
+    def test_probe_rejects_malformed_jsonl_instead_of_skipping_unknown_event(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"STORYOS_TRANSPORT_OK"}}\n'
+            'not-json\n'
+            '{"type":"turn.completed"}\n'
+        )
+        self.assertFalse(codex_subscription_image._transport_probe_completed(raw))
+
+    def test_direct_probe_rejects_image_generation_tool_event(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"tool_call",'
+            '"name":"image_generation"}}\n'
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex",
+                         return_value=SimpleNamespace(returncode=0, stdout=raw)),
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            ok, _ = codex_subscription_image._probe_transport_model(
+                Path("codex.exe"), "transport-a", "low")
+        self.assertFalse(ok)
+
+    def test_probe_rejects_provider_image_generation_item_type(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"image_generation_call"}}\n'
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        self.assertFalse(codex_subscription_image._transport_probe_completed(raw))
+
+    def test_cleanup_timeout_rejects_image_tool_event(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"tool_call","name":"image_generation"}}\n'
+            '{"type":"item.completed","item":{"type":"agent_message","text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed","usage":{}}\n'
+        )
+        self.assertFalse(codex_subscription_image._transport_probe_completed(raw))
 
     def test_login_preflight_selects_first_successful_catalog_transport(self):
         probes = []

@@ -3,6 +3,7 @@
 """Generate exactly one image via the current Codex ChatGPT sign-in, then normalize it to the Story OS canvas."""
 from __future__ import annotations
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -284,6 +285,65 @@ def _subscription_model_catalog(codex: Path) -> list[dict]:
     return rows
 
 
+def _probe_event_calls_image_generation(value: object) -> bool:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if (str(key) in {"type", "tool", "tool_name", "name", "function"}
+                    and str(child).strip() in {"image_generation", "image_generation_call"}):
+                return True
+            if _probe_event_calls_image_generation(child):
+                return True
+    elif isinstance(value, list):
+        return any(_probe_event_calls_image_generation(child) for child in value)
+    return False
+
+
+def _transport_probe_completed(raw: str) -> bool:
+    """Accept only a completed exact sentinel with no image tool invocation."""
+    sentinel = False
+    turn_completed = False
+    for line in str(raw or "").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except (TypeError, ValueError):
+            return False
+        if not isinstance(row, dict):
+            continue
+        if _probe_event_calls_image_generation(row):
+            return False
+        if row.get("type") == "turn.completed":
+            turn_completed = True
+        item = row.get("item") if isinstance(row.get("item"), dict) else {}
+        if (row.get("type") == "item.completed"
+                and item.get("type") == "agent_message"
+                and str(item.get("text") or "").strip() == "STORYOS_TRANSPORT_OK"):
+            sentinel = True
+    return sentinel and turn_completed
+
+
+def _timeout_probe_result(exc: Exception) -> str:
+    remote = getattr(exc, "remote", None)
+    if isinstance(remote, dict):
+        request_id = str(remote.get("request_id") or "").strip()
+    else:
+        request_id = str(getattr(remote, "request_id", "") or "").strip()
+    if not request_id:
+        return ""
+    try:
+        result = codex_user_runner.read_task_result(request_id)
+        if not isinstance(result, dict):
+            return ""
+        encoded = str(result.get("output_base64") or "")
+        if not encoded:
+            return ""
+        output = base64.b64decode(encoded, validate=True)
+        return output.decode("utf-8")
+    except Exception:
+        return ""
+
+
 def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, str]:
     cmd = execution_command_prefix(codex) + [
         'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
@@ -293,21 +353,28 @@ def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, 
         *transport_args(model, effort),
         '-s', 'read-only', '--json', '-',
     ]
-    completed = codex_user_runner.run_codex(
-        cmd,
-        input="Return exactly STORYOS_TRANSPORT_OK and do not call any tool.",
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
-        check=False,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        task_type="smoke",
-        codex_home_mode="inherit",
-    )
-    raw = str(completed.stdout or "")
-    return completed.returncode == 0 and "STORYOS_TRANSPORT_OK" in raw, raw[-800:]
+    try:
+        completed = codex_user_runner.run_codex(
+            cmd,
+            input="Return exactly STORYOS_TRANSPORT_OK and do not call any tool.",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
+            check=False,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            task_type="smoke",
+            codex_home_mode="inherit",
+        )
+        raw = str(completed.stdout or "")
+        passed = completed.returncode == 0 and _transport_probe_completed(raw)
+        return passed, "PASS" if passed else raw[-800:]
+    except codex_user_runner.CodexUserRunnerTimeout as exc:
+        raw = _timeout_probe_result(exc)
+        if _transport_probe_completed(raw):
+            return True, "PASS_WITH_CLEANUP_TIMEOUT"
+        return False, raw[-800:]
 
 
 def payload_capability_preflight(*, model: str, quality: str,
@@ -336,6 +403,7 @@ def payload_capability_preflight(*, model: str, quality: str,
                     "transport_model": row["model"],
                     "transport_effort": row["effort"],
                     "transport_model_source": "LOGIN_CATALOG_PROBE",
+                    "transport_probe_status": tail,
                     "payload_model": requested_model,
                     "payload_quality": requested_quality,
                     "api_key_required": False,
@@ -744,9 +812,9 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     frame_contract_text = frame_contract['prompt_contract'] if frame_contract else None
     internal_policy = getattr(args, '_image_model_policy', None)
     if isinstance(internal_policy, dict):
-        model_policy = dict(internal_policy)
+        payload_model_policy = dict(internal_policy)
     else:
-        model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
+        payload_model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
     recovered_codex_raw = getattr(args, '_recovered_codex_raw', None)
     canonical_payload_request = getattr(args, '_canonical_payload_request', None)
     recovered_src = Path(str(recovered_codex_raw)).expanduser().resolve() if recovered_codex_raw else None
@@ -786,9 +854,9 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             raise BackendError("IMAGE_PAYLOAD_REQUEST_LOGICAL_ASSET_MISMATCH")
         if canonical_payload_request.get("frame_contract_sha256") != (frame_contract or {}).get("contract_sha256"):
             raise BackendError("IMAGE_PAYLOAD_REQUEST_FRAME_CONTRACT_MISMATCH")
-        if canonical_payload_request.get("payload_model") != model_policy.get("model"):
+        if canonical_payload_request.get("payload_model") != payload_model_policy.get("model"):
             raise BackendError("IMAGE_PAYLOAD_REQUEST_MODEL_MISMATCH")
-        if canonical_payload_request.get("payload_quality") != model_policy.get("quality"):
+        if canonical_payload_request.get("payload_quality") != payload_model_policy.get("quality"):
             raise BackendError("IMAGE_PAYLOAD_REQUEST_QUALITY_MISMATCH")
         referenced = []
         for row in canonical_payload_request.get("references") or []:
@@ -827,7 +895,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
                 raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_REQUIRED")
             elapsed = invoke_codex(
                 prompt_path, referenced, raw_output, log, size, int(args.timeout), args.codex,
-                None, None, model_policy["model"], model_policy["quality"], model_policy["strict_model"],
+                None, None, payload_model_policy["model"], payload_model_policy["quality"], payload_model_policy["strict_model"],
                 scene_text=str(canonical_payload_request["scene_prompt"]),
                 runner_request_id=str(getattr(args, "_runner_request_id", "") or "") or None,
                 episode_dir=ep,
@@ -851,11 +919,11 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         if bool(getattr(args, "_raw_candidate_budget_preclaimed", False)):
             raise BackendError("INDEPENDENT_IMAGE_PAYLOAD_REQUEST_REQUIRED")
-        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
+        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, payload_model_policy['model'], payload_model_policy['quality'], payload_model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
         backend_name = 'codex_subscription'
-    receipt_data = provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame))
+    receipt_data = provider_capability.inspect(raw_output, width, height, model=payload_model_policy["model"], route=backend_name, frame=int(args.frame))
     receipt_data.update(provider_receipt_model_bindings(
-        ep, model_policy["model"], model_policy["quality"]))
+        ep, payload_model_policy["model"], payload_model_policy["quality"]))
     if canonical_payload_request is not None:
         receipt_data.update({
             "controller_receipt_id": canonical_payload_request.get("controller_receipt_id"),
@@ -936,12 +1004,12 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         'provider_receipt': {k: v for k, v in provider_receipt_info.items() if k != 'receipt'},
         'provider_capability': provider_receipt_info.get('receipt'),
         'image_model': {
-            **model_policy,
+            **payload_model_policy,
             'enforcement': 'runtime_request_to_worker_contract',
             'provider_attestation': False,
             'generation_route': backend_name,
-            'generation_route_note': f'generated via built-in image_gen tool in the Codex desktop interface when STORY_OS_MANUAL_RAW_DIR is set; model contract stays {model_policy["model"]}',
-        } if manual_src else {**model_policy, 'enforcement': 'runtime_request_to_worker_contract', 'provider_attestation': False},
+            'generation_route_note': f'generated via built-in image_gen tool in the Codex desktop interface when STORY_OS_MANUAL_RAW_DIR is set; model contract stays {payload_model_policy["model"]}',
+        } if manual_src else {**payload_model_policy, 'enforcement': 'runtime_request_to_worker_contract', 'provider_attestation': False},
         'elapsed_seconds': elapsed,
     }
 
