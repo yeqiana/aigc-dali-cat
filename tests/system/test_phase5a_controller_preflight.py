@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,13 +10,14 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import phase5a_collaborative_canary as canary  # noqa: E402
-import codex_subscription_image  # noqa: E402
 import codex_user_runner  # noqa: E402
 import model_policy  # noqa: E402
 import runtime_observability  # noqa: E402
+import scoped_codex_worker  # noqa: E402
+import openai_images_provider  # noqa: E402
 
 
-def test_exact_probe_uses_episode_bound_luna_high_and_codex_auth_context(monkeypatch, tmp_path):
+def test_exact_probe_uses_regular_scoped_text_route_and_does_not_enable_image_tool(monkeypatch, tmp_path):
     episode = tmp_path / "episode"
     episode.mkdir()
     calls = {}
@@ -30,37 +30,43 @@ def test_exact_probe_uses_episode_bound_luna_high_and_codex_auth_context(monkeyp
     monkeypatch.setattr(model_policy, "validate_bound_policy", lambda _ep: [])
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
                         dict(binding) if role == "image.controller" else original_resolve(role, **kwargs))
-    monkeypatch.setattr(codex_subscription_image, "resolve_codex",
-                        lambda _codex: Path("codex.exe"))
-    monkeypatch.setattr(codex_subscription_image, "image_runtime_preflight",
-                        lambda **_kwargs: {"auth_context_present": True})
-    monkeypatch.setattr(codex_subscription_image, "command_prefix",
-                        lambda _exe: ["codex.exe"])
-    monkeypatch.setattr(codex_subscription_image, "controller_args",
-                        lambda _ep: ["-m", "gpt-6-luna", "-c", 'model_reasoning_effort="high"'])
     monkeypatch.setattr(codex_user_runner, "bridge_required", lambda: True)
 
-    def run_codex(argv, **kwargs):
-        calls["argv"] = argv
-        calls["kwargs"] = kwargs
-        stream = (
+    def execute_model_call(_ep, step, actual_binding, prompt, **kwargs):
+        calls.update(step=step, binding=actual_binding, prompt=prompt, kwargs=kwargs)
+        kwargs["output_handle"].write(
             '{"type":"item.completed","item":{"type":"agent_message",'
             '"text":"{\\"capability_probe\\":\\"PASS\\"}"}}\n'
             '{"type":"turn.completed","usage":{}}\n'
         )
-        return subprocess.CompletedProcess(argv, 0, stream)
+        return 0, {
+            "receipt_schema_version": 1, "status": "SUCCESS", "call_id": kwargs["call_id"],
+            "step": step, "codex_argv": ["codex", "exec", "-m", "gpt-6-luna", "-c",
+                                           'model_reasoning_effort="high"'],
+            "model_role": actual_binding["role"], "profile": actual_binding["profile"],
+            "requested_model": actual_binding["model"], "effective_model": actual_binding["model"],
+            "reasoning_effort": actual_binding["reasoning_effort"],
+            "model_policy_version": actual_binding["policy_version"],
+            "model_policy_sha256": actual_binding["model_policy_sha256"],
+            "started_at": "2026-10-01T00:00:00Z", "finished_at": "2026-10-01T00:00:01Z",
+            "duration_ms": 1000,
+        }
 
-    monkeypatch.setattr(codex_user_runner, "run_codex", run_codex)
+    monkeypatch.setattr(scoped_codex_worker, "execute_model_call", execute_model_call)
     monkeypatch.setattr(runtime_observability, "write_model_execution_receipt",
                         lambda _ep, *, receipt: episode / (receipt["call_id"] + ".json"))
 
     result = canary.exact_controller_capability_preflight(episode, codex="codex.exe", timeout=5)
 
     assert result["status"] == "PASS"
-    assert calls["argv"][calls["argv"].index("-m") + 1] == "gpt-6-luna"
-    assert 'model_reasoning_effort="high"' in calls["argv"]
-    assert calls["kwargs"]["task_type"] == "smoke"
-    assert calls["kwargs"]["input"].find('"capability_probe":"PASS"') >= 0
+    assert calls["step"] == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT"
+    assert calls["kwargs"]["sandbox"] == "read-only"
+    assert calls["kwargs"].get("image_paths", ()) == ()
+    assert calls["kwargs"]["receipt_fields"]["image_generation_enabled"] is False
+    assert calls["prompt"].find('"capability_probe":"PASS"') >= 0
+    assert "-m" in result["receipt"]["codex_argv"]
+    assert "gpt-6-luna" in result["receipt"]["codex_argv"]
+    assert 'model_reasoning_effort="high"' in result["receipt"]["codex_argv"]
     assert result["receipt"]["effective_model_source"] == "EXPLICIT_RUNTIME_BINDING"
     assert result["receipt"]["model_policy_sha256"] == "a" * 64
     assert result["receipt"]["image_generation_called"] is False
@@ -80,6 +86,13 @@ def test_unsupported_controller_blocks_before_global_claim_scheduler_or_attempt(
         "episode": episode, "logical_asset_key": "canary/frame-01",
         "runtime_request_id": "request-1", "policy_sha256": "a" * 64,
     })
+    monkeypatch.setattr(openai_images_provider, "payload_capability_preflight", lambda **_k: {
+        "status": "PASS", "provider": "openai_images_api"
+    })
+    original_resolve = model_policy.resolve
+    monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
+                        ({"model": "gpt-image-2.5-flare", "quality": "high"}
+                         if role == "image.payload" else original_resolve(role, **kwargs)))
     monkeypatch.setattr(canary, "exact_controller_capability_preflight", lambda *_a, **_k: {
         "status": "BLOCKED", "failure_class": "MODEL_UNAVAILABLE",
     })
@@ -100,6 +113,41 @@ def test_unsupported_controller_blocks_before_global_claim_scheduler_or_attempt(
     assert calls == []
 
 
+def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatch, tmp_path):
+    episode = tmp_path / "canary"
+    episode.mkdir()
+    calls = []
+    monkeypatch.setattr(canary, "_preflight", lambda *_a, **_k: {
+        "episode": episode, "logical_asset_key": "canary/frame-01",
+        "runtime_request_id": "request-1", "policy_sha256": "a" * 64,
+    })
+    original_resolve = model_policy.resolve
+    monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
+                        ({"model": "gpt-image-2.5-flare", "quality": "high"}
+                         if role == "image.payload" else original_resolve(role, **kwargs)))
+    monkeypatch.setattr(openai_images_provider, "payload_capability_preflight", lambda **_k: {
+        "status": "BLOCKED", "failure_class": "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER",
+        "provider": "openai_images_api", "credential_available": False,
+    })
+    monkeypatch.setattr(canary, "exact_controller_capability_preflight",
+                        lambda *_a, **_k: calls.append("controller"))
+    monkeypatch.setattr(canary, "claim_global_canary", lambda *_a, **_k: calls.append("claim"))
+    monkeypatch.setattr(canary, "_telemetry", lambda *_a, **_k: None)
+    monkeypatch.setattr(__import__("generation_attempt_authority"), "reserve",
+                        lambda *_a, **_k: calls.append("reserve"))
+    monkeypatch.setattr(__import__("image_scheduler"), "run_scheduler_async",
+                        lambda *_a, **_k: calls.append("scheduler"))
+
+    result = canary.run_production_subpath(episode, canary_id="test-canary")
+
+    assert result["status"] == "CANARY_PAYLOAD_PREFLIGHT_BLOCKED"
+    assert result["failure_class"] == "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER"
+    assert result["image_attempt_reserve_called"] is False
+    assert result["image_scheduler_called"] is False
+    assert result["controller_preflight_called"] is False
+    assert calls == []
+
+
 def test_probe_nonzero_result_is_blocked_and_records_exact_model_binding(monkeypatch, tmp_path):
     episode = tmp_path / "episode"
     episode.mkdir()
@@ -112,16 +160,19 @@ def test_probe_nonzero_result_is_blocked_and_records_exact_model_binding(monkeyp
     monkeypatch.setattr(model_policy, "validate_bound_policy", lambda _ep: [])
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
                         dict(binding) if role == "image.controller" else original_resolve(role, **kwargs))
-    image = codex_subscription_image
-    monkeypatch.setattr(image, "resolve_codex", lambda _codex: Path("codex.exe"))
-    monkeypatch.setattr(image, "image_runtime_preflight", lambda **_kwargs: {})
-    monkeypatch.setattr(image, "command_prefix", lambda _exe: ["codex.exe"])
-    monkeypatch.setattr(image, "controller_args",
-                        lambda _ep: ["-m", "gpt-6-luna", "-c", 'model_reasoning_effort="high"'])
-    runner = codex_user_runner
-    monkeypatch.setattr(runner, "bridge_required", lambda: False)
-    monkeypatch.setattr(runner, "run_codex", lambda argv, **_kwargs:
-                        subprocess.CompletedProcess(argv, 1, "HTTP 400 model unsupported"))
+    monkeypatch.setattr(codex_user_runner, "bridge_required", lambda: False)
+    def unsupported(_ep, step, actual_binding, _prompt, **kwargs):
+        kwargs["output_handle"].write("HTTP 400 model unsupported")
+        return 1, {"status": "FAILED", "call_id": kwargs["call_id"], "step": step,
+                   "codex_argv": ["codex", "exec", "-m", "gpt-6-luna", "-c",
+                                  'model_reasoning_effort="high"'],
+                   "model_role": actual_binding["role"], "profile": actual_binding["profile"],
+                   "requested_model": actual_binding["model"],
+                   "reasoning_effort": actual_binding["reasoning_effort"],
+                   "model_policy_version": actual_binding["policy_version"],
+                   "model_policy_sha256": actual_binding["model_policy_sha256"],
+                   "started_at": "start", "finished_at": "finish", "duration_ms": 1}
+    monkeypatch.setattr(scoped_codex_worker, "execute_model_call", unsupported)
     saved = {}
     monkeypatch.setattr(runtime_observability, "write_model_execution_receipt",
                         lambda _ep, *, receipt: saved.update(receipt) or episode / "probe.json")
@@ -150,19 +201,23 @@ def test_zero_exit_without_exact_completed_sentinel_fails_closed(monkeypatch, tm
     monkeypatch.setattr(model_policy, "validate_bound_policy", lambda _ep: [])
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
                         dict(binding) if role == "image.controller" else original_resolve(role, **kwargs))
-    monkeypatch.setattr(codex_subscription_image, "resolve_codex", lambda _codex: Path("codex.exe"))
-    monkeypatch.setattr(codex_subscription_image, "image_runtime_preflight", lambda **_kwargs: {})
-    monkeypatch.setattr(codex_subscription_image, "command_prefix", lambda _exe: ["codex.exe"])
-    monkeypatch.setattr(codex_subscription_image, "controller_args",
-                        lambda _ep: ["-m", "gpt-6-luna", "-c", 'model_reasoning_effort="high"'])
     monkeypatch.setattr(codex_user_runner, "bridge_required", lambda: False)
-    stream = (
-        '{"type":"item.completed","item":{"type":"agent_message",'
-        '"text":"{\\"capability_probe\\":\\"NOT_PASS\\"}"}}\n'
-        '{"type":"turn.completed","usage":{}}\n'
-    )
-    monkeypatch.setattr(codex_user_runner, "run_codex", lambda argv, **_kwargs:
-                        subprocess.CompletedProcess(argv, 0, stream))
+    def wrong_sentinel(_ep, step, actual_binding, _prompt, **kwargs):
+        kwargs["output_handle"].write(
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"{\\"capability_probe\\":\\"NOT_PASS\\"}"}}\n'
+            '{"type":"turn.completed","usage":{}}\n'
+        )
+        return 0, {"status": "SUCCESS", "call_id": kwargs["call_id"], "step": step,
+                   "codex_argv": ["codex", "exec", "-m", "gpt-6-luna", "-c",
+                                  'model_reasoning_effort="high"'],
+                   "model_role": actual_binding["role"], "profile": actual_binding["profile"],
+                   "requested_model": actual_binding["model"],
+                   "reasoning_effort": actual_binding["reasoning_effort"],
+                   "model_policy_version": actual_binding["policy_version"],
+                   "model_policy_sha256": actual_binding["model_policy_sha256"],
+                   "started_at": "start", "finished_at": "finish", "duration_ms": 1}
+    monkeypatch.setattr(scoped_codex_worker, "execute_model_call", wrong_sentinel)
     saved = {}
     monkeypatch.setattr(runtime_observability, "write_model_execution_receipt",
                         lambda _ep, *, receipt: saved.update(receipt) or episode / "probe.json")

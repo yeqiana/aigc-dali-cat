@@ -108,6 +108,16 @@ class GenerationAttemptContextTests(TestCase):
                 "package_sha256": "p", "scene_prompt_sha256": "s", "frame_contract_sha256": "f",
             }),
             patch.object(image_worker_pool.runtime_circuit_breaker, "blocking", return_value=None),
+            patch.object(image_worker_pool.canvas_normalize, "read_canvas", return_value=(1080, 1350, "4:5")),
+            patch.object(image_worker_pool, "_canonical_controller_request", side_effect=lambda *_a, **_k: (
+                call_order.append("controller") or {
+                    "request": {"controller_output_sha256": "controller-output", "request_fingerprint": "request-fp"},
+                    "controller_call_id": "controller-call",
+                }
+            )),
+            patch.object(image_worker_pool.openai_images_provider, "payload_capability_preflight", side_effect=lambda **_k: (
+                call_order.append("payload_preflight") or {"status": "PASS"}
+            )),
             patch.object(image_worker_pool.raw_candidate_budget, "kind_for_queue_item", return_value="original"),
             patch.object(image_worker_pool.raw_candidate_budget, "semantic_key_for_queue_item", return_value=None),
             patch.object(image_worker_pool.raw_candidate_budget, "claim", side_effect=claim_stub),
@@ -117,7 +127,7 @@ class GenerationAttemptContextTests(TestCase):
             result = image_worker_pool.execute(episode, item, 10, codex=True)
 
         self.assertEqual(result["returncode"], 98)
-        self.assertEqual(call_order, ["claim"])
+        self.assertEqual(call_order, ["controller", "payload_preflight", "claim"])
         provider_stub.assert_not_called()
         self.assertEqual(captured["model_role"], "image.controller")
         self.assertEqual(captured["profile"], "image_controller")
@@ -127,8 +137,8 @@ class GenerationAttemptContextTests(TestCase):
         self.assertEqual(captured["payload_quality"], "high")
         self.assertEqual(captured["model_policy_version"], "lean-2026-09-30-v1")
         self.assertEqual(captured["model_policy_sha256"], policy_sha)
-        self.assertEqual(captured["provider_candidate"], "codex_subscription")
-        self.assertEqual(captured["runner_candidate"], "codex_user_runner")
+        self.assertEqual(captured["provider_candidate"], "openai_images_api")
+        self.assertEqual(captured["runner_candidate"], "python-openai-images-http")
 
 
 if __name__ == "__main__":
