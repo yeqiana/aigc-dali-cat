@@ -446,14 +446,40 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             remote={"request_id": "abc123"}, result={"output_base64": encoded})
         self.assertEqual(row["status"], "BLOCKED")
 
-    def test_probe_rejects_malformed_jsonl_instead_of_skipping_unknown_event(self):
+    def test_probe_rejects_malformed_json_protocol_frame(self):
         raw = (
             '{"type":"item.completed","item":{"type":"agent_message",'
             '"text":"STORYOS_TRANSPORT_OK"}}\n'
-            'not-json\n'
+            '{"type":broken-json}\n'
             '{"type":"turn.completed"}\n'
         )
         self.assertFalse(codex_subscription_image._transport_probe_completed(raw))
+
+    def test_probe_accepts_non_json_stderr_diagnostics(self):
+        raw = (
+            '2026-10-01 ERROR failed to load skill: missing YAML frontmatter\n'
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        facts = codex_subscription_image._inspect_transport_probe(raw)
+        self.assertTrue(codex_subscription_image._transport_probe_completed(raw))
+        self.assertFalse(facts["malformed_jsonl"])
+        self.assertEqual(facts["diagnostic_noise_line_count"], 1)
+
+    def test_visibility_probe_accepts_non_json_stderr_diagnostics(self):
+        raw = (
+            '2026-10-01 ERROR failed to load skill: missing YAML frontmatter\n'
+            'another diagnostic warning\n'
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"{\\\"image_generation_visible\\\":true}"}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        facts = codex_subscription_image._inspect_tool_visibility_probe(raw)
+        self.assertTrue(facts["probe_result_valid"])
+        self.assertTrue(facts["image_generation_visible_secondary"])
+        self.assertFalse(facts["malformed_jsonl"])
+        self.assertEqual(facts["diagnostic_noise_line_count"], 2)
 
     def test_direct_probe_rejects_image_generation_tool_event(self):
         raw = (

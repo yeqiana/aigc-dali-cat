@@ -608,13 +608,21 @@ def _inspect_transport_probe(raw: str) -> dict[str, object]:
     turn_completed = False
     image_generation_call_count = 0
     malformed_jsonl = False
+    diagnostic_noise_line_count = 0
     for line in str(raw or "").splitlines():
-        if not line.strip():
+        stripped = line.strip()
+        if not stripped:
             continue
         try:
-            row = json.loads(line)
+            row = json.loads(stripped)
         except (TypeError, ValueError):
-            malformed_jsonl = True
+            # The runner merges stderr into the JSONL stream. Ordinary CLI
+            # diagnostics are not protocol corruption. JSON-looking frames
+            # that fail decoding still fail closed.
+            if stripped.startswith(("{", "[")):
+                malformed_jsonl = True
+            else:
+                diagnostic_noise_line_count += 1
             continue
         if not isinstance(row, dict):
             continue
@@ -632,6 +640,7 @@ def _inspect_transport_probe(raw: str) -> dict[str, object]:
         "turn_completed": turn_completed,
         "image_generation_call_count": image_generation_call_count,
         "malformed_jsonl": malformed_jsonl,
+        "diagnostic_noise_line_count": diagnostic_noise_line_count,
     }
 
 
@@ -642,13 +651,18 @@ def _inspect_tool_visibility_probe(raw: str) -> dict[str, object]:
     visibility_answer_count = 0
     image_generation_call_count = 0
     malformed_jsonl = False
+    diagnostic_noise_line_count = 0
     for line in str(raw or "").splitlines():
-        if not line.strip():
+        stripped = line.strip()
+        if not stripped:
             continue
         try:
-            row = json.loads(line)
+            row = json.loads(stripped)
         except (TypeError, ValueError):
-            malformed_jsonl = True
+            if stripped.startswith(("{", "[")):
+                malformed_jsonl = True
+            else:
+                diagnostic_noise_line_count += 1
             continue
         if not isinstance(row, dict):
             continue
@@ -675,9 +689,9 @@ def _inspect_tool_visibility_probe(raw: str) -> dict[str, object]:
         "turn_completed": turn_completed,
         "image_generation_call_count": image_generation_call_count,
         "malformed_jsonl": malformed_jsonl,
+        "diagnostic_noise_line_count": diagnostic_noise_line_count,
         "probe_result_valid": valid,
     }
-
 
 def _timeout_probe_result(exc: Exception) -> str:
     return _timeout_probe_result_details(exc)[0]
