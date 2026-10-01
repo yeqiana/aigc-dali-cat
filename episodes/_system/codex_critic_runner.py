@@ -20,7 +20,9 @@ attempt/technical-failure bookkeeping and their own prompts.
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
+import hashlib
 import codex_user_runner
 import json
 import os
@@ -115,6 +117,78 @@ def default_log_path(root, tag="critic"):
     directory = Path(root).resolve() / "meta"
     directory.mkdir(parents=True, exist_ok=True)
     return directory / f"{tag}-run.jsonl"
+
+
+def _persist_final_semantic_durable_result(episode, remote, expected_returncode):
+    """Persist the exact User Runner output bytes referenced by a final receipt.
+
+    A local Critic log is useful diagnostics, but it is not the durable result
+    object written by the User Runner. Keep the durable bytes in the Episode
+    runtime evidence area so result_ref and result_sha256 identify one object.
+    Missing or incomplete durable evidence is deliberately reported as absent;
+    the Final Semantic receipt remains provisional and cannot become success.
+    """
+    request_id = str((remote or {}).get("request_id") or "").strip()
+    if not request_id:
+        return {}
+    try:
+        # Reuse the User Runner's request-id contract before using it in a
+        # runtime evidence filename.
+        durable_path = codex_user_runner.task_result_path(request_id)
+        durable = codex_user_runner.read_task_result(request_id)
+        if (not isinstance(durable, dict)
+                or str(durable.get("request_id") or "") != request_id
+                or int(durable.get("returncode", -1)) != int(expected_returncode)):
+            return {"durable_result_status": "MISSING_OR_MISMATCHED"}
+        raw = base64.b64decode(str(durable.get("output_base64") or ""), validate=True)
+        text = raw.decode("utf-8-sig", errors="replace")
+        events = []
+        for line in text.splitlines():
+            try:
+                event = json.loads(line)
+            except Exception:
+                continue
+            if isinstance(event, dict):
+                events.append(event)
+        if not any(event.get("type") == "turn.completed" for event in events):
+            return {"durable_result_status": "TURN_NOT_COMPLETED"}
+        if recover_completed_agent_json(text) is None:
+            return {"durable_result_status": "STRUCTURED_RESULT_MISSING"}
+        # Keep the full task-result JSON in place in the User Runner. Copy only
+        # a minimal, secret-safe projection into the Episode evidence area.
+        durable_json = durable_path.read_bytes()
+        if json.loads(durable_json.decode("utf-8-sig")) != durable:
+            return {"durable_result_status": "DURABLE_JSON_MISMATCH"}
+        structured_result = recover_completed_agent_json(text)
+    except Exception:
+        return {"durable_result_status": "DURABLE_RESULT_UNAVAILABLE"}
+
+    target_dir = Path(episode).resolve() / "meta" / "runtime" / "model-execution-results"
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / f"{request_id}.projection.json"
+    temporary = target.with_suffix(target.suffix + ".tmp")
+    projection = {
+        "schema": "storyos.user_runner_result_projection.v1",
+        "request_id": request_id,
+        "returncode": int(expected_returncode),
+        "turn_completed": True,
+        "structured_result": structured_result,
+        "output_sha256": hashlib.sha256(raw).hexdigest(),
+        "copied_at": dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds"),
+    }
+    projection_bytes = (json.dumps(
+        projection, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ) + "\n").encode("utf-8")
+    temporary.write_bytes(projection_bytes)
+    temporary.replace(target)
+    return {
+        "result_ref": target.relative_to(Path(episode).resolve()).as_posix(),
+        "result_sha256": hashlib.sha256(projection_bytes).hexdigest(),
+        "result_sha256_source": "USER_RUNNER_DURABLE_RESULT_PROJECTION",
+        "result_output_sha256": projection["output_sha256"],
+        "execution_completion_source": "USER_RUNNER_DURABLE_RESULT",
+        "durable_result_status": "VALIDATED",
+    }
 
 
 def build_command(
@@ -246,8 +320,16 @@ def launch(
         policy_version = str(context.pop("model_policy_version", "") or "").strip()
         profile = str(context.pop("profile", "") or "").strip()
         role = str(context.pop("model_role", "") or "").strip()
+        # This is an internal compatibility flag only. Final Semantic
+        # authority is always provisional until the review lane validates its
+        # durable result and candidate bindings.
+        context.pop("defer_final_semantic_success", None)
         if not all((selected_model, effort, policy_sha, policy_version, profile, role)):
             raise ValueError("model execution context requires bound role/profile/model/effort/policy")
+        durable_result_evidence = (
+            _persist_final_semantic_durable_result(episode, remote, done.returncode)
+            if role == "vision.final" else {}
+        )
         receipt = {
             "receipt_schema_version": 1,
             "episode_id": logical_asset_identity.episode_id(episode),
@@ -271,13 +353,13 @@ def launch(
             # validated turn completion, durable output and the candidate's
             # review-item/generation bindings. Its receipt is finalized later.
             "status": ("PENDING_VALIDATION" if role == "vision.final"
-                       and context.get("defer_final_semantic_success") is True
                        else "SUCCESS" if int(done.returncode) == 0 else "FAILED"),
             "returncode": int(done.returncode),
             "runner_request_id": str(remote.get("request_id") or ""),
             "thread_id": str(remote.get("thread_id") or ""),
             "model_binding_source": "EPISODE_BOUND_POLICY",
             "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+            **durable_result_evidence,
             **context,
         }
         receipt_file = runtime_observability.write_model_execution_receipt(episode, receipt=receipt)
