@@ -11,6 +11,63 @@ import image_generation_gateway
 class OpenAIImagesProviderError(RuntimeError):
     pass
 
+
+def payload_capability_preflight(*, model: str, quality: str) -> dict:
+    """Check whether the independent API payload route is configured and callable.
+
+    This is intentionally a non-generation preflight.  A successful result only
+    proves that the route, credentials, and static model/quality contract are
+    present; actual Flare capability remains unconfirmed until a real dispatch.
+    """
+    configured_model = str(model or "").strip()
+    configured_quality = str(quality or "").strip().lower()
+    if configured_model != "gpt-image-2.5-flare":
+        return {"status": "BLOCKED", "failure_class": "PAYLOAD_MODEL_UNSUPPORTED",
+                "provider": "openai_images_api", "requested_model": configured_model,
+                "requested_quality": configured_quality, "credential_available": False}
+    if configured_quality != "high":
+        return {"status": "BLOCKED", "failure_class": "PAYLOAD_QUALITY_UNSUPPORTED",
+                "provider": "openai_images_api", "requested_model": configured_model,
+                "requested_quality": configured_quality, "credential_available": False}
+    try:
+        runtime = image_provider_runtime.load()
+        api = runtime.get("openai_images_api") or {}
+        static = image_provider_runtime.capability_snapshot()["openai_images_api"]
+    except Exception as exc:
+        return {"status": "BLOCKED", "failure_class": "PAYLOAD_ROUTE_CONFIGURATION_INVALID",
+                "provider": "openai_images_api", "detail": type(exc).__name__}
+    if api.get("enabled") is not True:
+        return {"status": "BLOCKED", "failure_class": "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER",
+                "provider": "openai_images_api", "credential_available": False}
+    if str(api.get("model") or "") != configured_model:
+        return {"status": "BLOCKED", "failure_class": "PAYLOAD_MODEL_UNSUPPORTED",
+                "provider": "openai_images_api", "requested_model": configured_model,
+                "configured_model": str(api.get("model") or ""),
+                "credential_available": bool(static.get("credential_available"))}
+    capability_id = "OPENAI_GPT_IMAGE_2_5_FLARE_API_V1"
+    try:
+        registry = json.loads((Path(__file__).resolve().parents[2] / "config/providers/gpt-image-2.5-flare-api.json").read_text(encoding="utf-8-sig"))
+    except Exception as exc:
+        return {"status": "BLOCKED", "failure_class": "PAYLOAD_CAPABILITY_REGISTRY_INVALID",
+                "provider": "openai_images_api", "detail": type(exc).__name__}
+    supported_quality = set((registry.get("quality") or {}).get("provider_supported") or [])
+    if (registry.get("capability_id") != capability_id
+            or registry.get("model") != configured_model
+            or configured_quality not in supported_quality
+            or (registry.get("quality") or {}).get("formal_required") != "high"):
+        return {"status": "BLOCKED", "failure_class": "PAYLOAD_CAPABILITY_CONTRACT_MISMATCH",
+                "provider": "openai_images_api", "credential_available": bool(static.get("credential_available"))}
+    if not static.get("credential_available"):
+        return {"status": "BLOCKED", "failure_class": "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER",
+                "provider": "openai_images_api", "requested_model": configured_model,
+                "requested_quality": configured_quality, "credential_available": False,
+                "capability_evidence": "STATIC_REGISTRY_ONLY"}
+    return {"status": "PASS", "provider": "openai_images_api",
+            "requested_model": configured_model, "requested_quality": configured_quality,
+            "credential_available": True,
+            "capability_evidence": "PAYLOAD_CAPABILITY_UNKNOWN_UNTIL_REAL_DISPATCH",
+            "image_generation_available": None}
+
 def provider_size_for_release(width: int, height: int) -> tuple[int, int]:
     # GPT-Image-2 flexible dimensions must be divisible by 16.
     # Preserve Story OS release ratio and prefer downscaling after generation.
@@ -150,9 +207,39 @@ def generate_native_batch(
     req = request.Request(endpoint, data=body, headers=_headers(api_key, content_type=content_type), method="POST")
     if not isinstance(generation_attempt_leases, list) or len(generation_attempt_leases) != int(count):
         raise OpenAIImagesProviderError("GENERATION_ATTEMPT_LEASE_REQUIRED")
+    episode = Path(episode_dir or Path.cwd())
+
+    def dispatch_payload():
+        def event(name: str, *, status: str, **extra) -> None:
+            try:
+                import runtime_observability
+                runtime_observability.safe_record_runtime_event(
+                    episode, name, source="openai_images_provider",
+                    step="IMAGE_PAYLOAD_DISPATCH", status=status,
+                    provider="openai_images_api", payload_model=model,
+                    payload_quality=quality,
+                    generation_keys=[str(x.get("generation_key") or "")
+                                     for x in generation_attempt_leases],
+                    attempt_indices=[x.get("attempt_index") for x in generation_attempt_leases],
+                    logical_asset_keys=[str(x.get("logical_asset_key") or "")
+                                        for x in generation_attempt_leases], **extra)
+            except Exception:
+                return
+
+        event("IMAGE_PAYLOAD_DISPATCH_STARTED", status="RUNNING", request_size=[pw, ph],
+              endpoint_kind="edits" if references else "generations")
+        try:
+            response = _request(req, timeout)
+        except Exception as exc:
+            event("IMAGE_PAYLOAD_DISPATCH_FINISHED", status="FAILED",
+                  failure_class=type(exc).__name__)
+            raise
+        event("IMAGE_PAYLOAD_DISPATCH_FINISHED", status="SUCCESS",
+              request_id=response[1].get("x-request-id"))
+        return response
+
     raw, headers = image_generation_gateway.provider_generate_many(
-        Path(episode_dir or Path.cwd()),
-        generation_attempt_leases, "openai_images_api", lambda: _request(req, timeout))
+        episode, generation_attempt_leases, "openai_images_api", dispatch_payload)
     images = _decode_response(raw, int(count))
     artifacts = []
     for path, data in zip(raw_paths, images):

@@ -8,6 +8,8 @@ persistent image-generation daemon/session contract.
 """
 from __future__ import annotations
 import argparse
+import hashlib
+import json
 import os
 import uuid
 from pathlib import Path
@@ -25,6 +27,11 @@ import product_runtime_adapter
 import resource_library
 import production_recovery
 import runtime_timeout_policy
+import image_payload_controller
+import image_payload_request
+import openai_images_provider
+import logical_asset_identity
+import canvas_normalize
 
 MODE="python_warm_pool_codex_ephemeral"
 CODEX_SESSION_REUSE=False
@@ -63,6 +70,76 @@ def generation_attempt_context(ep, item, payload_policy):
         "payload_model_source": "EXPLICIT_RUNTIME_BINDING",
     }
 
+
+def _payload_reference_evidence(ep: Path, root: Path, refs: list[Path]) -> list[dict]:
+    rows = []
+    for path in refs:
+        resolved = path.resolve()
+        try:
+            relative = resolved.relative_to(root.resolve()).as_posix()
+        except ValueError as exc:
+            raise ValueError("IMAGE_PAYLOAD_REFERENCE_OUTSIDE_REPOSITORY") from exc
+        if not resolved.is_file():
+            raise ValueError("IMAGE_PAYLOAD_REFERENCE_MISSING")
+        digest = hashlib.sha256(resolved.read_bytes()).hexdigest()
+        rows.append({"path": relative, "authority_id": None, "sha256": digest})
+    return rows
+
+
+def _canonical_controller_request(ep: Path, item: dict, package: dict,
+                                  prompt_path: Path, refs: list[Path],
+                                  visual: dict, width: int, height: int,
+                                  aspect: str, timeout: int, codex: str | None) -> dict:
+    root = Path(__file__).resolve().parents[2]
+    frame = int(item["frame"])
+    scene = str(package.get("scene_prompt") or "").strip()
+    frame_prompt = str(package.get("frame_prompt_contract") or "").strip()
+    visual_text = str(visual.get("text") or "").strip()
+    if not scene or not frame_prompt or not visual_text:
+        raise ValueError("IMAGE_PAYLOAD_SOURCE_CONTRACT_MISSING")
+    reference_evidence = _payload_reference_evidence(ep, root, refs)
+    canonical = json.dumps({
+        "scene_prompt_sha256": package.get("scene_prompt_sha256"),
+        "frame_contract_sha256": package.get("frame_contract_sha256"),
+        "frame_prompt_contract": frame_prompt,
+        "visual_profile_sha256": visual.get("profile_sha256"),
+        "visual_contract": visual_text,
+        "references": reference_evidence,
+    }, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    authority_sha = hashlib.sha256(canonical).hexdigest()
+    visual_sha = hashlib.sha256(json.dumps({
+        "profile_sha256": visual.get("profile_sha256"),
+        "capture_grammar": visual.get("capture_grammar"),
+        "text": visual_text,
+    }, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+    request_result = image_payload_controller.build_payload_request(
+        ep,
+        logical_asset_key=logical_asset_identity.frame_asset_key(ep, frame),
+        frame_id=f"{frame:02d}",
+        authority_input_sha256=authority_sha,
+        source_prompt_sha256=str(package.get("scene_prompt_sha256") or ""),
+        frame_contract_sha256=str(package.get("frame_contract_sha256") or ""),
+        visual_contract_sha256=visual_sha,
+        canvas={"width": int(width), "height": int(height), "aspect_ratio": str(aspect)},
+        references=reference_evidence,
+        controller_input={
+            "source_scene_prompt": scene,
+            "frame_prompt_contract": frame_prompt,
+            "visual_contract": visual_text,
+            "storyboard_source": package.get("storyboard_source") or {},
+            "source_prompt_path": prompt_path.relative_to(root).as_posix(),
+        },
+        codex_raw=codex,
+        timeout=timeout,
+        run_id=str(item.get("run_id") or ""),
+        trace_id=str(item.get("trace_id") or ""),
+    )
+    request = request_result.get("request") if isinstance(request_result, dict) else None
+    errors = image_payload_request.validate_request(request or {})
+    if errors:
+        raise ValueError("IMAGE_PAYLOAD_REQUEST_INVALID:" + ",".join(errors))
+    return {**request_result, "reference_paths": refs}
+
 def execute(ep,item,timeout,codex):
     resource_library.ensure_fresh(ep)
     runtime,_=runtime_router.detect()
@@ -90,15 +167,55 @@ def execute(ep,item,timeout,codex):
     model=str(effective_model_policy["model"])
     quality=str(effective_model_policy["quality"])
     package=prompt_package.compile_frame(ep,frame,prompt,write=True)
+    visual=backend.compile_prompt_contract(ep)
     blocked=runtime_circuit_breaker.blocking(ep,"image")
     if blocked:
         result={"returncode":97,"stdout":"RUNTIME_CIRCUIT_OPEN: "+str(blocked),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
         return result
+
+    # The image Controller is a text-only, Episode-policy-bound step. It emits
+    # the canonical prompt request before the independent Pixel route is checked.
+    try:
+        width,height,aspect=canvas_normalize.read_canvas(ep)
+        controller_result = _canonical_controller_request(
+            ep,item,package,prompt,refs,visual,width,height,aspect,timeout,codex)
+        canonical_request=controller_result["request"]
+    except Exception as exc:
+        message=f"IMAGE_CONTROLLER_OR_PAYLOAD_REQUEST_BLOCKED: {type(exc).__name__}: {str(exc)[:500]}"
+        result={"returncode":93,"stdout":message,"payload":None,"output":None,
+                "log":log,"attempt":attempt,"scout":None,
+                "image_attempt_reserve_called":False}
+        production_recovery.write_lifecycle(ep,item,"BLOCKED",worker_pid=os.getpid(),error=message,result=result)
+        return result
+    # The Pixel lane must be available independently and may not fall back to
+    # the legacy Codex image_generation tool (which couples Controller/Payload).
+    payload_policy = model_policy.resolve("image.payload", episode=ep)
+    payload_preflight = openai_images_provider.payload_capability_preflight(
+        model=str(payload_policy.get("model") or ""),
+        quality=str(payload_policy.get("quality") or ""),
+    )
+    if payload_preflight.get("status") != "PASS":
+        code=str(payload_preflight.get("failure_class") or "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER")
+        message=f"{code}: independent payload route unavailable; provider={payload_preflight.get('provider')}"
+        result={"returncode":94,"stdout":message,"payload":None,"output":None,
+                "log":log,"attempt":attempt,"scout":None,
+                "payload_preflight":payload_preflight,"image_attempt_reserve_called":False}
+        production_recovery.write_lifecycle(ep,item,"BLOCKED",worker_pid=os.getpid(),error=message,result=result)
+        return result
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
     budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
     attempt_context = generation_attempt_context(ep, item, effective_model_policy)
+    attempt_context.update({
+        "provider": "openai_images_api",
+        "provider_candidate": "openai_images_api",
+        "runner": "python-openai-images-http",
+        "runner_candidate": "python-openai-images-http",
+        "controller_receipt_id": controller_result.get("controller_call_id"),
+        "controller_output_sha256": canonical_request.get("controller_output_sha256"),
+        "payload_request_fingerprint": canonical_request.get("request_fingerprint"),
+    })
     budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token,semantic_key=budget_semantic_key,
         generation_context=attempt_context)
     if not budget_ok:
@@ -121,7 +238,10 @@ def execute(ep,item,timeout,codex):
         _image_model_policy=effective_model_policy,
         _raw_candidate_budget_preclaimed=True,_raw_candidate_token=budget_token,candidate_kind=budget_kind,
         _generation_attempt_lease=generation_lease,
-        _runner_request_id=runner_request_id)
+        _runner_request_id=runner_request_id,
+        _canonical_payload_request=canonical_request,
+        _payload_reference_paths=refs,
+        _payload_provider_route="openai_images_api")
     # Resident Runner image workers do not always inherit a workflow trace
     # context. Keep the span evidence correlated instead of turning a missing
     # observability context into a false worker failure.

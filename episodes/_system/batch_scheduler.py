@@ -133,6 +133,10 @@ def _fallback_single(ep,item,timeout,codex):
 
 def should_use(ep:Path)->bool:
     if not batch_runtime_config.enabled():return False
+    # The legacy batch prompt compiler and Codex image tool do not consume a
+    # Luna-authored canonical ImagePayloadRequest. Route those Episodes through
+    # image_scheduler's per-frame Controller/Payload path instead.
+    if __import__("image_payload_controller").separate_execution_required(ep):return False
     q=load_queue(ep)
     queued=[x for x in q.get("items") or [] if x.get("status")=="queued"]
     if not queued:return False

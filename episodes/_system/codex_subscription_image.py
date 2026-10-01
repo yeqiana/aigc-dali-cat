@@ -3,6 +3,7 @@
 """Generate exactly one image via the current Codex ChatGPT sign-in, then normalize it to the Story OS canvas."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import os
 import shutil
@@ -24,6 +25,8 @@ import model_policy
 import provider_capability
 import image_artifact_collector
 import image_generation_gateway
+import image_payload_request
+import openai_images_provider
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 import runtime_log_policy
 import runtime_router
@@ -544,6 +547,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         model_policy = image_model_policy.for_episode(ep, explicit=getattr(args, 'image_model', None), explicit_quality=getattr(args, 'image_quality', None))
     recovered_codex_raw = getattr(args, '_recovered_codex_raw', None)
+    canonical_payload_request = getattr(args, '_canonical_payload_request', None)
     recovered_src = Path(str(recovered_codex_raw)).expanduser().resolve() if recovered_codex_raw else None
     recovered_request_id = str(getattr(args, '_recovered_runner_request_id', '') or '').strip()
     if recovered_src is not None and not valid_image(recovered_src):
@@ -567,17 +571,81 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         shutil.copy2(manual_src, raw_output)
         elapsed = 0.0
         backend_name = 'codex_desktop_interface_imagegen'
+    elif canonical_payload_request is not None:
+        expected_policy = model_policy.resolve("image.payload", episode=ep)
+        errors = image_payload_request.validate_request(
+            canonical_payload_request,
+            expected_policy_sha256=str(expected_policy.get("model_policy_sha256") or ""),
+        )
+        if errors:
+            raise BackendError("IMAGE_PAYLOAD_REQUEST_INVALID: " + ",".join(errors))
+        expected_key = __import__("logical_asset_identity").frame_asset_key(ep, int(args.frame))
+        if canonical_payload_request.get("logical_asset_key") != expected_key:
+            raise BackendError("IMAGE_PAYLOAD_REQUEST_LOGICAL_ASSET_MISMATCH")
+        if canonical_payload_request.get("frame_contract_sha256") != (frame_contract or {}).get("contract_sha256"):
+            raise BackendError("IMAGE_PAYLOAD_REQUEST_FRAME_CONTRACT_MISMATCH")
+        if canonical_payload_request.get("payload_model") != model_policy.get("model"):
+            raise BackendError("IMAGE_PAYLOAD_REQUEST_MODEL_MISMATCH")
+        if canonical_payload_request.get("payload_quality") != model_policy.get("quality"):
+            raise BackendError("IMAGE_PAYLOAD_REQUEST_QUALITY_MISMATCH")
+        referenced = []
+        for row in canonical_payload_request.get("references") or []:
+            rel = str(row.get("path") or "").strip()
+            if not rel:
+                raise BackendError("IMAGE_PAYLOAD_REQUEST_REFERENCE_PATH_REQUIRED")
+            path = (ROOT / rel).resolve()
+            try:
+                path.relative_to(ROOT.resolve())
+            except ValueError as exc:
+                raise BackendError("IMAGE_PAYLOAD_REQUEST_REFERENCE_PATH_UNSTABLE") from exc
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != row.get("sha256"):
+                raise BackendError("IMAGE_PAYLOAD_REQUEST_REFERENCE_SHA_MISMATCH")
+            referenced.append(path)
+        started = time.monotonic()
+        provider_evidence = openai_images_provider.generate_native_batch(
+            prompt=str(canonical_payload_request["scene_prompt"]),
+            references=referenced,
+            count=1,
+            model=str(canonical_payload_request["payload_model"]),
+            quality=str(canonical_payload_request["payload_quality"]),
+            release_width=int(width),
+            release_height=int(height),
+            timeout=int(args.timeout),
+            raw_paths=[raw_output],
+            generation_attempt_leases=[getattr(args, "_generation_attempt_lease", None)],
+            episode_dir=ep,
+        )
+        elapsed = round(time.monotonic() - started, 3)
+        backend_name = "openai_images_api"
     else:
+        if bool(getattr(args, "_raw_candidate_budget_preclaimed", False)):
+            raise BackendError("INDEPENDENT_IMAGE_PAYLOAD_REQUEST_REQUIRED")
         elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, model_policy['model'], model_policy['quality'], model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=model_policy["model"], route=backend_name, frame=int(args.frame))
     receipt_data.update(provider_receipt_model_bindings(
         ep, model_policy["model"], model_policy["quality"]))
+    if canonical_payload_request is not None:
+        receipt_data.update({
+            "controller_receipt_id": canonical_payload_request.get("controller_receipt_id"),
+            "controller_output_sha256": canonical_payload_request.get("controller_output_sha256"),
+            "payload_request_fingerprint": canonical_payload_request.get("request_fingerprint"),
+            "payload_model": canonical_payload_request.get("payload_model"),
+            "payload_quality": canonical_payload_request.get("payload_quality"),
+            "payload_effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+            "payload_provider_model_reported": False,
+            "payload_provider_receipt": provider_evidence,
+        })
     # W-21: the receipt carries the reference files really sent to the provider, so
     # the production ledger can record execution evidence, not only a declaration.
     # A manual desktop import never attaches them to a provider call, so it must not
     # claim reference delivery it did not perform.
-    receipt_data["reference_transport"] = "manual_desktop_import" if manual_src else "codex_subscription_cli_attachment"
+    if manual_src:
+        receipt_data["reference_transport"] = "manual_desktop_import"
+    elif backend_name == "openai_images_api":
+        receipt_data["reference_transport"] = "openai_images_api_multipart" if refs else "openai_images_api_json"
+    else:
+        receipt_data["reference_transport"] = "codex_subscription_cli_attachment"
     receipt_data["references"] = [] if manual_src else provider_capability.reference_evidence(refs)
     if recovered_src is not None:
         receipt_data["recovery"] = {

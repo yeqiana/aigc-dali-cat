@@ -106,6 +106,8 @@ def _invoke_openai_native_n(ep:Path,contract:dict,prompt_text:str,refs:list[Path
 
 def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|None)->dict:
     if not items: raise BatchBackendError("empty batch")
+    if __import__("image_payload_controller").separate_execution_required(ep):
+        raise BatchBackendError("CANONICAL_CONTROLLER_PAYLOAD_SPLIT_REQUIRED")
     expected=int(contract["planned_count"])
     if expected!=len(items): raise BatchBackendError("batch contract/item count mismatch")
     if expected>batch_runtime_config.images_per_batch(): raise BatchBackendError("batch exceeds configured images_per_batch")

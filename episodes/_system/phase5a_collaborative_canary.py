@@ -11,6 +11,7 @@ from __future__ import annotations
 from copy import deepcopy
 import argparse
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -474,17 +475,18 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
                                           timeout: int | None = None) -> dict[str, Any]:
     """Execute a tiny exact-model text task before the image Scheduler can run.
 
-    The call uses the frozen Episode controller binding, the same Codex user
-    runner/authentication bridge, and the same provider arguments as the image
-    worker. It does not call image_generation, the Attempt Authority, or the
-    Production Ledger.
+    The call uses the frozen Episode controller binding and the regular scoped
+    text runner. It deliberately does not inherit the legacy image worker's
+    ChatGPT image-tool endpoint override. It does not call image_generation,
+    the Attempt Authority, or the Production Ledger.
     """
-    import codex_subscription_image
     import codex_user_runner
+    import codex_critic_runner
     import logical_asset_identity
     import model_policy
     import runtime_observability
     import runtime_timeout_policy
+    import scoped_codex_worker
 
     episode = Path(ep).resolve()
     call_id = uuid.uuid4().hex
@@ -512,40 +514,50 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
         if not binding.get("model_policy_sha256"):
             raise RuntimeError("CANARY_CONTROLLER_POLICY_SHA_MISSING")
 
-        # Use the image worker's executable resolution, auth bridge, controller
-        # argv (including explicit provider routing), and current runner identity.
-        executable = codex_subscription_image.resolve_codex(codex)
-        bridged = bool(codex_user_runner.bridge_required())
-        codex_subscription_image.image_runtime_preflight(bridged=bridged)
-        auth_context = "user_runner" if bridged else "direct_codex_user_runner"
-        argv = codex_subscription_image.command_prefix(executable) + [
-            "exec", "--skip-git-repo-check", "--ephemeral",
-            *codex_subscription_image.controller_args(episode),
-            "-s", "read-only", "-C", str(ROOT), "--json", "-",
-        ]
+        # Controller execution uses the regular scoped text runner. Do not
+        # inherit the legacy image worker's ChatGPT image-tool endpoint override:
+        # that transport is precisely where Luna was rejected, and the Controller
+        # has no image_generation capability requirement.
         probe_prompt = (
             'Return only this exact JSON object and do not call tools: '
             '{"capability_probe":"PASS"}'
         )
-        completed = codex_user_runner.run_codex(
-            argv, input=probe_prompt, stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, timeout=(int(timeout) if timeout is not None
-                                                else runtime_timeout_policy.seconds("codex_auth_probe")),
-            check=False, text=True, encoding="utf-8", errors="replace",
-            task_type="smoke", codex_home_mode="inherit",
+        probe_stream = io.StringIO()
+        auth_context = "user_runner" if codex_user_runner.bridge_required() else "direct_codex_user_runner"
+        rc, receipt = scoped_codex_worker.execute_model_call(
+            episode, "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT", binding, probe_prompt,
+            codex_raw=codex, timeout=(int(timeout) if timeout is not None
+                                      else runtime_timeout_policy.seconds("codex_auth_probe")),
+            run_id=run_id, trace_id=trace_id, call_id=call_id,
+            output_handle=probe_stream, sandbox="read-only",
+            receipt_fields={
+                "provider": "codex_cli_configured_transport",
+                "provider_source": "CODEX_CLI_CONFIG",
+                "runner": "codex_user_runner",
+                "auth_context": auth_context,
+                "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+                "image_generation_enabled": False,
+            },
         )
-        returncode = int(completed.returncode)
+        returncode = int(rc)
+        argv = list(receipt.get("codex_argv") or [])
+        if not ("-m" in argv and "gpt-6-luna" in argv and "-c" in argv
+                and 'model_reasoning_effort="high"' in argv):
+            status = "FAILED"
+            failure_class = "EXACT_CONTROLLER_BINDING_NOT_PRESENT_IN_ARGV"
+            error_detail = "EXPLICIT_MODEL_OR_EFFORT_ARGV_MISSING"
+            returncode = returncode or 1
+            raise RuntimeError(failure_class)
         # A zero process exit is insufficient: require Codex's completed
         # assistant result and the exact structured sentinel. Never persist raw
         # stdout because runner/provider output is not receipt data.
-        import codex_critic_runner
         result_object = (codex_critic_runner.recover_completed_agent_json(
-            str(completed.stdout or "")) if returncode == 0 else None)
+            probe_stream.getvalue()) if returncode == 0 else None)
         if returncode == 0 and result_object == {"capability_probe": "PASS"}:
             status = "SUCCESS"
             failure_class = ""
         elif returncode != 0:
-            output_text = str(completed.stdout or "").lower()
+            output_text = probe_stream.getvalue().lower()
             if any(token in output_text for token in ("unsupported", "model unavailable", "unknown model", "http 400")):
                 failure_class = "MODEL_UNAVAILABLE"
             elif any(token in output_text for token in ("unauthorized", "authentication", "http 401", "login required")):
@@ -562,7 +574,10 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
     except Exception as exc:
         detail = str(exc)
         lowered = detail.lower()
-        if "auth" in lowered or "login" in lowered or "401" in lowered:
+        if "exact_controller_binding_not_present_in_argv" in lowered:
+            failure_class = "EXACT_CONTROLLER_BINDING_NOT_PRESENT_IN_ARGV"
+            error_detail = "EXPLICIT_MODEL_OR_EFFORT_ARGV_MISSING"
+        elif "auth" in lowered or "login" in lowered or "401" in lowered:
             failure_class = "AUTH_FAILED"
         elif "runner" in lowered or "connect" in lowered or "unavailable" in lowered:
             failure_class = "RUNNER_UNAVAILABLE"
@@ -589,8 +604,8 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
         "reasoning_effort": binding.get("reasoning_effort") or "high",
         "model_policy_version": binding.get("policy_version") or "unknown",
         "model_policy_sha256": binding.get("model_policy_sha256") or "unknown",
-        "provider": "codex_subscription",
-        "runner": "codex exec via codex_user_runner",
+        "provider": "codex_cli_configured_transport",
+        "runner": "codex_user_runner",
         "started_at": started_at,
         "finished_at": finished_at,
         "duration_ms": round((time.monotonic() - started) * 1000, 3),
@@ -635,6 +650,27 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
     preflight = _preflight(Path(ep), canary_id)
     if dry_run:
         return {"status": "READY", **{k: v for k, v in preflight.items() if k != "episode"}}
+    import model_policy
+    import openai_images_provider
+    payload_binding = model_policy.resolve("image.payload", episode=preflight["episode"])
+    payload_probe = openai_images_provider.payload_capability_preflight(
+        model=str(payload_binding.get("model") or ""),
+        quality=str(payload_binding.get("quality") or ""),
+    )
+    if payload_probe.get("status") != "PASS":
+        _telemetry(preflight["episode"], "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
+                   logical_asset_key=preflight["logical_asset_key"],
+                   model_policy_sha256=preflight["policy_sha256"],
+                   failure_class=payload_probe.get("failure_class"),
+                   provider=payload_probe.get("provider"), status="BLOCKED",
+                   step="EXACT_PAYLOAD_CAPABILITY_PREFLIGHT")
+        return {"status": "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
+                "failure_class": payload_probe.get("failure_class"),
+                "payload_preflight": payload_probe,
+                "image_attempt_reserve_called": False,
+                "image_scheduler_called": False,
+                "controller_preflight_called": False,
+                "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
     controller_probe = exact_controller_capability_preflight(
         preflight["episode"], codex=codex)
     if controller_probe.get("status") != "PASS":
@@ -645,6 +681,7 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
                    status="BLOCKED", step="EXACT_CONTROLLER_CAPABILITY_PREFLIGHT")
         return {"status": "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
                 "controller_preflight": controller_probe,
+                "payload_preflight": payload_probe,
                 "image_attempt_reserve_called": False,
                 "image_scheduler_called": False,
                 "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
