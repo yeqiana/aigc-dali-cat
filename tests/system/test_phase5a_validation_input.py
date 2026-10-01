@@ -21,6 +21,11 @@ def _attempt():
     }
 
 
+def test_scene_prompt_stays_inside_formal_generation_budget():
+    assert len(prep.SCENE_PROMPT) <= 260
+    assert len(prep.SCENE_PROMPT.encode("utf-8")) <= 900
+
+
 def test_source_descriptor_is_stable_and_non_promotable(tmp_path, monkeypatch):
     monkeypatch.setattr(prep, "ROOT", tmp_path)
     profile = tmp_path / "profile.json"

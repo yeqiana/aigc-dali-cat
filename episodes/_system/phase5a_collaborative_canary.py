@@ -964,6 +964,14 @@ def validate_workspace(ep: str | Path, canary_id: str) -> tuple[Path, dict[str, 
     return episode, marker
 
 
+def _active_canary_queue_items(queue: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Return current production rows while preserving superseded history."""
+    return [
+        row for row in queue.get("items") or []
+        if isinstance(row, dict) and str(row.get("status") or "") != "superseded"
+    ]
+
+
 def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     """Check all durable bindings before asking the canonical scheduler to run."""
     import fast_frame_scout
@@ -1014,7 +1022,7 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     if (reviewer.get("model"), reviewer.get("reasoning_effort")) != ("gpt-6-luna", "high"):
         raise CanaryContractError("CANARY_REVIEW_BINDING_MISMATCH")
     queue = scheduler_core.load_queue(ep)
-    items = [row for row in queue.get("items") or [] if isinstance(row, dict)]
+    items = _active_canary_queue_items(queue)
     if len(items) != 1:
         raise CanaryContractError("CANARY_REQUIRES_EXACTLY_ONE_QUEUE_ITEM")
     item = items[0]

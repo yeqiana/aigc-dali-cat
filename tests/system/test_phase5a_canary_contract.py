@@ -170,3 +170,15 @@ def test_bind_and_freeze_returns_episode_bound_policy_identity(tmp_path, monkeyp
     assert [attrs["step"] for _, attrs in events] == [
         "RUNTIME_REQUEST_BIND", "MODEL_POLICY_FREEZE"
     ]
+
+
+def test_active_canary_queue_items_ignore_superseded_history():
+    queue = {
+        "items": [
+            {"id": "old", "status": "superseded"},
+            {"id": "current", "status": "queued"},
+        ]
+    }
+    assert canary._active_canary_queue_items(queue) == [
+        {"id": "current", "status": "queued"}
+    ]

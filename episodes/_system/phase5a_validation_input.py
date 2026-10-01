@@ -49,7 +49,7 @@ table, with its tuning pointer between station marks. A powered-off dark televis
 behind it. Soft overcast window daylight. No people, readable text, logos, captions,
 watermarks, or cinematic staging.
 """
-SCENE_PROMPT = """Frame 01: eye-level documentary still in a quiet overcast room. Old tabletop radio on a wooden table, tuning pointer between station marks; dark powered-off television behind. Soft available window daylight. No people, readable text, captions, logos, watermark, or cinematic staging."""
+SCENE_PROMPT = """Frame 01: eye-level documentary still in a quiet overcast room. Old tabletop radio on wooden table; dark powered-off TV behind. Soft window daylight. No people, readable text, captions, logos, watermark, or cinematic staging."""
 
 
 class ValidationInputError(RuntimeError):
