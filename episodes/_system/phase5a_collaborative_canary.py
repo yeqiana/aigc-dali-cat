@@ -533,19 +533,31 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     validate_queued_attempt(item, asset_state)
     return {
         "episode": ep,
+        "episode_path": str(ep.resolve()),
+        "canary_id": canary_id,
         "marker": marker,
         "runtime_request_id": bound_request.get("request_id"),
         "policy_version": controller.get("policy_version"),
         "policy_sha256": controller.get("model_policy_sha256"),
+        "model_policy_sha256": controller.get("model_policy_sha256"),
         "controller": {"model": controller.get("model"), "effort": controller.get("reasoning_effort")},
         "reviewer": {"model": reviewer.get("model"), "effort": reviewer.get("reasoning_effort"),
                      "profile": reviewer.get("profile")},
         "payload": {"model": payload.get("model"), "quality": payload.get("quality")},
+        "payload_model": str(payload.get("model") or ""),
+        "payload_quality": str(payload.get("quality") or "").lower(),
         "logical_asset_key": key,
         "frame_contract_sha256": frame_contract_sha,
         "prompt_package_sha256": prompt_package_sha,
         "attempt_state": asset_state,
+        "attempts_consumed": int(asset_state.get("attempts_consumed") or 0),
+        "remaining_attempts": int(asset_state.get("remaining_attempts") or 0),
+        "active_attempt_index": asset_state.get("active_attempt_index"),
         "queue_item_id": item.get("id"),
+        "queue_item_count": len(items),
+        "frame": int(item.get("frame") or 0),
+        "kind": str(item.get("kind") or ""),
+        "scope": str(item.get("scope") or ""),
         "queue_item_status": item.get("status"),
         "queue_authority": production_queue_store.authority(ep),
     }
@@ -784,13 +796,43 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
         return {"status": "READY", **{k: v for k, v in preflight.items() if k != "episode"}}
     import model_policy
     import image_payload_transport
+    import codex_subscription_image
     payload_binding = model_policy.resolve("image.payload", episode=preflight["episode"])
-    payload_probe = image_payload_transport.payload_capability_preflight(
-        model=str(payload_binding.get("model") or ""),
-        quality=str(payload_binding.get("quality") or ""),
-        codex_raw=codex,
-    )
-    if payload_probe.get("status") != "PASS":
+    payload_route = image_payload_transport.selected_route(1)
+    if str(payload_route.get("provider") or "") == "codex_subscription":
+        # The UNKNOWN-capability readiness path is scoped to the already
+        # claimed Phase 5A replacement. Persist that single bounded claim
+        # before its live text-only preflight; this writes no image Attempt and
+        # does not authorize any dispatch by itself.
+        global_claim = claim_global_canary(preflight["episode"], canary_id)
+        payload_probe = codex_subscription_image.payload_capability_preflight(
+            model=str(payload_binding.get("model") or ""),
+            quality=str(payload_binding.get("quality") or ""),
+            codex_raw=codex,
+            phase5a_canary_id=canary_id,
+            phase5a_canary_context={k: v for k, v in preflight.items() if k != "episode"},
+        )
+        payload_probe = {**payload_route, **payload_probe,
+                         "provider": payload_probe.get("provider") or payload_route.get("provider")}
+    else:
+        payload_probe = image_payload_transport.payload_capability_preflight(
+            model=str(payload_binding.get("model") or ""),
+            quality=str(payload_binding.get("quality") or ""),
+            codex_raw=codex,
+        )
+    payload_status = str(payload_probe.get("status") or "")
+    if (payload_status == "READY_FOR_REAL_CAPABILITY_PROOF"
+            and str(payload_probe.get("provider") or "") != "codex_subscription"):
+        payload_status = "BLOCKED"
+        payload_probe = {**payload_probe, "status": "BLOCKED",
+                         "failure_class": "PHASE5A_UNKNOWN_CAPABILITY_REQUIRES_CODEX_SUBSCRIPTION"}
+    if (payload_status != "PASS"
+            and not (payload_status == "READY_FOR_REAL_CAPABILITY_PROOF"
+                     and payload_probe.get("tool_capability_state") == "UNKNOWN"
+                     and payload_probe.get("session_start") == "PASS"
+                     and payload_probe.get("image_generation_called") is False
+                     and payload_probe.get("image_attempt_authority_called") is False
+                     and payload_probe.get("phase5a_scope", {}).get("canary_id") == canary_id)):
         _telemetry(preflight["episode"], "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
                    logical_asset_key=preflight["logical_asset_key"],
                    model_policy_sha256=preflight["policy_sha256"],
@@ -818,7 +860,8 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
                 "image_attempt_reserve_called": False,
                 "image_scheduler_called": False,
                 "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
-    global_claim = claim_global_canary(preflight["episode"], canary_id)
+    if str(payload_route.get("provider") or "") != "codex_subscription":
+        global_claim = claim_global_canary(preflight["episode"], canary_id)
     import runtime_trace
     run_id = f"phase5a-{canary_id}"
     trace_id = runtime_trace.start_run(
@@ -835,8 +878,17 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
     before_release = release_path.read_bytes() if release_path.is_file() else None
     import image_scheduler
     try:
-        rc = image_scheduler.run_scheduler_async(preflight["episode"], max_workers=1,
-                                                 timeout=int(timeout), codex=codex)
+        if payload_status == "READY_FOR_REAL_CAPABILITY_PROOF":
+            with codex_subscription_image.phase5a_payload_dispatch_context(
+                preflight["episode"], canary_id,
+                {k: v for k, v in preflight.items() if k != "episode"},
+                payload_probe,
+            ):
+                rc = image_scheduler.run_scheduler_async(
+                    preflight["episode"], max_workers=1, timeout=int(timeout), codex=codex)
+        else:
+            rc = image_scheduler.run_scheduler_async(preflight["episode"], max_workers=1,
+                                                     timeout=int(timeout), codex=codex)
     except Exception as exc:
         original_exc = exc
         after_stage = stage_path.read_bytes() if stage_path.is_file() else None

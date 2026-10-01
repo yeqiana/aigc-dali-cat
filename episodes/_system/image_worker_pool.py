@@ -192,12 +192,34 @@ def execute(ep,item,timeout,codex):
     # transport before reserving an image Attempt so an unavailable login/API
     # lane cannot burn generation budget.
     payload_policy = model_policy.resolve("image.payload", episode=ep)
-    payload_preflight = image_payload_transport.payload_capability_preflight(
-        model=str(payload_policy.get("model") or ""),
-        quality=str(payload_policy.get("quality") or ""),
-        codex_raw=codex,
+    controller_policy = model_policy.resolve("image.controller", episode=ep)
+    phase5a_grant_evidence = backend.consume_phase5a_payload_dispatch_grant(
+        ep, item,
+        payload_model=str(payload_policy.get("model") or ""),
+        payload_quality=str(payload_policy.get("quality") or ""),
+        policy_sha256=str(controller_policy.get("model_policy_sha256") or ""),
     )
-    if payload_preflight.get("status") != "PASS":
+    if phase5a_grant_evidence is not None:
+        # The dedicated Phase 5A harness already completed the same live,
+        # non-generating session-start attestation. Reuse that evidence once;
+        # never turn UNKNOWN into a general production PASS.
+        payload_preflight = phase5a_grant_evidence
+    else:
+        payload_preflight = image_payload_transport.payload_capability_preflight(
+            model=str(payload_policy.get("model") or ""),
+            quality=str(payload_policy.get("quality") or ""),
+            codex_raw=codex,
+        )
+    payload_preflight_status = str(payload_preflight.get("status") or "")
+    payload_gate_pass = (
+        payload_preflight_status == "PASS"
+        or (payload_preflight_status == "READY_FOR_REAL_CAPABILITY_PROOF"
+            and payload_preflight.get("phase5a_dispatch_grant_consumed") is True
+            and phase5a_grant_evidence is not None
+            and payload_preflight.get("image_generation_called") is False
+            and payload_preflight.get("image_attempt_authority_called") is False)
+    )
+    if not payload_gate_pass:
         code=str(payload_preflight.get("failure_class") or "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER")
         message=f"{code}: independent payload route unavailable; provider={payload_preflight.get('provider')}"
         result={"returncode":94,"stdout":message,"payload":None,"output":None,

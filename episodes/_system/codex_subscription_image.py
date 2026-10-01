@@ -3,12 +3,16 @@
 """Generate exactly one image via the current Codex ChatGPT sign-in, then normalize it to the Story OS canvas."""
 from __future__ import annotations
 import argparse
+from contextlib import contextmanager
+from contextvars import ContextVar
 import base64
 import hashlib
+import hmac
 import json
 import os
 import re
 import shutil
+import secrets
 import subprocess
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import sys
@@ -229,6 +233,11 @@ def transport_args(model: str, effort: str) -> list[str]:
 
 
 _LOGIN_CATALOG_SOURCE = "LOGIN_ACCOUNT_MODEL_CATALOG"
+_PHASE5A_CANARY_TYPE = "PHASE5A_COLLABORATIVE_REGRESSION"
+_PHASE5A_PAYLOAD_DISPATCH_GRANT: ContextVar[dict | None] = ContextVar(
+    "storyos_phase5a_payload_dispatch_grant", default=None
+)
+_PHASE5A_READINESS_SIGNING_KEY = secrets.token_bytes(32)
 
 
 def _catalog_reasoning_levels(row: dict) -> list[str]:
@@ -243,29 +252,29 @@ def _catalog_reasoning_levels(row: dict) -> list[str]:
 
 
 def _catalog_image_tool_capability(row: dict) -> str:
-    """Return only explicit image tool support metadata when the catalog has it."""
-    declared = []
-    found = False
-    for key in ("supported_tools", "experimental_supported_tools"):
-        value = row.get(key)
-        if not isinstance(value, list):
-            continue
-        found = True
-        for item in value:
-            if isinstance(item, str):
-                declared.append(item.strip().lower())
-            elif isinstance(item, dict):
-                name = item.get("name") or item.get("tool") or item.get("type")
-                if isinstance(name, str):
-                    declared.append(name.strip().lower())
-    if found:
-        return "AVAILABLE" if "image_generation" in declared else "UNAVAILABLE"
-    tool_mode = row.get("tool_mode")
-    if isinstance(tool_mode, str) and tool_mode.strip().lower() in {
-        "none", "disabled", "text_only", "code_mode_only",
-    }:
-        return "UNAVAILABLE"
+    """Catalog rows are not the runtime/session tool authority in CLI 0.153.4.
+
+    ``experimental_supported_tools`` and ``tool_mode`` are optional catalog
+    metadata, not an exhaustive statement of what an enabled session exposes.
+    They are fingerprinted for diagnosis but never grant or deny runtime tool
+    capability by themselves.
+    """
     return "UNKNOWN"
+
+
+def _catalog_tool_names(row: dict, key: str) -> list[str] | None:
+    value = row.get(key)
+    if not isinstance(value, list):
+        return None
+    names = []
+    for item in value:
+        if isinstance(item, str):
+            names.append(item.strip().lower())
+        elif isinstance(item, dict):
+            name = item.get("name") or item.get("tool") or item.get("type")
+            if isinstance(name, str):
+                names.append(name.strip().lower())
+    return sorted(set(name for name in names if name))
 
 
 def _catalog_candidates(payload: dict) -> list[dict]:
@@ -290,6 +299,9 @@ def _catalog_candidates(payload: dict) -> list[dict]:
             "visibility": visibility,
             "priority": priority,
             "supported_reasoning_levels": levels,
+            "supported_tools": _catalog_tool_names(row, "supported_tools"),
+            "experimental_supported_tools": _catalog_tool_names(row, "experimental_supported_tools"),
+            "tool_mode": str(row.get("tool_mode") or ""),
         })
         if slug == controller_model or visibility != "list":
             continue
@@ -300,7 +312,8 @@ def _catalog_candidates(payload: dict) -> list[dict]:
             "priority": priority,
             "candidate_catalog_member": True,
             "catalog_source": _LOGIN_CATALOG_SOURCE,
-            "image_tool_capability": _catalog_image_tool_capability(row),
+            "tool_capability_state": _catalog_image_tool_capability(row),
+            "tool_capability_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
         })
     candidates.sort(key=lambda row: (row["priority"], row["model"]))
     safe_catalog_entries.sort(key=lambda row: row["slug"])
@@ -353,6 +366,219 @@ def _subscription_model_catalog(codex: Path) -> list[dict]:
     """Compatibility wrapper for callers that only need candidates."""
     evidence = _subscription_model_catalog_with_evidence(codex)
     return list(evidence["candidates"])
+
+
+def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
+                                   expected: dict | None = None, *,
+                                   allow_running: bool = False,
+                                   require_claim: bool = False) -> dict | None:
+    """Re-read the dedicated Canary contract and its authorities fail-closed."""
+    try:
+        episode = Path(ep).resolve()
+        value = str(canary_id or "").strip()
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}", value) or ".." in value:
+            return None
+        expected_dir = (ROOT / ".codex_tmp" / "phase5a" / value).resolve()
+        if episode != expected_dir:
+            return None
+        marker_path = episode / "meta" / "phase5a-canary.json"
+        marker = json.loads(marker_path.read_text(encoding="utf-8-sig"))
+        if marker != {
+            "workspace_class": "TEST_ONLY",
+            "promotion_class": "NON_PROMOTABLE",
+            "canary_type": _PHASE5A_CANARY_TYPE,
+            "canary_id": value,
+        }:
+            return None
+
+        import generation_attempt_authority
+        import logical_asset_identity
+        import model_policy
+        import scheduler_core
+
+        if model_policy.validate_bound_policy(episode):
+            return None
+        controller = model_policy.resolve("image.controller", episode=episode)
+        payload = model_policy.resolve("image.payload", episode=episode)
+        if (controller.get("model_policy_sha256") != payload.get("model_policy_sha256")
+                or not re.fullmatch(r"[0-9a-f]{64}", str(controller.get("model_policy_sha256") or ""))):
+            return None
+        queue = scheduler_core.load_queue(episode)
+        items = [row for row in queue.get("items") or [] if isinstance(row, dict)]
+        if len(items) != 1:
+            return None
+        item = items[0]
+        allowed_status = {"queued", "running"} if allow_running else {"queued"}
+        if (int(item.get("frame") or 0) != 1 or item.get("kind") != "original"
+                or item.get("scope") != "batch" or item.get("status") not in allowed_status):
+            return None
+        logical_key = logical_asset_identity.frame_asset_key(episode, 1)
+        state = generation_attempt_authority.load_asset_state(episode, logical_key)
+        if (int(state.get("attempts_consumed") or 0) != 0
+                or state.get("active_attempt_index") is not None
+                or int(state.get("remaining_attempts") or 0) != 2):
+            return None
+        if (str(payload.get("model") or "") != "gpt-image-2.5-flare"
+                or str(payload.get("quality") or "").lower() != "high"):
+            return None
+        if require_claim:
+            global_path = ROOT / ".codex_tmp" / "phase5a" / ".phase5a-collaborative-canary-claim.json"
+            replacement_path = ROOT / ".codex_tmp" / "phase5a" / ".phase5a-collaborative-canary-replacement.json"
+            global_claim = json.loads(global_path.read_text(encoding="utf-8-sig"))
+            expected_workspace = str(episode)
+            if global_claim.get("canary_id") == value and global_claim.get("workspace") == expected_workspace:
+                claim_valid = global_claim.get("canary_type") == _PHASE5A_CANARY_TYPE
+            elif replacement_path.is_file():
+                replacement = json.loads(replacement_path.read_text(encoding="utf-8-sig"))
+                claim_valid = bool(
+                    global_claim.get("canary_type") == _PHASE5A_CANARY_TYPE
+                    and replacement.get("canary_type") == _PHASE5A_CANARY_TYPE
+                    and replacement.get("canary_id") == value
+                    and replacement.get("workspace") == expected_workspace
+                    and replacement.get("previous_canary_id") == global_claim.get("canary_id")
+                    and replacement.get("previous_workspace") == global_claim.get("workspace")
+                )
+            else:
+                claim_valid = False
+            if not claim_valid:
+                return None
+        identity = {
+            "canary_type": _PHASE5A_CANARY_TYPE,
+            "canary_id": value,
+            "episode_path": str(episode),
+            "queue_item_id": str(item.get("id") or ""),
+            "queue_item_count": 1,
+            "frame": 1,
+            "kind": "original",
+            "scope": "batch",
+            "logical_asset_key": logical_key,
+            "attempts_consumed": 0,
+            "remaining_attempts": 2,
+            "active_attempt_index": None,
+            "model_policy_sha256": str(controller["model_policy_sha256"]),
+            "payload_model": str(payload.get("model") or ""),
+            "payload_quality": str(payload.get("quality") or "").lower(),
+        }
+        if expected is not None:
+            for key in (
+                "queue_item_id", "logical_asset_key", "model_policy_sha256",
+                "payload_model", "payload_quality",
+            ):
+                if str(expected.get(key) or "") != str(identity[key] or ""):
+                    return None
+        return identity
+    except Exception:
+        return None
+
+
+def _phase5a_readiness_signature(readiness: dict) -> str:
+    """Sign a minimal in-process readiness identity; caller dictionaries alone authorize nothing."""
+    scope = readiness.get("phase5a_scope") if isinstance(readiness.get("phase5a_scope"), dict) else {}
+    bound = {
+        "canary_type": scope.get("canary_type"),
+        "canary_id": scope.get("canary_id"),
+        "episode_path": scope.get("episode_path"),
+        "queue_item_id": scope.get("queue_item_id"),
+        "logical_asset_key": scope.get("logical_asset_key"),
+        "model_policy_sha256": scope.get("model_policy_sha256"),
+        "payload_model": readiness.get("payload_model"),
+        "payload_quality": readiness.get("payload_quality"),
+        "transport_model": readiness.get("transport_model"),
+        "transport_effort": readiness.get("transport_effort"),
+        "candidate_catalog_member": readiness.get("candidate_catalog_member"),
+        "catalog_source": readiness.get("catalog_source"),
+        "catalog_sha256": readiness.get("catalog_sha256"),
+        "tool_capability_state": readiness.get("tool_capability_state"),
+        "tool_capability_source": readiness.get("tool_capability_source"),
+        "session_start": readiness.get("session_start"),
+        "image_generation_visible_secondary": readiness.get("image_generation_visible_secondary"),
+        "image_generation_called": readiness.get("image_generation_called"),
+        "image_attempt_authority_called": readiness.get("image_attempt_authority_called"),
+        "status": readiness.get("status"),
+    }
+    message = json.dumps(bound, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hmac.new(_PHASE5A_READINESS_SIGNING_KEY, message, hashlib.sha256).hexdigest()
+
+
+@contextmanager
+def phase5a_payload_dispatch_context(ep: Path, canary_id: str,
+                                     canary_context: dict,
+                                     payload_readiness: dict):
+    """Authorize exactly one UNKNOWN-capability image item in the fixed Canary.
+
+    This in-memory context is intentionally not a runtime option or a persisted
+    bypass.  The worker consumes the grant once, and only after rechecking its
+    queue item, policy, payload binding, and current Attempt state.
+    """
+    identity = _validated_phase5a_canary_scope(
+        Path(ep), canary_id, canary_context, require_claim=True,
+    )
+    readiness_scope = (payload_readiness.get("phase5a_scope")
+                       if isinstance(payload_readiness.get("phase5a_scope"), dict) else {})
+    scope_matches = bool(identity) and all(
+        str(readiness_scope.get(key) or "") == str(identity.get(key) or "")
+        for key in (
+            "canary_type", "canary_id", "episode_path", "queue_item_id",
+            "logical_asset_key", "model_policy_sha256", "payload_model", "payload_quality",
+        )
+    )
+    if (identity is None
+            or not scope_matches
+            or str(payload_readiness.get("status") or "") != "READY_FOR_REAL_CAPABILITY_PROOF"
+            or payload_readiness.get("tool_capability_state") != "UNKNOWN"
+            or payload_readiness.get("image_generation_called") is not False
+            or payload_readiness.get("image_attempt_authority_called") is not False
+            or payload_readiness.get("session_start") != "PASS"
+            or payload_readiness.get("candidate_catalog_member") is not True
+            or payload_readiness.get("catalog_source") != _LOGIN_CATALOG_SOURCE
+            or not re.fullmatch(r"[0-9a-f]{64}", str(payload_readiness.get("catalog_sha256") or ""))
+            or not str(payload_readiness.get("transport_model") or "")
+            or not str(payload_readiness.get("transport_effort") or "")
+            or not hmac.compare_digest(
+                str(payload_readiness.get("_phase5a_readiness_signature") or ""),
+                _phase5a_readiness_signature(payload_readiness),
+            )):
+        raise BackendError("PHASE5A_PAYLOAD_DISPATCH_GRANT_DENIED")
+    grant = {
+        **identity,
+        "payload_readiness": dict(payload_readiness),
+        "consumed": False,
+    }
+    token = _PHASE5A_PAYLOAD_DISPATCH_GRANT.set(grant)
+    try:
+        yield
+    finally:
+        _PHASE5A_PAYLOAD_DISPATCH_GRANT.reset(token)
+
+
+def consume_phase5a_payload_dispatch_grant(ep: Path, item: dict, *,
+                                           payload_model: str,
+                                           payload_quality: str,
+                                           policy_sha256: str) -> dict | None:
+    """Consume the current task-local Phase5A grant once; ordinary work gets None."""
+    grant = _PHASE5A_PAYLOAD_DISPATCH_GRANT.get()
+    if not isinstance(grant, dict) or grant.get("consumed"):
+        return None
+    identity = _validated_phase5a_canary_scope(
+        Path(ep), str(grant.get("canary_id") or ""), grant,
+        allow_running=True, require_claim=True,
+    )
+    if identity is None:
+        return None
+    if (str(item.get("id") or "") != identity["queue_item_id"]
+            or int(item.get("frame") or 0) != 1
+            or item.get("kind") != "original"
+            or item.get("scope") != "batch"
+            or str(payload_model or "") != identity["payload_model"]
+            or str(payload_quality or "").lower() != identity["payload_quality"]
+            or str(policy_sha256 or "") != identity["model_policy_sha256"]):
+        return None
+    grant["consumed"] = True
+    evidence = dict(grant["payload_readiness"])
+    evidence["phase5a_dispatch_grant_consumed"] = True
+    evidence["phase5a_canary_id"] = identity["canary_id"]
+    evidence["phase5a_queue_item_id"] = identity["queue_item_id"]
+    return evidence
 
 
 def _probe_event_calls_image_generation(value: object) -> bool:
@@ -409,6 +635,50 @@ def _inspect_transport_probe(raw: str) -> dict[str, object]:
     }
 
 
+def _inspect_tool_visibility_probe(raw: str) -> dict[str, object]:
+    """Parse one exact secondary visibility answer and protocol completion facts."""
+    turn_completed = False
+    visibility: bool | None = None
+    visibility_answer_count = 0
+    image_generation_call_count = 0
+    malformed_jsonl = False
+    for line in str(raw or "").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except (TypeError, ValueError):
+            malformed_jsonl = True
+            continue
+        if not isinstance(row, dict):
+            continue
+        if _probe_event_calls_image_generation(row):
+            image_generation_call_count += 1
+        if row.get("type") == "turn.completed":
+            turn_completed = True
+        item = row.get("item") if isinstance(row.get("item"), dict) else {}
+        if row.get("type") == "item.completed" and item.get("type") == "agent_message":
+            try:
+                answer = json.loads(str(item.get("text") or "").strip())
+            except (TypeError, ValueError):
+                continue
+            if (isinstance(answer, dict) and set(answer) == {"image_generation_visible"}
+                    and isinstance(answer.get("image_generation_visible"), bool)):
+                visibility = answer["image_generation_visible"]
+                visibility_answer_count += 1
+    valid = bool(turn_completed and visibility_answer_count == 1 and visibility is not None
+                 and image_generation_call_count == 0 and not malformed_jsonl)
+    return {
+        "visibility_response_completed": visibility is not None,
+        "visibility_response_count": visibility_answer_count,
+        "image_generation_visible_secondary": visibility,
+        "turn_completed": turn_completed,
+        "image_generation_call_count": image_generation_call_count,
+        "malformed_jsonl": malformed_jsonl,
+        "probe_result_valid": valid,
+    }
+
+
 def _timeout_probe_result(exc: Exception) -> str:
     return _timeout_probe_result_details(exc)[0]
 
@@ -438,7 +708,8 @@ def _timeout_probe_result_details(exc: Exception) -> tuple[str, bool]:
 
 
 def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
-                                      *, candidate_provenance: dict | None = None) -> dict[str, object]:
+                                      *, candidate_provenance: dict | None = None,
+                                      tool_visibility_probe: bool = False) -> dict[str, object]:
     cmd = execution_command_prefix(codex) + [
         'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
         '-c', 'skills.include_instructions=false',
@@ -479,14 +750,23 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
         "catalog_source": _LOGIN_CATALOG_SOURCE,
         "catalog_sha256": str(provenance["catalog_sha256"]),
         "catalog_entry_count": provenance.get("catalog_entry_count"),
-        "image_tool_capability": provenance.get("image_tool_capability", "UNKNOWN"),
+        "tool_capability_state": provenance.get("tool_capability_state", "UNKNOWN"),
+        "tool_capability_source": provenance.get("tool_capability_source", _LOGIN_CATALOG_SOURCE),
         "image_attempt_authority_called": False,
         "image_generation_called": False,
     }
+    prompt = (
+        'Do not call any tool. Inspect only the tools made available to this session. '
+        'Return exactly one JSON object: {"image_generation_visible":true} or '
+        '{"image_generation_visible":false}. Do not infer from model knowledge. '
+        'Answer only from the actual tool registry exposed to this session.'
+        if tool_visibility_probe else
+        "Return exactly STORYOS_TRANSPORT_OK and do not call any tool."
+    )
     try:
         completed = codex_user_runner.run_codex(
             cmd,
-            input="Return exactly STORYOS_TRANSPORT_OK and do not call any tool.",
+            input=prompt,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
@@ -498,12 +778,21 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
             codex_home_mode="inherit",
         )
         raw = str(completed.stdout or "")
-        facts = _inspect_transport_probe(raw)
+        facts = (_inspect_tool_visibility_probe(raw) if tool_visibility_probe
+                 else _inspect_transport_probe(raw))
         failure_facts = _safe_transport_failure_facts(raw, int(completed.returncode))
-        passed = bool(int(completed.returncode) == 0 and facts["sentinel_completed"]
-                      and facts["turn_completed"]
+        session_started = bool(
+            tool_visibility_probe
+            and int(completed.returncode) == 0
+            and facts["turn_completed"]
+            and facts["image_generation_call_count"] == 0
+            and not facts["malformed_jsonl"]
+        )
+        passed = bool(int(completed.returncode) == 0 and facts["turn_completed"]
                       and facts["image_generation_call_count"] == 0
-                      and not facts["malformed_jsonl"])
+                      and not facts["malformed_jsonl"]
+                      and (session_started if tool_visibility_probe
+                           else facts["sentinel_completed"]))
         failure_class = None if passed else (
             failure_facts["failure_class"] if int(completed.returncode) != 0
             else "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT"
@@ -523,6 +812,9 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
             "transport_model_source": "LOGIN_CATALOG_PROBE",
             "failure_class": failure_class,
             "failure_stage": None if passed else "transport_probe",
+            "session_start": "PASS" if session_started else None,
+            "probe_kind": "TOOL_VISIBILITY_TEXT_PROBE" if tool_visibility_probe else "TRANSPORT_SENTINEL_PROBE",
+            "tool_visibility_evidence_level": "SECONDARY_ATTESTATION" if tool_visibility_probe else None,
         }
     except codex_user_runner.CodexUserRunnerTimeout as exc:
         remote = getattr(exc, "remote", None)
@@ -531,11 +823,20 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
         else:
             request_id = str(getattr(remote, "request_id", "") or "").strip() or None
         raw, durable_result_found = _timeout_probe_result_details(exc)
-        facts = _inspect_transport_probe(raw)
-        passed = bool(request_id and raw and facts["sentinel_completed"]
-                      and facts["turn_completed"]
-                      and facts["image_generation_call_count"] == 0
-                      and not facts["malformed_jsonl"])
+        facts = (_inspect_tool_visibility_probe(raw) if tool_visibility_probe
+                 else _inspect_transport_probe(raw))
+        session_started = bool(
+            tool_visibility_probe
+            and facts["turn_completed"]
+            and facts["image_generation_call_count"] == 0
+            and not facts["malformed_jsonl"]
+        )
+        passed = bool(request_id and durable_result_found and raw and (
+            session_started if tool_visibility_probe else
+            facts["sentinel_completed"] and facts["turn_completed"]
+            and facts["image_generation_call_count"] == 0
+            and not facts["malformed_jsonl"]
+        ))
         return {
             **facts,
             **candidate_identity,
@@ -550,6 +851,9 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
             "transport_model_source": "LOGIN_CATALOG_PROBE",
             "failure_class": None if passed else "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT",
             "failure_stage": None if passed else "transport_probe",
+            "session_start": "PASS" if passed and tool_visibility_probe else None,
+            "probe_kind": "TOOL_VISIBILITY_TEXT_PROBE" if tool_visibility_probe else "TRANSPORT_SENTINEL_PROBE",
+            "tool_visibility_evidence_level": "SECONDARY_ATTESTATION" if tool_visibility_probe else None,
         }
     except subprocess.TimeoutExpired as exc:
         return {
@@ -669,7 +973,9 @@ def _classify_preflight_exception(exc: Exception, *, stage: str) -> str:
 
 
 def payload_capability_preflight(*, model: str, quality: str,
-                                 codex_raw: str | None = None) -> dict:
+                                 codex_raw: str | None = None,
+                                 phase5a_canary_id: str | None = None,
+                                 phase5a_canary_context: dict | None = None) -> dict:
     """Prove login-auth transport before any image Attempt is reserved."""
     requested_model = str(model or "").strip()
     requested_quality = str(quality or "").strip().lower()
@@ -707,6 +1013,27 @@ def payload_capability_preflight(*, model: str, quality: str,
                 "image_attempt_authority_called": False,
                 "image_generation_called": False,
             }
+        canary_scope = None
+        if phase5a_canary_id is not None:
+            episode_path = (
+                str(phase5a_canary_context.get("episode_path") or "")
+                if isinstance(phase5a_canary_context, dict) else ""
+            )
+            canary_scope = _validated_phase5a_canary_scope(
+                Path(episode_path),
+                phase5a_canary_id, phase5a_canary_context,
+                require_claim=True,
+            )
+            # The fixed global/replacement claim is part of eligibility too;
+            # a TEST_ONLY marker or copied runtime context is never sufficient.
+            if canary_scope is None:
+                return {
+                    "status": "BLOCKED",
+                    "failure_class": "PHASE5A_PAYLOAD_CAPABILITY_SCOPE_INVALID",
+                    "failure_stage": "phase5a_scope_validation",
+                    "image_attempt_authority_called": False,
+                    "image_generation_called": False,
+                }
         eligible = [
             row for row in candidates
             if isinstance(row, dict)
@@ -714,12 +1041,12 @@ def payload_capability_preflight(*, model: str, quality: str,
             and row.get("catalog_source") == _LOGIN_CATALOG_SOURCE
             and row.get("catalog_sha256") == catalog_sha256
             and str(row.get("model") or "") in candidate_models
-            and row.get("image_tool_capability") != "UNAVAILABLE"
+            and row.get("tool_capability_state") != "EXPLICIT_UNSUPPORTED"
         ]
         if not eligible:
             return {
                 "status": "BLOCKED",
-                "failure_class": "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+                "failure_class": "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE_FOR_VISIBLE_MODELS",
                 "failure_stage": "model_catalog_capability",
                 "catalog_source": catalog_source,
                 "catalog_sha256": catalog_sha256,
@@ -731,10 +1058,25 @@ def payload_capability_preflight(*, model: str, quality: str,
                         "candidate_priority": row.get("priority"),
                         "candidate_catalog_member": row.get("candidate_catalog_member") is True,
                         "catalog_sha256": catalog_sha256,
-                        "image_tool_capability": row.get("image_tool_capability", "UNKNOWN"),
+                        "tool_capability_state": row.get("tool_capability_state", "UNKNOWN"),
+                        "tool_capability_source": row.get("tool_capability_source"),
                     }
                     for row in candidates if isinstance(row, dict)
                 ],
+                "image_attempt_authority_called": False,
+                "image_generation_called": False,
+            }
+        if (not canary_scope
+                and not any(row.get("tool_capability_state") == "EXPLICIT_SUPPORTED" for row in eligible)):
+            return {
+                "status": "BLOCKED",
+                "failure_class": "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN",
+                "failure_stage": "tool_capability_attestation",
+                "tool_capability_state": "UNKNOWN",
+                "tool_capability_source": "NO_SESSION_TOOL_REGISTRY_API",
+                "catalog_source": catalog_source,
+                "catalog_sha256": catalog_sha256,
+                "catalog_entry_count": catalog_entry_count,
                 "image_attempt_authority_called": False,
                 "image_generation_called": False,
             }
@@ -747,8 +1089,12 @@ def payload_capability_preflight(*, model: str, quality: str,
                 "catalog_entry_count": catalog_entry_count,
             }
             stage = "transport_probe"
+            capability_state = str(row.get("tool_capability_state") or "UNKNOWN")
+            use_visibility_probe = capability_state == "UNKNOWN" and canary_scope is not None
             diagnostic = _probe_transport_model_diagnostic(
-                codex, row["model"], row["effort"], candidate_provenance=candidate_provenance,
+                codex, row["model"], row["effort"],
+                candidate_provenance=candidate_provenance,
+                tool_visibility_probe=use_visibility_probe,
             )
             diagnostic = {
                 **diagnostic,
@@ -759,13 +1105,19 @@ def payload_capability_preflight(*, model: str, quality: str,
                 "catalog_source": catalog_source,
                 "catalog_sha256": catalog_sha256,
                 "catalog_entry_count": catalog_entry_count,
-                "image_tool_capability": row.get("image_tool_capability", "UNKNOWN"),
+                "tool_capability_state": row.get("tool_capability_state", "UNKNOWN"),
+                "tool_capability_source": row.get("tool_capability_source", _LOGIN_CATALOG_SOURCE),
                 "image_attempt_authority_called": False,
                 "image_generation_called": bool(diagnostic.get("image_generation_call_count", 0)),
             }
             if str(diagnostic.get("status") or "") in {"PASS", "PASS_WITH_CLEANUP_TIMEOUT"}:
-                return {
-                    "status": "PASS",
+                if capability_state == "UNKNOWN" and not canary_scope:
+                    failures.append({**diagnostic,
+                                     "failure_class": "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN"})
+                    break
+                readiness = {
+                    "status": ("READY_FOR_REAL_CAPABILITY_PROOF"
+                               if capability_state == "UNKNOWN" else "PASS"),
                     "provider": "codex_subscription",
                     "runner": "codex_user_runner" if codex_user_runner.bridge_required() else "codex_cli",
                     "transport_model": row["model"],
@@ -776,7 +1128,26 @@ def payload_capability_preflight(*, model: str, quality: str,
                     "catalog_entry_count": catalog_entry_count,
                     "candidate_catalog_member": True,
                     "candidate_priority": row.get("priority"),
-                    "image_tool_capability": row.get("image_tool_capability", "UNKNOWN"),
+                    "tool_capability_state": capability_state,
+                    "tool_capability_source": row.get("tool_capability_source"),
+                    "tool_visibility_evidence_level": (
+                        "SECONDARY_ATTESTATION" if use_visibility_probe else None
+                    ),
+                    "image_generation_visible_secondary": (
+                        diagnostic.get("image_generation_visible_secondary")
+                        if use_visibility_probe else None
+                    ),
+                    "image_generation_visible": (
+                        diagnostic.get("image_generation_visible_secondary")
+                        if use_visibility_probe else None
+                    ),
+                    "tool_registry_attestation": "UNAVAILABLE" if use_visibility_probe else None,
+                    "visibility_response_completed": (
+                        diagnostic.get("visibility_response_completed")
+                        if use_visibility_probe else None
+                    ),
+                    "session_start": "PASS",
+                    "explicit_negative_evidence": False,
                     "transport_probe_status": diagnostic["status"],
                     "transport_probe_diagnostic": diagnostic,
                     "payload_model": requested_model,
@@ -784,16 +1155,31 @@ def payload_capability_preflight(*, model: str, quality: str,
                     "api_key_required": False,
                     "image_attempt_authority_called": False,
                     "image_generation_called": False,
+                    "phase5a_scope": canary_scope,
                 }
-            failures.append({
+                if readiness["status"] == "READY_FOR_REAL_CAPABILITY_PROOF":
+                    readiness["_phase5a_readiness_signature"] = _phase5a_readiness_signature(readiness)
+                return readiness
+            failure_row = {
                 **diagnostic,
                 "candidate_model": str(row["model"]),
                 "candidate_effort": str(row.get("effort") or ""),
-            })
+                "tool_capability_state": row.get("tool_capability_state", "UNKNOWN"),
+                "tool_capability_source": row.get("tool_capability_source", _LOGIN_CATALOG_SOURCE),
+            }
+            if (str(diagnostic.get("failure_class") or "") == "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE"
+                    and not use_visibility_probe):
+                failure_row["tool_capability_state"] = "EXPLICIT_UNSUPPORTED"
+                failure_row["tool_capability_source"] = "SESSION_TOOL_REJECTION"
+            failures.append(failure_row)
             # Only an explicit account/model rejection justifies trying one
             # alternate catalog entry. Other failures are environmental or
             # ambiguous and must not fan out into more live model requests.
-            if str(diagnostic.get("failure_class") or "") != "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE":
+            next_candidate_allowed = str(diagnostic.get("failure_class") or "") in {
+                "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+                "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+            }
+            if not next_candidate_allowed:
                 break
             if index == 1:
                 break
@@ -804,6 +1190,7 @@ def payload_capability_preflight(*, model: str, quality: str,
             "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT",
             "LOGIN_AUTH_TRANSPORT_EXEC_FAILED",
             "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+            "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN",
             "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT",
             "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
         )
