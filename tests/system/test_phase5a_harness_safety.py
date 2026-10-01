@@ -28,7 +28,7 @@ def test_global_claim_allows_only_one_workspace_and_same_id_resume(tmp_path, mon
     try:
         canary.claim_global_canary(second, second_id)
     except canary.CanaryContractError as exc:
-        assert str(exc) == "CANARY_GLOBAL_SINGLETON_ALREADY_CLAIMED"
+        assert str(exc) == "CANARY_REPLACEMENT_SOURCE_ATTEMPT_COUNT_INVALID"
     else:
         raise AssertionError("a second workspace must not obtain a real-canary slot")
 

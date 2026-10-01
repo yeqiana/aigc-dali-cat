@@ -100,11 +100,20 @@ def test_scheduler_worker_attempt_gateway_artifact_and_review_queue_fake_provide
             image_worker_pool.backend.model_policy,
             "resolve",
             lambda role, episode=None: ({
+                "role": "image.controller",
                 "model": "gpt-6-luna",
                 "reasoning_effort": "high",
                 "profile": "image_controller",
+                "policy_version": "test-frozen-v1",
                 "model_policy_sha256": "a" * 64,
-            } if role == "image.controller" and episode else {}),
+            } if role == "image.controller" and episode else ({
+                "role": "image.payload",
+                "model": "gpt-image-2.5-flare",
+                "quality": "high",
+                "profile": "image_payload",
+                "policy_version": "test-frozen-v1",
+                "model_policy_sha256": "a" * 64,
+            } if role == "image.payload" and episode else {})),
         )
         monkeypatch.setattr(image_worker_pool.runtime_router, "detect", lambda: ("CODEX", "test"))
         monkeypatch.setattr(image_worker_pool.runtime_router, "image_execution_runtime", lambda: ("CODEX", "test"))
@@ -113,6 +122,8 @@ def test_scheduler_worker_attempt_gateway_artifact_and_review_queue_fake_provide
             "package_sha256": "b" * 64,
             "scene_prompt_sha256": "c" * 64,
             "frame_contract_sha256": "d" * 64,
+            "scene_prompt": "TEST_ONLY frozen scene prompt",
+            "frame_prompt_contract": "TEST_ONLY frozen frame contract",
         })
         monkeypatch.setattr(image_worker_pool.runtime_circuit_breaker, "blocking", lambda *_a: None)
         monkeypatch.setattr(image_worker_pool.runtime_circuit_breaker, "record_success", lambda *_a: None)
@@ -127,7 +138,43 @@ def test_scheduler_worker_attempt_gateway_artifact_and_review_queue_fake_provide
             "profile_sha256": "e" * 64,
             "capture_profile": {},
         })
-        monkeypatch.setattr(image_worker_pool.backend.resolved_frame_contract, "required", lambda *_a: False)
+        monkeypatch.setattr(image_worker_pool.backend.resolved_frame_contract, "required", lambda *_a: True)
+
+        def fake_controller_request(ep, _item, package, _prompt, _refs, _visual,
+                                    width, height, aspect, _timeout, _codex):
+            call_id = "phase5a-fake-controller"
+            request = image_worker_pool.image_payload_request.build_request(
+                episode_id=logical_asset_identity.episode_id(ep),
+                logical_asset_key=logical_asset_identity.frame_asset_key(ep, 1),
+                frame_id="frame-01",
+                authority_input_sha256="f" * 64,
+                source_prompt_sha256=package["scene_prompt_sha256"],
+                frame_contract_sha256=package["frame_contract_sha256"],
+                visual_contract_sha256="e" * 64,
+                controller_receipt_id=call_id,
+                controller_output_sha256="a" * 64,
+                payload_model="gpt-image-2.5-flare",
+                payload_quality="high",
+                canvas={"width": width, "height": height, "aspect_ratio": aspect},
+                references=[],
+                scene_prompt=package["scene_prompt"],
+                model_policy_version="test-frozen-v1",
+                model_policy_sha256="a" * 64,
+            )
+            return {"request": request, "controller_call_id": call_id}
+
+        monkeypatch.setattr(image_worker_pool, "_canonical_controller_request", fake_controller_request)
+        monkeypatch.setattr(
+            image_worker_pool.image_payload_transport,
+            "payload_capability_preflight",
+            lambda **_kwargs: {
+                "status": "PASS",
+                "provider": "codex_subscription",
+                "runner": "test_fake_runner",
+                "transport_model": "test-transport",
+                "transport_effort": "low",
+            },
+        )
 
         dispatches = []
 

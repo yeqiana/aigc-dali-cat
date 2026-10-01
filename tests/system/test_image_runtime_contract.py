@@ -238,7 +238,18 @@ class BackendAndLedgerContractTests(unittest.TestCase):
                     mock.patch.object(image_worker_pool.runtime_router, "detect", return_value=("CODEX", "test")), \
                     mock.patch.object(image_worker_pool.runtime_router, "image_execution_runtime", return_value=("CODEX", "test")), \
                     mock.patch.object(image_worker_pool.prompt_package, "compile_frame", return_value={
-                        "package_sha256": "a" * 64, "scene_prompt_sha256": "b" * 64, "frame_contract_sha256": "c" * 64}), \
+                        "package_sha256": "a" * 64, "scene_prompt_sha256": "b" * 64, "frame_contract_sha256": "c" * 64,
+                        "scene_prompt": "A valid frozen scene prompt.",
+                        "frame_prompt_contract": "A valid frame contract."}), \
+                    mock.patch.object(image_worker_pool, "_canonical_controller_request", return_value={
+                        "request": {"request_fingerprint": "d" * 64},
+                        "controller_call_id": "controller-test-call",
+                        "controller_output_sha256": "e" * 64,
+                        "request_fingerprint": "d" * 64}), \
+                    mock.patch.object(image_worker_pool.image_payload_transport,
+                                      "payload_capability_preflight", return_value={
+                        "status": "PASS", "provider": "fake", "runner": "fake-runner",
+                        "transport_model": "fake-transport", "transport_effort": "low"}), \
                     mock.patch.object(image_worker_pool.backend, "generate_for_frame", return_value={"backend": "fake"}), \
                     mock.patch.object(image_worker_pool.production_recovery, "write_lifecycle"), \
                     mock.patch.object(image_worker_pool.runtime_trace, "start_span", return_value="span"), \
