@@ -11,7 +11,7 @@
     "project_env": "OPENAI_PROJECT_ID"
   },
   "openai_images_api": {
-    "enabled": true,
+    "enabled": false,
     "model": "gpt-image-2.5-flare",
     "native_n_supported": true,
     "native_n_min": 1,
