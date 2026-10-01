@@ -103,3 +103,37 @@ image_blocked_recovery inspect rejects deterministic local recovery with provide
 The persisted Provider Receipt proves that StoryOS requested the correct canonical canvas. The failure is therefore downstream of the canonical request: the image tool/provider returned a 4:3 landscape RAW despite the 4:5 portrait request. The transport prompt has been hardened to state exact dimensions, exact aspect ratio, explicit PORTRAIT/LANDSCAPE orientation, and that shot-scale words such as wide shot must never change the locked canvas orientation.
 
 No second real image dispatch was made. Attempt 2 remains unused. Under the current Phase 5A contract, Attempt 2 is reserved for a natural Review-driven REPAIR_NEEDED path, not for an automatic technical transport retry. Phase 5A therefore remains BLOCKED at the real-provider canvas compatibility boundary. Phase 5B remains NOT STARTED.
+
+## 2026-10-01 Attempt 2 shared-budget final update
+
+The shared generation-budget rule was changed and validated after direct user approval: primary generation, technical retry, and content repair all compete for the same hard maximum of two real Provider Attempts per Logical Asset. Technical retry has no independent generation pool.
+
+For the existing replacement Canary, Attempt 1 had already consumed one slot and ended before Review because the provider RAW violated the frozen 4:5 portrait canvas. The ASPECT_RATIO_MISMATCH path was therefore authorized to use the one remaining slot as a bounded TECHNICAL_RETRY. Queue authorization itself did not consume an Attempt; the Authority remained 1/2 until Gateway dispatch commit.
+
+Attempt 2 authoritative result:
+
+- Canary: phase5a-collab-retry-087b52d549aa
+- Logical asset: _external/76251ec2bfb424e9/frame-01
+- Attempt index: 2
+- Generation key: ga1-c6f16e1fba3d2c7bb8955ad7314e5b24ffa16e81564ac087-a2
+- Attempt reason: TECHNICAL_RETRY
+- Technical source: ASPECT_RATIO_MISMATCH
+- Provider: codex_subscription
+- Payload: gpt-image-2.5-flare / high
+- Dispatch committed: yes
+- Attempt status: OUTCOME_UNKNOWN
+- New provider RAW committed: no
+- New review item: no
+- Attempts consumed: 2
+- Remaining attempts: 0
+- Active attempt: none
+- Queue terminal state: external_blocked
+- External block reason: shared_generation_attempt_budget_exhausted
+- Stage mutation: none
+- Release mutation: none
+
+The durable Codex runner result for Attempt 2 completed with return code 0 and turn.completed, but reported generated_artifacts as an empty list. The image worker therefore had no valid image candidate to commit. JSONL does not expose image-generation tool events even for the successful first Attempt, so absence of a visible tool event is not treated as proof that the tool was never called. The precise durable classification for future equivalent executions is IMAGE_TOOL_NO_ARTIFACT.
+
+Attempt 1 and Attempt 2 now exhaust the single shared budget. Generation Attempt Authority reports attempts_consumed=2, remaining_attempts=0, active_attempt_index=null. Both the technical-retry gate and the Phase5A canary gate independently reject any Attempt 3. A later content Review cannot obtain another generation slot for this Logical Asset; if a usable candidate cannot be recovered from existing evidence, the only valid production disposition is BLOCKED / NEEDS_USER rather than a third Provider dispatch.
+
+Phase 5A therefore remains BLOCKED. It has proven the real login-auth image path can produce a provider artifact, but this Canary did not produce a canonical candidate eligible for Review within its two-attempt budget. Phase 5B remains NOT STARTED.
