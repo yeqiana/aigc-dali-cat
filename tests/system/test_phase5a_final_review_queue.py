@@ -26,6 +26,12 @@ def _policy() -> dict:
             "model_policy_sha256": "a" * 64}
 
 
+def _policy_for_role(role: str, **_kwargs) -> dict:
+    if role == "image.payload":
+        return {"role": role, "model": "gpt-image-2.5-flare", "quality": "high"}
+    return _policy()
+
+
 def _queue_item(tmp_path: Path, *, status="queued", receipt=None) -> tuple[dict, dict, Path, str]:
     artifact = tmp_path / "frame.png"
     artifact.write_bytes(b"test pixels")
@@ -66,7 +72,7 @@ def test_final_semantic_enqueue_is_bound_and_idempotent(tmp_path):
     artifact = tmp_path / "frame.png"
     artifact.write_bytes(b"test pixels")
     q = {"items": [], review_queue.QUEUE_KEY: []}
-    with patch("model_policy.resolve", return_value=_policy()):
+    with patch("model_policy.resolve", side_effect=_policy_for_role):
         first = review_queue.enqueue_final_semantic(
             q, episode=tmp_path, source_item=_source(artifact), artifact=artifact,
             artifact_path=str(artifact))

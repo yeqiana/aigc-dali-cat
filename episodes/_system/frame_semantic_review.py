@@ -523,6 +523,43 @@ def _find_pending_final_semantic_receipt(
     return matches[0]
 
 
+def _validate_durable_result_projection(
+    ep: Path, receipt: dict, *, request_id: str, durable_result: dict,
+) -> Path:
+    """Validate Slot2's secret-safe durable result projection without rewriting it."""
+    if receipt.get("durable_result_status") != "VALIDATED":
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_NOT_VALIDATED")
+    raw_ref = str(receipt.get("result_ref") or "").strip()
+    if not raw_ref:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_REF_MISSING")
+    relative = Path(raw_ref)
+    if relative.is_absolute():
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_PATH_INVALID")
+    episode = Path(ep).resolve()
+    projection_path = (episode / relative).resolve()
+    try:
+        projection_path.relative_to(episode)
+    except ValueError as exc:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_PATH_INVALID") from exc
+    if not projection_path.is_file():
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_MISSING")
+    expected_sha = str(receipt.get("result_sha256") or "").lower()
+    if len(expected_sha) != 64 or sha256_file(projection_path).lower() != expected_sha:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_SHA_MISMATCH")
+    try:
+        projection = json.loads(projection_path.read_bytes().decode("utf-8-sig"))
+    except Exception as exc:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_INVALID") from exc
+    if (not isinstance(projection, dict)
+            or projection.get("schema") != "storyos.user_runner_result_projection.v1"
+            or str(projection.get("request_id") or "") != request_id
+            or int(projection.get("returncode", -1)) != 0
+            or projection.get("turn_completed") is not True
+            or projection.get("structured_result") != durable_result):
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_BINDING_MISMATCH")
+    return projection_path
+
+
 def _finalize_final_semantic_receipt(
     ep: Path, *, receipt_ref: str | None, review_item: dict | None,
     frame: dict, candidate: Path, log_path: Path, returncode: int,
@@ -566,6 +603,8 @@ def _finalize_final_semantic_receipt(
     durable_result = codex_critic_runner.recover_completed_agent_json(durable_log)
     if not isinstance(durable_result, dict):
         raise RuntimeError("FINAL_SEMANTIC_STRUCTURED_RESULT_NOT_DURABLE")
+    _validate_durable_result_projection(
+        ep, receipt, request_id=request_id, durable_result=durable_result)
     try:
         result = read_json(candidate)
     except Exception as exc:
@@ -606,9 +645,6 @@ def _finalize_final_semantic_receipt(
         "model_policy_sha256": policy_sha,
         "evidence_fingerprint": fingerprint,
         "candidate_result_sha256": sha256_file(candidate),
-        "result_sha256": hashlib.sha256(raw).hexdigest(),
-        "result_ref": repo_rel(log_path),
-        "result_sha256_source": "USER_RUNNER_DURABLE_OUTPUT",
         "execution_completion_source": "USER_RUNNER_DURABLE_RESULT",
         "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
         "created_at": now(),
@@ -641,6 +677,266 @@ def _commit_final_semantic_execution_receipt(
     write_json(path, validated_receipt)
 
 
+REVIEW_COMMIT_SCHEMA = "phase5a-final-semantic-review-commit/v1"
+
+
+def review_commit_id(
+    review_item_id: str, generation_key: str, attempt_index: int,
+    evidence_fingerprint: str,
+) -> str:
+    """Stable idempotency key for one queue-bound Final Semantic decision."""
+    identity = {
+        "review_item_id": str(review_item_id or "").strip(),
+        "generation_key": str(generation_key or "").strip(),
+        "attempt_index": int(attempt_index),
+        "evidence_fingerprint": str(evidence_fingerprint or "").lower(),
+    }
+    if not all((identity["review_item_id"], identity["generation_key"],
+                identity["evidence_fingerprint"])) or identity["attempt_index"] not in {1, 2}:
+        raise ValueError("review commit identity is incomplete")
+    raw = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def review_commit_manifest_path(ep: Path, commit_id: str) -> Path:
+    return Path(ep) / "meta/runtime/review-commits" / f"{str(commit_id)}.json"
+
+
+def load_review_commit(ep: Path, commit_id: str) -> dict | None:
+    """Load one Review commit decision for verified projection consumers."""
+    path = review_commit_manifest_path(ep, commit_id)
+    if not path.is_file():
+        return None
+    value = read_json(path)
+    return value if isinstance(value, dict) else None
+
+
+def find_review_commit_for_item(ep: Path, review_item_id: str) -> dict | None:
+    """Find the unique decided commit for a queue item; ambiguity fails closed."""
+    directory = Path(ep) / "meta/runtime/review-commits"
+    if not directory.is_dir():
+        return None
+    matches = []
+    for path in sorted(directory.glob("*.json")):
+        try:
+            value = read_json(path)
+        except Exception as exc:
+            raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_MANIFEST_UNREADABLE") from exc
+        if not isinstance(value, dict) or value.get("schema") != REVIEW_COMMIT_SCHEMA:
+            continue
+        if str(value.get("review_item_id") or "") != str(review_item_id or ""):
+            continue
+        expected_id = review_commit_id(
+            str(value.get("review_item_id") or ""),
+            str(value.get("generation_key") or ""),
+            int(value.get("attempt_index") or 0),
+            str(value.get("evidence_fingerprint") or ""),
+        )
+        commit_id = str(value.get("review_commit_id") or "")
+        if commit_id != expected_id or path.stem != commit_id:
+            raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_IDENTITY_MISMATCH")
+        matches.append({"commit_id": commit_id, "manifest": value})
+    if len(matches) > 1:
+        raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_AMBIGUOUS")
+    return matches[0] if matches else None
+
+
+def review_commit_is_decided(manifest: dict | None) -> bool:
+    return (isinstance(manifest, dict)
+            and manifest.get("schema") == REVIEW_COMMIT_SCHEMA
+            and manifest.get("status") in {"COMMIT_DECIDED", "PROJECTIONS_APPLIED"})
+
+
+def _write_review_commit_decision(ep: Path, plan: dict, receipt: dict) -> str:
+    """Persist a validated decision marker before applying success projections.
+
+    The immutable pending request and candidate remain the replay input until
+    local projections verify. A decided commit can therefore be re-applied by
+    the normal deterministic candidate path without redispatching a model.
+    Queue terminalization remains a separate required gate.
+    """
+    commit_id = str(plan.get("review_commit_id") or "")
+    if not commit_id:
+        raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_ID_MISSING")
+    path = review_commit_manifest_path(ep, commit_id)
+    receipt_raw = json.dumps(receipt, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    attempt_index = int(plan.get("attempt_index") or 0)
+    request_path = pending_request_path(Path(ep), attempt_index)
+    candidate_path = Path(ep) / CANDIDATE_REL
+    if not request_path.is_file() or not candidate_path.is_file():
+        raise RuntimeError("FINAL_SEMANTIC_REVIEW_REPLAY_INPUT_MISSING")
+    manifest = {
+        "schema": REVIEW_COMMIT_SCHEMA,
+        "status": "COMMIT_DECIDED",
+        "review_commit_id": commit_id,
+        "review_item_id": plan.get("review_item_id"),
+        "generation_key": plan.get("generation_key"),
+        "logical_asset_key": plan.get("logical_asset_key"),
+        "attempt_index": plan.get("attempt_index"),
+        "review_attempt": plan.get("attempt"),
+        "frame": (plan.get("frames") or [None])[0],
+        "candidate_sha256": plan.get("candidate_sha256", [None])[0],
+        "frame_contract_sha256": plan.get("frame_contract_sha256"),
+        "prompt_package_sha256": plan.get("prompt_package_sha256"),
+        "model_policy_sha256": plan.get("model_policy_sha256"),
+        "evidence_fingerprint": plan.get("evidence_fingerprint"),
+        "receipt_sha256": hashlib.sha256(receipt_raw).hexdigest(),
+        "replay_inputs": {
+            "pending_request": str(request_path.relative_to(Path(ep))).replace("\\", "/"),
+            "pending_request_sha256": sha256_file(request_path),
+            "candidate": str(candidate_path.relative_to(Path(ep))).replace("\\", "/"),
+            "candidate_input_sha256": sha256_file(candidate_path),
+        },
+        "target_projections": [
+            "model_execution_receipt", "production_ledger", "approved_asset",
+            "frame_review", "review_summary",
+        ],
+        "separate_commit_required": ["review_queue_terminal"],
+        "projection_recovery": "REPLAY_FROM_BOUND_PENDING_CANDIDATE",
+        "created_at": now(),
+        "applied_at": None,
+    }
+    if path.is_file():
+        existing = read_json(path)
+        comparable = {key: value for key, value in existing.items()
+                      if key not in {"created_at", "applied_at", "status"}}
+        expected_comparable = {key: value for key, value in manifest.items()
+                               if key not in {"created_at", "applied_at", "status"}}
+        if comparable != expected_comparable:
+            raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_ID_CONFLICT")
+        if review_commit_is_decided(existing):
+            return commit_id
+    import runtime_atomic_store
+    runtime_atomic_store.atomic_write_json(path, manifest)
+    return commit_id
+
+
+def mark_review_commit_projections_applied(ep: Path, commit_id: str) -> dict:
+    """Mark successful local Review projections; Queue terminal is checked separately."""
+    path = review_commit_manifest_path(ep, commit_id)
+    manifest = load_review_commit(ep, commit_id)
+    if not review_commit_is_decided(manifest):
+        raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_NOT_DECIDED")
+    if manifest.get("status") == "PROJECTIONS_APPLIED":
+        return manifest
+    manifest["status"] = "PROJECTIONS_APPLIED"
+    manifest["applied_at"] = now()
+    import runtime_atomic_store
+    runtime_atomic_store.atomic_write_json(path, manifest)
+    return manifest
+
+
+def review_commit_replay_inputs_valid(ep: Path, manifest: dict) -> bool:
+    """Return true only while the immutable request/candidate replay pair matches."""
+    inputs = manifest.get("replay_inputs") if isinstance(manifest, dict) else None
+    if not isinstance(inputs, dict):
+        return False
+    ep = Path(ep).resolve()
+    for path_key, sha_key in (("pending_request", "pending_request_sha256"),
+                              ("candidate", "candidate_input_sha256")):
+        relative = str(inputs.get(path_key) or "")
+        path = (ep / relative).resolve()
+        try:
+            path.relative_to(ep)
+        except ValueError:
+            return False
+        expected_sha = str(inputs.get(sha_key) or "").lower()
+        if not path.is_file() or len(expected_sha) != 64 or sha256_file(path).lower() != expected_sha:
+            return False
+    return True
+
+
+def review_commit_projections_verified(ep: Path, commit_id: str) -> bool:
+    """Verify all local single-frame projections after a lost caller response.
+
+    This intentionally does not verify or mutate Review Queue terminal state;
+    the queue owner must still attach its SUCCESS receipt before authority PASS.
+    """
+    ep = Path(ep).resolve()
+    manifest = load_review_commit(ep, commit_id)
+    if not review_commit_is_decided(manifest):
+        return False
+    if manifest.get("projection_recovery") != "REPLAY_FROM_BOUND_PENDING_CANDIDATE":
+        return False
+    frame = str(manifest.get("frame") or "").zfill(2)
+    if frame == "00":
+        return False
+    summary_path = ep / SUMMARY_REL
+    if not summary_path.is_file():
+        return False
+    try:
+        summary = read_json(summary_path)
+    except Exception:
+        return False
+    receipt = ((summary.get("critic_provenance") or {}).get("model_execution_receipt")
+               if isinstance(summary, dict) else None)
+    if not isinstance(receipt, dict):
+        return False
+    raw = json.dumps(receipt, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    if hashlib.sha256(raw).hexdigest() != str(manifest.get("receipt_sha256") or ""):
+        return False
+    if (str(receipt.get("review_item_id") or "") != str(manifest.get("review_item_id") or "")
+            or str(receipt.get("generation_key") or "") != str(manifest.get("generation_key") or "")
+            or str(receipt.get("logical_asset_key") or "") != str(manifest.get("logical_asset_key") or "")
+            or int(receipt.get("attempt_index") or 0) != int(manifest.get("attempt_index") or 0)
+            or str(receipt.get("candidate_sha256") or "").lower() != str(manifest.get("candidate_sha256") or "").lower()
+            or str(receipt.get("model_policy_sha256") or "") != str(manifest.get("model_policy_sha256") or "")
+            or str(receipt.get("evidence_fingerprint") or "") != str(manifest.get("evidence_fingerprint") or "")):
+        return False
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    row = ((ledger.get("frames") or {}).get(frame) or {})
+    approved = row.get("approved_asset") if isinstance(row.get("approved_asset"), dict) else {}
+    if str(row.get("status") or "").upper() not in {"PASSED", "LOCKED"}:
+        return False
+    expected_sha = str(manifest.get("candidate_sha256") or "").lower()
+    if str(approved.get("sha256") or "").lower() != expected_sha:
+        return False
+    try:
+        current = frame_records(ep, require_files=False, only_frames=[int(frame)])
+        if len(current) != 1 or str(current[0].get("sha256") or "").lower() != expected_sha:
+            return False
+        return not verify_scoped_review(
+            ep, current, review_scope=PHASE5A_SINGLE_FRAME_SCOPE, metadata_only=True)
+    except Exception:
+        return False
+
+
+def reconcile_review_commit(ep: Path, commit_id: str) -> dict:
+    """Idempotently finish a decided single-frame commit without model/provider work."""
+    ep = Path(ep).resolve()
+    manifest = load_review_commit(ep, commit_id)
+    if not review_commit_is_decided(manifest):
+        return {"status": "COMMIT_NOT_DECIDED", "review_commit_id": commit_id}
+    if manifest.get("status") == "PROJECTIONS_APPLIED":
+        return {"status": "PROJECTIONS_APPLIED", "review_commit_id": commit_id,
+                "replayed": False}
+
+    candidate = ep / CANDIDATE_REL
+    request_path = pending_request_path(ep, int(manifest.get("review_attempt") or 0))
+    if candidate.is_file() and request_path.is_file():
+        if not review_commit_replay_inputs_valid(ep, manifest):
+            return {"status": "COMMIT_INCOMPLETE", "review_commit_id": commit_id,
+                    "reason": "REPLAY_INPUT_IDENTITY_MISMATCH", "replayed": False}
+        # This path parses and validates the already durable critic candidate;
+        # it never dispatches a model or image provider.
+        result = apply_pending_candidate(ep, attempt=int(manifest["review_attempt"]))
+        if result != 0 or not review_commit_projections_verified(ep, commit_id):
+            return {"status": "COMMIT_INCOMPLETE", "review_commit_id": commit_id,
+                    "reason": "REPLAY_DID_NOT_VERIFY", "replayed": True,
+                    "apply_result": result}
+        mark_review_commit_projections_applied(ep, commit_id)
+        return {"status": "PROJECTIONS_APPLIED", "review_commit_id": commit_id,
+                "replayed": True}
+
+    # Candidate cleanup happens only after local verification. If it is gone,
+    # adopt only when every local projection still proves the exact receipt and
+    # identity. Review Queue terminal SUCCESS remains an independent condition.
+    if not candidate.exists() and review_commit_projections_verified(ep, commit_id):
+        mark_review_commit_projections_applied(ep, commit_id)
+        return {"status": "PROJECTIONS_APPLIED", "review_commit_id": commit_id,
+                "replayed": False, "adopted_verified_projections": True}
+    return {"status": "COMMIT_INCOMPLETE", "review_commit_id": commit_id,
+            "reason": "REPLAY_INPUTS_OR_VERIFIED_PROJECTIONS_MISSING", "replayed": False}
 def prepare_review_commit(
     ep: Path, *, data: dict, reviewed: list[dict], contexts: dict,
     provenance: dict, attempt: int, review_scope: str,
@@ -722,6 +1018,21 @@ def prepare_review_commit(
         "frames": [str(row.get("frame") or "").zfill(2) for row in reviewed],
         "candidate_sha256": [str(row.get("sha256") or "").lower() for row in reviewed],
         "ledger_actions": "prevalidated",
+        **({
+            "review_commit_id": review_commit_id(
+                review_item_id,
+                str((review_item or {}).get("generation_key") or ""),
+                int((review_item or {}).get("attempt_index") or 0),
+                str((receipt or {}).get("evidence_fingerprint") or ""),
+            ),
+            "generation_key": review_item.get("generation_key"),
+            "logical_asset_key": review_item.get("logical_asset_key"),
+            "attempt_index": review_item.get("attempt_index"),
+            "frame_contract_sha256": expected.get("frame_contract_sha256"),
+            "prompt_package_sha256": expected.get("prompt_package_sha256"),
+            "model_policy_sha256": expected.get("model_policy_sha256"),
+            "evidence_fingerprint": expected.get("evidence_fingerprint"),
+        } if isinstance(review_item, dict) else {}),
     }
 
 
@@ -1192,7 +1503,21 @@ def _apply_candidate_gate(
             if phase4_errors:
                 raise RuntimeError("approved Frame Contract preflight failed: " + "; ".join(phase4_errors))
 
+    # These checks used to run after cmd_review/cmd_promote/cmd_lock.  They are
+    # deterministic checks over the exact candidate bytes and recorded source
+    # contract, so run them while this is still a read-only validation phase.
+    # A failed contract must never leave an approved file or LOCKED Ledger row.
+    for source in reviewed:
+        path = Path(source["path"])
+        if not path.is_file() or sha256_file(path).lower() != str(source.get("sha256") or "").lower():
+            raise RuntimeError(f"frame {source['frame']} candidate changed before Review commit")
+
+    review_commit = None
     if isinstance(review_item, dict):
+        receipt = provenance.get("model_execution_receipt")
+        review_commit = _write_review_commit_decision(ep, commit_plan, receipt)
+        provenance = dict(provenance)
+        provenance["review_commit_id"] = review_commit
         # The Final Semantic Model Execution Receipt is part of this commit,
         # not something promoted to SUCCESS before the authority checks above.
         _commit_final_semantic_execution_receipt(
@@ -1269,10 +1594,11 @@ def _apply_candidate_gate(
     before_sha = {row["frame"]: row["sha256"] for row in reviewed}
     after_sha = {row["frame"]: row["sha256"] for row in approved}
     if before_sha != after_sha:
-        raise RuntimeError("candidate -> approved promotion changed reviewed pixels")
-    binding_errors = phase4_binding_errors(ep, approved)
-    if binding_errors:
-        raise RuntimeError("approved Frame Contract binding failed: " + "; ".join(binding_errors))
+        # cmd_promote writes only a projection of the already prevalidated
+        # candidate.  If storage corrupts it, classify the projection as
+        # unverified; do not turn that late IO anomaly into a Review PASS.
+        print("FRAME SEMANTIC REVIEW PROJECTION UNVERIFIED: approved pixels differ from candidate")
+        return 2
     approved_sources = review_source_bindings(ep, approved)
     provenance = dict(provenance)
     provenance["review_scope"] = (
@@ -1280,7 +1606,7 @@ def _apply_candidate_gate(
         if review_scope == PHASE5A_SINGLE_FRAME_SCOPE else "FULL_FRAME_SET"
     )
     provenance["reviewed_candidate_assets"] = evidence["reviewed_assets"]
-    return _persist_candidate(
+    result = _persist_candidate(
         ep,
         data=data,
         current=approved,
@@ -1291,6 +1617,9 @@ def _apply_candidate_gate(
         verification_scope=review_scope,
         review_item=review_item,
     )
+    if review_commit and result == 0:
+        mark_review_commit_projections_applied(ep, review_commit)
+    return result
 
 
 def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
@@ -2715,7 +3044,6 @@ def _persist_candidate(
         "summary": {"passed": not candidate_errors},
     }
     write_json(ep / SUMMARY_REL, summary)
-    (ep / CANDIDATE_REL).unlink(missing_ok=True)
     _rebind_incremental_captions(ep)
 
     verify_errors = (
@@ -2729,6 +3057,11 @@ def _persist_candidate(
         for error in errors:
             print("FAIL:", error)
         return 2
+    # Keep the source candidate and pending request until every local
+    # projection has passed verification. If the process stops earlier, the
+    # queue recovery path can replay this same bound decision without a model
+    # call. Deletion is cleanup only, after verified projections exist.
+    (ep / CANDIDATE_REL).unlink(missing_ok=True)
     print("FRAME SEMANTIC REVIEW PASS")
     return 0
 

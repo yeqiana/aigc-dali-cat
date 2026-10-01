@@ -705,6 +705,20 @@ def check_production(repo_root: Path, episode_dir: Path, gates: dict, manifest: 
             else:
                 for error in errors:
                     findings.append(Finding("FAIL", "frame_semantic_review", error))
+        # A LOCKED ledger row and an approved file are projections. Stage
+        # advancement must also prove the matching completed Review receipt and
+        # terminal Review Queue authority for every generated accepted frame.
+        try:
+            import verified_review_authority
+            authority = verified_review_authority.verify_episode_review_authority(
+                episode_dir, metadata_only=metadata_only)
+            if authority.get("status") == "BLOCKED":
+                for error in authority.get("errors") or []:
+                    findings.append(Finding("FAIL", "verified_review_authority", str(error)))
+        except Exception as exc:
+            findings.append(Finding(
+                "FAIL", "verified_review_authority",
+                f"review authority verifier unavailable: {type(exc).__name__}: {exc}"))
 
 
 def check_visual_profile_for_production(repo_root: Path, episode_dir: Path, findings: list[Finding], *, metadata_only: bool) -> None:

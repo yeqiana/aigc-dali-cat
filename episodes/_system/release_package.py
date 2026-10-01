@@ -15,6 +15,7 @@ import story_json
 import frame_review_persistence
 import story_review
 import visual_profile_review_persistence
+import verified_review_authority
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_REL = Path('meta/release-manifest.json')
@@ -101,6 +102,7 @@ def file_row(path: Path, role: str) -> dict:
 
 
 def build_payload(ep: Path) -> dict:
+    verified_review_authority.require_verified_episode_review_authority(ep, metadata_only=False)
     snapshot_sha=None
     if final_snapshot.required(ep) or (ep/final_snapshot.SNAPSHOT_REL).is_file():
         errors=final_snapshot.verify(ep)

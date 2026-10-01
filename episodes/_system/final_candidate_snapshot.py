@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 
 import frame_semantic_review
+import verified_review_authority
 import fast_frame_scout
 import character_visual_contract
 import caption_image_audit
@@ -136,6 +137,7 @@ def _optional(ep:Path,relpath:str,role:str,archive:str)->dict|None:
 
 
 def preflight(ep:Path, *, write_evidence:bool=True)->None:  # STORY_OS_V2_5_R31_HOTFIX
+    verified_review_authority.require_verified_episode_review_authority(ep, metadata_only=False)
     semantic=frame_semantic_review.verify_episode(ep,metadata_only=False,write_audit=write_evidence)
     if semantic and not acceptance_allows(ep, "frame_semantic"):
         raise ValueError("frame semantic preflight failed: "+"; ".join(semantic[:8]))

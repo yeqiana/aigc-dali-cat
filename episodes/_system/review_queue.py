@@ -205,6 +205,27 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
     if review_attempt not in {1, 2}:
         raise RuntimeError("FINAL_SEMANTIC_ATTEMPT_INDEX_INVALID")
 
+    # A durable Review commit intent means the Final Semantic model already
+    # ran. Recover its bound candidate/projections before considering any new
+    # Critic dispatch; a receipt/commit problem must never spend another model
+    # call or generation attempt.
+    commit = frame_semantic_review.find_review_commit_for_item(
+        ep, str(item.get("review_key") or ""))
+    if commit is not None:
+        commit_id = str(commit.get("commit_id") or "")
+        manifest = commit.get("manifest")
+        if not commit_id or not frame_semantic_review.review_commit_is_decided(manifest):
+            raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_MANIFEST_INVALID")
+        if manifest.get("status") == "COMMIT_DECIDED":
+            recovery = frame_semantic_review.reconcile_review_commit(ep, commit_id)
+            if not isinstance(recovery, dict) or recovery.get("status") != "PROJECTIONS_APPLIED":
+                raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_INCOMPLETE")
+            manifest = frame_semantic_review.load_review_commit(ep, commit_id)
+        if (not frame_semantic_review.review_commit_projections_verified(ep, commit_id)
+                or not isinstance(manifest, dict)
+                or manifest.get("status") != "PROJECTIONS_APPLIED"):
+            raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_INCOMPLETE")
+
     # If official evidence was committed before the queue completion write,
     # adopt it. `verify_episode` checks the canonical receipt bindings and does
     # not make another model call.
@@ -222,11 +243,17 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
     else:
         verified = not frame_semantic_review.verify_episode(ep, metadata_only=True)
     current_review = frame_review_persistence.load(ep, int(item["frame"])) if verified else None
-    if (verified and isinstance(current_review, dict)
-            and current_review.get("generation_key") == item.get("generation_key")
-            and str(current_review.get("asset_sha256") or "").lower() == item["artifact_sha256"]
-            and current_review.get("logical_asset_key") == item.get("logical_asset_key")
-            and current_review.get("model_policy_sha256") == item.get("model_policy_sha256")):
+    can_adopt = (verified and isinstance(current_review, dict)
+                 and current_review.get("generation_key") == item.get("generation_key")
+                 and str(current_review.get("asset_sha256") or "").lower() == item["artifact_sha256"]
+                 and current_review.get("logical_asset_key") == item.get("logical_asset_key")
+                 and current_review.get("model_policy_sha256") == item.get("model_policy_sha256"))
+    if commit is not None and not can_adopt:
+        # A durable commit decision proves the Critic already ran. If its
+        # projection cannot be adopted, stop for reconciliation; never spend a
+        # second Final Semantic call to paper over a broken Review commit.
+        raise RuntimeError("FINAL_SEMANTIC_REVIEW_COMMIT_INCOMPLETE")
+    if can_adopt:
         critic_summary = frame_semantic_review.read_json(ep / frame_semantic_review.SUMMARY_REL)
         critic_receipt = ((critic_summary.get("critic_provenance") or {}).get("model_execution_receipt")
                           if isinstance(critic_summary, dict) else None)
@@ -483,6 +510,38 @@ def telemetry(ep: Path, event: str, item: dict, *, queue_depth: int) -> None:
         pass
 
 
+def _claim_next_lane_item(ep: Path, scheduler_core) -> dict | None:
+    """Claim work while serialized with Phase5A epoch retirement.
+
+    The lane-start check is only an early rejection. This check shares the
+    retirement lock at the actual claim boundary, so a lane started earlier
+    cannot claim work after retirement commits.
+    """
+    ep = Path(ep).resolve()
+    if (ep / "meta" / "phase5a-canary.json").is_file():
+        import phase5a_collaborative_canary
+        from runtime_atomic_store import FileLock
+
+        with FileLock(
+            phase5a_collaborative_canary.validation_epoch_lock_target(ep),
+            timeout=30, stale_seconds=3600,
+        ):
+            phase5a_collaborative_canary.assert_validation_epoch_review_dispatch_eligible(ep)
+            with scheduler_core.queue_transaction(ep):
+                queue = scheduler_core.load_queue(ep)
+                row = claim(queue)
+                if row:
+                    scheduler_core.save_queue(ep, queue)
+            return row
+
+    with scheduler_core.queue_transaction(ep):
+        queue = scheduler_core.load_queue(ep)
+        row = claim(queue)
+        if row:
+            scheduler_core.save_queue(ep, queue)
+    return row
+
+
 async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                    timeout: int, max_inflight: int) -> None:
     """Consume durable work concurrently with Generation; never dispatch images."""
@@ -496,6 +555,10 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
     import scheduler_core
 
     ep = Path(episode).resolve()
+    phase5a_marker = ep / "meta" / "phase5a-canary.json"
+    if phase5a_marker.is_file():
+        import phase5a_collaborative_canary
+        phase5a_collaborative_canary.assert_validation_epoch_review_dispatch_eligible(ep)
     active: set[asyncio.Task] = set()
 
     def current_artifact_sha(frame: int) -> str | None:
@@ -590,11 +653,7 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
 
     while True:
         while len(active) < max(1, int(max_inflight)):
-            with scheduler_core.queue_transaction(ep):
-                q = scheduler_core.load_queue(ep)
-                row = claim(q)
-                if row:
-                    scheduler_core.save_queue(ep, q)
+            row = _claim_next_lane_item(ep, scheduler_core)
             if not row:
                 break
             active.add(asyncio.create_task(execute(dict(row))))

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import json
+from contextlib import ExitStack
 from pathlib import Path
 from unittest import mock
 
@@ -118,16 +119,48 @@ def test_stale_final_review_is_requeued_in_place_for_phase5a_scope(
     assert existing["review_scope"] == review_queue.PHASE5A_SINGLE_FRAME
 
 
-def test_scoped_candidate_gate_closes_only_reviewed_frame(monkeypatch):
+def test_scoped_candidate_gate_closes_only_reviewed_frame(monkeypatch, tmp_path):
+    import hashlib
+
     state = {"status": "ORIGINAL_READY"}
+    candidate_path = tmp_path / "candidate" / "01.png"
+    candidate_path.parent.mkdir(parents=True)
+    candidate_path.write_bytes(b"frame-01 candidate")
+    candidate_sha = hashlib.sha256(candidate_path.read_bytes()).hexdigest()
     reviewed = [{
         "frame": "01", "path_rel": "candidate/01.png",
-        "path": Path("candidate/01.png"), "sha256": "c" * 64,
+        "path": candidate_path, "sha256": candidate_sha,
+        "logical_asset_key": "_external/test/frame-01",
+        "generation_key": "generation-test-a1",
     }]
+    review_item = {
+        "review_key": "test-item", "logical_asset_key": "_external/test/frame-01",
+        "generation_key": "generation-test-a1", "attempt_index": 1,
+        "artifact_sha256": candidate_sha, "prompt_package_sha256": "p" * 64,
+    }
+    policy_sha = "m" * 64
+    frame_contract_sha = "f" * 64
+    fingerprint = "e" * 64
+    receipt = {
+        "receipt_schema_version": 2, "status": "SUCCESS",
+        "model_role": "vision.final", "profile": "vision_final",
+        "requested_model": "gpt-6-luna", "effective_model": "gpt-6-luna",
+        "reasoning_effort": "high", "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+        "returncode": 0, "turn_completed": True,
+        "review_item_id": "test-item", "logical_asset_key": "_external/test/frame-01",
+        "generation_key": "generation-test-a1", "attempt_index": 1,
+        "candidate_sha256": candidate_sha, "frame_contract_sha256": frame_contract_sha,
+        "prompt_package_sha256": "p" * 64, "model_policy_sha256": policy_sha,
+        "evidence_fingerprint": fingerprint, "runner_request_id": "runner-test-01",
+        "result_sha256": "r" * 64, "result_ref": "meta/result.json",
+        "created_at": "2026-10-01T00:00:00Z",
+    }
     data = {
         "frames": [{
             "frame": "01", "decision": "pass",
-            "checks": {}, "issue_codes": [], "notes": "ok",
+            "checks": {name: True for name in (
+                frame_semantic_review.CHECKS + [frame_semantic_review.ANATOMY_CHECK])},
+            "issue_codes": [], "notes": "ok",
         }],
         "issue_codes": [],
         "summary": {"passed": True},
@@ -141,7 +174,7 @@ def test_scoped_candidate_gate_closes_only_reviewed_frame(monkeypatch):
     }
     approved = [{
         "frame": "01", "path_rel": "approved/01.png",
-        "path": Path("approved/01.png"), "sha256": "c" * 64,
+        "path": Path("approved/01.png"), "sha256": candidate_sha,
     }]
 
     def ledger_frame(*_a, **_k):
@@ -155,46 +188,52 @@ def test_scoped_candidate_gate_closes_only_reviewed_frame(monkeypatch):
 
     frame_records = mock.Mock(return_value=approved)
     persist = mock.Mock(return_value=0)
-    with mock.patch.object(frame_semantic_review, "validate_candidate_gate_rows",
-                           return_value=[]), \
-         mock.patch.object(frame_semantic_review, "episode_contract_version",
-                           return_value="test"), \
-         mock.patch.object(frame_semantic_review, "directing_v3_required",
-                           return_value=False), \
-         mock.patch.object(frame_semantic_review.production_ledger,
-                           "load_authority", return_value=ledger), \
-         mock.patch.object(frame_semantic_review.production_ledger,
-                           "content_repair_limit", return_value=1), \
-         mock.patch.object(frame_semantic_review, "_ledger_frame",
-                           side_effect=ledger_frame), \
-         mock.patch.object(frame_semantic_review.production_ledger,
-                           "cmd_review", side_effect=review), \
-         mock.patch.object(frame_semantic_review.production_ledger,
-                           "cmd_promote"), \
-         mock.patch.object(frame_semantic_review.production_ledger,
-                           "cmd_lock", side_effect=lock), \
-         mock.patch.object(frame_semantic_review, "write_json"), \
-         mock.patch.object(frame_semantic_review, "frame_records",
-                           frame_records), \
-         mock.patch.object(frame_semantic_review, "phase4_binding_errors",
-                           return_value=[]), \
-         mock.patch.object(frame_semantic_review, "review_source_bindings",
-                           return_value={}), \
-         mock.patch.object(frame_semantic_review, "prepare_review_commit",
-                           return_value={"review_item_id": "test-item"}), \
-         mock.patch.object(frame_semantic_review, "perceptual_rows",
-                           return_value=[]), \
-         mock.patch.object(frame_semantic_review, "_persist_candidate", persist):
+    with ExitStack() as stack:
+        for target, name, kwargs in (
+            (frame_semantic_review, "validate_candidate_gate_rows", {"return_value": []}),
+            (frame_semantic_review, "episode_contract_version", {"return_value": "test"}),
+            (frame_semantic_review, "directing_v3_required", {"return_value": False}),
+            (frame_semantic_review.production_ledger, "load_authority", {"return_value": ledger}),
+            (frame_semantic_review.production_ledger, "content_repair_limit", {"return_value": 1}),
+            (frame_semantic_review, "_ledger_frame", {"side_effect": ledger_frame}),
+            (frame_semantic_review.production_ledger, "cmd_review", {"side_effect": review}),
+            (frame_semantic_review.production_ledger, "cmd_promote", {}),
+            (frame_semantic_review.production_ledger, "cmd_lock", {"side_effect": lock}),
+            (frame_semantic_review, "write_json", {}),
+            (frame_semantic_review, "frame_records", {"new": frame_records}),
+            (frame_semantic_review, "phase4_binding_errors", {"return_value": []}),
+            (frame_semantic_review, "review_source_bindings", {"return_value": {}}),
+            (frame_semantic_review, "phase3_context_hashes",
+             {"return_value": {"frame_contract_sha256": frame_contract_sha}}),
+            (frame_semantic_review, "source_binding", {"return_value": {}}),
+            (frame_semantic_review, "bound_review_policy_sha256", {"return_value": policy_sha}),
+            (frame_semantic_review, "review_evidence_fingerprint", {"return_value": fingerprint}),
+            (frame_semantic_review, "prepare_review_commit",
+             {"return_value": {"review_item_id": "test-item", "review_commit_id": "commit-test"}}),
+            (frame_semantic_review, "_write_review_commit_decision", {"return_value": "commit-test"}),
+            (frame_semantic_review, "mark_review_commit_projections_applied",
+             {"return_value": {"status": "PROJECTIONS_APPLIED"}}),
+            (frame_semantic_review, "_commit_final_semantic_execution_receipt", {}),
+            (frame_semantic_review, "perceptual_rows", {"return_value": []}),
+            (frame_semantic_review, "_persist_candidate", {"new": persist}),
+        ):
+            if "new" in kwargs:
+                stack.enter_context(mock.patch.object(target, name, kwargs["new"]))
+            else:
+                stack.enter_context(mock.patch.object(target, name, **kwargs))
         rc = frame_semantic_review._apply_candidate_gate(
-            Path("ep"), data=data, reviewed=reviewed, contexts={},
-            provenance={"review_source_bindings": {}}, attempt=1,
+            tmp_path, data=data, reviewed=reviewed, contexts={},
+            provenance={"runtime": "CODEX_ISOLATED", "isolated_session": True,
+                        "attempt": 1, "review_source_bindings": {},
+                        "model_execution_receipt": receipt}, attempt=1,
             review_scope=frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE,
+            review_item=review_item,
         )
 
     assert rc == 0
     assert state["status"] == "LOCKED"
     frame_records.assert_called_once_with(
-        Path("ep"), require_files=True, only_frames=["01"])
+        tmp_path, require_files=True, only_frames=["01"])
     assert persist.call_args.kwargs["verification_scope"] == \
         frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE
 

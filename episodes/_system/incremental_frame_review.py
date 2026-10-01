@@ -20,6 +20,7 @@ import story_json
 import runtime_timeout_policy
 import visual_reality_score
 import episode_performance
+import verified_review_authority
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_REL = Path("meta/incremental-frame-review.json")
@@ -331,6 +332,13 @@ def build_plan(ep: Path) -> dict:
     pending_plan = _pending_ledger_plan(ep)
     if pending_plan is not None:
         return pending_plan
+    authority = verified_review_authority.verify_episode_review_authority(ep, metadata_only=False)
+    if authority["status"] == "BLOCKED":
+        return {
+            "action": "BLOCKED_UNVERIFIED_REVIEW_AUTHORITY",
+            "dirty_frames": [], "reused_frames": [], "missing_evidence_frames": [],
+            "context_frames": [], "reasons": authority["errors"],
+        }
     frames = base.frame_records(ep, require_files=True)
     contexts = base.context_hashes(ep)
     captions = caption_state(ep, frames)
@@ -664,6 +672,9 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
     errors = list(base.verify_episode(ep, metadata_only=metadata_only, write_audit=False))
     if not review_required(ep):
         return errors
+    authority = verified_review_authority.verify_episode_review_authority(
+        ep, metadata_only=metadata_only)
+    errors.extend(authority["errors"])
     # E005 is an automated risk detector only. If present, a low score makes
     # the review dirty/repairable; it does not manufacture a visual PASS.
     score_path = Path(ep) / visual_reality_score.REL
@@ -719,6 +730,10 @@ def run_review(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     if action == "NOT_REQUIRED":
         print("INCREMENTAL FRAME REVIEW SKIP: legacy contract")
         return 0
+    if action == "BLOCKED_UNVERIFIED_REVIEW_AUTHORITY":
+        for error in plan.get("reasons") or []:
+            print("FAIL:", error)
+        return 3
     if action == "NOOP":
         errors = verify_episode(ep, metadata_only=False, write_audit=True)
         if errors:

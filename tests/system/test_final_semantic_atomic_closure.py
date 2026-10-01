@@ -54,10 +54,19 @@ def test_later_machine_review_can_escalate_locked_exhausted_frame_without_forgin
         assert not current.get("user_exception_authorizations")
 
 
-def test_final_semantic_applies_failure_escalation_before_new_pass_lock():
+def test_final_semantic_applies_failure_escalation_before_new_pass_lock(tmp_path):
+    import hashlib
+
+    candidate03 = tmp_path / "candidate" / "03.png"
+    candidate12 = tmp_path / "candidate" / "12.png"
+    candidate03.parent.mkdir(parents=True)
+    candidate03.write_bytes(b"frame-03 candidate")
+    candidate12.write_bytes(b"frame-12 candidate")
     reviewed = [
-        {"frame": "03", "path_rel": "candidate/03.png", "sha256": "3" * 64},
-        {"frame": "12", "path_rel": "approved/12.png", "sha256": "c" * 64},
+        {"frame": "03", "path_rel": "candidate/03.png", "path": candidate03,
+         "sha256": hashlib.sha256(candidate03.read_bytes()).hexdigest()},
+        {"frame": "12", "path_rel": "candidate/12.png", "path": candidate12,
+         "sha256": hashlib.sha256(candidate12.read_bytes()).hexdigest()},
     ]
     critic = {
         "frames": [
@@ -110,9 +119,13 @@ def test_final_semantic_applies_failure_escalation_before_new_pass_lock():
             patch.object(frame_semantic_review.production_ledger, "mark_review_needs_user", side_effect=escalate), \
             patch.object(frame_semantic_review.production_ledger, "cmd_review", side_effect=review), \
             patch.object(frame_semantic_review.production_ledger, "cmd_promote", side_effect=promote), \
-            patch.object(frame_semantic_review.production_ledger, "cmd_lock", side_effect=lock):
+            patch.object(frame_semantic_review.production_ledger, "cmd_lock", side_effect=lock), \
+            patch.object(frame_semantic_review, "prepare_review_commit",
+                         return_value={"ledger_actions": "prevalidated"}), \
+            patch.object(frame_semantic_review, "review_source_bindings", return_value={}):
         rc = frame_semantic_review._apply_candidate_gate(
-            Path("ep"), data=critic, reviewed=reviewed, contexts={}, provenance={}, attempt=2
+            tmp_path, data=critic, reviewed=reviewed, contexts={},
+            provenance={"review_source_bindings": {}}, attempt=2
         )
 
     assert rc == 2
@@ -122,7 +135,12 @@ def test_final_semantic_applies_failure_escalation_before_new_pass_lock():
     assert state["03"] == "LOCKED"
 
 
-def test_final_semantic_failure_with_budget_remaining_authorizes_only_the_bounded_repair():
+def test_final_semantic_failure_with_budget_remaining_authorizes_only_the_bounded_repair(tmp_path):
+    import hashlib
+
+    candidate = tmp_path / "candidate" / "03.png"
+    candidate.parent.mkdir(parents=True)
+    candidate.write_bytes(b"frame-03 candidate")
     ledger = {
         "policy": {"max_content_repairs_per_frame": 1},
         "frames": {"03": {"status": "ORIGINAL_READY", "content_repairs_used": 0}},
@@ -139,11 +157,15 @@ def test_final_semantic_failure_with_budget_remaining_authorizes_only_the_bounde
             patch.object(frame_semantic_review.production_ledger, "content_repair_limit", return_value=1), \
             patch.object(frame_semantic_review.production_ledger, "cmd_review", side_effect=lambda args: calls.append(args)), \
             patch.object(frame_semantic_review.production_ledger, "cmd_authorize_repair", side_effect=lambda args: calls.append(args)), \
-            patch.object(frame_semantic_review.production_ledger, "force_pass_content_exhaustion") as force_pass:
+            patch.object(frame_semantic_review.production_ledger, "force_pass_content_exhaustion") as force_pass, \
+            patch.object(frame_semantic_review, "prepare_review_commit",
+                         return_value={"ledger_actions": "prevalidated"}), \
+            patch.object(frame_semantic_review, "review_source_bindings", return_value={}):
         rc = frame_semantic_review._apply_candidate_gate(
-            Path("ep"), data={"frames": [review], "issue_codes": []},
-            reviewed=[{"frame": "03", "path_rel": "candidate/03.png", "sha256": "3" * 64}],
-            contexts={}, provenance={}, attempt=2)
+            tmp_path, data={"frames": [review], "issue_codes": []},
+            reviewed=[{"frame": "03", "path_rel": "candidate/03.png", "path": candidate,
+                       "sha256": hashlib.sha256(candidate.read_bytes()).hexdigest()}],
+            contexts={}, provenance={"review_source_bindings": {}}, attempt=2)
 
     assert rc == 2
     assert len(calls) == 2
@@ -153,7 +175,12 @@ def test_final_semantic_failure_with_budget_remaining_authorizes_only_the_bounde
     force_pass.assert_not_called()
 
 
-def test_final_semantic_failure_at_exhausted_budget_keeps_ready_candidate_needs_user():
+def test_final_semantic_failure_at_exhausted_budget_keeps_ready_candidate_needs_user(tmp_path):
+    import hashlib
+
+    candidate = tmp_path / "candidate" / "12.png"
+    candidate.parent.mkdir(parents=True)
+    candidate.write_bytes(b"frame-12 candidate")
     ledger = {
         "policy": {"max_content_repairs_per_frame": 1},
         "frames": {"12": {"status": "REPAIR_READY", "content_repairs_used": 1}},
@@ -170,11 +197,15 @@ def test_final_semantic_failure_at_exhausted_budget_keeps_ready_candidate_needs_
             patch.object(frame_semantic_review.production_ledger, "content_repair_limit", return_value=1), \
             patch.object(frame_semantic_review.production_ledger, "cmd_review", side_effect=lambda args: seen.append(args)), \
             patch.object(frame_semantic_review.production_ledger, "cmd_authorize_repair") as authorize, \
-            patch.object(frame_semantic_review.production_ledger, "force_pass_content_exhaustion") as force_pass:
+            patch.object(frame_semantic_review.production_ledger, "force_pass_content_exhaustion") as force_pass, \
+            patch.object(frame_semantic_review, "prepare_review_commit",
+                         return_value={"ledger_actions": "prevalidated"}), \
+            patch.object(frame_semantic_review, "review_source_bindings", return_value={}):
         rc = frame_semantic_review._apply_candidate_gate(
-            Path("ep"), data={"frames": [review], "issue_codes": []},
-            reviewed=[{"frame": "12", "path_rel": "candidate/12.png", "sha256": "c" * 64}],
-            contexts={}, provenance={}, attempt=2)
+            tmp_path, data={"frames": [review], "issue_codes": []},
+            reviewed=[{"frame": "12", "path_rel": "candidate/12.png", "path": candidate,
+                       "sha256": hashlib.sha256(candidate.read_bytes()).hexdigest()}],
+            contexts={}, provenance={"review_source_bindings": {}}, attempt=2)
 
     assert rc == 2
     assert len(seen) == 1
