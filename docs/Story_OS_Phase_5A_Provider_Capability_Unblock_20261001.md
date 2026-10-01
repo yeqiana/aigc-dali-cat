@@ -71,3 +71,35 @@ Current validation:
 - The historical Canary OUTCOME_UNKNOWN Attempt remains unchanged.
 
 The remaining Phase 5A blocker is therefore the offline interactive runner, not API credentials or Controller/Payload routing. Real Provider Canary remains pending and Phase 5B remains NOT STARTED.
+
+## 2026-10-01 Real Canary Attempt 1 update
+
+This section supersedes the older operational blocker statements above while preserving them as historical evidence.
+
+The login-auth route, bounded UNKNOWN-capability gate, Payload transport preflight, and exact Luna Controller preflight all passed. The replacement Canary phase5a-collab-retry-087b52d549aa then entered its first real image Attempt.
+
+Authoritative result:
+
+- Logical asset: _external/76251ec2bfb424e9/frame-01
+- Attempt 1 generation key: ga1-c6f16e1fba3d2c7bb8955ad7314e5b24ffa16e81564ac087-a1
+- Provider: codex_subscription
+- Transport: gpt-5.6-sol / low
+- Payload: gpt-image-2.5-flare / high
+- Requested canvas: 1080x1350, aspect 4:5
+- Real provider RAW: 1448x1086
+- RAW SHA-256: 654acef2e272d77798471a612ea9fd19ee2534b7ca84acf91e73df18d3eb837b
+- Queue result: blocked
+- Technical failure: ASPECT_RATIO_MISMATCH
+- Ratio delta: 0.666666667
+- Attempt status: OUTCOME_UNKNOWN
+- Attempts consumed: 1
+- Remaining attempts: 1
+- Stage authority mutation: none
+- Release authority mutation: none
+- Review did not start because the provider RAW failed the canonical canvas gate.
+
+image_blocked_recovery inspect rejects deterministic local recovery with provider_crop_exception_limit_exceeded. The configured provider-crop exception limit is 0.06, so this RAW cannot be silently center-cropped or normalized into the formal 4:5 candidate.
+
+The persisted Provider Receipt proves that StoryOS requested the correct canonical canvas. The failure is therefore downstream of the canonical request: the image tool/provider returned a 4:3 landscape RAW despite the 4:5 portrait request. The transport prompt has been hardened to state exact dimensions, exact aspect ratio, explicit PORTRAIT/LANDSCAPE orientation, and that shot-scale words such as wide shot must never change the locked canvas orientation.
+
+No second real image dispatch was made. Attempt 2 remains unused. Under the current Phase 5A contract, Attempt 2 is reserved for a natural Review-driven REPAIR_NEEDED path, not for an automatic technical transport retry. Phase 5A therefore remains BLOCKED at the real-provider canvas compatibility boundary. Phase 5B remains NOT STARTED.
