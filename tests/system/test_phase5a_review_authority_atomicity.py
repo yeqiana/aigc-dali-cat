@@ -412,3 +412,23 @@ def test_unreceipted_locked_projection_is_classified_unverified_idempotently(tmp
     assert first["provider_dispatch_count"] == 0
     assert locked_ledger["frames"]["01"]["status"] == "LOCKED"
     assert not (tmp_path / "media" / "approved" / "01.png").exists()
+
+
+def test_bound_review_verifier_fails_closed_when_provenance_missing(tmp_path, monkeypatch):
+    frame = {
+        "frame": "01",
+        "sha256": CANDIDATE_SHA,
+        "path_rel": "media/approved/01.png",
+        "path": tmp_path / "media/approved/01.png",
+        "logical_asset_key": LOGICAL_ASSET_KEY,
+        "generation_key": GENERATION_KEY,
+    }
+    monkeypatch.setattr(frame_semantic_review.phase4_contract, "required", lambda _ep: True)
+    monkeypatch.setattr(frame_semantic_review.phase4_contract, "verify_approved_asset_binding", lambda *_args: [])
+    monkeypatch.setattr(frame_semantic_review, "source_binding", lambda *_args: {})
+    monkeypatch.setattr(frame_semantic_review, "bound_review_policy_sha256", lambda _ep: POLICY_SHA)
+    errors = frame_semantic_review.validate_bound_review(
+        {}, frame=frame, contexts={}, version="test", metadata_only=True,
+        phase3_contexts={"frame_contract_sha256": FRAME_CONTRACT_SHA}, ep=tmp_path,
+    )
+    assert any("evidence_fingerprint" in error for error in errors)

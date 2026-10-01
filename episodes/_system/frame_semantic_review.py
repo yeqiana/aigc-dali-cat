@@ -1558,6 +1558,7 @@ def recover_completed_shards_after_parent_timeout(ep: Path, *, attempt: int) -> 
 def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: str, metadata_only: bool, phase3_contexts: dict | None = None, directing_v3: bool = False, ep: Path | None = None) -> list[str]:
     errors: list[str] = []
     key = frame["frame"]
+    provenance = data.get("critic_provenance") or {}
     forced = _forced_marker(ep, key, frame["sha256"]) if ep is not None and data.get("forced_pass") is True else None
     if data.get("forced_pass") is True and forced is None:
         errors.append(f"frame {key} forced PASS has no matching ledger evidence")
@@ -1630,7 +1631,6 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     expected_binding = source_binding(ep, frame["frame"]) if ep is not None else None
     if expected_binding and data.get("source_binding") != expected_binding:
         errors.append(f"frame {key} source_binding mismatch")
-    provenance = data.get("critic_provenance") or {}
     for error in runtime_provenance.validate_critic_provenance(provenance):
         errors.append(f"frame {key} {error}")
     if provenance.get("review_scope") not in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET", PHASE5A_SINGLE_FRAME_SCOPE}:

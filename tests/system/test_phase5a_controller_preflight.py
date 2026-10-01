@@ -88,6 +88,7 @@ def test_unsupported_controller_blocks_before_global_claim_scheduler_or_attempt(
     monkeypatch.setattr(canary, "_preflight", lambda *_a, **_k: {
         "episode": episode, "logical_asset_key": "canary/frame-01",
         "runtime_request_id": "request-1", "policy_sha256": "a" * 64,
+        "queue_item_status": "queued",
     })
     monkeypatch.setattr(image_payload_transport, "selected_route", lambda *_a, **_k: {
         "provider": "codex_subscription",
@@ -127,6 +128,7 @@ def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatc
     monkeypatch.setattr(canary, "_preflight", lambda *_a, **_k: {
         "episode": episode, "logical_asset_key": "canary/frame-01",
         "runtime_request_id": "request-1", "policy_sha256": "a" * 64,
+        "queue_item_status": "queued",
     })
     original_resolve = model_policy.resolve
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
