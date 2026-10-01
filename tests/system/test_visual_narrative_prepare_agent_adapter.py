@@ -17,6 +17,7 @@ import agent_shadow_compare
 import preimage_authority_snapshot
 import preimage_task_contract
 import product_runtime_adapter
+import model_policy
 from agents import visual_narrative_prepare_adapter as adapter
 from agents import visual_narrative_prepare_model_producer as producer
 
@@ -36,6 +37,7 @@ class VisualNarrativeAdapterTest(unittest.TestCase):
             "rules": {"max_identical_setup_consecutive": 2, "frame10_requires_new_question_or_evidence": True},
             "frames": [{"frame": "01", "shot_scale": "wide", "scene_position_id": "room-door"}],
         }), encoding="utf-8")
+        model_policy.freeze_for_episode(self.ep)
         snapshot = preimage_authority_snapshot.build(self.ep, write=False)
         self.task = preimage_task_contract.task_contract(self.ep, "VISUAL_NARRATIVE_PREPARE", snapshot)
         self.task = producer.freeze_task(self.ep, self.task)

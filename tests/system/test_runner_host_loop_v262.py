@@ -255,20 +255,44 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
         }
         self.assertEqual(image_scheduler._technical_retry_code(item), "LOCAL_WORKSPACE_PERMISSION")
 
-    def test_worker_process_lost_requeues_as_retryable_technical_failure(self):
+    def test_worker_process_lost_requeues_only_with_one_shared_attempt_remaining(self):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
-            self._queue(ep, {"id": "q1", "frame": 3, "kind": "baseline_candidate", "scope": "repair", "status": "tech_failed", "attempts": 6, "technical_retry_epoch_start_attempt": 5, "technical_failure_code": "WORKER_PROCESS_LOST", "last_error": "worker disappeared before terminal receipt"})
-            result = image_scheduler.retry_tech(ep, sleep_fn=lambda seconds: self.assertEqual(seconds, 15))
+            self._queue(ep, {"id": "q1", "frame": 3, "kind": "baseline_candidate", "scope": "repair", "status": "tech_failed", "attempts": 1, "technical_failure_code": "WORKER_PROCESS_LOST", "last_error": "worker disappeared before terminal receipt"})
+            state = {
+                "logical_asset_key": "_external/test/frame-03",
+                "attempts_consumed": 1,
+                "remaining_attempts": 1,
+                "active_attempt_index": None,
+            }
+            with patch.object(
+                    image_scheduler, "_shared_generation_attempt_state",
+                    return_value=state):
+                result = image_scheduler.retry_tech(
+                    ep, sleep_fn=lambda _seconds: self.fail("shared final retry has no legacy backoff"))
             queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
             self.assertEqual(result["requeued"], 1)
+            self.assertEqual(result["backoff_seconds"], 0)
             self.assertEqual(queue["items"][0]["status"], "queued")
+            self.assertEqual(
+                queue["items"][0]["technical_retry_shared_budget"]["remaining_before_retry"], 1)
 
-    def test_third_capacity_failure_closes_epoch_immediately(self):
-        item = {"attempts": 3, "technical_retry_epoch_start_attempt": 0}
-        status = image_scheduler._terminal_technical_status(item, "PROVIDER_CAPACITY")
+    def test_exhausted_shared_budget_blocks_capacity_retry_immediately(self):
+        item = {"id": "q1", "frame": 1, "attempts": 2}
+        with tempfile.TemporaryDirectory() as td, \
+             patch.object(image_scheduler, "_shared_generation_attempt_state",
+                               return_value={
+                                   "logical_asset_key": "_external/test/frame-01",
+                                   "attempts_consumed": 2,
+                                   "remaining_attempts": 0,
+                                   "active_attempt_index": None,
+                               }):
+            status = image_scheduler._terminal_technical_status(
+                Path(td), item, "PROVIDER_CAPACITY")
         self.assertEqual(status, "external_blocked")
-        self.assertEqual(item["external_block"]["reason"], "technical_retry_exhausted")
+        self.assertEqual(
+            item["external_block"]["reason"],
+            "shared_generation_attempt_budget_exhausted")
         self.assertEqual(item["external_block"]["code"], "PROVIDER_CAPACITY")
 
     def test_capacity_exhaustion_can_advance_non_strict_model_without_erasing_history(self):
@@ -296,40 +320,80 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
         self.assertEqual(image_scheduler._scheduler_terminal_rc(
             queue,has_block=False,has_failure=True),24)
 
-    def test_second_failed_attempt_backs_off_then_requeues_same_item(self):
+    def test_one_remaining_shared_attempt_requeues_without_legacy_backoff(self):
+        with tempfile.TemporaryDirectory() as td:
+            ep = Path(td)
+            self._queue(ep, {"id": "q1", "frame": 1, "kind": "baseline_candidate", "scope": "baseline_candidate", "status": "tech_failed", "attempts": 1, "technical_failure_code": "NETWORK_ERROR", "last_error": "network"})
+            slept = []
+            state = {
+                "logical_asset_key": "_external/test/frame-01",
+                "attempts_consumed": 1,
+                "remaining_attempts": 1,
+                "active_attempt_index": None,
+            }
+            with patch.object(
+                    image_scheduler, "_shared_generation_attempt_state",
+                    return_value=state):
+                result = image_scheduler.retry_tech(
+                    ep, sleep_fn=lambda seconds: slept.append(seconds))
+            queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
+            self.assertEqual(result["requeued"], 1)
+            self.assertEqual(result["backoff_seconds"], 0)
+            self.assertEqual(slept, [])
+            row = queue["items"][0]
+            self.assertEqual(row["status"], "queued")
+            self.assertEqual(row["generation_attempt_reason"], "TECHNICAL_RETRY")
+            self.assertEqual(
+                row["technical_retry_shared_budget"]["remaining_before_retry"], 1)
+
+    def test_two_consumed_shared_attempts_open_external_block_without_sleep(self):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
             self._queue(ep, {"id": "q1", "frame": 1, "kind": "baseline_candidate", "scope": "baseline_candidate", "status": "tech_failed", "attempts": 2, "technical_failure_code": "NETWORK_ERROR", "last_error": "network"})
-            slept = []
-            result = image_scheduler.retry_tech(ep, sleep_fn=lambda seconds: slept.append(seconds))
-            queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
-            self.assertEqual(result["requeued"], 1)
-            self.assertEqual(result["backoff_seconds"], 45)
-            self.assertEqual(slept, [45])
-            self.assertEqual(queue["items"][0]["status"], "queued")
-
-    def test_third_failed_attempt_opens_external_block_without_content_failure(self):
-        with tempfile.TemporaryDirectory() as td:
-            ep = Path(td)
-            self._queue(ep, {"id": "q1", "frame": 1, "kind": "baseline_candidate", "scope": "baseline_candidate", "status": "tech_failed", "attempts": 3, "technical_failure_code": "NETWORK_ERROR", "last_error": "network"})
-            result = image_scheduler.retry_tech(ep, sleep_fn=lambda _seconds: self.fail("exhausted retry must not sleep"))
+            state = {
+                "logical_asset_key": "_external/test/frame-01",
+                "attempts_consumed": 2,
+                "remaining_attempts": 0,
+                "active_attempt_index": None,
+            }
+            with patch.object(
+                    image_scheduler, "_shared_generation_attempt_state",
+                    return_value=state):
+                result = image_scheduler.retry_tech(
+                    ep, sleep_fn=lambda _seconds: self.fail("exhausted retry must not sleep"))
             queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
             self.assertEqual(result["requeued"], 0)
-            self.assertEqual(result["exhausted_frames"], [1])
-            self.assertEqual(queue["items"][0]["status"], "external_blocked")
-            self.assertEqual(queue["items"][0]["external_block"]["reason"], "technical_retry_exhausted")
+            row = queue["items"][0]
+            self.assertEqual(row["status"], "external_blocked")
+            self.assertEqual(
+                row["external_block"]["reason"],
+                "shared_generation_attempt_budget_exhausted")
 
-    def test_reset_exhausted_starts_new_bounded_epoch_without_erasing_attempt_history(self):
+    def test_reset_exhausted_cannot_reopen_shared_generation_budget(self):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
-            self._queue(ep, {"id": "q1", "frame": 1, "kind": "baseline_candidate", "scope": "baseline_candidate", "status": "external_blocked", "attempts": 3, "technical_failure_code": "NETWORK_ERROR", "external_block": {"reason": "technical_retry_exhausted"}})
-            result = image_scheduler.retry_tech(ep, reset_exhausted=True, sleep_fn=lambda _seconds: self.fail("new epoch first retry has no backoff"))
+            self._queue(ep, {"id": "q1", "frame": 1, "kind": "baseline_candidate", "scope": "baseline_candidate", "status": "external_blocked", "attempts": 2, "technical_failure_code": "NETWORK_ERROR", "external_block": {"reason": "shared_generation_attempt_budget_exhausted"}})
+            state = {
+                "logical_asset_key": "_external/test/frame-01",
+                "attempts_consumed": 2,
+                "remaining_attempts": 0,
+                "active_attempt_index": None,
+            }
+            with patch.object(
+                    image_scheduler, "_shared_generation_attempt_state",
+                    return_value=state):
+                result = image_scheduler.retry_tech(
+                    ep, reset_exhausted=True,
+                    sleep_fn=lambda _seconds: self.fail("exhausted retry must not sleep"))
             queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
             row = queue["items"][0]
-            self.assertEqual(result["requeued"], 1)
-            self.assertEqual(row["status"], "queued")
-            self.assertEqual(row["attempts"], 3)
-            self.assertEqual(row["technical_retry_epoch_start_attempt"], 3)
+            self.assertEqual(result["requeued"], 0)
+            self.assertEqual(row["status"], "external_blocked")
+            self.assertEqual(row["attempts"], 2)
+            self.assertNotIn("technical_retry_epoch_start_attempt", row)
+            self.assertEqual(
+                row["external_block"]["reason"],
+                "shared_generation_attempt_budget_exhausted")
 
 
 class VisualLockBaselineAuthorityTests(unittest.TestCase):

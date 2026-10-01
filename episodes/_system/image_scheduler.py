@@ -1176,10 +1176,10 @@ def resume_authorized_budget(ep:Path,frames:list[int]|None=None)->dict:
 def retry_tech(ep:Path,frame:int|None=None,*,reset_exhausted:bool=False,sleep_fn=time.sleep)->dict:
     """Requeue one technical retry only when the shared max-2 budget has room.
 
-    The legacy per-item retry epoch remains diagnostic history only. Generation
-    Attempt Authority is the sole authority for whether another real image may
-    be dispatched. A technical retry therefore competes with content repair for
-    the same final Attempt 2 slot.
+    reset_exhausted remains a CLI-compatibility argument only. It cannot create
+    a new real-generation budget epoch or bypass Generation Attempt Authority.
+    A technical retry competes with content repair for the same final Attempt 2
+    slot.
     """
     ep=Path(ep).resolve()
 
