@@ -14,6 +14,7 @@ from pathlib import Path
 
 import codex_subscription_image as backend
 import image_model_policy
+import model_policy
 import prompt_package
 import runtime_trace
 import raw_candidate_budget  # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME
@@ -33,6 +34,34 @@ def model_policy_for_item(ep,item):
     model=str(item.get("model") or episode_model_policy["model"])
     quality=str(item.get("quality") or episode_model_policy["quality"])
     return {**episode_model_policy,"model":model,"quality":quality,"strict_model":bool(item.get("strict_model",episode_model_policy.get("strict_model")))}
+
+def generation_attempt_context(ep, item, payload_policy):
+    """Capture the Episode-bound execution request before reserving an Attempt.
+
+    These values describe the requested/bound execution context; they are not
+    Provider confirmation.  The Attempt Authority persists this mapping in the
+    durable row's CONTEXT before the Gateway can commit dispatch.
+    """
+    controller = model_policy.resolve("image.controller", episode=ep)
+    payload = model_policy.resolve("image.payload", episode=ep)
+    provider_candidate = str(item.get("provider_candidate") or item.get("provider") or "codex_subscription")
+    runner_candidate = str(item.get("runner_candidate") or item.get("runner") or "codex_user_runner")
+    return {
+        "scope": item.get("scope"),
+        "model_role": "image.controller",
+        "profile": controller.get("profile"),
+        "controller_model": controller.get("model"),
+        "controller_effort": controller.get("reasoning_effort"),
+        "payload_model": str(payload_policy.get("model") or payload.get("model") or ""),
+        "payload_quality": str(payload_policy.get("quality") or payload.get("quality") or ""),
+        "model_policy_version": controller.get("policy_version"),
+        "model_policy_sha256": controller.get("model_policy_sha256"),
+        "provider": provider_candidate,
+        "provider_candidate": provider_candidate,
+        "runner_candidate": runner_candidate,
+        "controller_model_source": "EPISODE_BOUND_RUNTIME_POLICY",
+        "payload_model_source": "EXPLICIT_RUNTIME_BINDING",
+    }
 
 def execute(ep,item,timeout,codex):
     resource_library.ensure_fresh(ep)
@@ -69,10 +98,9 @@ def execute(ep,item,timeout,codex):
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
     budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
+    attempt_context = generation_attempt_context(ep, item, effective_model_policy)
     budget_ok,budget_row=raw_candidate_budget.claim(ep,frame,budget_kind,reason=f"formal_generation_entrypoint scope={item.get('scope')} attempt={attempt}",token=budget_token,semantic_key=budget_semantic_key,
-        generation_context={"scope":item.get("scope"),"model_role":"image.payload","payload_model":model,
-            "payload_quality":quality,"model_policy_sha256":effective_model_policy.get("model_policy_sha256"),
-            "provider":item.get("provider") or "codex_subscription"})
+        generation_context=attempt_context)
     if not budget_ok:
         result={"returncode":98,"stdout":"RAW_CANDIDATE_BUDGET_EXHAUSTED: "+str(budget_row),"payload":None,"output":None,"log":log,"attempt":attempt,"scout":None,"budget":budget_row}
         production_recovery.write_lifecycle(ep, item, "FAILED", worker_pid=os.getpid(), error=result["stdout"], result=result)
