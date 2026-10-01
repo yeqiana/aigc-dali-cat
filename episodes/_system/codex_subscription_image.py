@@ -414,9 +414,22 @@ def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
             return None
         logical_key = logical_asset_identity.frame_asset_key(episode, 1)
         state = generation_attempt_authority.load_asset_state(episode, logical_key)
-        if (int(state.get("attempts_consumed") or 0) != 0
-                or state.get("active_attempt_index") is not None
-                or int(state.get("remaining_attempts") or 0) != 2):
+        consumed = int(state.get("attempts_consumed") or 0)
+        remaining = int(state.get("remaining_attempts") or 0)
+        active = state.get("active_attempt_index")
+        attempt_reason = str(item.get("generation_attempt_reason") or "PRIMARY_GENERATION")
+        technical_source = str(item.get("technical_retry_source_code") or "")
+        primary_scope = (
+            consumed == 0 and remaining == 2 and active is None
+            and attempt_reason == "PRIMARY_GENERATION"
+            and not technical_source
+        )
+        technical_retry_scope = (
+            consumed == 1 and remaining == 1 and active is None
+            and attempt_reason == "TECHNICAL_RETRY"
+            and technical_source == "ASPECT_RATIO_MISMATCH"
+        )
+        if not (primary_scope or technical_retry_scope):
             return None
         if (str(payload.get("model") or "") != "gpt-image-2.5-flare"
                 or str(payload.get("quality") or "").lower() != "high"):
@@ -452,9 +465,11 @@ def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
             "kind": "original",
             "scope": "batch",
             "logical_asset_key": logical_key,
-            "attempts_consumed": 0,
-            "remaining_attempts": 2,
-            "active_attempt_index": None,
+            "attempts_consumed": consumed,
+            "remaining_attempts": remaining,
+            "active_attempt_index": active,
+            "generation_attempt_reason": attempt_reason,
+            "technical_retry_source_code": technical_source,
             "model_policy_sha256": str(controller["model_policy_sha256"]),
             "payload_model": str(payload.get("model") or ""),
             "payload_quality": str(payload.get("quality") or "").lower(),
@@ -462,7 +477,9 @@ def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
         if expected is not None:
             for key in (
                 "queue_item_id", "logical_asset_key", "model_policy_sha256",
-                "payload_model", "payload_quality",
+                "payload_model", "payload_quality", "attempts_consumed",
+                "remaining_attempts", "generation_attempt_reason",
+                "technical_retry_source_code",
             ):
                 if str(expected.get(key) or "") != str(identity[key] or ""):
                     return None
@@ -480,6 +497,10 @@ def _phase5a_readiness_signature(readiness: dict) -> str:
         "episode_path": scope.get("episode_path"),
         "queue_item_id": scope.get("queue_item_id"),
         "logical_asset_key": scope.get("logical_asset_key"),
+        "attempts_consumed": scope.get("attempts_consumed"),
+        "remaining_attempts": scope.get("remaining_attempts"),
+        "generation_attempt_reason": scope.get("generation_attempt_reason"),
+        "technical_retry_source_code": scope.get("technical_retry_source_code"),
         "model_policy_sha256": scope.get("model_policy_sha256"),
         "payload_model": readiness.get("payload_model"),
         "payload_quality": readiness.get("payload_quality"),
@@ -519,7 +540,9 @@ def phase5a_payload_dispatch_context(ep: Path, canary_id: str,
         str(readiness_scope.get(key) or "") == str(identity.get(key) or "")
         for key in (
             "canary_type", "canary_id", "episode_path", "queue_item_id",
-            "logical_asset_key", "model_policy_sha256", "payload_model", "payload_quality",
+            "logical_asset_key", "attempts_consumed", "remaining_attempts",
+            "generation_attempt_reason", "technical_retry_source_code",
+            "model_policy_sha256", "payload_model", "payload_quality",
         )
     )
     if (identity is None

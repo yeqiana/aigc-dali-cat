@@ -562,6 +562,8 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
         "attempts_consumed": int(asset_state.get("attempts_consumed") or 0),
         "remaining_attempts": int(asset_state.get("remaining_attempts") or 0),
         "active_attempt_index": asset_state.get("active_attempt_index"),
+        "generation_attempt_reason": str(item.get("generation_attempt_reason") or "PRIMARY_GENERATION"),
+        "technical_retry_source_code": str(item.get("technical_retry_source_code") or ""),
         "queue_item_id": item.get("id"),
         "queue_item_count": len(items),
         "frame": int(item.get("frame") or 0),

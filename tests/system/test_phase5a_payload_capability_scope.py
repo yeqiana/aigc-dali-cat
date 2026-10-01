@@ -259,6 +259,70 @@ class Phase5APayloadCapabilityScopeTests(unittest.TestCase):
         self.assertFalse(result["image_attempt_authority_called"])
         self.assertEqual(runner.call_count, 1)
 
+    def test_bounded_technical_retry_scope_is_accepted_at_one_of_two(self) -> None:
+        self.queue_item["generation_attempt_reason"] = "TECHNICAL_RETRY"
+        self.queue_item["technical_retry_source_code"] = "ASPECT_RATIO_MISMATCH"
+        self.asset_state.update({
+            "attempts_consumed": 1,
+            "remaining_attempts": 1,
+            "active_attempt_index": None,
+        })
+        scope = self._scope()
+        self.assertIsNotNone(scope)
+        self.assertEqual(scope["attempts_consumed"], 1)
+        self.assertEqual(scope["remaining_attempts"], 1)
+        self.assertEqual(scope["generation_attempt_reason"], "TECHNICAL_RETRY")
+        self.assertEqual(scope["technical_retry_source_code"], "ASPECT_RATIO_MISMATCH")
+        readiness = self._readiness(scope)
+        with backend.phase5a_payload_dispatch_context(
+            self.workspace, CANARY_ID, scope, readiness,
+        ):
+            evidence = backend.consume_phase5a_payload_dispatch_grant(
+                self.workspace, self.queue_item,
+                payload_model=PAYLOAD_MODEL,
+                payload_quality=PAYLOAD_QUALITY,
+                policy_sha256=POLICY_SHA,
+            )
+        self.assertTrue(evidence["phase5a_dispatch_grant_consumed"])
+
+    def test_technical_retry_scope_rejects_wrong_source_or_attempt_three(self) -> None:
+        self.queue_item["generation_attempt_reason"] = "TECHNICAL_RETRY"
+        self.queue_item["technical_retry_source_code"] = "NETWORK_ERROR"
+        self.asset_state.update({
+            "attempts_consumed": 1,
+            "remaining_attempts": 1,
+            "active_attempt_index": None,
+        })
+        self.assertIsNone(self._scope())
+
+        self.queue_item["technical_retry_source_code"] = "ASPECT_RATIO_MISMATCH"
+        self.asset_state.update({
+            "attempts_consumed": 2,
+            "remaining_attempts": 0,
+            "active_attempt_index": None,
+        })
+        self.assertIsNone(self._scope())
+
+    def test_primary_readiness_signature_cannot_be_reused_for_attempt_two(self) -> None:
+        primary_scope = self._scope()
+        self.assertIsNotNone(primary_scope)
+        readiness = self._readiness(primary_scope)
+
+        self.queue_item["generation_attempt_reason"] = "TECHNICAL_RETRY"
+        self.queue_item["technical_retry_source_code"] = "ASPECT_RATIO_MISMATCH"
+        self.asset_state.update({
+            "attempts_consumed": 1,
+            "remaining_attempts": 1,
+            "active_attempt_index": None,
+        })
+        retry_scope = self._scope()
+        self.assertIsNotNone(retry_scope)
+        with self.assertRaisesRegex(backend.BackendError, "PHASE5A_PAYLOAD_DISPATCH_GRANT_DENIED"):
+            with backend.phase5a_payload_dispatch_context(
+                self.workspace, CANARY_ID, retry_scope, readiness,
+            ):
+                self.fail("primary readiness must not authorize Attempt2")
+
     def test_only_fixed_replacement_canary_with_ready_authorities_gets_grant(self) -> None:
         scope = self._scope()
         self.assertIsNotNone(scope)
