@@ -51,3 +51,23 @@ Its status, receipt, and generation key were not rewritten or reused. Because no
 - No credentials, tokens, or raw provider response content are included in this report.
 - Phase 5A remains blocked pending an automated independent Pixel Provider configured for `gpt-image-2.5-flare/high`.
 - Phase 5B is `NOT STARTED`.
+## Login-auth Payload route convergence update
+
+The repository now explicitly disables the API-key image route and keeps codex_subscription enabled. Provider selection remains authoritative in image_provider_runtime; a present OPENAI_API_KEY can no longer re-enable the disabled API route.
+
+The split Production path now uses the configured provider. image_payload_transport delegates preflight to the selected provider, image_worker_pool performs provider-aware Payload preflight before claiming an image Attempt, and the Phase 5A Canary uses the same preflight. codex_subscription_image can execute a frozen ImagePayloadRequest through a login-auth transport shim. The shim is not image.controller and may only invoke image_generation once using the already frozen payload model, quality, canvas, references, and scene prompt.
+
+The technical transport model is selected from the live login account model catalog and validated in an image-tool-enabled text probe before any image Attempt is reserved. It is not added to Episode Model Policy and cannot rewrite Luna or Flare.
+
+Current validation:
+- API-key route configured: false.
+- Selected one-image route: codex_subscription.
+- API key required: false.
+- Config validation: PASS.
+- Changed module compilation: PASS.
+- Direct executable contract tests: 18 passed / 0 failed.
+- Live login-auth Payload preflight: BLOCKED / LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE because the interactive codex_user_runner endpoint currently points to a stopped runner process while Codex is being installed or updated.
+- The blocked preflight reports image_attempt_authority_called=false and image_generation_called=false, so no new Attempt or image was consumed.
+- The historical Canary OUTCOME_UNKNOWN Attempt remains unchanged.
+
+The remaining Phase 5A blocker is therefore the offline interactive runner, not API credentials or Controller/Payload routing. Real Provider Canary remains pending and Phase 5B remains NOT STARTED.
