@@ -651,11 +651,12 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
     if dry_run:
         return {"status": "READY", **{k: v for k, v in preflight.items() if k != "episode"}}
     import model_policy
-    import openai_images_provider
+    import image_payload_transport
     payload_binding = model_policy.resolve("image.payload", episode=preflight["episode"])
-    payload_probe = openai_images_provider.payload_capability_preflight(
+    payload_probe = image_payload_transport.payload_capability_preflight(
         model=str(payload_binding.get("model") or ""),
         quality=str(payload_binding.get("quality") or ""),
+        codex_raw=codex,
     )
     if payload_probe.get("status") != "PASS":
         _telemetry(preflight["episode"], "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",

@@ -29,7 +29,7 @@ import production_recovery
 import runtime_timeout_policy
 import image_payload_controller
 import image_payload_request
-import openai_images_provider
+import image_payload_transport
 import logical_asset_identity
 import canvas_normalize
 
@@ -188,12 +188,14 @@ def execute(ep,item,timeout,codex):
                 "image_attempt_reserve_called":False}
         production_recovery.write_lifecycle(ep,item,"BLOCKED",worker_pid=os.getpid(),error=message,result=result)
         return result
-    # The Pixel lane must be available independently and may not fall back to
-    # the legacy Codex image_generation tool (which couples Controller/Payload).
+    # Provider selection is configuration-authoritative. Preflight the selected
+    # transport before reserving an image Attempt so an unavailable login/API
+    # lane cannot burn generation budget.
     payload_policy = model_policy.resolve("image.payload", episode=ep)
-    payload_preflight = openai_images_provider.payload_capability_preflight(
+    payload_preflight = image_payload_transport.payload_capability_preflight(
         model=str(payload_policy.get("model") or ""),
         quality=str(payload_policy.get("quality") or ""),
+        codex_raw=codex,
     )
     if payload_preflight.get("status") != "PASS":
         code=str(payload_preflight.get("failure_class") or "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER")
@@ -206,12 +208,21 @@ def execute(ep,item,timeout,codex):
     budget_kind=raw_candidate_budget.kind_for_queue_item(item)
     budget_token=str(item["id"])
     budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
+    selected_provider = str(payload_preflight.get("provider") or "")
+    selected_runner = str(
+        payload_preflight.get("runner")
+        or ("codex_user_runner" if selected_provider == "codex_subscription"
+            else "python-openai-images-http" if selected_provider == "openai_images_api"
+            else selected_provider)
+    )
     attempt_context = generation_attempt_context(ep, item, effective_model_policy)
     attempt_context.update({
-        "provider": "openai_images_api",
-        "provider_candidate": "openai_images_api",
-        "runner": "python-openai-images-http",
-        "runner_candidate": "python-openai-images-http",
+        "provider": selected_provider,
+        "provider_candidate": selected_provider,
+        "runner": selected_runner,
+        "runner_candidate": selected_runner,
+        "transport_model": payload_preflight.get("transport_model"),
+        "transport_effort": payload_preflight.get("transport_effort"),
         "controller_receipt_id": controller_result.get("controller_call_id"),
         "controller_output_sha256": canonical_request.get("controller_output_sha256"),
         "payload_request_fingerprint": canonical_request.get("request_fingerprint"),
@@ -241,7 +252,9 @@ def execute(ep,item,timeout,codex):
         _runner_request_id=runner_request_id,
         _canonical_payload_request=canonical_request,
         _payload_reference_paths=refs,
-        _payload_provider_route="openai_images_api")
+        _payload_provider_route=selected_provider,
+        _payload_transport_model=payload_preflight.get("transport_model"),
+        _payload_transport_effort=payload_preflight.get("transport_effort"))
     # Resident Runner image workers do not always inherit a workflow trace
     # context. Keep the span evidence correlated instead of turning a missing
     # observability context into a false worker failure.

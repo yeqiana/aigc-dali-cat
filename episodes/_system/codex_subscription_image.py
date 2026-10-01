@@ -190,6 +190,183 @@ def controller_args(episode: Path | str | None = None) -> list[str]:
     ]
 
 
+
+
+def _subscription_provider_args() -> list[str]:
+    """Force the ChatGPT/Codex subscription endpoint for the login-auth lane."""
+    return [
+        '-c', 'model_provider="openai"',
+        '-c', 'openai_base_url="https://chatgpt.com/backend-api/codex"',
+    ]
+
+
+def transport_args(model: str, effort: str) -> list[str]:
+    model = str(model or "").strip()
+    effort = str(effort or "").strip().lower() or "low"
+    if not model:
+        raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_REQUIRED")
+    return [
+        '-m', model,
+        '-c', f'model_reasoning_effort="{effort}"',
+        *_subscription_provider_args(),
+    ]
+
+
+def _catalog_candidates(payload: dict) -> list[dict]:
+    rows = payload.get("models") if isinstance(payload, dict) else None
+    if not isinstance(rows, list):
+        return []
+    controller_model = str(_IMAGE_CONTROLLER_POLICY.get("model") or "")
+    candidates = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        slug = str(row.get("slug") or "").strip()
+        if not slug or slug == controller_model or str(row.get("visibility") or "") != "list":
+            continue
+        levels = row.get("supported_reasoning_levels") or []
+        normalized = []
+        for level in levels:
+            if isinstance(level, str):
+                normalized.append(level)
+            elif isinstance(level, dict) and level.get("effort"):
+                normalized.append(str(level["effort"]))
+        effort = "low" if "low" in normalized else str(row.get("default_reasoning_level") or "medium")
+        candidates.append({
+            "model": slug,
+            "effort": effort,
+            "priority": int(row.get("priority") or 9999),
+        })
+    return sorted(candidates, key=lambda row: (row["priority"], row["model"]))
+
+
+def _subscription_model_catalog(codex: Path) -> list[dict]:
+    cmd = command_prefix(codex) + ['debug', 'models', *_subscription_provider_args()]
+    completed = codex_user_runner.run_codex(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
+        check=False,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        task_type="smoke",
+        codex_home_mode="inherit",
+    )
+    raw = str(completed.stdout or "").strip()
+    if completed.returncode != 0:
+        raise BackendError(f"LOGIN_AUTH_MODEL_CATALOG_FAILED: rc={completed.returncode}")
+    start = raw.find("{")
+    if start < 0:
+        raise BackendError("LOGIN_AUTH_MODEL_CATALOG_INVALID")
+    try:
+        payload = json.loads(raw[start:])
+    except json.JSONDecodeError as exc:
+        raise BackendError("LOGIN_AUTH_MODEL_CATALOG_INVALID") from exc
+    rows = _catalog_candidates(payload)
+    if not rows:
+        raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE")
+    return rows
+
+
+def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, str]:
+    cmd = command_prefix(codex) + [
+        'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
+        '-c', 'skills.include_instructions=false',
+        '-c', 'project_doc_max_bytes=0',
+        '--enable', 'image_generation',
+        *transport_args(model, effort),
+        '-s', 'read-only', '--json', '-',
+    ]
+    completed = codex_user_runner.run_codex(
+        cmd,
+        input="Return exactly STORYOS_TRANSPORT_OK and do not call any tool.",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
+        check=False,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        task_type="smoke",
+        codex_home_mode="inherit",
+    )
+    raw = str(completed.stdout or "")
+    return completed.returncode == 0 and "STORYOS_TRANSPORT_OK" in raw, raw[-800:]
+
+
+def payload_capability_preflight(*, model: str, quality: str,
+                                 codex_raw: str | None = None) -> dict:
+    """Prove login-auth transport before any image Attempt is reserved."""
+    requested_model = str(model or "").strip()
+    requested_quality = str(quality or "").strip().lower()
+    if not requested_model or requested_quality != "high":
+        return {
+            "status": "BLOCKED",
+            "failure_class": "PAYLOAD_MODEL_UNSUPPORTED_ON_LOGIN_TRANSPORT",
+            "provider": "codex_subscription",
+        }
+    try:
+        codex = resolve_codex(codex_raw)
+        image_runtime_preflight(bridged=codex_user_runner.bridge_required())
+        candidates = _subscription_model_catalog(codex)
+        failures = []
+        for row in candidates[:6]:
+            ok, tail = _probe_transport_model(codex, row["model"], row["effort"])
+            if ok:
+                return {
+                    "status": "PASS",
+                    "provider": "codex_subscription",
+                    "runner": "codex_user_runner" if codex_user_runner.bridge_required() else "codex_cli",
+                    "transport_model": row["model"],
+                    "transport_effort": row["effort"],
+                    "transport_model_source": "LOGIN_CATALOG_PROBE",
+                    "payload_model": requested_model,
+                    "payload_quality": requested_quality,
+                    "api_key_required": False,
+                    "image_attempt_authority_called": False,
+                    "image_generation_called": False,
+                }
+            failures.append({"model": row["model"], "probe_tail": tail})
+        return {
+            "status": "BLOCKED",
+            "failure_class": "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+            "provider": "codex_subscription",
+            "candidate_failures": failures,
+            "image_attempt_authority_called": False,
+            "image_generation_called": False,
+        }
+    except Exception as exc:
+        return {
+            "status": "BLOCKED",
+            "failure_class": "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE",
+            "provider": "codex_subscription",
+            "reason": f"{type(exc).__name__}: {str(exc)[:400]}",
+            "image_attempt_authority_called": False,
+            "image_generation_called": False,
+        }
+
+
+def payload_transport_prompt(request: dict, size: str, reference_count: int) -> str:
+    """Mechanical image-tool shim. Business semantics are frozen upstream."""
+    return (
+        "You are an image tool transport only. Do not rewrite, summarize, reinterpret, "
+        "improve, or alter the payload. FIRST ACTION: call image_generation exactly once. "
+        "Do not call shell, exec, Python, node, web, or any other tool before or after it.\n"
+        f"TRANSPORT_REQUEST_FINGERPRINT: {request.get('request_fingerprint')}\n"
+        f"EXACT_IMAGE_MODEL: {request.get('payload_model')}\n"
+        f"EXACT_IMAGE_QUALITY: {request.get('payload_quality')}\n"
+        f"EXACT_CANVAS: {size}\n"
+        f"EXACT_REFERENCE_COUNT: {int(reference_count)}\n"
+        "Use every attached reference exactly as an identity/continuity reference; do not add others.\n"
+        "<exact_scene_prompt>\n"
+        f"{str(request.get('scene_prompt') or '')}\n"
+        "</exact_scene_prompt>\n"
+        "After image_generation succeeds, stop immediately."
+    )
+
+
 def provider_receipt_model_bindings(
     episode: Path | str, payload_model: str, payload_quality: str
 ) -> dict[str, object]:
@@ -377,7 +554,7 @@ def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
     return 'workspace-write'
 
 
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None) -> float:
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None, transport_model: str | None = None, transport_effort: str | None = None, transport_request: dict | None = None) -> float:
     if episode_dir is None or not isinstance(generation_attempt_lease, dict):
         raise BackendError('GENERATION_ATTEMPT_LEASE_REQUIRED')
     scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
@@ -400,11 +577,15 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         # visual/frame contracts in the prompt. Muting the Codex skills catalog prevents
         # the controller from spending a turn loading imagegen/SKILL.md before it can
         # reach image_generation; project docs are likewise unnecessary in this temp cwd.
+        execution_args = (
+            transport_args(str(transport_model or ""), str(transport_effort or "low"))
+            if transport_request is not None else controller_args(episode_dir)
+        )
         cmd = command_prefix(codex) + [
             'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
             '-c', 'skills.include_instructions=false', '-c', 'project_doc_max_bytes=0',
             '--enable', 'image_generation',
-            *controller_args(episode_dir), '-s', sandbox_mode, '-C', str(workdir), '--json'
+            *execution_args, '-s', sandbox_mode, '-C', str(workdir), '--json'
         ]
         for ref in local_refs:
             cmd.extend(['-i', str(ref)])
@@ -440,6 +621,12 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             worker_env["CODEX_HOME"] = str(worker_codex_home)
         else:
             image_runtime_preflight(bridged=True)
+        request_prompt = (
+            payload_transport_prompt(transport_request, size, len(local_refs))
+            if transport_request is not None
+            else worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text,
+                               image_model, image_quality, strict_model)
+        )
         with log.open('w', encoding='utf-8', newline='\n') as log_handle:
             try:
                 completed = image_generation_gateway.provider_generate(
@@ -447,7 +634,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
                     'codex_subscription', lambda: codex_user_runner.run_codex(
                         cmd,
                         env=worker_env,
-                        input=worker_prompt(scene, local_refs, size, visual_contract, frame_contract_text, image_model, image_quality, strict_model),
+                        input=request_prompt,
                         text=True,
                         encoding="utf-8",
                         errors="strict",
@@ -552,6 +739,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     recovered_request_id = str(getattr(args, '_recovered_runner_request_id', '') or '').strip()
     if recovered_src is not None and not valid_image(recovered_src):
         raise BackendError(f'recovered Codex raw invalid: {recovered_src}')
+    provider_evidence = None
     manual_dir = os.environ.get('STORY_OS_MANUAL_RAW_DIR')
     manual_src = None
     if manual_dir:
@@ -601,22 +789,51 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != row.get("sha256"):
                 raise BackendError("IMAGE_PAYLOAD_REQUEST_REFERENCE_SHA_MISMATCH")
             referenced.append(path)
+        selected_route = str(getattr(args, "_payload_provider_route", "") or "")
         started = time.monotonic()
-        provider_evidence = openai_images_provider.generate_native_batch(
-            prompt=str(canonical_payload_request["scene_prompt"]),
-            references=referenced,
-            count=1,
-            model=str(canonical_payload_request["payload_model"]),
-            quality=str(canonical_payload_request["payload_quality"]),
-            release_width=int(width),
-            release_height=int(height),
-            timeout=int(args.timeout),
-            raw_paths=[raw_output],
-            generation_attempt_leases=[getattr(args, "_generation_attempt_lease", None)],
-            episode_dir=ep,
-        )
+        if selected_route == "openai_images_api":
+            provider_evidence = openai_images_provider.generate_native_batch(
+                prompt=str(canonical_payload_request["scene_prompt"]),
+                references=referenced,
+                count=1,
+                model=str(canonical_payload_request["payload_model"]),
+                quality=str(canonical_payload_request["payload_quality"]),
+                release_width=int(width),
+                release_height=int(height),
+                timeout=int(args.timeout),
+                raw_paths=[raw_output],
+                generation_attempt_leases=[getattr(args, "_generation_attempt_lease", None)],
+                episode_dir=ep,
+            )
+            backend_name = "openai_images_api"
+        elif selected_route == "codex_subscription":
+            transport_model = str(getattr(args, "_payload_transport_model", "") or "")
+            transport_effort = str(getattr(args, "_payload_transport_effort", "") or "low")
+            if not transport_model:
+                raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_REQUIRED")
+            elapsed = invoke_codex(
+                prompt_path, referenced, raw_output, log, size, int(args.timeout), args.codex,
+                None, None, model_policy["model"], model_policy["quality"], model_policy["strict_model"],
+                scene_text=str(canonical_payload_request["scene_prompt"]),
+                runner_request_id=str(getattr(args, "_runner_request_id", "") or "") or None,
+                episode_dir=ep,
+                generation_attempt_lease=getattr(args, "_generation_attempt_lease", None),
+                transport_model=transport_model,
+                transport_effort=transport_effort,
+                transport_request=canonical_payload_request,
+            )
+            provider_evidence = {
+                "provider": "codex_subscription",
+                "transport_model": transport_model,
+                "transport_effort": transport_effort,
+                "transport_role": "IMAGE_TOOL_TRANSPORT",
+                "payload_request_fingerprint": canonical_payload_request.get("request_fingerprint"),
+                "provider_model_reported": False,
+            }
+            backend_name = "codex_subscription"
+        else:
+            raise BackendError(f"PAYLOAD_PROVIDER_ROUTE_UNSUPPORTED:{selected_route}")
         elapsed = round(time.monotonic() - started, 3)
-        backend_name = "openai_images_api"
     else:
         if bool(getattr(args, "_raw_candidate_budget_preclaimed", False)):
             raise BackendError("INDEPENDENT_IMAGE_PAYLOAD_REQUEST_REQUIRED")
@@ -635,6 +852,9 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             "payload_effective_model_source": "EXPLICIT_RUNTIME_BINDING",
             "payload_provider_model_reported": False,
             "payload_provider_receipt": provider_evidence,
+            "transport_model": getattr(args, "_payload_transport_model", None),
+            "transport_effort": getattr(args, "_payload_transport_effort", None),
+            "transport_role": "IMAGE_TOOL_TRANSPORT" if backend_name == "codex_subscription" else None,
         })
     # W-21: the receipt carries the reference files really sent to the provider, so
     # the production ledger can record execution evidence, not only a declaration.
