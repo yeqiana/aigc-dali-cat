@@ -99,7 +99,7 @@ DEFAULT_IMAGE_QUALITY = str(model_policy.resolve("image.payload")["quality"])
 TECH_RETRY_MAX = int(storyos_config.get_path(_CONFIG, "production.technical_retry.max_attempts_per_item"))
 TECH_RETRY_BACKOFF = tuple(int(x) for x in storyos_config.get_path(_CONFIG, "production.technical_retry.backoff_seconds"))
 RETRYABLE_TECH_CODES = {
-    "NETWORK_ERROR", "NETWORK_CONNECT", "RATE_LIMIT_429", "BACKEND_5XX", "PROVIDER_CAPACITY", "TIMEOUT", "IMAGE_BACKEND_ERROR",
+    "NETWORK_ERROR", "NETWORK_CONNECT", "RATE_LIMIT_429", "BACKEND_5XX", "PROVIDER_CAPACITY", "PROVIDER_QUOTA_EXHAUSTED", "TIMEOUT", "IMAGE_BACKEND_ERROR",
     "IMAGE_BACKEND_NO_OUTPUT", "IMAGE_TOOL_NO_ARTIFACT",
     "LOCAL_WORKSPACE_PERMISSION",
     "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_FAILED", "WORKER_INTERRUPTED_FAILURE", "WORKER_PROCESS_LOST",
@@ -460,6 +460,24 @@ def _terminal_technical_status(ep:Path,item:dict,code:str)->str:
     """Choose terminal state from the shared max-2 Generation Attempt budget."""
     if code in NON_REGENERATING_FAILURE_CODES:
         return "blocked"
+    if code == image_model_policy.PROVIDER_QUOTA_EXHAUSTED:
+        # Account quota is an external condition, not a reason to immediately
+        # consume the final shared Attempt. Keep it explicitly retryable, but
+        # require a later operator retry after quota/credits are available.
+        try:
+            state=_shared_generation_attempt_state(ep,item)
+        except Exception:
+            state={}
+        item["external_block"]={
+            "at":now(),
+            "reason":"provider_quota_exhausted",
+            "code":code,
+            "attempts_consumed":state.get("attempts_consumed"),
+            "remaining_attempts":state.get("remaining_attempts"),
+            "max_real_generation_attempts":
+                generation_attempt_authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET,
+        }
+        return "external_blocked"
     if code in RETRYABLE_TECH_CODES:
         allowed,state,reason=_technical_retry_budget(ep,item,code)
         if not allowed:
@@ -1048,9 +1066,10 @@ def _technical_retry_code(item:dict)->str:
     # ACL failure into PERMISSION_403. Reclassify that narrow signature from the
     # preserved error text so recovery can open a new bounded technical epoch.
     inferred=image_model_policy.classify_backend_error(error,source="image_backend")
-    if inferred==image_model_policy.LOCAL_WORKSPACE_PERMISSION:
-        return inferred
     code=str(item.get("technical_failure_code") or "").strip().upper()
+    if inferred and (inferred==image_model_policy.LOCAL_WORKSPACE_PERMISSION
+                     or code in {"", "IMAGE_BACKEND_ERROR"}):
+        return inferred
     return code or inferred or classify_error(error)
 
 

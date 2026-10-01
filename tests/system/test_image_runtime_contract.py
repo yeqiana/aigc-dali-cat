@@ -360,6 +360,28 @@ class BackendAndLedgerContractTests(unittest.TestCase):
         self.assertIn("canvas=1080x1920 exactly", prompt)
         self.assertEqual(codex_subscription_image.provider_size(1080, 1920), "1080x1920")
 
+    def test_provider_usage_limit_is_explicit_retryable_external_quota(self):
+        message = (
+            "You've hit your usage limit. Upgrade to Pro, purchase more credits "
+            "or try again later."
+        )
+        self.assertEqual(
+            image_scheduler.classify_error(message),
+            image_model_policy.PROVIDER_QUOTA_EXHAUSTED,
+        )
+        self.assertIn(
+            image_model_policy.PROVIDER_QUOTA_EXHAUSTED,
+            image_scheduler.RETRYABLE_TECH_CODES,
+        )
+        item = {
+            "technical_failure_code": "IMAGE_BACKEND_ERROR",
+            "last_error": message,
+        }
+        self.assertEqual(
+            image_scheduler._technical_retry_code(item),
+            image_model_policy.PROVIDER_QUOTA_EXHAUSTED,
+        )
+
     def test_only_canvas_aspect_failure_may_use_shared_technical_retry_slot(self):
         self.assertEqual(image_scheduler.classify_error("NORMALIZE_REVIEW: manual review"), "NORMALIZE_REVIEW")
         self.assertEqual(image_scheduler.classify_error("ASPECT_RATIO_MISMATCH: reject"), "ASPECT_RATIO_MISMATCH")

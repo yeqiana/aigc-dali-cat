@@ -706,6 +706,19 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertFalse(row["result_found"])
         self.assertIsNone(row["generated_artifact_count"])
 
+    def test_logged_backend_failure_preserves_provider_usage_limit(self):
+        raw = (
+            '{"type":"error","message":"You have hit your usage limit. '
+            'Purchase more credits or try again later."}\n'
+            '{"type":"turn.failed","error":{"message":"usage limit"}}\n'
+        )
+        self.assertEqual(
+            codex_subscription_image.logged_backend_failure(
+                raw, returncode=1, candidate_valid=False, candidate_viable=False
+            ),
+            codex_subscription_image.image_model_policy.PROVIDER_QUOTA_EXHAUSTED,
+        )
+
     def test_transport_prompt_freezes_payload_and_calls_image_once(self):
         request = {
             "request_fingerprint": "f" * 64,

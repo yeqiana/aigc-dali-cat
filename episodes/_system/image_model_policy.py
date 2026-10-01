@@ -16,6 +16,7 @@ FALLBACK_MODELS=tuple(str(x).strip() for x in _IMAGE_PROFILE.get("fallback_model
 REPRODUCIBLE_SNAPSHOT="gpt-image-2.5-flare-2026-09-08"
 MODEL_UNAVAILABLE="MODEL_UNAVAILABLE"
 PROVIDER_CAPACITY="PROVIDER_CAPACITY"
+PROVIDER_QUOTA_EXHAUSTED="PROVIDER_QUOTA_EXHAUSTED"
 BACKEND_5XX="BACKEND_5XX"
 RATE_LIMIT_429="RATE_LIMIT_429"
 AUTH_401="AUTH_401"
@@ -28,6 +29,12 @@ MODEL_UNAVAILABLE_PATTERNS=("model_unavailable","model unavailable","model is no
 # image/content failure. Exact production evidence on 2026-09-15 was:
 # "Selected model is at capacity. Please try a different model."
 PROVIDER_CAPACITY_PATTERNS=("provider_capacity","selected model is at capacity","model is at capacity","provider is at capacity","capacity temporarily unavailable")
+PROVIDER_QUOTA_EXHAUSTED_PATTERNS=(
+    "you've hit your usage limit",
+    "you have hit your usage limit",
+    "purchase more credits",
+    "usage limit. upgrade to pro",
+)
 BACKEND_5XX_PATTERNS=("500 internal server error","502 bad gateway","503 service unavailable","504 gateway timeout","upstream_server_error","server_error")
 RATE_LIMIT_PATTERNS=("429","too many requests","rate limit")
 AUTH_401_PATTERNS=("401 unauthorized","http 401","status code 401","authentication required")
@@ -55,6 +62,7 @@ def classify_backend_error(text, *, source="image_backend"):
         return LOCAL_WORKSPACE_PERMISSION
     if any(x in low for x in PERMISSION_403_PATTERNS): return PERMISSION_403
     if any(x in low for x in NETWORK_ERROR_PATTERNS): return NETWORK_ERROR
+    if any(x in low for x in PROVIDER_QUOTA_EXHAUSTED_PATTERNS): return PROVIDER_QUOTA_EXHAUSTED
     if any(x in low for x in PROVIDER_CAPACITY_PATTERNS): return PROVIDER_CAPACITY
     if any(x in low for x in MODEL_UNAVAILABLE_PATTERNS): return MODEL_UNAVAILABLE
     if any(x in low for x in ARTIFACT_SAVE_COLLISION_PATTERNS): return ARTIFACT_SAVE_COLLISION
