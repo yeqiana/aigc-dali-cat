@@ -44,6 +44,7 @@ import runtime_event_collector
 import runtime_observability
 import production_recovery
 import production_ledger
+import production_ledger_persistence
 import runtime_timeout_policy
 import local_visual_triage
 import review_queue
@@ -582,41 +583,129 @@ def _persist_generation_identity(ep: Path, item: dict, result: dict | None = Non
     return identity
 
 
+def _reconcile_generation_identity_to_ledger(ep: Path, item: dict, identity: dict) -> dict:
+    """Backfill missing Ledger identity only when Queue/output/Attempt all agree."""
+    if identity.get("ok") is not True:
+        return {**identity, "ledger_updated": False}
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    key = f"{int(item.get('frame') or 0):02d}"
+    frame = ((ledger.get("frames") or {}).get(key) or {})
+    candidate = frame.get("current_candidate") if isinstance(frame.get("current_candidate"), dict) else None
+    if not isinstance(candidate, dict):
+        return {**identity, "ok": False, "ledger_updated": False,
+                "reason": "ledger_current_candidate_missing"}
+    item_path = str(item.get("output_path") or "").replace("\\", "/")
+    candidate_path = str(candidate.get("path") or candidate.get("asset_path") or "").replace("\\", "/")
+    if not item_path or candidate_path != item_path:
+        return {**identity, "ok": False, "ledger_updated": False,
+                "reason": "ledger_candidate_path_mismatch"}
+    attempt_id = str(candidate.get("attempt_id") or "")
+    attempt = next((row for row in frame.get("attempts") or []
+                    if isinstance(row, dict) and str(row.get("attempt_id") or "") == attempt_id), None)
+    if not isinstance(attempt, dict) or str(attempt.get("result") or "") != "success":
+        return {**identity, "ok": False, "ledger_updated": False,
+                "reason": "ledger_success_attempt_missing"}
+    for target in (attempt, candidate):
+        existing_key = str(target.get("generation_key") or "")
+        existing_index = int(target.get("generation_attempt_index") or 0)
+        if existing_key and existing_key != identity["generation_key"]:
+            return {**identity, "ok": False, "ledger_updated": False,
+                    "reason": "ledger_generation_key_conflict"}
+        if existing_index and existing_index != int(identity["attempt_index"]):
+            return {**identity, "ok": False, "ledger_updated": False,
+                    "reason": "ledger_attempt_index_conflict"}
+    attempt["generation_key"] = identity["generation_key"]
+    attempt["generation_attempt_index"] = int(identity["attempt_index"])
+    candidate["generation_key"] = identity["generation_key"]
+    candidate["generation_attempt_index"] = int(identity["attempt_index"])
+    production_ledger_persistence.persist_authority(ep, ledger)
+    return {**identity, "ledger_updated": True}
+
+
 def reconcile_generated_identities(ep: Path) -> dict:
-    """Repair missing Queue identity from lifecycle + MySQL Attempt Authority only.
+    """Repair Queue + Ledger identity from immutable MySQL Attempt Authority only.
 
     Resume-safe: this never dispatches a Provider or reserves an Attempt.
+    A complete Queue row without a persisted Ledger candidate remains untouched;
+    Ledger backfill is attempted only when the canonical candidate exists.
     """
     ep = Path(ep).resolve()
     repaired = []
+    ledger_repaired = []
     blocked = []
     with queue_transaction(ep):
         q = load_queue(ep)
-        changed = False
+        queue_changed = False
         for item in q.get("items") or []:
             if not isinstance(item, dict) or item.get("status") != "generated":
                 continue
-            if item.get("generation_key") and int(item.get("attempt_index") or 0) > 0:
+
+            queue_key = str(item.get("generation_key") or "")
+            queue_attempt = int(item.get("attempt_index") or 0)
+            ledger = production_ledger.load_authority(ep, default={}) or {}
+            frame_key = f"{int(item.get('frame') or 0):02d}"
+            frame = ((ledger.get("frames") or {}).get(frame_key) or {})
+            candidate = frame.get("current_candidate") if isinstance(frame.get("current_candidate"), dict) else None
+
+            # Legacy/unit contexts may have no canonical Ledger candidate. Keep a
+            # complete Queue identity unchanged rather than manufacturing a failure.
+            if queue_key and queue_attempt > 0 and not isinstance(candidate, dict):
                 continue
-            identity = _persist_generation_identity(ep, item)
-            if identity.get("ok") is True:
-                repaired.append({
-                    "id": item.get("id"),
-                    "frame": item.get("frame"),
-                    "generation_key": identity.get("generation_key"),
-                    "attempt_index": identity.get("attempt_index"),
-                })
-                changed = True
-            else:
+
+            # If both authorities already carry identity, only detect conflict.
+            if queue_key and queue_attempt > 0 and isinstance(candidate, dict):
+                ledger_key = str(candidate.get("generation_key") or "")
+                ledger_attempt = int(candidate.get("generation_attempt_index") or 0)
+                if ledger_key and ledger_attempt:
+                    if ledger_key != queue_key or ledger_attempt != queue_attempt:
+                        blocked.append({
+                            "id": item.get("id"), "frame": item.get("frame"),
+                            "reason": "queue_ledger_generation_identity_conflict",
+                        })
+                    continue
+
+            identity = _generation_identity_from_result(ep, item)
+            if identity.get("ok") is not True:
                 blocked.append({
-                    "id": item.get("id"),
-                    "frame": item.get("frame"),
+                    "id": item.get("id"), "frame": item.get("frame"),
                     "reason": identity.get("reason"),
                 })
-        if changed:
+                continue
+
+            if not queue_key or queue_attempt <= 0:
+                queue_identity = _persist_generation_identity(ep, item)
+                if queue_identity.get("ok") is not True:
+                    blocked.append({
+                        "id": item.get("id"), "frame": item.get("frame"),
+                        "reason": queue_identity.get("reason"),
+                    })
+                    continue
+                repaired.append({
+                    "id": item.get("id"), "frame": item.get("frame"),
+                    "generation_key": queue_identity.get("generation_key"),
+                    "attempt_index": queue_identity.get("attempt_index"),
+                })
+                queue_changed = True
+                identity = queue_identity
+
+            if isinstance(candidate, dict):
+                ledger_identity = _reconcile_generation_identity_to_ledger(ep, item, identity)
+                if ledger_identity.get("ok") is True and ledger_identity.get("ledger_updated"):
+                    ledger_repaired.append({
+                        "id": item.get("id"), "frame": item.get("frame"),
+                        "generation_key": ledger_identity.get("generation_key"),
+                        "attempt_index": ledger_identity.get("attempt_index"),
+                    })
+                elif ledger_identity.get("ok") is not True:
+                    blocked.append({
+                        "id": item.get("id"), "frame": item.get("frame"),
+                        "reason": ledger_identity.get("reason"),
+                    })
+        if queue_changed:
             save_queue(ep, q)
     return {
         "repaired": repaired,
+        "ledger_repaired": ledger_repaired,
         "blocked": blocked,
         "provider_dispatch_count": 0,
         "attempt_reservation_count": 0,

@@ -455,9 +455,18 @@ def ledger_success(ep: Path, item: dict, result: dict,
         resolved = Path(str(receipt_path))
         if not resolved.is_absolute():
             resolved = ROOT / resolved
+    budget = result.get("candidate_budget") if isinstance(result.get("candidate_budget"), dict) else {}
+    authority = budget.get("authority") if isinstance(budget.get("authority"), dict) else {}
+    generation_key = str(
+        budget.get("generation_key") or authority.get("generation_key") or ""
+    ).strip() or None
+    attempt_index_raw = budget.get("attempt_index") or authority.get("attempt_index")
+    generation_attempt_index = int(attempt_index_raw) if attempt_index_raw else None
     return ledger_call.success(ep, frame=int(item["frame"]),
                                path=Path(str(result["output"])),
-                               provider_receipt=resolved)
+                               provider_receipt=resolved,
+                               generation_key=generation_key,
+                               generation_attempt_index=generation_attempt_index)
 
 
 def ledger_tech_fail(ep: Path, item: dict, code: str, message: str) -> None:

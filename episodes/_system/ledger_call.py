@@ -74,6 +74,8 @@ def success(
     frame: int,
     path: Path,
     provider_receipt: Path | None = None,
+    generation_key: str | None = None,
+    generation_attempt_index: int | None = None,
 ) -> tuple[bool, str]:
     """Mirror ``production_ledger.py success`` for a committed candidate."""
     namespace = SimpleNamespace(
@@ -81,6 +83,9 @@ def success(
         frame=f"{int(frame):02d}",
         path=str(Path(path).resolve()),
         provider_receipt=str(Path(provider_receipt).resolve()) if provider_receipt else None,
+        generation_key=str(generation_key or "").strip() or None,
+        generation_attempt_index=(int(generation_attempt_index)
+                                  if generation_attempt_index is not None else None),
     )
     return _invoke(production_ledger.cmd_success, namespace)
 

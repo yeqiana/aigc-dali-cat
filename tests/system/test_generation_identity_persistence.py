@@ -104,3 +104,55 @@ def test_resume_reconciliation_keeps_complete_identity_unchanged(monkeypatch, tm
     result = image_scheduler.reconcile_generated_identities(tmp_path)
     assert result["repaired"] == []
     assert result["blocked"] == []
+
+
+def test_reconcile_backfills_ledger_generation_identity_from_authority(monkeypatch, tmp_path):
+    item = {
+        "id": "q1", "frame": 1, "status": "generated", "attempts": 1,
+        "generation_key": "ga-authority-a1", "attempt_index": 1,
+        "output_path": "candidate/01.png",
+    }
+    queue = {"items": [item]}
+    ledger = {
+        "frames": {
+            "01": {
+                "status": "ORIGINAL_READY",
+                "current_candidate": {
+                    "path": "candidate/01.png", "sha256": "a" * 64,
+                    "attempt_id": "ledger-attempt",
+                },
+                "attempts": [{
+                    "attempt_id": "ledger-attempt", "result": "success",
+                }],
+            },
+        },
+    }
+
+    @contextlib.contextmanager
+    def tx(_ep):
+        yield
+
+    monkeypatch.setattr(image_scheduler, "queue_transaction", tx)
+    monkeypatch.setattr(image_scheduler, "load_queue", lambda _ep: queue)
+    monkeypatch.setattr(image_scheduler, "save_queue", lambda *_a, **_k: None)
+    monkeypatch.setattr(image_scheduler.production_ledger, "load_authority",
+                        lambda *_a, **_k: ledger)
+    monkeypatch.setattr(
+        image_scheduler.generation_attempt_authority, "load_attempt",
+        lambda *_a, **_k: {
+            "attempt_index": 1, "generation_key": "ga-authority-a1",
+            "status": "SUCCEEDED",
+        })
+    persisted = []
+    monkeypatch.setattr(
+        image_scheduler.production_ledger_persistence, "persist_authority",
+        lambda _ep, data: persisted.append(data) or {"mysql_written": True})
+
+    result = image_scheduler.reconcile_generated_identities(tmp_path)
+
+    assert result["blocked"] == []
+    assert result["ledger_repaired"][0]["generation_key"] == "ga-authority-a1"
+    assert ledger["frames"]["01"]["current_candidate"]["generation_key"] == "ga-authority-a1"
+    assert ledger["frames"]["01"]["current_candidate"]["generation_attempt_index"] == 1
+    assert ledger["frames"]["01"]["attempts"][0]["generation_key"] == "ga-authority-a1"
+    assert persisted

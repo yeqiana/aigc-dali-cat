@@ -267,6 +267,15 @@ def cmd_success(args: argparse.Namespace) -> None:
         raise SystemExit("candidate image dimensions cannot be parsed")
     if dims != expected:
         raise SystemExit(f"candidate size {dims[0]}x{dims[1]} != expected {expected[0]}x{expected[1]}")
+    generation_key = str(getattr(args, "generation_key", "") or "").strip()
+    generation_attempt_index_raw = getattr(args, "generation_attempt_index", None)
+    generation_attempt_index = (
+        int(generation_attempt_index_raw) if generation_attempt_index_raw is not None else None
+    )
+    if bool(generation_key) != bool(generation_attempt_index):
+        raise SystemExit("generation_key and generation_attempt_index must be supplied together")
+    if generation_attempt_index is not None and generation_attempt_index not in {1, 2}:
+        raise SystemExit("generation_attempt_index must be 1 or 2")
     candidate_info = {
         "path": repo_relative(candidate),
         "sha256": sha256_file(candidate),
@@ -276,6 +285,11 @@ def cmd_success(args: argparse.Namespace) -> None:
         "kind": attempt["kind"],
         "attempt_id": attempt["attempt_id"],
     }
+    if generation_key:
+        attempt["generation_key"] = generation_key
+        attempt["generation_attempt_index"] = generation_attempt_index
+        candidate_info["generation_key"] = generation_key
+        candidate_info["generation_attempt_index"] = generation_attempt_index
     provider_receipt = None
     if getattr(args, "provider_receipt", None):
         provider_receipt, receipt_data = _load_provider_receipt_evidence(
