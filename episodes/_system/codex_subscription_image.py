@@ -7,6 +7,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
@@ -227,35 +228,92 @@ def transport_args(model: str, effort: str) -> list[str]:
     ]
 
 
+_LOGIN_CATALOG_SOURCE = "LOGIN_ACCOUNT_MODEL_CATALOG"
+
+
+def _catalog_reasoning_levels(row: dict) -> list[str]:
+    levels = row.get("supported_reasoning_levels") or []
+    normalized = []
+    for level in levels:
+        if isinstance(level, str):
+            normalized.append(level)
+        elif isinstance(level, dict) and level.get("effort"):
+            normalized.append(str(level["effort"]))
+    return sorted(set(normalized))
+
+
+def _catalog_image_tool_capability(row: dict) -> str:
+    """Return only explicit image tool support metadata when the catalog has it."""
+    declared = []
+    found = False
+    for key in ("supported_tools", "experimental_supported_tools"):
+        value = row.get(key)
+        if not isinstance(value, list):
+            continue
+        found = True
+        for item in value:
+            if isinstance(item, str):
+                declared.append(item.strip().lower())
+            elif isinstance(item, dict):
+                name = item.get("name") or item.get("tool") or item.get("type")
+                if isinstance(name, str):
+                    declared.append(name.strip().lower())
+    if found:
+        return "AVAILABLE" if "image_generation" in declared else "UNAVAILABLE"
+    tool_mode = row.get("tool_mode")
+    if isinstance(tool_mode, str) and tool_mode.strip().lower() in {
+        "none", "disabled", "text_only", "code_mode_only",
+    }:
+        return "UNAVAILABLE"
+    return "UNKNOWN"
+
+
 def _catalog_candidates(payload: dict) -> list[dict]:
     rows = payload.get("models") if isinstance(payload, dict) else None
     if not isinstance(rows, list):
         return []
     controller_model = str(_IMAGE_CONTROLLER_POLICY.get("model") or "")
     candidates = []
+    safe_catalog_entries = []
     for row in rows:
         if not isinstance(row, dict):
             continue
         slug = str(row.get("slug") or "").strip()
-        if not slug or slug == controller_model or str(row.get("visibility") or "") != "list":
+        if not slug:
             continue
-        levels = row.get("supported_reasoning_levels") or []
-        normalized = []
-        for level in levels:
-            if isinstance(level, str):
-                normalized.append(level)
-            elif isinstance(level, dict) and level.get("effort"):
-                normalized.append(str(level["effort"]))
-        effort = "low" if "low" in normalized else str(row.get("default_reasoning_level") or "medium")
+        visibility = str(row.get("visibility") or "")
+        priority_value = row.get("priority")
+        priority = int(priority_value) if priority_value is not None else 9999
+        levels = _catalog_reasoning_levels(row)
+        safe_catalog_entries.append({
+            "slug": slug,
+            "visibility": visibility,
+            "priority": priority,
+            "supported_reasoning_levels": levels,
+        })
+        if slug == controller_model or visibility != "list":
+            continue
+        effort = "low" if "low" in levels else str(row.get("default_reasoning_level") or "medium")
         candidates.append({
             "model": slug,
             "effort": effort,
-            "priority": int(row.get("priority") or 9999),
+            "priority": priority,
+            "candidate_catalog_member": True,
+            "catalog_source": _LOGIN_CATALOG_SOURCE,
+            "image_tool_capability": _catalog_image_tool_capability(row),
         })
-    return sorted(candidates, key=lambda row: (row["priority"], row["model"]))
+    candidates.sort(key=lambda row: (row["priority"], row["model"]))
+    safe_catalog_entries.sort(key=lambda row: row["slug"])
+    catalog_sha256 = hashlib.sha256(json.dumps(
+        safe_catalog_entries, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")).hexdigest()
+    for candidate in candidates:
+        candidate["catalog_sha256"] = catalog_sha256
+        candidate["catalog_entry_count"] = len(safe_catalog_entries)
+    return candidates
 
 
-def _subscription_model_catalog(codex: Path) -> list[dict]:
+def _subscription_model_catalog_with_evidence(codex: Path) -> dict[str, object]:
     cmd = execution_command_prefix(codex) + ['debug', 'models', *_subscription_provider_args()]
     completed = codex_user_runner.run_codex(
         cmd,
@@ -282,7 +340,19 @@ def _subscription_model_catalog(codex: Path) -> list[dict]:
     rows = _catalog_candidates(payload)
     if not rows:
         raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE")
-    return rows
+    return {
+        "catalog_source": _LOGIN_CATALOG_SOURCE,
+        "catalog_sha256": rows[0]["catalog_sha256"],
+        "catalog_entry_count": rows[0]["catalog_entry_count"],
+        "candidate_models": [str(row["model"]) for row in rows],
+        "candidates": rows,
+    }
+
+
+def _subscription_model_catalog(codex: Path) -> list[dict]:
+    """Compatibility wrapper for callers that only need candidates."""
+    evidence = _subscription_model_catalog_with_evidence(codex)
+    return list(evidence["candidates"])
 
 
 def _probe_event_calls_image_generation(value: object) -> bool:
@@ -300,19 +370,30 @@ def _probe_event_calls_image_generation(value: object) -> bool:
 
 def _transport_probe_completed(raw: str) -> bool:
     """Accept only a completed exact sentinel with no image tool invocation."""
+    result = _inspect_transport_probe(raw)
+    return bool(result["sentinel_completed"] and result["turn_completed"]
+                and result["image_generation_call_count"] == 0
+                and not result["malformed_jsonl"])
+
+
+def _inspect_transport_probe(raw: str) -> dict[str, object]:
+    """Return safe probe facts without retaining or returning model output."""
     sentinel = False
     turn_completed = False
+    image_generation_call_count = 0
+    malformed_jsonl = False
     for line in str(raw or "").splitlines():
         if not line.strip():
             continue
         try:
             row = json.loads(line)
         except (TypeError, ValueError):
-            return False
+            malformed_jsonl = True
+            continue
         if not isinstance(row, dict):
             continue
         if _probe_event_calls_image_generation(row):
-            return False
+            image_generation_call_count += 1
         if row.get("type") == "turn.completed":
             turn_completed = True
         item = row.get("item") if isinstance(row.get("item"), dict) else {}
@@ -320,31 +401,44 @@ def _transport_probe_completed(raw: str) -> bool:
                 and item.get("type") == "agent_message"
                 and str(item.get("text") or "").strip() == "STORYOS_TRANSPORT_OK"):
             sentinel = True
-    return sentinel and turn_completed
+    return {
+        "sentinel_completed": sentinel,
+        "turn_completed": turn_completed,
+        "image_generation_call_count": image_generation_call_count,
+        "malformed_jsonl": malformed_jsonl,
+    }
 
 
 def _timeout_probe_result(exc: Exception) -> str:
+    return _timeout_probe_result_details(exc)[0]
+
+
+def _timeout_probe_result_details(exc: Exception) -> tuple[str, bool]:
     remote = getattr(exc, "remote", None)
     if isinstance(remote, dict):
         request_id = str(remote.get("request_id") or "").strip()
     else:
         request_id = str(getattr(remote, "request_id", "") or "").strip()
     if not request_id:
-        return ""
+        return "", False
     try:
         result = codex_user_runner.read_task_result(request_id)
-        if not isinstance(result, dict):
-            return ""
-        encoded = str(result.get("output_base64") or "")
-        if not encoded:
-            return ""
-        output = base64.b64decode(encoded, validate=True)
-        return output.decode("utf-8")
     except Exception:
-        return ""
+        return "", False
+    if not isinstance(result, dict):
+        return "", False
+    encoded = str(result.get("output_base64") or "")
+    if not encoded:
+        return "", True
+    try:
+        output = base64.b64decode(encoded, validate=True)
+        return output.decode("utf-8"), True
+    except Exception:
+        return "", True
 
 
-def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, str]:
+def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
+                                      *, candidate_provenance: dict | None = None) -> dict[str, object]:
     cmd = execution_command_prefix(codex) + [
         'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
         '-c', 'skills.include_instructions=false',
@@ -353,6 +447,42 @@ def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, 
         *transport_args(model, effort),
         '-s', 'read-only', '--json', '-',
     ]
+    resolution = "user_runner" if codex_user_runner.bridge_required() else "direct_cli"
+    provenance = candidate_provenance if isinstance(candidate_provenance, dict) else {}
+    candidate_member = (
+        provenance.get("candidate_catalog_member") is True
+        and provenance.get("catalog_source") == _LOGIN_CATALOG_SOURCE
+        and str(provenance.get("model") or "") == str(model)
+        and str(provenance.get("effort") or "") == str(effort)
+        and bool(re.fullmatch(r"[0-9a-f]{64}", str(provenance.get("catalog_sha256") or "")))
+    )
+    if not candidate_member:
+        return {
+            "status": "BLOCKED",
+            "failure_class": "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_CANDIDATE",
+            "failure_stage": "candidate_attestation",
+            "candidate_model": str(model),
+            "candidate_effort": str(effort),
+            "candidate_priority": provenance.get("priority"),
+            "candidate_catalog_member": False,
+            "catalog_source": provenance.get("catalog_source"),
+            "catalog_sha256": provenance.get("catalog_sha256"),
+            "image_generation_call_count": 0,
+            "image_attempt_authority_called": False,
+            "image_generation_called": False,
+        }
+    candidate_identity = {
+        "candidate_model": str(model),
+        "candidate_effort": str(effort),
+        "candidate_priority": provenance.get("priority"),
+        "candidate_catalog_member": True,
+        "catalog_source": _LOGIN_CATALOG_SOURCE,
+        "catalog_sha256": str(provenance["catalog_sha256"]),
+        "catalog_entry_count": provenance.get("catalog_entry_count"),
+        "image_tool_capability": provenance.get("image_tool_capability", "UNKNOWN"),
+        "image_attempt_authority_called": False,
+        "image_generation_called": False,
+    }
     try:
         completed = codex_user_runner.run_codex(
             cmd,
@@ -368,13 +498,174 @@ def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, 
             codex_home_mode="inherit",
         )
         raw = str(completed.stdout or "")
-        passed = completed.returncode == 0 and _transport_probe_completed(raw)
-        return passed, "PASS" if passed else raw[-800:]
+        facts = _inspect_transport_probe(raw)
+        failure_facts = _safe_transport_failure_facts(raw, int(completed.returncode))
+        passed = bool(int(completed.returncode) == 0 and facts["sentinel_completed"]
+                      and facts["turn_completed"]
+                      and facts["image_generation_call_count"] == 0
+                      and not facts["malformed_jsonl"])
+        failure_class = None if passed else (
+            failure_facts["failure_class"] if int(completed.returncode) != 0
+            else "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT"
+        )
+        return {
+            **facts,
+            **failure_facts,
+            **candidate_identity,
+            "image_generation_called": bool(facts["image_generation_call_count"]),
+            "status": "PASS" if passed else "BLOCKED",
+            "returncode": int(completed.returncode),
+            "timed_out": False,
+            "request_id": None,
+            "durable_result_found": False,
+            "exception_class": None,
+            "codex_resolution": resolution,
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
+            "failure_class": failure_class,
+            "failure_stage": None if passed else "transport_probe",
+        }
     except codex_user_runner.CodexUserRunnerTimeout as exc:
-        raw = _timeout_probe_result(exc)
-        if _transport_probe_completed(raw):
-            return True, "PASS_WITH_CLEANUP_TIMEOUT"
-        return False, raw[-800:]
+        remote = getattr(exc, "remote", None)
+        if isinstance(remote, dict):
+            request_id = str(remote.get("request_id") or "").strip() or None
+        else:
+            request_id = str(getattr(remote, "request_id", "") or "").strip() or None
+        raw, durable_result_found = _timeout_probe_result_details(exc)
+        facts = _inspect_transport_probe(raw)
+        passed = bool(request_id and raw and facts["sentinel_completed"]
+                      and facts["turn_completed"]
+                      and facts["image_generation_call_count"] == 0
+                      and not facts["malformed_jsonl"])
+        return {
+            **facts,
+            **candidate_identity,
+            "image_generation_called": bool(facts["image_generation_call_count"]),
+            "status": "PASS_WITH_CLEANUP_TIMEOUT" if passed else "BLOCKED",
+            "returncode": _safe_remote_int(remote, "returncode"),
+            "timed_out": True,
+            "request_id": request_id,
+            "durable_result_found": durable_result_found,
+            "exception_class": type(exc).__name__,
+            "codex_resolution": resolution,
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
+            "failure_class": None if passed else "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT",
+            "failure_stage": None if passed else "transport_probe",
+        }
+    except subprocess.TimeoutExpired as exc:
+        return {
+            **candidate_identity,
+            "status": "BLOCKED",
+            "failure_class": "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT",
+            "failure_stage": "transport_probe",
+            "candidate_model": str(model),
+            "returncode": None,
+            "timed_out": True,
+            "request_id": None,
+            "durable_result_found": False,
+            "sentinel_completed": False,
+            "turn_completed": False,
+            "image_generation_call_count": 0,
+            "exception_class": type(exc).__name__,
+            "codex_resolution": resolution,
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
+        }
+    except codex_user_runner.CodexUserRunnerUnavailable as exc:
+        return {**candidate_identity,
+                **_failed_transport_probe(model, resolution, "LOGIN_AUTH_RUNNER_UNAVAILABLE", exc)}
+    except codex_user_runner.CodexUserRunnerAuthFailed as exc:
+        return {**candidate_identity,
+                **_failed_transport_probe(model, resolution, "LOGIN_AUTH_AUTH_FAILED", exc)}
+    except Exception as exc:
+        return {**candidate_identity,
+                **_failed_transport_probe(model, resolution, "LOGIN_AUTH_TRANSPORT_EXEC_FAILED", exc)}
+
+
+def _safe_remote_int(remote: object, key: str) -> int | None:
+    value = remote.get(key) if isinstance(remote, dict) else getattr(remote, key, None)
+    try:
+        return int(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _safe_request_id(remote: object) -> str | None:
+    value = remote.get("request_id") if isinstance(remote, dict) else getattr(remote, "request_id", None)
+    request_id = str(value or "").strip()
+    if not request_id or len(request_id) > 128 or not re.fullmatch(r"[A-Za-z0-9._:-]+", request_id):
+        return None
+    return request_id
+
+
+def _safe_transport_failure_facts(raw: str, returncode: int) -> dict[str, object]:
+    """Classify common CLI failures using text transiently, storing no raw output."""
+    text = str(raw or "").lower()
+    status_match = re.search(r"\b(?:http(?:\s+error)?\s*)?(4\d\d|5\d\d)\b", text)
+    http_status = int(status_match.group(1)) if status_match else None
+    websocket_attempted = "responses_websocket" in text or "websocket" in text
+    if returncode == 0:
+        failure_class = None
+    elif http_status in {401, 403} or any(term in text for term in ("unauthorized", "authentication failed", "not authenticated", "auth_failed")):
+        failure_class = "LOGIN_AUTH_AUTH_FAILED"
+    elif "runner unavailable" in text or "user runner unavailable" in text:
+        failure_class = "LOGIN_AUTH_RUNNER_UNAVAILABLE"
+    elif ("model" in text and any(term in text for term in ("unsupported", "not supported", "unavailable"))) or http_status == 400 and "model" in text:
+        failure_class = "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE"
+    elif "image_generation" in text and any(term in text for term in ("unavailable", "not enabled", "not supported", "unknown tool")):
+        failure_class = "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE"
+    else:
+        failure_class = "LOGIN_AUTH_TRANSPORT_EXEC_FAILED"
+    return {
+        "http_status": http_status,
+        "websocket_attempted": websocket_attempted,
+        "protocol_failure_class": (
+            "TRANSPORT_WEBSOCKET_UPGRADE_REJECTED" if http_status == 426 and websocket_attempted else None
+        ),
+        "failure_class": failure_class,
+    }
+
+
+def _failed_transport_probe(model: str, resolution: str, failure_class: str,
+                            exc: Exception) -> dict[str, object]:
+    return {
+        "status": "BLOCKED",
+        "failure_class": failure_class,
+        "failure_stage": "transport_probe",
+        "candidate_model": str(model),
+        "returncode": _safe_remote_int(getattr(exc, "remote", None), "returncode"),
+        "timed_out": False,
+        "request_id": _safe_request_id(getattr(exc, "remote", None)),
+        "durable_result_found": False,
+        "sentinel_completed": False,
+        "turn_completed": False,
+        "image_generation_call_count": 0,
+        "exception_class": type(exc).__name__,
+        "codex_resolution": resolution,
+        "transport_model_source": "LOGIN_CATALOG_PROBE",
+    }
+
+
+def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, str]:
+    """Compatibility wrapper with sanitized evidence only."""
+    diagnostic = _probe_transport_model_diagnostic(codex, model, effort)
+    status = str(diagnostic.get("status") or "BLOCKED")
+    return status.startswith("PASS"), status
+
+
+def _classify_preflight_exception(exc: Exception, *, stage: str) -> str:
+    detail = str(exc).upper()
+    if stage == "resolve_codex":
+        return "LOGIN_AUTH_RUNNER_UNAVAILABLE"
+    if stage == "runner_preflight":
+        if "AUTHENTICATION" in detail or "AUTH_FAILED" in detail or "AUTHENTICATION CONTEXT" in detail:
+            return "LOGIN_AUTH_AUTH_FAILED"
+        return "LOGIN_AUTH_RUNNER_UNAVAILABLE"
+    if stage == "model_catalog":
+        if "UNAVAILABLE" in detail or "MODEL_UNAVAILABLE" in detail:
+            return "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE"
+        return "LOGIN_AUTH_MODEL_CATALOG_FAILED"
+    if stage == "transport_probe":
+        return "LOGIN_AUTH_TRANSPORT_EXEC_FAILED"
+    return "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE"
 
 
 def payload_capability_preflight(*, model: str, quality: str,
@@ -386,16 +677,93 @@ def payload_capability_preflight(*, model: str, quality: str,
         return {
             "status": "BLOCKED",
             "failure_class": "PAYLOAD_MODEL_UNSUPPORTED_ON_LOGIN_TRANSPORT",
+            "failure_stage": "request_validation",
             "provider": "codex_subscription",
+            "image_attempt_authority_called": False,
+            "image_generation_called": False,
         }
+    stage = "resolve_codex"
+    codex_resolution = "unknown"
     try:
+        codex_resolution = "user_runner" if codex_user_runner.bridge_required() else "direct_cli"
         codex = resolve_codex(codex_raw)
+        stage = "runner_preflight"
         image_runtime_preflight(bridged=codex_user_runner.bridge_required())
-        candidates = _subscription_model_catalog(codex)
-        failures = []
-        for row in candidates[:6]:
-            ok, tail = _probe_transport_model(codex, row["model"], row["effort"])
-            if ok:
+        stage = "model_catalog"
+        catalog = _subscription_model_catalog_with_evidence(codex)
+        candidates = catalog.get("candidates") if isinstance(catalog, dict) else None
+        candidate_models = catalog.get("candidate_models") if isinstance(catalog, dict) else None
+        catalog_sha256 = str(catalog.get("catalog_sha256") or "") if isinstance(catalog, dict) else ""
+        catalog_source = str(catalog.get("catalog_source") or "") if isinstance(catalog, dict) else ""
+        catalog_entry_count = catalog.get("catalog_entry_count") if isinstance(catalog, dict) else None
+        if (not isinstance(candidates, list) or not isinstance(candidate_models, list)
+                or catalog_source != _LOGIN_CATALOG_SOURCE
+                or not re.fullmatch(r"[0-9a-f]{64}", catalog_sha256)):
+            return {
+                "status": "BLOCKED",
+                "failure_class": "LOGIN_AUTH_MODEL_CATALOG_INVALID",
+                "failure_stage": "model_catalog_attestation",
+                "provider": "codex_subscription",
+                "image_attempt_authority_called": False,
+                "image_generation_called": False,
+            }
+        eligible = [
+            row for row in candidates
+            if isinstance(row, dict)
+            and row.get("candidate_catalog_member") is True
+            and row.get("catalog_source") == _LOGIN_CATALOG_SOURCE
+            and row.get("catalog_sha256") == catalog_sha256
+            and str(row.get("model") or "") in candidate_models
+            and row.get("image_tool_capability") != "UNAVAILABLE"
+        ]
+        if not eligible:
+            return {
+                "status": "BLOCKED",
+                "failure_class": "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+                "failure_stage": "model_catalog_capability",
+                "catalog_source": catalog_source,
+                "catalog_sha256": catalog_sha256,
+                "catalog_entry_count": catalog_entry_count,
+                "live_candidates": [
+                    {
+                        "candidate_model": str(row.get("model") or ""),
+                        "candidate_effort": str(row.get("effort") or ""),
+                        "candidate_priority": row.get("priority"),
+                        "candidate_catalog_member": row.get("candidate_catalog_member") is True,
+                        "catalog_sha256": catalog_sha256,
+                        "image_tool_capability": row.get("image_tool_capability", "UNKNOWN"),
+                    }
+                    for row in candidates if isinstance(row, dict)
+                ],
+                "image_attempt_authority_called": False,
+                "image_generation_called": False,
+            }
+        failures: list[dict[str, object]] = []
+        for index, row in enumerate(eligible[:2]):
+            candidate_provenance = {
+                **row,
+                "catalog_source": catalog_source,
+                "catalog_sha256": catalog_sha256,
+                "catalog_entry_count": catalog_entry_count,
+            }
+            stage = "transport_probe"
+            diagnostic = _probe_transport_model_diagnostic(
+                codex, row["model"], row["effort"], candidate_provenance=candidate_provenance,
+            )
+            diagnostic = {
+                **diagnostic,
+                "candidate_model": str(row["model"]),
+                "candidate_effort": str(row.get("effort") or ""),
+                "candidate_priority": row.get("priority"),
+                "candidate_catalog_member": True,
+                "catalog_source": catalog_source,
+                "catalog_sha256": catalog_sha256,
+                "catalog_entry_count": catalog_entry_count,
+                "image_tool_capability": row.get("image_tool_capability", "UNKNOWN"),
+                "image_attempt_authority_called": False,
+                "image_generation_called": bool(diagnostic.get("image_generation_call_count", 0)),
+            }
+            if str(diagnostic.get("status") or "") in {"PASS", "PASS_WITH_CLEANUP_TIMEOUT"}:
                 return {
                     "status": "PASS",
                     "provider": "codex_subscription",
@@ -403,28 +771,81 @@ def payload_capability_preflight(*, model: str, quality: str,
                     "transport_model": row["model"],
                     "transport_effort": row["effort"],
                     "transport_model_source": "LOGIN_CATALOG_PROBE",
-                    "transport_probe_status": tail,
+                    "catalog_source": catalog_source,
+                    "catalog_sha256": catalog_sha256,
+                    "catalog_entry_count": catalog_entry_count,
+                    "candidate_catalog_member": True,
+                    "candidate_priority": row.get("priority"),
+                    "image_tool_capability": row.get("image_tool_capability", "UNKNOWN"),
+                    "transport_probe_status": diagnostic["status"],
+                    "transport_probe_diagnostic": diagnostic,
                     "payload_model": requested_model,
                     "payload_quality": requested_quality,
                     "api_key_required": False,
                     "image_attempt_authority_called": False,
                     "image_generation_called": False,
                 }
-            failures.append({"model": row["model"], "probe_tail": tail})
+            failures.append({
+                **diagnostic,
+                "candidate_model": str(row["model"]),
+                "candidate_effort": str(row.get("effort") or ""),
+            })
+            # Only an explicit account/model rejection justifies trying one
+            # alternate catalog entry. Other failures are environmental or
+            # ambiguous and must not fan out into more live model requests.
+            if str(diagnostic.get("failure_class") or "") != "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE":
+                break
+            if index == 1:
+                break
+        failure_classes = {str(row.get("failure_class") or "") for row in failures}
+        failure_priority = (
+            "LOGIN_AUTH_AUTH_FAILED",
+            "LOGIN_AUTH_RUNNER_UNAVAILABLE",
+            "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT",
+            "LOGIN_AUTH_TRANSPORT_EXEC_FAILED",
+            "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+            "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT",
+            "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+        )
+        failure_class = next(
+            (candidate for candidate in failure_priority if candidate in failure_classes),
+            "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+        )
         return {
             "status": "BLOCKED",
-            "failure_class": "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+            "failure_class": failure_class,
+            "failure_stage": "transport_probe",
+            "safe_failure_stage": "transport_probe",
+            "safe_failure_class": failure_class,
             "provider": "codex_subscription",
             "candidate_failures": failures,
+            "catalog_source": catalog_source,
+            "catalog_sha256": catalog_sha256,
+            "catalog_entry_count": catalog_entry_count,
+            "codex_resolution": codex_resolution,
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
             "image_attempt_authority_called": False,
             "image_generation_called": False,
         }
     except Exception as exc:
+        failure_class = _classify_preflight_exception(exc, stage=stage)
         return {
             "status": "BLOCKED",
-            "failure_class": "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE",
+            "failure_class": failure_class,
+            "safe_failure_stage": stage,
+            "safe_failure_class": failure_class,
+            "exception_class": type(exc).__name__,
             "provider": "codex_subscription",
-            "reason": f"{type(exc).__name__}: {str(exc)[:400]}",
+            "codex_resolution": codex_resolution,
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
+            "candidate_model": None,
+            "returncode": _safe_remote_int(getattr(exc, "remote", None), "returncode"),
+            "timed_out": isinstance(exc, codex_user_runner.CodexUserRunnerTimeout),
+            "request_id": _safe_request_id(getattr(exc, "remote", None)),
+            "durable_result_found": False,
+            "sentinel_completed": False,
+            "turn_completed": False,
+            "image_generation_call_count": 0,
             "image_attempt_authority_called": False,
             "image_generation_called": False,
         }
