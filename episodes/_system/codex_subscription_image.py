@@ -110,6 +110,32 @@ def logged_backend_failure(raw_log_text: str, *, returncode: int,
     tail = (relevant[-6000:] or str(raw_log_text or "")[-6000:])
     return image_model_policy.classify_backend_error(tail, source="image_backend")
 
+def runner_generated_artifact_evidence(request_id: str | None) -> dict[str, object]:
+    """Read only durable artifact metadata for one completed user-runner request."""
+    value = str(request_id or "").strip()
+    if not value:
+        return {"result_found": False, "generated_artifact_count": None}
+    try:
+        result = codex_user_runner.read_task_result(value)
+    except Exception:
+        return {"result_found": False, "generated_artifact_count": None}
+    if not isinstance(result, dict):
+        return {"result_found": False, "generated_artifact_count": None}
+    evidence = result.get("evidence") if isinstance(result.get("evidence"), dict) else {}
+    artifacts = evidence.get("generated_artifacts")
+    if not isinstance(artifacts, list):
+        return {
+            "result_found": True,
+            "generated_artifact_count": None,
+            "returncode": result.get("returncode"),
+        }
+    return {
+        "result_found": True,
+        "generated_artifact_count": len(artifacts),
+        "returncode": result.get("returncode"),
+    }
+
+
 def resolve_codex(raw: str | None) -> Path:
     explicit = bool(raw or os.environ.get("CODEX_EXE"))
     if not runtime_router.local_codex_image_allowed(explicit=explicit):
@@ -1635,6 +1661,13 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         )
         if machine_code:
             raise BackendError(f'{machine_code}: requested={image_model}; log={log}')
+        if completed.returncode == 0 and not candidate_valid:
+            artifact_evidence = runner_generated_artifact_evidence(runner_request_id)
+            if (artifact_evidence.get("result_found") is True
+                    and artifact_evidence.get("generated_artifact_count") == 0):
+                raise BackendError(
+                    f'IMAGE_TOOL_NO_ARTIFACT: rc=0; generated_artifacts=0; log={log}'
+                )
         if completed.returncode != 0 or not candidate_valid:
             raise BackendError(f'Codex image worker failed rc={completed.returncode}; no_valid_image=true; log={log}')
         # Structurally valid but undersized provider RAW with no technical error in

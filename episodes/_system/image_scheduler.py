@@ -99,7 +99,7 @@ TECH_RETRY_MAX = int(storyos_config.get_path(_CONFIG, "production.technical_retr
 TECH_RETRY_BACKOFF = tuple(int(x) for x in storyos_config.get_path(_CONFIG, "production.technical_retry.backoff_seconds"))
 RETRYABLE_TECH_CODES = {
     "NETWORK_ERROR", "NETWORK_CONNECT", "RATE_LIMIT_429", "BACKEND_5XX", "PROVIDER_CAPACITY", "TIMEOUT", "IMAGE_BACKEND_ERROR",
-    "IMAGE_BACKEND_NO_OUTPUT",
+    "IMAGE_BACKEND_NO_OUTPUT", "IMAGE_TOOL_NO_ARTIFACT",
     "LOCAL_WORKSPACE_PERMISSION",
     "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_FAILED", "WORKER_INTERRUPTED_FAILURE", "WORKER_PROCESS_LOST",
     # A provider RAW that violates the frozen canvas may use the one remaining
@@ -434,6 +434,7 @@ def classify_error(text:str)->str:
     for code in NON_REGENERATING_FAILURE_CODES:
         if code in text:return code
     if "ASPECT_RATIO_MISMATCH" in text:return "ASPECT_RATIO_MISMATCH"
+    if "IMAGE_TOOL_NO_ARTIFACT" in text:return "IMAGE_TOOL_NO_ARTIFACT"
     if "IMAGE_BACKEND_NO_OUTPUT" in text:return "IMAGE_BACKEND_NO_OUTPUT"
     low=text.lower()
     # Prefer structured transport booleans before the broader model/backend

@@ -669,6 +669,43 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertFalse(row["image_attempt_authority_called"])
         self.assertFalse(row["image_generation_called"])
 
+    def test_runner_artifact_evidence_distinguishes_zero_artifacts(self):
+        with patch.object(
+            codex_subscription_image.codex_user_runner,
+            "read_task_result",
+            return_value={
+                "returncode": 0,
+                "evidence": {"generated_artifacts": []},
+            },
+        ):
+            row = codex_subscription_image.runner_generated_artifact_evidence("req-zero")
+        self.assertTrue(row["result_found"])
+        self.assertEqual(row["generated_artifact_count"], 0)
+        self.assertEqual(row["returncode"], 0)
+
+    def test_runner_artifact_evidence_counts_generated_artifacts(self):
+        with patch.object(
+            codex_subscription_image.codex_user_runner,
+            "read_task_result",
+            return_value={
+                "returncode": 0,
+                "evidence": {"generated_artifacts": [{"path": "a.png"}]},
+            },
+        ):
+            row = codex_subscription_image.runner_generated_artifact_evidence("req-one")
+        self.assertTrue(row["result_found"])
+        self.assertEqual(row["generated_artifact_count"], 1)
+
+    def test_runner_artifact_evidence_fails_closed_when_result_missing(self):
+        with patch.object(
+            codex_subscription_image.codex_user_runner,
+            "read_task_result",
+            side_effect=RuntimeError("missing"),
+        ):
+            row = codex_subscription_image.runner_generated_artifact_evidence("req-missing")
+        self.assertFalse(row["result_found"])
+        self.assertIsNone(row["generated_artifact_count"])
+
     def test_transport_prompt_freezes_payload_and_calls_image_once(self):
         request = {
             "request_fingerprint": "f" * 64,

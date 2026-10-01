@@ -368,6 +368,15 @@ class BackendAndLedgerContractTests(unittest.TestCase):
         self.assertIn("ASPECT_RATIO_MISMATCH", image_scheduler.RETRYABLE_TECH_CODES)
         self.assertNotIn("ASPECT_RATIO_MISMATCH", image_scheduler.NON_REGENERATING_FAILURE_CODES)
 
+    def test_no_artifact_from_completed_image_task_is_retryable_technical_failure(self):
+        self.assertEqual(
+            image_scheduler.classify_error(
+                "IMAGE_TOOL_NO_ARTIFACT: rc=0; generated_artifacts=0"
+            ),
+            "IMAGE_TOOL_NO_ARTIFACT",
+        )
+        self.assertIn("IMAGE_TOOL_NO_ARTIFACT", image_scheduler.RETRYABLE_TECH_CODES)
+
     def test_structured_connect_failure_does_not_masquerade_as_timeout(self):
         historical = ('http/request send failed http_method="POST" '
                       'error_is_timeout=false error_is_connect=true error=error sending request')
