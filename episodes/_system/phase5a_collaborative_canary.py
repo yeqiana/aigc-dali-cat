@@ -357,16 +357,24 @@ def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
 
 
 def validate_queued_attempt(item: Mapping[str, Any], asset_state: Mapping[str, Any]) -> None:
-    """A Phase 5A original queue item may only reserve Attempt 1."""
+    """Share one max-2 image budget across primary, technical retry and repair."""
     if item.get("status") != "queued":
         return
     if asset_state.get("active_attempt_index") is not None:
         raise CanaryContractError("CANARY_GENERATION_ATTEMPT_ALREADY_ACTIVE")
     consumed = int(asset_state.get("attempts_consumed") or 0)
-    if item.get("kind") == "original" and consumed > 0:
-        raise CanaryContractError("CANARY_ORIGINAL_ITEM_CANNOT_USE_ATTEMPT2")
-    if int(asset_state.get("remaining_attempts") or 0) <= 0:
+    remaining = int(asset_state.get("remaining_attempts") or 0)
+    if remaining <= 0:
         raise CanaryContractError("CANARY_GENERATION_ATTEMPT_BUDGET_EXHAUSTED")
+    if item.get("kind") == "original" and consumed > 0:
+        technical_retry = (
+            str(item.get("generation_attempt_reason") or "") == "TECHNICAL_RETRY"
+            and str(item.get("technical_retry_source_code") or "") == "ASPECT_RATIO_MISMATCH"
+            and consumed == 1
+            and remaining == 1
+        )
+        if not technical_retry:
+            raise CanaryContractError("CANARY_ORIGINAL_ITEM_CANNOT_USE_ATTEMPT2")
 
 
 def _model_execution_receipts(ep: Path) -> list[dict[str, Any]]:

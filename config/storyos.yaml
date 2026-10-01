@@ -250,8 +250,8 @@ production:
   # 图片 backend 技术失败独立于内容返修/候选池：同一 queue item 最多 3 次 backend attempt。
   # 第 1/2 次失败后分别退避 15s/45s；耗尽后进入外部能力阻塞，不伪装成内容 FAIL。
   technical_retry:
-    max_attempts_per_item: 3
-    backoff_seconds: [15, 45]
+    max_attempts_per_item: 1
+    backoff_seconds: []
 
 agent_runtime:
   # Trace 只记录执行事实，不是第二套 Episode State。

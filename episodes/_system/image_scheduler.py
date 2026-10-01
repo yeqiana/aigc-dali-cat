@@ -48,6 +48,7 @@ import runtime_timeout_policy
 import local_visual_triage
 import review_queue
 import logical_asset_identity
+import generation_attempt_authority
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = Path(__file__).resolve().parent
@@ -101,9 +102,12 @@ RETRYABLE_TECH_CODES = {
     "IMAGE_BACKEND_NO_OUTPUT",
     "LOCAL_WORKSPACE_PERMISSION",
     "PROVIDER_ARTIFACT_SAVE_COLLISION", "WORKER_FAILED", "WORKER_INTERRUPTED_FAILURE", "WORKER_PROCESS_LOST",
+    # A provider RAW that violates the frozen canvas may use the one remaining
+    # real-generation slot. It does not receive a separate retry budget.
+    "ASPECT_RATIO_MISMATCH",
 }
 NON_REGENERATING_FAILURE_CODES = {
-    "NORMALIZE_REVIEW", "ASPECT_RATIO_MISMATCH", "NORMALIZE_TECHNICAL_FAILURE",
+    "NORMALIZE_REVIEW", "NORMALIZE_TECHNICAL_FAILURE",
     "NORMALIZE_INPUT_MISSING", "NORMALIZE_OUTPUT_EXISTS", "NORMALIZE_OUTPUT_FORMAT",
     "EPISODE_CANVAS_MISMATCH", "IMAGE_MODEL_CONTRACT_MISMATCH", "IMAGE_QUALITY_CONTRACT_MISMATCH",
     "RAW_CANDIDATE_BUDGET_EXHAUSTED",
@@ -429,6 +433,7 @@ def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
 def classify_error(text:str)->str:
     for code in NON_REGENERATING_FAILURE_CODES:
         if code in text:return code
+    if "ASPECT_RATIO_MISMATCH" in text:return "ASPECT_RATIO_MISMATCH"
     if "IMAGE_BACKEND_NO_OUTPUT" in text:return "IMAGE_BACKEND_NO_OUTPUT"
     low=text.lower()
     # Prefer structured transport booleans before the broader model/backend
@@ -449,20 +454,23 @@ def classify_error(text:str)->str:
     return "IMAGE_BACKEND_ERROR"
 
 
-def _terminal_technical_status(item:dict,code:str)->str:
-    """Choose tech_failed vs external_blocked at the failure that exhausts the epoch.
-
-    Previously the third backend failure was persisted as TECH_FAILED and the
-    resident Runner exited on rc=21 before a *later* retry-tech cycle could convert
-    it to external_blocked. A restart then had to repair bookkeeping before it could
-    even wait on the provider. Close the retry epoch at the point of failure instead.
-    """
-    used=_retry_epoch_attempts(item)
-    if code in RETRYABLE_TECH_CODES and used>=TECH_RETRY_MAX:
-        item["external_block"]={"at":now(),"reason":"technical_retry_exhausted","code":code,
-                                "attempts":used,"max_attempts":TECH_RETRY_MAX}
-        return "external_blocked"
-    return "blocked" if code in NON_REGENERATING_FAILURE_CODES else "tech_failed"
+def _terminal_technical_status(ep:Path,item:dict,code:str)->str:
+    """Choose terminal state from the shared max-2 Generation Attempt budget."""
+    if code in NON_REGENERATING_FAILURE_CODES:
+        return "blocked"
+    if code in RETRYABLE_TECH_CODES:
+        allowed,state,reason=_technical_retry_budget(ep,item,code)
+        if not allowed:
+            item["external_block"]={
+                "at":now(),"reason":reason,"code":code,
+                "attempts_consumed":state.get("attempts_consumed"),
+                "remaining_attempts":state.get("remaining_attempts"),
+                "max_real_generation_attempts":
+                    generation_attempt_authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET,
+            }
+            return "external_blocked"
+        return "tech_failed"
+    return "tech_failed"
 
 
 async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->dict:
@@ -718,7 +726,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                 has_failure=True
                 code=triage_failure_code if triage_blocked else ("CANDIDATE_COMMIT_FAILED" if backend_ok else classify_error(msg))
                 if not backend_ok: ledger_tech_fail(ep,item,code,msg)
-                item["status"]=_terminal_technical_status(item,code)
+                item["status"]=_terminal_technical_status(ep,item,code)
                 item["technical_failure_code"]=code
                 item.setdefault("technical_failures",[]).append({"at":now(),"attempt":int(item.get("attempts") or 0),"code":code})
                 has_block=has_block or item["status"]=="blocked"
@@ -736,7 +744,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
             msg=str(image_event.payload.get("error") or "async worker failed")
             code=classify_error(msg)
             ledger_tech_fail(ep,item,code,msg)
-            item["status"]=_terminal_technical_status(item,code)
+            item["status"]=_terminal_technical_status(ep,item,code)
             item["technical_failure_code"]=code
             item.setdefault("technical_failures",[]).append({"at":now(),"attempt":int(item.get("attempts") or 0),"code":code})
             has_block=has_block or item["status"]=="blocked"
@@ -825,6 +833,33 @@ def _retry_epoch_attempts(item:dict)->int:
     return max(0,int(item.get("attempts") or 0)-int(item.get("technical_retry_epoch_start_attempt") or 0))
 
 
+def _shared_generation_attempt_state(ep:Path,item:dict)->dict:
+    """Read the only authoritative real-image budget for this logical asset."""
+    key=logical_asset_identity.frame_asset_key(ep,int(item.get("frame") or 0))
+    state=generation_attempt_authority.load_asset_state(ep,key)
+    return {
+        "logical_asset_key":key,
+        "attempts_consumed":int(state.get("attempts_consumed") or 0),
+        "remaining_attempts":int(state.get("remaining_attempts") or 0),
+        "active_attempt_index":state.get("active_attempt_index"),
+    }
+
+
+def _technical_retry_budget(ep:Path,item:dict,code:str)->tuple[bool,dict,str]:
+    """Technical retry and content repair share the same global max-2 budget."""
+    if str(code or "").upper() not in RETRYABLE_TECH_CODES:
+        return False,{},"non_retryable_technical_failure"
+    try:
+        state=_shared_generation_attempt_state(ep,item)
+    except Exception as exc:
+        return False,{},"generation_attempt_authority_unavailable"
+    if state.get("active_attempt_index") is not None:
+        return False,state,"generation_attempt_already_active"
+    if int(state.get("remaining_attempts") or 0) <= 0:
+        return False,state,"shared_generation_attempt_budget_exhausted"
+    return True,state,"shared_generation_attempt_budget_available"
+
+
 def availability_fallback_model(item:dict,code:str|None=None,*,episode:Path|None=None)->str|None:
     code=str(code or _technical_retry_code(item)).strip().upper()
     if code not in {image_model_policy.PROVIDER_CAPACITY,image_model_policy.MODEL_UNAVAILABLE}:
@@ -895,33 +930,54 @@ def resume_authorized_budget(ep:Path,frames:list[int]|None=None)->dict:
 
 
 def retry_tech(ep:Path,frame:int|None=None,*,reset_exhausted:bool=False,sleep_fn=time.sleep)->dict:
+    """Requeue one technical retry only when the shared max-2 budget has room.
+
+    The legacy per-item retry epoch remains diagnostic history only. Generation
+    Attempt Authority is the sole authority for whether another real image may
+    be dispatched. A technical retry therefore competes with content repair for
+    the same final Attempt 2 slot.
+    """
     ep=Path(ep).resolve()
-    # Availability exhaustion can move a non-strict system-default item to the
-    # next configured model without user intervention. Other technical failures
-    # stay blocked until an explicit reset proves the same provider recovered.
+
+    # Normalize eligible blocked/external rows into the retryable technical lane.
     with queue_transaction(ep):
         q=load_queue(ep)
         for item in q.get("items") or []:
-            if item.get("status")!="external_blocked" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
+            if frame is not None and int(item.get("frame") or -1)!=int(frame):
+                continue
+            if item.get("status") not in {"blocked","external_blocked","tech_failed"}:
                 continue
             code=_technical_retry_code(item)
-            target=_apply_model_failover(item,code,episode=ep)
-            if target:
-                item["status"]="tech_failed"
+            allowed,state,reason=_technical_retry_budget(ep,item,code)
+            if not allowed:
+                if code in RETRYABLE_TECH_CODES:
+                    item["status"]="external_blocked"
+                    item["external_block"]={
+                        "at":now(),"reason":reason,"code":code,
+                        "attempts_consumed":state.get("attempts_consumed"),
+                        "remaining_attempts":state.get("remaining_attempts"),
+                        "max_real_generation_attempts":
+                            generation_attempt_authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET,
+                    }
                 continue
-            if reset_exhausted:
-                item["status"]="tech_failed"
-                item["technical_retry_epoch_start_attempt"]=int(item.get("attempts") or 0)
-                item.pop("external_block",None)
+            # Availability failover may change transport/model only before the
+            # next shared Attempt is reserved.
+            if item.get("status")=="external_blocked":
+                _apply_model_failover(item,code,episode=ep)
+            item["status"]="tech_failed"
+            item.pop("external_block",None)
         save_queue(ep,q)
 
+    # Backoff is operational pacing only; it never grants extra image budget.
     preview=load_queue(ep);delays=[]
     for item in preview.get("items") or []:
         if item.get("status")!="tech_failed" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
             continue
-        code=_technical_retry_code(item);used=_retry_epoch_attempts(item)
-        if code in RETRYABLE_TECH_CODES and used < TECH_RETRY_MAX and used>0:
-            delays.append(TECH_RETRY_BACKOFF[min(used-1,len(TECH_RETRY_BACKOFF)-1)])
+        code=_technical_retry_code(item)
+        allowed,_state,_reason=_technical_retry_budget(ep,item,code)
+        if allowed and _retry_epoch_attempts(item)>0 and TECH_RETRY_BACKOFF:
+            delays.append(TECH_RETRY_BACKOFF[min(
+                _retry_epoch_attempts(item)-1,len(TECH_RETRY_BACKOFF)-1)])
     delay=max(delays or [0])
     if delay>0:
         sleep_fn(delay)
@@ -931,27 +987,48 @@ def retry_tech(ep:Path,frame:int|None=None,*,reset_exhausted:bool=False,sleep_fn
         for item in q.get("items") or []:
             if item.get("status")!="tech_failed" or (frame is not None and int(item.get("frame") or -1)!=int(frame)):
                 continue
-            code=_technical_retry_code(item);used=_retry_epoch_attempts(item)
+            code=_technical_retry_code(item)
+            allowed,state,reason=_technical_retry_budget(ep,item,code)
             if code not in RETRYABLE_TECH_CODES:
                 item["status"]="external_blocked"
-                item["external_block"]={"at":now(),"reason":"non_retryable_technical_failure","code":code,"attempts":used,"max_attempts":TECH_RETRY_MAX}
+                item["external_block"]={"at":now(),"reason":"non_retryable_technical_failure","code":code}
                 non_retryable.append(int(item.get("frame") or 0));continue
-            if used >= TECH_RETRY_MAX:
+            if not allowed:
                 item["status"]="external_blocked"
-                item["external_block"]={"at":now(),"reason":"technical_retry_exhausted","code":code,"attempts":used,"max_attempts":TECH_RETRY_MAX}
+                item["external_block"]={
+                    "at":now(),"reason":reason,"code":code,
+                    "attempts_consumed":state.get("attempts_consumed"),
+                    "remaining_attempts":state.get("remaining_attempts"),
+                    "max_real_generation_attempts":
+                        generation_attempt_authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET,
+                }
                 exhausted.append(int(item.get("frame") or 0));continue
             item["status"]="queued"
             item["last_error"]=None
             item["retry_pending"]=False
             item["retry_backoff_seconds"]=delay
-            # A technical retry is a new backend execution transaction even
-            # when it reuses the same queue item/content-repair/candidate round.
+            item["generation_attempt_reason"]="TECHNICAL_RETRY"
+            item["technical_retry_source_code"]=code
+            item["technical_retry_authorized_at"]=now()
+            item["technical_retry_shared_budget"]={
+                "attempts_consumed":state.get("attempts_consumed"),
+                "remaining_before_retry":state.get("remaining_attempts"),
+                "max_real_generation_attempts":
+                    generation_attempt_authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET,
+            }
             item.pop("execution",None)
             item.pop("started_at",None)
             item.pop("completed_at",None)
             count+=1
         save_queue(ep,q)
-        return {"requeued":count,"frame":frame,"backoff_seconds":delay,"exhausted_frames":sorted(set(exhausted)),"non_retryable_frames":sorted(set(non_retryable))}
+        return {
+            "requeued":count,"frame":frame,"backoff_seconds":delay,
+            "exhausted_frames":sorted(set(exhausted)),
+            "non_retryable_frames":sorted(set(non_retryable)),
+            "budget_authority":"generation_attempt_authority",
+            "max_real_generation_attempts":
+                generation_attempt_authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET,
+        }
 
 
 def self_test()->None:
@@ -961,7 +1038,7 @@ def self_test()->None:
     assert classify_error("unknown model")=="MODEL_UNAVAILABLE"
     assert classify_error("Selected model is at capacity. Please try a different model.")=="PROVIDER_CAPACITY"
     assert classify_error("image generation failed: network error: error sending request")=="NETWORK_ERROR"
-    assert TECH_RETRY_MAX == 3 and TECH_RETRY_BACKOFF == (15,45)
+    assert TECH_RETRY_MAX == 1 and TECH_RETRY_BACKOFF == ()
     assert classify_error("ASPECT_RATIO_MISMATCH: inspect Generation Request")=="ASPECT_RATIO_MISMATCH"
     assert image_worker_pool.CODEX_SESSION_REUSE is False
     assert rolling_frame_review.VALID == {"PASS_PREVIEW","REPAIR_NOW","UNCERTAIN"}

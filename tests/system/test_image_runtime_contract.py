@@ -360,11 +360,13 @@ class BackendAndLedgerContractTests(unittest.TestCase):
         self.assertIn("canvas=1080x1920 exactly", prompt)
         self.assertEqual(codex_subscription_image.provider_size(1080, 1920), "1080x1920")
 
-    def test_normalize_failures_are_not_auto_requeued_for_generation(self):
+    def test_only_canvas_aspect_failure_may_use_shared_technical_retry_slot(self):
         self.assertEqual(image_scheduler.classify_error("NORMALIZE_REVIEW: manual review"), "NORMALIZE_REVIEW")
         self.assertEqual(image_scheduler.classify_error("ASPECT_RATIO_MISMATCH: reject"), "ASPECT_RATIO_MISMATCH")
         self.assertIn("NORMALIZE_REVIEW", image_scheduler.NON_REGENERATING_FAILURE_CODES)
         self.assertIn("IMAGE_QUALITY_CONTRACT_MISMATCH", image_scheduler.NON_REGENERATING_FAILURE_CODES)
+        self.assertIn("ASPECT_RATIO_MISMATCH", image_scheduler.RETRYABLE_TECH_CODES)
+        self.assertNotIn("ASPECT_RATIO_MISMATCH", image_scheduler.NON_REGENERATING_FAILURE_CODES)
 
     def test_structured_connect_failure_does_not_masquerade_as_timeout(self):
         historical = ('http/request send failed http_method="POST" '

@@ -55,6 +55,8 @@ def generation_attempt_context(ep, item, payload_policy):
     runner_candidate = str(item.get("runner_candidate") or item.get("runner") or "codex_user_runner")
     return {
         "scope": item.get("scope"),
+        "generation_attempt_reason": item.get("generation_attempt_reason") or "PRIMARY_GENERATION",
+        "technical_retry_source_code": item.get("technical_retry_source_code"),
         "model_role": "image.controller",
         "profile": controller.get("profile"),
         "controller_model": controller.get("model"),
