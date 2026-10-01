@@ -17,6 +17,9 @@ from pathlib import Path
 import re
 from types import MappingProxyType
 from typing import Any, Mapping
+import subprocess
+import time
+import uuid
 
 
 CANARY_ENTRYPOINT = "phase5a_collaborative_canary"
@@ -467,6 +470,162 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     }
 
 
+def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None = None,
+                                          timeout: int | None = None) -> dict[str, Any]:
+    """Execute a tiny exact-model text task before the image Scheduler can run.
+
+    The call uses the frozen Episode controller binding, the same Codex user
+    runner/authentication bridge, and the same provider arguments as the image
+    worker. It does not call image_generation, the Attempt Authority, or the
+    Production Ledger.
+    """
+    import codex_subscription_image
+    import codex_user_runner
+    import logical_asset_identity
+    import model_policy
+    import runtime_observability
+    import runtime_timeout_policy
+
+    episode = Path(ep).resolve()
+    call_id = uuid.uuid4().hex
+    run_id = f"phase5a-controller-probe-{call_id[:12]}"
+    trace_id = f"ST_{call_id[:16]}"
+    started_at = runtime_observability.now()
+    started = time.monotonic()
+    binding: dict[str, Any] = {}
+    argv: list[str] = []
+    auth_context = "unverified"
+    status = "FAILED"
+    failure_class = "CONTROLLER_PROBE_FAILED"
+    returncode: int | None = None
+    error_detail = ""
+
+    try:
+        errors = model_policy.validate_bound_policy(episode)
+        if errors:
+            raise RuntimeError("MODEL_POLICY_NOT_FROZEN: " + "; ".join(errors))
+        binding = model_policy.resolve("image.controller", episode=episode)
+        requested_model = str(binding.get("model") or "")
+        effort = str(binding.get("reasoning_effort") or "").lower()
+        if (requested_model, effort) != ("gpt-6-luna", "high"):
+            raise RuntimeError("CANARY_CONTROLLER_BINDING_MISMATCH")
+        if not binding.get("model_policy_sha256"):
+            raise RuntimeError("CANARY_CONTROLLER_POLICY_SHA_MISSING")
+
+        # Use the image worker's executable resolution, auth bridge, controller
+        # argv (including explicit provider routing), and current runner identity.
+        executable = codex_subscription_image.resolve_codex(codex)
+        bridged = bool(codex_user_runner.bridge_required())
+        codex_subscription_image.image_runtime_preflight(bridged=bridged)
+        auth_context = "user_runner" if bridged else "direct_codex_user_runner"
+        argv = codex_subscription_image.command_prefix(executable) + [
+            "exec", "--skip-git-repo-check", "--ephemeral",
+            *codex_subscription_image.controller_args(episode),
+            "-s", "read-only", "-C", str(ROOT), "--json", "-",
+        ]
+        probe_prompt = (
+            'Return only this exact JSON object and do not call tools: '
+            '{"capability_probe":"PASS"}'
+        )
+        completed = codex_user_runner.run_codex(
+            argv, input=probe_prompt, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, timeout=(int(timeout) if timeout is not None
+                                                else runtime_timeout_policy.seconds("codex_auth_probe")),
+            check=False, text=True, encoding="utf-8", errors="replace",
+            task_type="smoke", codex_home_mode="inherit",
+        )
+        returncode = int(completed.returncode)
+        # A zero process exit is insufficient: require Codex's completed
+        # assistant result and the exact structured sentinel. Never persist raw
+        # stdout because runner/provider output is not receipt data.
+        import codex_critic_runner
+        result_object = (codex_critic_runner.recover_completed_agent_json(
+            str(completed.stdout or "")) if returncode == 0 else None)
+        if returncode == 0 and result_object == {"capability_probe": "PASS"}:
+            status = "SUCCESS"
+            failure_class = ""
+        elif returncode != 0:
+            output_text = str(completed.stdout or "").lower()
+            if any(token in output_text for token in ("unsupported", "model unavailable", "unknown model", "http 400")):
+                failure_class = "MODEL_UNAVAILABLE"
+            elif any(token in output_text for token in ("unauthorized", "authentication", "http 401", "login required")):
+                failure_class = "AUTH_FAILED"
+            else:
+                failure_class = "CONTROLLER_EXECUTION_FAILED"
+            error_detail = "CODEX_EXEC_NONZERO_EXIT"
+        else:
+            failure_class = "PROBE_RESULT_INVALID"
+            error_detail = "COMPLETED_ASSISTANT_RESULT_DID_NOT_MATCH_SENTINEL"
+    except subprocess.TimeoutExpired as exc:
+        failure_class = "RUNNER_TIMEOUT"
+        error_detail = type(exc).__name__
+    except Exception as exc:
+        detail = str(exc)
+        lowered = detail.lower()
+        if "auth" in lowered or "login" in lowered or "401" in lowered:
+            failure_class = "AUTH_FAILED"
+        elif "runner" in lowered or "connect" in lowered or "unavailable" in lowered:
+            failure_class = "RUNNER_UNAVAILABLE"
+        elif "unsupported" in lowered or "model" in lowered or "400" in lowered:
+            failure_class = "MODEL_UNAVAILABLE"
+        else:
+            failure_class = "CONTROLLER_PROBE_FAILED"
+        # Do not copy exception messages or captured process output into the
+        # durable receipt. Those strings can contain transport/auth details.
+        error_detail = type(exc).__name__
+
+    finished_at = runtime_observability.now()
+    receipt = {
+        "receipt_schema_version": 1,
+        "episode_id": logical_asset_identity.episode_id(episode),
+        "run_id": run_id,
+        "trace_id": trace_id,
+        "step": "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT",
+        "call_id": call_id,
+        "model_role": binding.get("role") or "image.controller",
+        "profile": binding.get("profile") or "image_controller",
+        "requested_model": binding.get("model") or "gpt-6-luna",
+        "effective_model": binding.get("model") or "gpt-6-luna",
+        "reasoning_effort": binding.get("reasoning_effort") or "high",
+        "model_policy_version": binding.get("policy_version") or "unknown",
+        "model_policy_sha256": binding.get("model_policy_sha256") or "unknown",
+        "provider": "codex_subscription",
+        "runner": "codex exec via codex_user_runner",
+        "started_at": started_at,
+        "finished_at": finished_at,
+        "duration_ms": round((time.monotonic() - started) * 1000, 3),
+        "status": status,
+        "model_binding_source": "EPISODE_BOUND_MODEL_POLICY",
+        "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+        "codex_argv": argv,
+        "auth_context": auth_context,
+        "returncode": returncode,
+        "failure_class": failure_class or None,
+        "error_detail": error_detail or None,
+        "probe_result_valid": status == "SUCCESS",
+        "image_generation_called": False,
+        "image_attempt_authority_called": False,
+    }
+    try:
+        receipt_path = runtime_observability.write_model_execution_receipt(episode, receipt=receipt)
+        receipt["receipt_path"] = str(receipt_path)
+        _telemetry(episode, "MODEL_EXECUTION", step=receipt["step"], call_id=call_id,
+                   model_role=receipt["model_role"], profile=receipt["profile"],
+                   requested_model=receipt["requested_model"],
+                   effective_model_source=receipt["effective_model_source"],
+                   reasoning_effort=receipt["reasoning_effort"],
+                   model_policy_sha256=receipt["model_policy_sha256"],
+                   provider=receipt["provider"], runner=receipt["runner"],
+                   status=status, duration_ms=receipt["duration_ms"])
+    except Exception as exc:
+        # Missing durable probe evidence must fail closed before any image work.
+        return {"status": "BLOCKED", "failure_class": "PROBE_RECEIPT_WRITE_FAILED",
+                "reason": str(exc)[:600], "receipt": receipt}
+    return {"status": "PASS" if status == "SUCCESS" else "BLOCKED",
+            "failure_class": failure_class or None,
+            "reason": error_detail or None, "receipt": receipt}
+
+
 def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900,
                            codex: str | None = None, dry_run: bool = False) -> dict[str, Any]:
     """Run/resume exactly one item through the existing Production Scheduler.
@@ -476,6 +635,19 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
     preflight = _preflight(Path(ep), canary_id)
     if dry_run:
         return {"status": "READY", **{k: v for k, v in preflight.items() if k != "episode"}}
+    controller_probe = exact_controller_capability_preflight(
+        preflight["episode"], codex=codex)
+    if controller_probe.get("status") != "PASS":
+        _telemetry(preflight["episode"], "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
+                   logical_asset_key=preflight["logical_asset_key"],
+                   model_policy_sha256=preflight["policy_sha256"],
+                   failure_class=controller_probe.get("failure_class"),
+                   status="BLOCKED", step="EXACT_CONTROLLER_CAPABILITY_PREFLIGHT")
+        return {"status": "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
+                "controller_preflight": controller_probe,
+                "image_attempt_reserve_called": False,
+                "image_scheduler_called": False,
+                "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
     global_claim = claim_global_canary(preflight["episode"], canary_id)
     import runtime_trace
     run_id = f"phase5a-{canary_id}"
