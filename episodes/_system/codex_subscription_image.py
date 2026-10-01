@@ -138,6 +138,20 @@ def command_prefix(codex: Path) -> list[str]:
     import codex_cli_contract
     return codex_cli_contract.command_prefix(codex)
 
+
+def execution_command_prefix(codex: Path) -> list[str]:
+    """Let the interactive runner resolve its own Codex executable.
+
+    A SYSTEM-side absolute Codex path belongs to the service account install
+    context and may point at a partially-updated Desktop bundle. Across the
+    user-mode bridge, pass only the logical codex head so the runner selects
+    the executable from the signed-in interactive user environment.
+    """
+    if codex_user_runner.bridge_required():
+        return ["codex"]
+    return command_prefix(codex)
+
+
 def provider_size(width: int, height: int) -> str:
     return f'{width}x{height}'
 
@@ -241,7 +255,7 @@ def _catalog_candidates(payload: dict) -> list[dict]:
 
 
 def _subscription_model_catalog(codex: Path) -> list[dict]:
-    cmd = command_prefix(codex) + ['debug', 'models', *_subscription_provider_args()]
+    cmd = execution_command_prefix(codex) + ['debug', 'models', *_subscription_provider_args()]
     completed = codex_user_runner.run_codex(
         cmd,
         stdout=subprocess.PIPE,
@@ -271,7 +285,7 @@ def _subscription_model_catalog(codex: Path) -> list[dict]:
 
 
 def _probe_transport_model(codex: Path, model: str, effort: str) -> tuple[bool, str]:
-    cmd = command_prefix(codex) + [
+    cmd = execution_command_prefix(codex) + [
         'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
         '-c', 'skills.include_instructions=false',
         '-c', 'project_doc_max_bytes=0',
@@ -581,7 +595,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             transport_args(str(transport_model or ""), str(transport_effort or "low"))
             if transport_request is not None else controller_args(episode_dir)
         )
-        cmd = command_prefix(codex) + [
+        cmd = execution_command_prefix(codex) + [
             'exec', '--skip-git-repo-check', '--ephemeral', '--ignore-rules',
             '-c', 'skills.include_instructions=false', '-c', 'project_doc_max_bytes=0',
             '--enable', 'image_generation',

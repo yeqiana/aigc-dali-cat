@@ -34,6 +34,23 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertEqual([row["model"] for row in rows], ["transport-a", "transport-b"])
         self.assertEqual(rows[0]["effort"], "low")
 
+    def test_bridge_execution_prefix_defers_executable_resolution_to_user_runner(self):
+        with patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True):
+            self.assertEqual(
+                codex_subscription_image.execution_command_prefix(Path(r"C:/service/codex.exe")),
+                ["codex"],
+            )
+
+    def test_direct_execution_prefix_keeps_local_codex_contract(self):
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=False),
+            patch.object(codex_subscription_image, "command_prefix", return_value=["resolved-codex"]),
+        ):
+            self.assertEqual(
+                codex_subscription_image.execution_command_prefix(Path("codex.exe")),
+                ["resolved-codex"],
+            )
+
     def test_login_preflight_failure_is_before_attempt_and_generation(self):
         with (
             patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
