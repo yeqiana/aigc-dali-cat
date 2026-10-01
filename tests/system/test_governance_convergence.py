@@ -22,6 +22,9 @@ import scheduler_core
 import raw_candidate_budget as budget
 import prompt_package
 import runtime_workspace
+import episode_contract_persistence
+import model_policy
+import model_policy_persistence
 import production_batch_review as batch_review
 import frame_semantic_review as semantic
 import incremental_frame_review as incr
@@ -787,6 +790,15 @@ class SourceProofEntries(unittest.TestCase):
     def test_single_image_backend_sends_frozen_package_scene_and_blocks_drift_before_invoke(self):
         self.prompt.write_text('file scene text', encoding='utf-8')
         self.version_evidence()  # Real V2.1 gate: drift raises before invoke.
+        bound_contracts = {}
+        def save_contract(_ep, contract_type, _rel, payload, **_kwargs):
+            bound_contracts[(str(Path(_ep).resolve()), contract_type)] = json.loads(json.dumps(payload))
+            return {'mode': 'test', 'mysql_written': True}
+        def load_contract(_ep, contract_type, **_kwargs):
+            return bound_contracts.get((str(Path(_ep).resolve()), contract_type))
+        with patch.object(episode_contract_persistence, 'save', side_effect=save_contract), \
+                patch.object(episode_contract_persistence, 'load_latest', side_effect=load_contract):
+            frozen_policy = model_policy.freeze_for_episode(self.ep)['policy']
         visual = {'text': 'visual', 'profile_id': 'M00', 'profile_path': 'm',
                   'profile_sha256': 'v', 'capture_profile': 'cp'}
         pkg = {'scene_prompt': 'PACKAGE SCENE ONLY', 'scene_prompt_sha256': 's',
@@ -808,7 +820,8 @@ class SourceProofEntries(unittest.TestCase):
                                 reference=[], timeout=60, codex=None, image_model=None,
                                 image_quality=None, overwrite=False,
                                 _image_model_policy=policy)
-        with patch.object(single_backend, 'read_canvas', return_value=(1088, 1360, '4:5')), \
+        with patch.object(model_policy_persistence, 'load', return_value=frozen_policy), \
+                patch.object(single_backend, 'read_canvas', return_value=(1088, 1360, '4:5')), \
                 patch.object(single_backend, 'compile_prompt_contract', return_value=visual), \
                 patch.object(prompt_package, 'compile_frame', return_value=pkg), \
                 patch.object(single_backend, 'invoke_codex', side_effect=fake_invoke), \

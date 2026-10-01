@@ -225,7 +225,16 @@ class BackendAndLedgerContractTests(unittest.TestCase):
             prompt = Path(td) / "prompt.md"
             prompt.write_text("ordinary snapshot", encoding="utf-8")
             item = self._queue_item(prompt)
-            with mock.patch.object(image_worker_pool.resource_library, "ensure_fresh"), \
+            bound_contracts = {}
+            def save_contract(_ep, contract_type, _rel, payload, **_kwargs):
+                bound_contracts[(str(Path(_ep).resolve()), contract_type)] = json.loads(json.dumps(payload))
+                return {"mode": "test", "mysql_written": True}
+            def load_contract(_ep, contract_type, **_kwargs):
+                return bound_contracts.get((str(Path(_ep).resolve()), contract_type))
+            with mock.patch.object(episode_contract_persistence, "save", side_effect=save_contract), \
+                    mock.patch.object(episode_contract_persistence, "load_latest", side_effect=load_contract):
+                model_policy.freeze_for_episode(ep)
+                with mock.patch.object(image_worker_pool.resource_library, "ensure_fresh"), \
                     mock.patch.object(image_worker_pool.runtime_router, "detect", return_value=("CODEX", "test")), \
                     mock.patch.object(image_worker_pool.runtime_router, "image_execution_runtime", return_value=("CODEX", "test")), \
                     mock.patch.object(image_worker_pool.prompt_package, "compile_frame", return_value={
@@ -237,7 +246,7 @@ class BackendAndLedgerContractTests(unittest.TestCase):
                     mock.patch.object(image_worker_pool.raw_candidate_budget, "claim", return_value=(True, {"decision": "ALLOW"})), \
                     mock.patch.object(image_worker_pool.raw_candidate_budget, "release", return_value=(True, {"decision": "RELEASED"})) as release, \
                     mock.patch.object(image_worker_pool.raw_candidate_budget, "commit", side_effect=AssertionError("missing output must not consume budget")):
-                result = image_worker_pool.execute(ep, item, 30, "codex")
+                    result = image_worker_pool.execute(ep, item, 30, "codex")
             self.assertEqual(result["returncode"], 95)
             self.assertIn("IMAGE_BACKEND_NO_OUTPUT", result["stdout"])
             self.assertIsNone(result["output"])
