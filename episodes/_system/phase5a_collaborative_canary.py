@@ -71,7 +71,14 @@ MARKER_REL = Path("meta/phase5a-canary.json")
 GLOBAL_CLAIM_REL = WORKSPACE_REL / ".phase5a-collaborative-canary-claim.json"
 REPLACEMENT_CLAIM_REL = WORKSPACE_REL / ".phase5a-collaborative-canary-replacement.json"
 VALIDATION_EPOCH_DIR_REL = WORKSPACE_REL / ".phase5a-validation-epochs"
+VALIDATION_EPOCH_RETIREMENT_DIR_REL = VALIDATION_EPOCH_DIR_REL / "retirements"
 ROOT = Path(__file__).resolve().parents[2]
+
+_RETIREMENT_REASONS = frozenset({
+    "REVIEW_EXECUTION_RECEIPT_UNRECOVERABLE",
+    "GENERATION_IDENTITY_MISMATCH",
+    "UNVERIFIED_REVIEW_PROJECTION",
+})
 
 
 class CanaryContractError(ValueError):
@@ -298,6 +305,82 @@ def _validation_epoch_claims() -> list[dict[str, Any]]:
     return rows
 
 
+def validation_epoch_lock_target(ep: str | Path) -> Path:
+    """Return the shared OS-lock target used by reservation and retirement."""
+    episode = Path(ep).resolve()
+    try:
+        episode.relative_to((ROOT / WORKSPACE_REL).resolve())
+    except ValueError as exc:
+        raise CanaryContractError("CANARY_WORKSPACE_PATH_REQUIRED") from exc
+    return episode / "meta" / "runtime" / "phase5a-validation-epoch-authority"
+
+
+def _retirement_path(canary_id: str) -> Path:
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}", str(canary_id)) or ".." in str(canary_id):
+        raise CanaryContractError("INVALID_CANARY_ID")
+    path = (ROOT / VALIDATION_EPOCH_RETIREMENT_DIR_REL / f"{canary_id}.json").resolve()
+    try:
+        path.relative_to((ROOT / VALIDATION_EPOCH_DIR_REL).resolve())
+    except ValueError as exc:
+        raise CanaryContractError("CANARY_VALIDATION_EPOCH_PATH_ESCAPE") from exc
+    return path
+
+
+def _read_retirement(canary_id: str) -> dict[str, Any] | None:
+    path = _retirement_path(canary_id)
+    if not path.exists():
+        return None
+    try:
+        row = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_INVALID_FAIL_CLOSED") from exc
+    if (not isinstance(row, dict) or row.get("schema_version") != 1
+            or row.get("canary_type") != CANARY_TYPE
+            or row.get("canary_id") != canary_id
+            or row.get("retired") is not True
+            or row.get("generation_dispatch_eligible") is not False
+            or row.get("review_dispatch_eligible") is not False
+            or row.get("promotable") is not False
+            or row.get("release_eligible") is not False
+            or row.get("stage_authority") is not False
+            or row.get("retirement_reason") not in _RETIREMENT_REASONS
+            or not re.fullmatch(r"phase5a-validation-e[0-9]+-[0-9a-f]{12}",
+                                str(row.get("successor_epoch_id") or ""))
+            or int(row.get("attempts_consumed", -1)) < 0
+            or int(row.get("remaining_attempts", -1)) != 2 - int(row.get("attempts_consumed", -1))
+            or row.get("active_attempt_index") is not None):
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_INVALID_FAIL_CLOSED")
+    return row
+
+
+def assert_validation_epoch_dispatch_eligible(ep: str | Path) -> None:
+    """Fail closed at generation reservation for a retired Phase5A workspace."""
+    episode = Path(ep).resolve()
+    marker_path = episode / MARKER_REL
+    if not marker_path.is_file():
+        return
+    try:
+        marker = json.loads(marker_path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise CanaryContractError("CANARY_MARKER_INVALID_FAIL_CLOSED") from exc
+    canary_id = str(marker.get("canary_id") or "")
+    if marker.get("canary_type") != CANARY_TYPE or not canary_id:
+        raise CanaryContractError("CANARY_MARKER_INVALID_FAIL_CLOSED")
+    retirement = _read_retirement(canary_id)
+    if retirement is not None:
+        raise CanaryContractError("CANARY_VALIDATION_EPOCH_RETIRED_DISPATCH_DENIED")
+
+
+def assert_validation_epoch_review_dispatch_eligible(ep: str | Path) -> None:
+    """Fail closed before Phase5A Review Queue can recover/claim retired work."""
+    try:
+        assert_validation_epoch_dispatch_eligible(ep)
+    except CanaryContractError as exc:
+        if "RETIRED_DISPATCH_DENIED" in str(exc):
+            raise CanaryContractError("CANARY_VALIDATION_EPOCH_RETIRED_REVIEW_DENIED") from exc
+        raise
+
+
 def _validation_epoch_source_evidence(previous_episode: Path) -> dict[str, Any]:
     """Require the previous validation canary to be fully exhausted and terminal."""
     import generation_attempt_authority
@@ -347,15 +430,266 @@ def _validation_epoch_source_evidence(previous_episode: Path) -> dict[str, Any]:
     }
 
 
+def _assert_review_queue_not_recoverable(queue: Mapping[str, Any], *, at: str | None = None) -> list[dict[str, Any]]:
+    """Retirement is forbidden while Review can still be resumed or completed.
+
+    An expired running lease is retireable only when it has no bound Runner
+    request, no persisted result receipt, and no durable completed turn (the
+    latter is checked against the Critic logs by the caller).
+    """
+    from datetime import datetime, timezone
+
+    now = datetime.fromisoformat(at) if at else datetime.now(timezone.utc)
+    items = [row for row in queue.get("items") or [] if isinstance(row, dict)]
+    if len(items) != 1 or int(items[0].get("frame") or 0) != 1:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_QUEUE_INVALID")
+    # `review_pending` is not a failed, unrecoverable outcome: Resume can still
+    # enqueue/dispatch Review. Only generated or explicitly blocked frame work
+    # may proceed to the narrower unrecoverable-evidence checks below.
+    if str(items[0].get("status") or "").lower() not in {"generated", "blocked", "external_blocked"}:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECOVERABLE")
+
+    review_items = [row for row in queue.get("review_work_items") or [] if isinstance(row, dict)]
+    stale_claims: list[dict[str, Any]] = []
+    pending = {"queued", "pending", "ready", "claimed", "inflight", "dispatching", "started"}
+    for row in review_items:
+        status = str(row.get("status") or "").lower()
+        if status in pending:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECOVERABLE")
+        if status == "running":
+            expiry_raw = str(row.get("lease_expires_at") or "")
+            try:
+                expiry = datetime.fromisoformat(expiry_raw)
+                if expiry.tzinfo is None:
+                    expiry = expiry.replace(tzinfo=timezone.utc)
+            except (TypeError, ValueError):
+                raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECOVERABLE")
+            if expiry > now:
+                raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECOVERABLE")
+            request_ids = ("runner_request_id", "request_id", "user_runner_request_id", "codex_request_id")
+            if any(str(row.get(key) or "").strip() for key in request_ids) or row.get("receipt") is not None:
+                raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECOVERABLE")
+            stale_claims.append({
+                "review_key": row.get("review_key"),
+                "review_kind": row.get("review_kind"),
+                "status": status,
+                "lease_expires_at": expiry.isoformat(),
+                "runner_request_bound": False,
+                "result_receipt_present": False,
+            })
+        elif status not in {"finalized", "failed", "stale"}:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_STATUS_UNKNOWN")
+    if any(str(row.get("review_kind") or row.get("kind") or "").upper() == "FINAL_SEMANTIC"
+           and str(row.get("status") or "").lower() in {
+               "success", "passed", "pass", "finalized", "complete", "completed",
+           }
+           for row in review_items):
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_SUCCESS_PRESENT")
+    return stale_claims
+
+
+def _retirement_evidence(ep: Path, canary_id: str, reason: str,
+                         evidence_ref: str | Path) -> dict[str, Any]:
+    """Read and validate the narrow evidence needed to retire a broken epoch.
+
+    The reference must be the local diagnostic reconciliation report. It is
+    evidence of a failed review authority check, never a success authority.
+    Generation rows remain read-only and retain their factual budget values.
+    """
+    import generation_attempt_authority
+    import logical_asset_identity
+    import scheduler_core
+    import frame_semantic_review
+
+    episode, marker = validate_workspace(ep, canary_id)
+    if marker.get("promotable") is True:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_PROMOTABLE_SOURCE_DENIED")
+    if marker.get("release_eligible") is True:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_RELEASE_AUTHORITY_PRESENT")
+    if marker.get("stage_authority") is True:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_STAGE_AUTHORITY_PRESENT")
+    if marker.get("workspace_class") != "TEST_ONLY" or marker.get("promotion_class") != "NON_PROMOTABLE":
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_PROMOTABLE_SOURCE_DENIED")
+    if (episode / "meta" / "episode-state.json").exists():
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_STAGE_AUTHORITY_PRESENT")
+    release_manifest = episode / "meta" / "release-manifest.json"
+    if release_manifest.is_file():
+        try:
+            release = json.loads(release_manifest.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError) as exc:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_RELEASE_STATE_INVALID") from exc
+        if str(release.get("status") or "").upper() in {"PUBLISH_READY", "PUBLISHED"}:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_RELEASE_AUTHORITY_PRESENT")
+
+    claims = _validation_epoch_claims()
+    claim = next((row for row in claims if row.get("canary_id") == canary_id
+                  and Path(str(row.get("workspace") or "")).resolve() == episode), None)
+    if claim is None:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EPOCH_CLAIM_REQUIRED")
+    if claims[-1].get("canary_id") != canary_id:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_NOT_LATEST_EPOCH")
+
+    key = logical_asset_identity.frame_asset_key(episode, 1)
+    state = generation_attempt_authority.load_asset_state(episode, key)
+    if state.get("active_attempt_index") is not None:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_ATTEMPT_ACTIVE")
+    consumed = int(state.get("attempts_consumed") or 0)
+    remaining = int(state.get("remaining_attempts") if state.get("remaining_attempts") is not None
+                    else max(0, 2 - consumed))
+    if consumed < 1 or consumed >= 2 or remaining != 2 - consumed:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_ATTEMPT_STATE_INVALID")
+
+    # Any persisted Final Semantic receipt is conservatively treated as a
+    # potentially recoverable authority; never retire around it.
+    if frame_semantic_review.review_receipt_for_frame(episode, 1) is not None:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECEIPT_PRESENT")
+    queue = scheduler_core.load_queue(episode)
+    stale_review_claims = _assert_review_queue_not_recoverable(queue)
+
+    report_path = Path(evidence_ref)
+    if not report_path.is_absolute():
+        report_path = episode / report_path
+    report_path = report_path.resolve()
+    try:
+        report_path.relative_to(episode)
+    except ValueError as exc:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EVIDENCE_PATH_INVALID") from exc
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EVIDENCE_MISSING") from exc
+    if (report.get("authority") != "DIAGNOSTIC_ONLY"
+            or int(report.get("model_dispatch_count") or 0) != 0
+            or int(report.get("provider_dispatch_count") or 0) != 0
+            or report.get("status") != "UNVERIFIED_REVIEW_PROJECTION"):
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EVIDENCE_NOT_UNVERIFIED")
+    projections = [row for row in report.get("projections") or [] if isinstance(row, dict)]
+    matching = [row for row in projections if str(row.get("frame")) in {"1", "01"}]
+    errors = [str(error) for row in matching for error in row.get("errors") or []]
+    reason_present = (
+        reason == "UNVERIFIED_REVIEW_PROJECTION"
+        or (reason == "REVIEW_EXECUTION_RECEIPT_UNRECOVERABLE"
+            and any("receipt missing" in error.lower() for error in errors))
+        or (reason == "GENERATION_IDENTITY_MISMATCH"
+            and any("generation_key" in error.lower() for error in errors))
+    )
+    if not matching or not reason_present:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REASON_UNSUPPORTED_BY_EVIDENCE")
+
+    # Critic logs without a completed turn are not recoverable execution
+    # receipts. A completed turn is conservatively rejected for manual review.
+    critic_logs = sorted((episode / "meta").glob("frame-semantic-critic-attempt-*.jsonl"))
+    for log_path in critic_logs:
+        try:
+            if "turn.completed" in log_path.read_text(encoding="utf-8-sig"):
+                raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_RECOVERABLE_CRITIC_TURN")
+        except OSError as exc:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_CRITIC_EVIDENCE_UNREADABLE") from exc
+    attempt = generation_attempt_authority.load_attempt(episode, key, 1)
+    if (not isinstance(attempt, Mapping)
+            or str(attempt.get("status") or "") != "SUCCEEDED"
+            or not str(attempt.get("result_ref") or "").strip()):
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_GENERATION_ATTEMPT_MISSING")
+    return {
+        "logical_asset_key": key,
+        "attempts_consumed": consumed,
+        "remaining_attempts": remaining,
+        "active_attempt_index": None,
+        "attempt1_generation_key": attempt.get("generation_key"),
+        "queue_status": (queue.get("items") or [])[0].get("status"),
+        "stale_review_claims": stale_review_claims,
+        "review_receipt_present": False,
+        "recoverable_critic_turn_present": False,
+        "diagnostic_report_sha256": hashlib.sha256(report_path.read_bytes()).hexdigest(),
+        "diagnostic_report_ref": report_path.relative_to(episode).as_posix(),
+    }
+
+
+def retire_validation_epoch(ep: str | Path, canary_id: str, *,
+                            retirement_reason: str,
+                            evidence_ref: str | Path) -> dict[str, Any]:
+    """Retire an unrecoverable validation epoch without changing Attempt facts.
+
+    Retirement and generation reservation share the same OS file lock. The
+    immutable record reserves exactly one successor ID, so retries cannot
+    branch the epoch chain or consume the source's remaining budget.
+    """
+    from runtime_atomic_store import FileLock
+
+    if retirement_reason not in _RETIREMENT_REASONS:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REASON_INVALID")
+    episode, _marker = validate_workspace(ep, canary_id)
+    with FileLock(validation_epoch_lock_target(episode), timeout=30, stale_seconds=3600):
+        existing = _read_retirement(canary_id)
+        if existing is not None:
+            if existing.get("retirement_reason") != retirement_reason:
+                raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_CONFLICT")
+            return dict(existing)
+        evidence = _retirement_evidence(episode, canary_id, retirement_reason, evidence_ref)
+        epoch_rows = _validation_epoch_claims()
+        source = next((row for row in epoch_rows if row.get("canary_id") == canary_id), None)
+        if source is None:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EPOCH_CLAIM_REQUIRED")
+        successor_id = f"phase5a-validation-e{int(source['_epoch_index']) + 1}-{uuid.uuid4().hex[:12]}"
+        record = {
+            "schema_version": 1,
+            "canary_type": CANARY_TYPE,
+            "canary_id": canary_id,
+            "workspace": str(episode),
+            "validation_epoch": int(source["_epoch_index"]),
+            "retired": True,
+            "retirement_reason": retirement_reason,
+            "retirement_evidence": evidence,
+            "retired_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "attempts_consumed": evidence["attempts_consumed"],
+            "remaining_attempts": evidence["remaining_attempts"],
+            "active_attempt_index": None,
+            "generation_dispatch_eligible": False,
+            "review_dispatch_eligible": False,
+            "promotable": False,
+            "release_eligible": False,
+            "stage_authority": False,
+            "parent_epoch_id": canary_id,
+            "successor_epoch_id": successor_id,
+        }
+        path = _retirement_path(canary_id)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            descriptor = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError:
+            raced = _read_retirement(canary_id)
+            if raced is not None and raced.get("retirement_reason") == retirement_reason:
+                return dict(raced)
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_CONFLICT")
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+                json.dump(record, stream, ensure_ascii=False, indent=2)
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+        except Exception as exc:
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_WRITE_FAILED_FAIL_CLOSED") from exc
+        return record
+
+
 def _claim_validation_epoch(ep: Path, canary_id: str, *, previous_claim: Mapping[str, Any]) -> dict[str, Any]:
     episode, _marker = validate_workspace(ep, canary_id)
     previous_workspace = Path(str(previous_claim.get("workspace") or "")).resolve()
     previous_id = str(previous_claim.get("canary_id") or "")
     validate_workspace(previous_workspace, previous_id)
-    evidence = _validation_epoch_source_evidence(previous_workspace)
-
     existing = _validation_epoch_claims()
     epoch_index = 2 + len(existing)
+    retirement = _read_retirement(previous_id)
+    if retirement is not None:
+        if retirement.get("successor_epoch_id") != canary_id:
+            raise CanaryContractError("CANARY_VALIDATION_EPOCH_SUCCESSOR_RESERVED")
+        if int(retirement.get("validation_epoch") or 0) != epoch_index - 1:
+            raise CanaryContractError("CANARY_VALIDATION_EPOCH_SEQUENCE_INVALID_FAIL_CLOSED")
+        evidence = dict(retirement.get("retirement_evidence") or {})
+        source_reason = "SOURCE_RETIRED_UNRECOVERABLE"
+    else:
+        evidence = _validation_epoch_source_evidence(previous_workspace)
+        source_reason = "SOURCE_EXHAUSTED_NO_REVIEW_CANDIDATE"
     directory = (ROOT / VALIDATION_EPOCH_DIR_REL).resolve()
     directory.mkdir(parents=True, exist_ok=True)
     path = directory / f"epoch-{epoch_index:04d}.json"
@@ -366,7 +700,10 @@ def _claim_validation_epoch(ep: Path, canary_id: str, *, previous_claim: Mapping
         "validation_epoch": epoch_index,
         "previous_canary_id": previous_id,
         "previous_workspace": str(previous_workspace),
-        "reason": "PRIOR_VALIDATION_CANARY_EXHAUSTED_NO_REVIEW_CANDIDATE",
+        "reason": source_reason,
+        "previous_retired": retirement is not None,
+        "previous_retirement_reason": retirement.get("retirement_reason") if retirement else None,
+        "previous_successor_reservation": retirement.get("successor_epoch_id") if retirement else None,
         "previous_logical_asset_key": evidence.get("logical_asset_key"),
         "previous_attempts_consumed": evidence.get("attempts_consumed"),
         "previous_attempt2_generation_key": evidence.get("attempt2_generation_key"),
@@ -378,6 +715,21 @@ def _claim_validation_epoch(ep: Path, canary_id: str, *, previous_claim: Mapping
     try:
         descriptor = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     except FileExistsError:
+        try:
+            raced = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError) as exc:
+            raise CanaryContractError("CANARY_VALIDATION_EPOCH_CLAIM_INVALID_FAIL_CLOSED") from exc
+        if raced.get("canary_id") == canary_id and raced.get("workspace") == str(episode):
+            return {
+                "canary_type": CANARY_TYPE,
+                "canary_id": str(canary_id),
+                "workspace": str(episode),
+                "resumed": True,
+                "replacement": False,
+                "validation_epoch": epoch_index,
+                "previous_canary_id": previous_id,
+                "previous_retired": retirement is not None,
+            }
         raise CanaryContractError("CANARY_VALIDATION_EPOCH_ALREADY_CLAIMED")
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
@@ -395,6 +747,7 @@ def _claim_validation_epoch(ep: Path, canary_id: str, *, previous_claim: Mapping
         "replacement": False,
         "validation_epoch": epoch_index,
         "previous_canary_id": previous_id,
+        "previous_retired": retirement is not None,
     }
 
 

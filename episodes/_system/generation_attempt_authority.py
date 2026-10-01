@@ -151,7 +151,7 @@ def _expire_active(connection, episode_id: str, key: str, state: dict, ep: Path)
     return state
 
 
-def reserve(ep: str | Path, logical_asset_key: str, generation_context: dict | None = None, *, lease_seconds: int = DEFAULT_LEASE_SECONDS, legacy_consumed: int = 0) -> dict:
+def _reserve_impl(ep: str | Path, logical_asset_key: str, generation_context: dict | None = None, *, lease_seconds: int = DEFAULT_LEASE_SECONDS, legacy_consumed: int = 0) -> dict:
     """Atomically reserve the next hard-capped attempt and one active lease."""
     ep = Path(ep).resolve()
     key = str(logical_asset_key or "").strip()
@@ -233,6 +233,35 @@ def reserve(ep: str | Path, logical_asset_key: str, generation_context: dict | N
         raise
     finally:
         connection.close()
+
+
+def reserve(ep: str | Path, logical_asset_key: str, generation_context: dict | None = None, *,
+            lease_seconds: int = DEFAULT_LEASE_SECONDS, legacy_consumed: int = 0) -> dict:
+    """Reserve an image attempt, serializing Phase5A retirement with reserve.
+
+    Ordinary Episodes retain the database-only authority contract. A marked
+    Phase5A canary additionally shares its validation-epoch file lock with the
+    retirement operation, so no reserve can race past a retirement decision.
+    """
+    episode = Path(ep).resolve()
+    marker = episode / "meta" / "phase5a-canary.json"
+    if marker.is_file():
+        import phase5a_collaborative_canary
+        from runtime_atomic_store import FileLock
+
+        with FileLock(
+            phase5a_collaborative_canary.validation_epoch_lock_target(episode),
+            timeout=30, stale_seconds=3600,
+        ):
+            phase5a_collaborative_canary.assert_validation_epoch_dispatch_eligible(episode)
+            return _reserve_impl(
+                episode, logical_asset_key, generation_context,
+                lease_seconds=lease_seconds, legacy_consumed=legacy_consumed,
+            )
+    return _reserve_impl(
+        episode, logical_asset_key, generation_context,
+        lease_seconds=lease_seconds, legacy_consumed=legacy_consumed,
+    )
 
 
 def _locked_lease(connection, lease: dict, fencing_token: int) -> tuple[dict, dict]:
