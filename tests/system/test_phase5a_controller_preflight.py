@@ -229,3 +229,33 @@ def test_zero_exit_without_exact_completed_sentinel_fails_closed(monkeypatch, tm
     assert result["failure_class"] == "PROBE_RESULT_INVALID"
     assert saved["probe_result_valid"] is False
     assert saved["image_attempt_authority_called"] is False
+
+
+def test_controller_diagnostics_classify_local_websocket_426_without_raw_output():
+    failure, evidence = canary._controller_failure_diagnostics(
+        "failed to connect to websocket: HTTP error: 426 Upgrade Required "
+        "URL ws://127.0.0.1:10100/v1/responses",
+        1,
+        {"request_id": "req-safe-id", "durable_result_present": True},
+    )
+
+    assert failure == "CONTROLLER_PROTOCOL_FAILURE"
+    assert evidence == {
+        "protocol_failure_type": "TRANSPORT_WEBSOCKET_UPGRADE_REJECTED",
+        "http_status": 426,
+        "websocket_attempted": True,
+        "endpoint_class": "LOCAL_PROXY",
+        "runner_request_id": "req-safe-id",
+        "durable_result_present": True,
+    }
+
+
+def test_controller_diagnostics_do_not_classify_any_model_mention_as_unavailable():
+    failure, evidence = canary._controller_failure_diagnostics(
+        "model policy execution failed in scoped runtime", 1
+    )
+
+    assert failure == "CONTROLLER_EXECUTION_FAILED"
+    assert evidence["http_status"] is None
+    assert evidence["protocol_failure_type"] is None
+    assert evidence["endpoint_class"] == "UNKNOWN"

@@ -581,6 +581,14 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
     failure_class = "CONTROLLER_PROBE_FAILED"
     returncode: int | None = None
     error_detail = ""
+    failure_diagnostics: dict[str, Any] = {
+        "protocol_failure_type": None,
+        "http_status": None,
+        "websocket_attempted": False,
+        "endpoint_class": "UNKNOWN",
+        "runner_request_id": None,
+        "durable_result_present": False,
+    }
 
     try:
         errors = model_policy.validate_bound_policy(episode)
@@ -621,6 +629,12 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
         )
         returncode = int(rc)
         argv = list(receipt.get("codex_argv") or [])
+        runner_diagnostics = receipt.get("runner_diagnostics")
+        if isinstance(runner_diagnostics, dict):
+            failure_diagnostics["runner_request_id"] = runner_diagnostics.get("request_id")
+            failure_diagnostics["durable_result_present"] = bool(
+                runner_diagnostics.get("durable_result_present")
+            )
         if not ("-m" in argv and "gpt-6-luna" in argv and "-c" in argv
                 and 'model_reasoning_effort="high"' in argv):
             status = "FAILED"
@@ -637,13 +651,9 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
             status = "SUCCESS"
             failure_class = ""
         elif returncode != 0:
-            output_text = probe_stream.getvalue().lower()
-            if any(token in output_text for token in ("unsupported", "model unavailable", "unknown model", "http 400")):
-                failure_class = "MODEL_UNAVAILABLE"
-            elif any(token in output_text for token in ("unauthorized", "authentication", "http 401", "login required")):
-                failure_class = "AUTH_FAILED"
-            else:
-                failure_class = "CONTROLLER_EXECUTION_FAILED"
+            failure_class, failure_diagnostics = _controller_failure_diagnostics(
+                probe_stream.getvalue(), returncode, runner_diagnostics
+            )
             error_detail = "CODEX_EXEC_NONZERO_EXIT"
         else:
             failure_class = "PROBE_RESULT_INVALID"
@@ -652,17 +662,16 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
         failure_class = "RUNNER_TIMEOUT"
         error_detail = type(exc).__name__
     except Exception as exc:
-        detail = str(exc)
-        lowered = detail.lower()
-        if "exact_controller_binding_not_present_in_argv" in lowered:
+        # Exception text may contain endpoints or credentials. Use stable type
+        # and a narrow known contract code; never persist the message itself.
+        lowered = type(exc).__name__.lower()
+        if "exact_controller_binding_not_present_in_argv" in str(exc).lower():
             failure_class = "EXACT_CONTROLLER_BINDING_NOT_PRESENT_IN_ARGV"
             error_detail = "EXPLICIT_MODEL_OR_EFFORT_ARGV_MISSING"
-        elif "auth" in lowered or "login" in lowered or "401" in lowered:
+        elif "auth" in lowered or "401" in str(exc):
             failure_class = "AUTH_FAILED"
-        elif "runner" in lowered or "connect" in lowered or "unavailable" in lowered:
+        elif "runner" in lowered or "connectionerror" in lowered or "timeout" in lowered:
             failure_class = "RUNNER_UNAVAILABLE"
-        elif "unsupported" in lowered or "model" in lowered or "400" in lowered:
-            failure_class = "MODEL_UNAVAILABLE"
         else:
             failure_class = "CONTROLLER_PROBE_FAILED"
         # Do not copy exception messages or captured process output into the
@@ -697,6 +706,7 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
         "returncode": returncode,
         "failure_class": failure_class or None,
         "error_detail": error_detail or None,
+        **failure_diagnostics,
         "probe_result_valid": status == "SUCCESS",
         "image_generation_called": False,
         "image_attempt_authority_called": False,
@@ -719,6 +729,48 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
     return {"status": "PASS" if status == "SUCCESS" else "BLOCKED",
             "failure_class": failure_class or None,
             "reason": error_detail or None, "receipt": receipt}
+
+
+def _controller_failure_diagnostics(output: str, returncode: int | None,
+                                    runner: object = None) -> tuple[str, dict[str, Any]]:
+    """Classify controller transport failures without persisting raw output."""
+    text = str(output or "").lower()
+    status_match = re.search(r"\b(?:http(?:\s+error)?\s*[: ]\s*)?(4\d\d|5\d\d)\b", text)
+    http_status = int(status_match.group(1)) if status_match else None
+    websocket_attempted = any(token in text for token in (
+        "websocket", "web_socket", "responses_websocket", "responses websocket"
+    ))
+    if "127.0.0.1:10100" in text or "localhost:10100" in text:
+        endpoint_class = "LOCAL_PROXY"
+    elif "chatgpt.com/backend-api/codex" in text:
+        endpoint_class = "CHATGPT_SUBSCRIPTION"
+    elif "api.openai.com" in text:
+        endpoint_class = "DIRECT_API"
+    else:
+        endpoint_class = "UNKNOWN"
+    diagnostics: dict[str, Any] = {
+        "protocol_failure_type": None,
+        "http_status": http_status,
+        "websocket_attempted": websocket_attempted,
+        "endpoint_class": endpoint_class,
+        "runner_request_id": None,
+        "durable_result_present": False,
+    }
+    if isinstance(runner, dict):
+        diagnostics["runner_request_id"] = runner.get("request_id")
+        diagnostics["durable_result_present"] = bool(runner.get("durable_result_present"))
+    if http_status == 426 and websocket_attempted:
+        diagnostics["protocol_failure_type"] = "TRANSPORT_WEBSOCKET_UPGRADE_REJECTED"
+        return "CONTROLLER_PROTOCOL_FAILURE", diagnostics
+    if http_status == 401 or any(token in text for token in (
+        "unauthorized", "authentication failed", "login required"
+    )):
+        return "AUTH_FAILED", diagnostics
+    if http_status == 400 and any(token in text for token in (
+        "model unsupported", "model is not supported", "unknown model", "model unavailable"
+    )):
+        return "MODEL_UNAVAILABLE", diagnostics
+    return ("CONTROLLER_EXECUTION_FAILED" if returncode else "PROBE_RESULT_INVALID"), diagnostics
 
 
 def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900,

@@ -277,6 +277,7 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
     status="FAILED"
     cmd=[]
     execution_started=False
+    runner_diagnostics={}
     try:
         codex=resolve_codex(codex_raw)
         cmd=codex_exec_command(codex,binding,image_paths=image_paths,sandbox=sandbox)
@@ -286,16 +287,33 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         _model_event(ep,"WORKER_DISPATCH_COMMITTED",step,binding,worker_id=worker_id,
                      generation_key=call_id,status="committed",run_id=run_id,trace_id=trace_id,
                      logical_asset_key=logical_asset_key,wait_ms=0.0)
-        sink=output_handle or subprocess.DEVNULL
+        # ``subprocess.run`` in direct mode requires a real file descriptor for
+        # stdout; ``io.StringIO`` has no ``fileno`` and fails before Codex starts.
+        # Capture the exact controller preflight response through PIPE in both
+        # direct and bridged modes, then copy it into the caller's in-memory
+        # stream for sentinel validation. Other scoped work keeps its existing
+        # streaming/discard behavior.
+        capture_preflight_output = step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT"
+        sink = subprocess.PIPE if capture_preflight_output else (output_handle or subprocess.DEVNULL)
         execution_started=True
         cp=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
             stdout=sink,stderr=subprocess.STDOUT,timeout=timeout,check=False,
             task_type="scoped_step")
         rc=int(cp.returncode)
+        if capture_preflight_output:
+            captured = getattr(cp, "stdout", None)
+            if isinstance(captured, bytes):
+                captured = captured.decode("utf-8", "replace")
+            if output_handle is not None and captured:
+                output_handle.write(str(captured))
+                output_handle.flush()
+            runner_diagnostics=_safe_runner_diagnostics(getattr(cp,"remote",None))
         status="SUCCESS" if rc==0 else "FAILED"
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as exc:
         if not execution_started:
             raise
+        if step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT":
+            runner_diagnostics=_safe_runner_diagnostics(getattr(exc,"remote",None))
         rc=124
         status="TIMEOUT"
     except Exception:
@@ -322,6 +340,8 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         "codex_argv":cmd,
         "logical_asset_key":logical_asset_key,
     }
+    if step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT":
+        receipt["runner_diagnostics"]=runner_diagnostics
     if isinstance(receipt_fields, dict):
         receipt.update(receipt_fields)
     if persist_output_stream and output_handle is not None and hasattr(output_handle,"getvalue"):
@@ -336,6 +356,28 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         generation_key=call_id,duration_ms=duration_ms,status=status.lower(),run_id=run_id,
         trace_id=trace_id,call_id=call_id,logical_asset_key=logical_asset_key)
     return rc,receipt
+
+
+def _safe_runner_diagnostics(remote):
+    """Persist only non-secret runner metadata needed to explain scoped failures."""
+    if not isinstance(remote,dict):
+        return {}
+    request_id=str(remote.get("request_id") or "").strip() or None
+    durable_result_present=False
+    if request_id:
+        try:
+            durable_result_present=isinstance(codex_user_runner.read_task_result(request_id),dict)
+        except Exception:
+            durable_result_present=False
+    return {
+        "request_id":request_id,
+        "returncode":remote.get("returncode"),
+        "elapsed_seconds":remote.get("elapsed_seconds"),
+        "timed_out":bool(remote.get("timed_out",False)),
+        "task_type":str(remote.get("task_type") or "") or None,
+        "transport":str(remote.get("transport") or "") or None,
+        "durable_result_present":durable_result_present,
+    }
 
 
 def run_repair_prompt_task(ep, *, task_input, codex_raw=None, timeout=None):
