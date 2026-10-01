@@ -3,6 +3,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes" / "_system"
 if str(SYSTEM) not in sys.path:
@@ -77,6 +79,37 @@ def test_generated_original_item_remains_resumable_after_attempt_one():
     canary.validate_queued_attempt(item, state)
 
 
+def test_generated_resume_skips_generation_capability_preflight():
+    preflight = {
+        "queue_item_status": "generated",
+        "generation_key": "ga-existing-a1",
+        "attempt_index": 1,
+        "attempts_consumed": 1,
+        "active_attempt_index": None,
+    }
+    assert canary.requires_generation_capability_preflight(preflight) is False
+
+
+def test_queued_canary_still_requires_generation_capability_preflight():
+    preflight = {
+        "queue_item_status": "queued",
+        "attempts_consumed": 0,
+        "active_attempt_index": None,
+    }
+    assert canary.requires_generation_capability_preflight(preflight) is True
+
+
+def test_generated_resume_without_identity_fails_closed():
+    preflight = {
+        "queue_item_status": "generated",
+        "attempt_index": 1,
+        "attempts_consumed": 1,
+        "active_attempt_index": None,
+    }
+    with pytest.raises(canary.CanaryContractError, match="CANARY_GENERATED_RESUME_IDENTITY_INVALID"):
+        canary.requires_generation_capability_preflight(preflight)
+
+
 def test_model_execution_receipt_snapshot_detects_additions_and_changes(tmp_path):
     episode = tmp_path / "episode"
     receipts = episode / "meta/provider-receipts/model-executions"
@@ -107,6 +140,9 @@ def test_subscription_canary_claim_precedes_unknown_capability_preflight(monkeyp
         "logical_asset_key": "_external/test/frame-01",
         "policy_sha256": "a" * 64,
         "runtime_request_id": "req-test",
+        "queue_item_status": "queued",
+        "attempts_consumed": 0,
+        "active_attempt_index": None,
     }
     monkeypatch.setattr(canary, "_preflight", lambda *_args: preflight)
     monkeypatch.setattr(

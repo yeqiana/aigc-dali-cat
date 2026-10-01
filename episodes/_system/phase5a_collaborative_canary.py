@@ -699,8 +699,20 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     key = logical_asset_identity.frame_asset_key(ep, 1)
     asset_state = generation_attempt_authority.load_asset_state(ep, key)
     validate_generation_count(asset_state["attempts_consumed"])
-    # A completed queue item is safe to resume/reconcile. A queued item may be
-    # run only when no lease is active and the hard ceiling still has capacity.
+    # A completed queue item is safe to resume only when its persisted
+    # Generation identity is backed by the immutable Attempt Authority.
+    if item.get("status") == "generated":
+        generation_key = str(item.get("generation_key") or "")
+        attempt_index = int(item.get("attempt_index") or 0)
+        if not generation_key or attempt_index <= 0:
+            raise CanaryContractError("CANARY_GENERATED_ITEM_IDENTITY_MISSING")
+        attempt = generation_attempt_authority.load_attempt(ep, key, attempt_index)
+        if (not isinstance(attempt, Mapping)
+                or str(attempt.get("generation_key") or "") != generation_key
+                or str(attempt.get("status") or "").upper() != "SUCCEEDED"):
+            raise CanaryContractError("CANARY_GENERATED_ITEM_IDENTITY_AUTHORITY_MISMATCH")
+    # A queued item may be run only when no lease is active and the hard ceiling
+    # still has capacity.
     validate_queued_attempt(item, asset_state)
     return {
         "episode": ep,
@@ -732,6 +744,8 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
         "kind": str(item.get("kind") or ""),
         "scope": str(item.get("scope") or ""),
         "queue_item_status": item.get("status"),
+        "generation_key": item.get("generation_key"),
+        "attempt_index": int(item.get("attempt_index") or 0) or None,
         "queue_authority": production_queue_store.authority(ep),
     }
 
@@ -1063,6 +1077,27 @@ def _controller_failure_diagnostics(output: str, returncode: int | None,
     return ("CONTROLLER_EXECUTION_FAILED" if returncode else "PROBE_RESULT_INVALID"), diagnostics
 
 
+def requires_generation_capability_preflight(preflight: Mapping[str, Any]) -> bool:
+    """Return whether this invocation can still dispatch a real image.
+
+    Resume from a successfully generated artifact skips Payload/Controller
+    generation-capability probes because those probes cannot affect the already
+    committed artifact and only add latency/failure surface.
+    """
+    status = str(preflight.get("queue_item_status") or "")
+    if status == "queued":
+        return True
+    if status == "generated":
+        generation_key = str(preflight.get("generation_key") or "")
+        attempt_index = int(preflight.get("attempt_index") or 0)
+        consumed = int(preflight.get("attempts_consumed") or 0)
+        active = preflight.get("active_attempt_index")
+        if generation_key and attempt_index > 0 and consumed >= attempt_index and active is None:
+            return False
+        raise CanaryContractError("CANARY_GENERATED_RESUME_IDENTITY_INVALID")
+    raise CanaryContractError("CANARY_GENERATION_CAPABILITY_SCOPE_INVALID")
+
+
 def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900,
                            codex: str | None = None, dry_run: bool = False,
                            allow_validation_epoch: bool = False) -> dict[str, Any]:
@@ -1076,75 +1111,98 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
     import model_policy
     import image_payload_transport
     import codex_subscription_image
-    payload_binding = model_policy.resolve("image.payload", episode=preflight["episode"])
-    payload_route = image_payload_transport.selected_route(1)
-    if str(payload_route.get("provider") or "") == "codex_subscription":
-        # The UNKNOWN-capability readiness path is scoped to the already
-        # claimed Phase 5A replacement. Persist that single bounded claim
-        # before its live text-only preflight; this writes no image Attempt and
-        # does not authorize any dispatch by itself.
+    generation_preflight_required = requires_generation_capability_preflight(preflight)
+    if not generation_preflight_required:
         global_claim = claim_global_canary(
             preflight["episode"], canary_id,
             allow_validation_epoch=allow_validation_epoch)
-        payload_probe = codex_subscription_image.payload_capability_preflight(
-            model=str(payload_binding.get("model") or ""),
-            quality=str(payload_binding.get("quality") or ""),
-            codex_raw=codex,
-            phase5a_canary_id=canary_id,
-            phase5a_canary_context={k: v for k, v in preflight.items() if k != "episode"},
-        )
-        payload_probe = {**payload_route, **payload_probe,
-                         "provider": payload_probe.get("provider") or payload_route.get("provider")}
+        payload_route = {
+            "provider": "NOT_REQUIRED_EXISTING_GENERATION",
+            "reason": "existing successful Generation Attempt is already committed",
+        }
+        payload_probe = {
+            "status": "NOT_REQUIRED_EXISTING_GENERATION",
+            "image_generation_called": False,
+            "image_attempt_authority_called": False,
+            "generation_key": preflight.get("generation_key"),
+            "attempt_index": preflight.get("attempt_index"),
+        }
+        payload_status = "NOT_REQUIRED_EXISTING_GENERATION"
+        controller_probe = {
+            "status": "NOT_REQUIRED_EXISTING_GENERATION",
+            "generation_key": preflight.get("generation_key"),
+            "attempt_index": preflight.get("attempt_index"),
+        }
     else:
-        payload_probe = image_payload_transport.payload_capability_preflight(
-            model=str(payload_binding.get("model") or ""),
-            quality=str(payload_binding.get("quality") or ""),
-            codex_raw=codex,
-        )
-    payload_status = str(payload_probe.get("status") or "")
-    if (payload_status == "READY_FOR_REAL_CAPABILITY_PROOF"
-            and str(payload_probe.get("provider") or "") != "codex_subscription"):
-        payload_status = "BLOCKED"
-        payload_probe = {**payload_probe, "status": "BLOCKED",
-                         "failure_class": "PHASE5A_UNKNOWN_CAPABILITY_REQUIRES_CODEX_SUBSCRIPTION"}
-    if (payload_status != "PASS"
-            and not (payload_status == "READY_FOR_REAL_CAPABILITY_PROOF"
-                     and payload_probe.get("tool_capability_state") == "UNKNOWN"
-                     and payload_probe.get("session_start") == "PASS"
-                     and payload_probe.get("image_generation_called") is False
-                     and payload_probe.get("image_attempt_authority_called") is False
-                     and payload_probe.get("phase5a_scope", {}).get("canary_id") == canary_id)):
-        _telemetry(preflight["episode"], "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
-                   logical_asset_key=preflight["logical_asset_key"],
-                   model_policy_sha256=preflight["policy_sha256"],
-                   failure_class=payload_probe.get("failure_class"),
-                   provider=payload_probe.get("provider"), status="BLOCKED",
-                   step="EXACT_PAYLOAD_CAPABILITY_PREFLIGHT")
-        return {"status": "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
-                "failure_class": payload_probe.get("failure_class"),
-                "payload_preflight": payload_probe,
-                "image_attempt_reserve_called": False,
-                "image_scheduler_called": False,
-                "controller_preflight_called": False,
-                "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
-    controller_probe = exact_controller_capability_preflight(
-        preflight["episode"], codex=codex)
-    if controller_probe.get("status") != "PASS":
-        _telemetry(preflight["episode"], "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
-                   logical_asset_key=preflight["logical_asset_key"],
-                   model_policy_sha256=preflight["policy_sha256"],
-                   failure_class=controller_probe.get("failure_class"),
-                   status="BLOCKED", step="EXACT_CONTROLLER_CAPABILITY_PREFLIGHT")
-        return {"status": "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
-                "controller_preflight": controller_probe,
-                "payload_preflight": payload_probe,
-                "image_attempt_reserve_called": False,
-                "image_scheduler_called": False,
-                "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
-    if str(payload_route.get("provider") or "") != "codex_subscription":
-        global_claim = claim_global_canary(
-            preflight["episode"], canary_id,
-            allow_validation_epoch=allow_validation_epoch)
+        payload_binding = model_policy.resolve("image.payload", episode=preflight["episode"])
+        payload_route = image_payload_transport.selected_route(1)
+        if str(payload_route.get("provider") or "") == "codex_subscription":
+            # The UNKNOWN-capability readiness path is scoped to the already
+            # claimed Phase 5A replacement. Persist that single bounded claim
+            # before its live text-only preflight; this writes no image Attempt and
+            # does not authorize any dispatch by itself.
+            global_claim = claim_global_canary(
+                preflight["episode"], canary_id,
+                allow_validation_epoch=allow_validation_epoch)
+            payload_probe = codex_subscription_image.payload_capability_preflight(
+                model=str(payload_binding.get("model") or ""),
+                quality=str(payload_binding.get("quality") or ""),
+                codex_raw=codex,
+                phase5a_canary_id=canary_id,
+                phase5a_canary_context={k: v for k, v in preflight.items() if k != "episode"},
+            )
+            payload_probe = {**payload_route, **payload_probe,
+                             "provider": payload_probe.get("provider") or payload_route.get("provider")}
+        else:
+            payload_probe = image_payload_transport.payload_capability_preflight(
+                model=str(payload_binding.get("model") or ""),
+                quality=str(payload_binding.get("quality") or ""),
+                codex_raw=codex,
+            )
+        payload_status = str(payload_probe.get("status") or "")
+        if (payload_status == "READY_FOR_REAL_CAPABILITY_PROOF"
+                and str(payload_probe.get("provider") or "") != "codex_subscription"):
+            payload_status = "BLOCKED"
+            payload_probe = {**payload_probe, "status": "BLOCKED",
+                             "failure_class": "PHASE5A_UNKNOWN_CAPABILITY_REQUIRES_CODEX_SUBSCRIPTION"}
+        if (payload_status != "PASS"
+                and not (payload_status == "READY_FOR_REAL_CAPABILITY_PROOF"
+                         and payload_probe.get("tool_capability_state") == "UNKNOWN"
+                         and payload_probe.get("session_start") == "PASS"
+                         and payload_probe.get("image_generation_called") is False
+                         and payload_probe.get("image_attempt_authority_called") is False
+                         and payload_probe.get("phase5a_scope", {}).get("canary_id") == canary_id)):
+            _telemetry(preflight["episode"], "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
+                       logical_asset_key=preflight["logical_asset_key"],
+                       model_policy_sha256=preflight["policy_sha256"],
+                       failure_class=payload_probe.get("failure_class"),
+                       provider=payload_probe.get("provider"), status="BLOCKED",
+                       step="EXACT_PAYLOAD_CAPABILITY_PREFLIGHT")
+            return {"status": "CANARY_PAYLOAD_PREFLIGHT_BLOCKED",
+                    "failure_class": payload_probe.get("failure_class"),
+                    "payload_preflight": payload_probe,
+                    "image_attempt_reserve_called": False,
+                    "image_scheduler_called": False,
+                    "controller_preflight_called": False,
+                    "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
+        controller_probe = exact_controller_capability_preflight(
+            preflight["episode"], codex=codex)
+        if controller_probe.get("status") != "PASS":
+            _telemetry(preflight["episode"], "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
+                       logical_asset_key=preflight["logical_asset_key"],
+                       model_policy_sha256=preflight["policy_sha256"],
+                       failure_class=controller_probe.get("failure_class"),
+                       status="BLOCKED", step="EXACT_CONTROLLER_CAPABILITY_PREFLIGHT")
+            return {"status": "CANARY_CONTROLLER_PREFLIGHT_BLOCKED",
+                    "controller_preflight": controller_probe,
+                    "payload_preflight": payload_probe,
+                    "image_attempt_reserve_called": False,
+                    "image_scheduler_called": False,
+                    "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
+        if str(payload_route.get("provider") or "") != "codex_subscription":
+            global_claim = claim_global_canary(
+                preflight["episode"], canary_id,
+                allow_validation_epoch=allow_validation_epoch)
     import runtime_trace
     run_id = f"phase5a-{canary_id}"
     trace_id = runtime_trace.start_run(
