@@ -7,6 +7,7 @@ from pathlib import Path
 import uuid
 
 import logical_asset_identity
+import runtime_timeout_policy
 
 QUEUE_KEY = "review_work_items"
 ACTIVE = {"queued", "running"}
@@ -524,7 +525,7 @@ def _claim_next_lane_item(ep: Path, scheduler_core) -> dict | None:
 
         with FileLock(
             phase5a_collaborative_canary.validation_epoch_lock_target(ep),
-            timeout=30, stale_seconds=3600,
+            timeout=runtime_timeout_policy.seconds("authority_lock"), stale_seconds=3600,
         ):
             phase5a_collaborative_canary.assert_validation_epoch_review_dispatch_eligible(ep)
             with scheduler_core.queue_transaction(ep):

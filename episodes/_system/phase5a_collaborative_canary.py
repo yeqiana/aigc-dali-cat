@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 from types import MappingProxyType
 from typing import Any, Mapping
+import runtime_timeout_policy
 import subprocess
 import time
 import uuid
@@ -619,7 +620,11 @@ def retire_validation_epoch(ep: str | Path, canary_id: str, *,
     if retirement_reason not in _RETIREMENT_REASONS:
         raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REASON_INVALID")
     episode, _marker = validate_workspace(ep, canary_id)
-    with FileLock(validation_epoch_lock_target(episode), timeout=30, stale_seconds=3600):
+    with FileLock(
+        validation_epoch_lock_target(episode),
+        timeout=runtime_timeout_policy.seconds("authority_lock"),
+        stale_seconds=3600,
+    ):
         existing = _read_retirement(canary_id)
         if existing is not None:
             if existing.get("retirement_reason") != retirement_reason:
@@ -1459,13 +1464,14 @@ def requires_generation_capability_preflight(preflight: Mapping[str, Any]) -> bo
     raise CanaryContractError("CANARY_GENERATION_CAPABILITY_SCOPE_INVALID")
 
 
-def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900,
+def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int | None = None,
                            codex: str | None = None, dry_run: bool = False,
                            allow_validation_epoch: bool = False) -> dict[str, Any]:
     """Run/resume exactly one item through the existing Production Scheduler.
 
     The harness owns no Stage, Release, Attempt, Provider, or Review authority.
     """
+    timeout = runtime_timeout_policy.resolve("phase5a_canary_run", timeout)
     preflight = _preflight(Path(ep), canary_id)
     if dry_run:
         return {"status": "READY", **{k: v for k, v in preflight.items() if k != "episode"}}
@@ -1841,7 +1847,7 @@ def main() -> int:
     run = sub.add_parser("run", help="Run or safely resume one prepared Phase 5A canary asset")
     run.add_argument("episode_dir", type=Path)
     run.add_argument("--canary-id", required=True)
-    run.add_argument("--timeout", type=int, default=900)
+    run.add_argument("--timeout", type=int, default=None)
     run.add_argument("--codex")
     run.add_argument("--dry-run", action="store_true")
     run.add_argument("--allow-validation-epoch", action="store_true")

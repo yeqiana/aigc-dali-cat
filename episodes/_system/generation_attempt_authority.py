@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import logical_asset_identity
+import runtime_timeout_policy
 import storage_config
 from platform.repository.mysql.mysql_connection import MySqlConnection
 from platform.repository.mysql.schema_v2 import DATABASE_NAME
@@ -251,7 +252,7 @@ def reserve(ep: str | Path, logical_asset_key: str, generation_context: dict | N
 
         with FileLock(
             phase5a_collaborative_canary.validation_epoch_lock_target(episode),
-            timeout=30, stale_seconds=3600,
+            timeout=runtime_timeout_policy.seconds("authority_lock"), stale_seconds=3600,
         ):
             phase5a_collaborative_canary.assert_validation_epoch_dispatch_eligible(episode)
             return _reserve_impl(

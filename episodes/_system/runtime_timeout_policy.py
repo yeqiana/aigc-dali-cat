@@ -37,6 +37,8 @@ DEFAULT_SECONDS: dict[str, int] = {
     "release_semantic": 1800,       # recent5 / release critic semantic build
     "isolated_ml_probe": 30,        # sidecar interpreter/dependency resolution
     "isolated_ml_worker": 180,      # isolated local ML request response budget
+    "authority_lock": 30,            # short cross-process Authority/Queue file lock
+    "phase5a_canary_run": 900,       # one prepared Phase5A production-subpath run
 }
 REQUIRED_ROLES: tuple[str, ...] = tuple(DEFAULT_SECONDS)
 

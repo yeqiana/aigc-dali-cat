@@ -11,6 +11,7 @@ from pathlib import Path
 import logical_asset_identity
 import runtime_observability
 import runtime_status_snapshot
+import story_json
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -53,13 +54,8 @@ def _read_legacy_performance(ep: Path) -> dict:
 
 
 def _read_json(path: Path) -> dict:
-    if not path.is_file():
-        return {}
-    try:
-        value = json.loads(path.read_text(encoding="utf-8-sig"))
-        return value if isinstance(value, dict) else {}
-    except (OSError, ValueError, TypeError):
-        return {}
+    value = story_json.read_json(path, default={})
+    return value if isinstance(value, dict) else {}
 
 
 def _explicit_user_override(ep: Path, events: list[dict], *, source: str) -> tuple[bool | None, list[str]]:

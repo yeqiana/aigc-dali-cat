@@ -508,3 +508,5 @@ timeout_policy:
   release_semantic: 1800
   isolated_ml_probe: 30
   isolated_ml_worker: 180
+  authority_lock: 30
+  phase5a_canary_run: 900
