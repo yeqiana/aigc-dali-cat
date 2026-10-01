@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import argparse
+import base64
 import hashlib
 import io
 import json
@@ -563,6 +564,91 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     }
 
 
+
+def _controller_probe_event_calls_image_generation(value: object) -> bool:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if (str(key) in {"type", "tool", "tool_name", "name", "function"}
+                    and str(child).strip() in {"image_generation", "image_generation_call"}):
+                return True
+            if _controller_probe_event_calls_image_generation(child):
+                return True
+    elif isinstance(value, list):
+        return any(_controller_probe_event_calls_image_generation(child) for child in value)
+    return False
+
+
+def _controller_probe_facts(raw: str) -> dict[str, Any]:
+    """Parse only protocol facts needed to adopt a completed cleanup timeout."""
+    import json as _json
+    turn_completed = False
+    image_generation_call_count = 0
+    malformed_jsonl = False
+    diagnostic_noise_line_count = 0
+    for line in str(raw or "").splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            row = _json.loads(stripped)
+        except (TypeError, ValueError):
+            if stripped.startswith(("{", "[")):
+                malformed_jsonl = True
+            else:
+                diagnostic_noise_line_count += 1
+            continue
+        if not isinstance(row, dict):
+            continue
+        if _controller_probe_event_calls_image_generation(row):
+            image_generation_call_count += 1
+        if row.get("type") == "turn.completed":
+            turn_completed = True
+    return {
+        "turn_completed": turn_completed,
+        "image_generation_call_count": image_generation_call_count,
+        "malformed_jsonl": malformed_jsonl,
+        "diagnostic_noise_line_count": diagnostic_noise_line_count,
+    }
+
+
+def _recover_controller_cleanup_timeout(runner_diagnostics: dict[str, Any],
+                                        codex_critic_runner: Any,
+                                        codex_user_runner: Any) -> dict[str, Any]:
+    request_id = str((runner_diagnostics or {}).get("request_id") or "").strip()
+    if not request_id or not (runner_diagnostics or {}).get("durable_result_present"):
+        return {"adopted": False, "reason": "DURABLE_RESULT_UNAVAILABLE"}
+    try:
+        result = codex_user_runner.read_task_result(request_id)
+    except Exception:
+        return {"adopted": False, "reason": "DURABLE_RESULT_READ_FAILED"}
+    if not isinstance(result, dict):
+        return {"adopted": False, "reason": "DURABLE_RESULT_INVALID"}
+    encoded = str(result.get("output_base64") or "")
+    if not encoded:
+        return {"adopted": False, "reason": "DURABLE_OUTPUT_MISSING"}
+    try:
+        raw = base64.b64decode(encoded, validate=True).decode("utf-8", "replace")
+    except Exception:
+        return {"adopted": False, "reason": "DURABLE_OUTPUT_INVALID"}
+    facts = _controller_probe_facts(raw)
+    recovered = codex_critic_runner.recover_completed_agent_json(raw)
+    adopted = bool(
+        recovered == {"capability_probe": "PASS"}
+        and facts["turn_completed"]
+        and facts["image_generation_call_count"] == 0
+        and not facts["malformed_jsonl"]
+    )
+    return {
+        "adopted": adopted,
+        "reason": "PASS_WITH_CLEANUP_TIMEOUT" if adopted else "DURABLE_PROBE_INVALID",
+        "turn_completed": facts["turn_completed"],
+        "image_generation_call_count": facts["image_generation_call_count"],
+        "malformed_jsonl": facts["malformed_jsonl"],
+        "diagnostic_noise_line_count": facts["diagnostic_noise_line_count"],
+        "request_id": request_id,
+    }
+
+
 def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None = None,
                                           timeout: int | None = None) -> dict[str, Any]:
     """Execute a tiny exact-model text task before the image Scheduler can run.
@@ -655,13 +741,33 @@ def exact_controller_capability_preflight(ep: str | Path, *, codex: str | None =
             returncode = returncode or 1
             raise RuntimeError(failure_class)
         # A zero process exit is insufficient: require Codex's completed
-        # assistant result and the exact structured sentinel. Never persist raw
-        # stdout because runner/provider output is not receipt data.
+        # assistant result and the exact structured sentinel. A runner cleanup
+        # timeout may be adopted only from its durable result when the turn
+        # already completed, the sentinel is exact, and no image tool ran.
         result_object = (codex_critic_runner.recover_completed_agent_json(
             probe_stream.getvalue()) if returncode == 0 else None)
+        cleanup_recovery = None
+        if returncode == 124:
+            cleanup_recovery = _recover_controller_cleanup_timeout(
+                runner_diagnostics, codex_critic_runner, codex_user_runner
+            )
         if returncode == 0 and result_object == {"capability_probe": "PASS"}:
             status = "SUCCESS"
             failure_class = ""
+        elif returncode == 124 and cleanup_recovery and cleanup_recovery.get("adopted"):
+            status = "SUCCESS"
+            failure_class = ""
+            error_detail = ""
+            failure_diagnostics = {
+                **failure_diagnostics,
+                "runner_request_id": cleanup_recovery.get("request_id"),
+                "durable_result_present": True,
+                "cleanup_timeout_recovered": True,
+                "cleanup_timeout_recovery": "PASS_WITH_CLEANUP_TIMEOUT",
+                "turn_completed": cleanup_recovery.get("turn_completed"),
+                "image_generation_call_count": cleanup_recovery.get("image_generation_call_count"),
+                "diagnostic_noise_line_count": cleanup_recovery.get("diagnostic_noise_line_count"),
+            }
         elif returncode != 0:
             failure_class, failure_diagnostics = _controller_failure_diagnostics(
                 probe_stream.getvalue(), returncode, runner_diagnostics

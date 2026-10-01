@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -15,6 +17,7 @@ import model_policy  # noqa: E402
 import runtime_observability  # noqa: E402
 import scoped_codex_worker  # noqa: E402
 import image_payload_transport  # noqa: E402
+import codex_subscription_image  # noqa: E402
 
 
 def test_exact_probe_uses_regular_scoped_text_route_and_does_not_enable_image_tool(monkeypatch, tmp_path):
@@ -86,7 +89,10 @@ def test_unsupported_controller_blocks_before_global_claim_scheduler_or_attempt(
         "episode": episode, "logical_asset_key": "canary/frame-01",
         "runtime_request_id": "request-1", "policy_sha256": "a" * 64,
     })
-    monkeypatch.setattr(image_payload_transport, "payload_capability_preflight", lambda **_k: {
+    monkeypatch.setattr(image_payload_transport, "selected_route", lambda *_a, **_k: {
+        "provider": "codex_subscription",
+    })
+    monkeypatch.setattr(codex_subscription_image, "payload_capability_preflight", lambda **_k: {
         "status": "PASS", "provider": "codex_subscription",
         "transport_model": "gpt-5.6-sol", "transport_effort": "low",
     })
@@ -111,7 +117,7 @@ def test_unsupported_controller_blocks_before_global_claim_scheduler_or_attempt(
     assert result["status"] == "CANARY_CONTROLLER_PREFLIGHT_BLOCKED"
     assert result["image_attempt_reserve_called"] is False
     assert result["image_scheduler_called"] is False
-    assert calls == []
+    assert calls == ["claim"]
 
 
 def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatch, tmp_path):
@@ -126,7 +132,10 @@ def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatc
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
                         ({"model": "gpt-image-2.5-flare", "quality": "high"}
                          if role == "image.payload" else original_resolve(role, **kwargs)))
-    monkeypatch.setattr(image_payload_transport, "payload_capability_preflight", lambda **_k: {
+    monkeypatch.setattr(image_payload_transport, "selected_route", lambda *_a, **_k: {
+        "provider": "codex_subscription",
+    })
+    monkeypatch.setattr(codex_subscription_image, "payload_capability_preflight", lambda **_k: {
         "status": "BLOCKED", "failure_class": "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE",
         "provider": "codex_subscription", "image_attempt_authority_called": False,
     })
@@ -146,7 +155,7 @@ def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatc
     assert result["image_attempt_reserve_called"] is False
     assert result["image_scheduler_called"] is False
     assert result["controller_preflight_called"] is False
-    assert calls == []
+    assert calls == ["claim"]
 
 
 def test_probe_nonzero_result_is_blocked_and_records_exact_model_binding(monkeypatch, tmp_path):
@@ -229,6 +238,56 @@ def test_zero_exit_without_exact_completed_sentinel_fails_closed(monkeypatch, tm
     assert result["failure_class"] == "PROBE_RESULT_INVALID"
     assert saved["probe_result_valid"] is False
     assert saved["image_attempt_authority_called"] is False
+
+
+
+def test_controller_cleanup_timeout_adopts_exact_durable_completion(monkeypatch):
+    raw = (
+        '2026-10-01 ERROR failed to load skill: missing YAML frontmatter\n'
+        '{"type":"item.completed","item":{"type":"agent_message",'
+        '"text":"{\\"capability_probe\\":\\"PASS\\"}"}}\n'
+        '{"type":"turn.completed","usage":{}}\n'
+    )
+    encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
+    monkeypatch.setattr(codex_user_runner, "read_task_result",
+                        lambda _rid: {"output_base64": encoded, "returncode": 124})
+    import codex_critic_runner
+    result = canary._recover_controller_cleanup_timeout(
+        {"request_id": "req-cleanup", "durable_result_present": True},
+        codex_critic_runner, codex_user_runner,
+    )
+    assert result["adopted"] is True
+    assert result["turn_completed"] is True
+    assert result["image_generation_call_count"] == 0
+
+
+def test_controller_cleanup_timeout_rejects_image_generation_event(monkeypatch):
+    raw = (
+        '{"type":"item.completed","item":{"type":"tool_call","name":"image_generation"}}\n'
+        '{"type":"item.completed","item":{"type":"agent_message",'
+        '"text":"{\\"capability_probe\\":\\"PASS\\"}"}}\n'
+        '{"type":"turn.completed","usage":{}}\n'
+    )
+    encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
+    monkeypatch.setattr(codex_user_runner, "read_task_result",
+                        lambda _rid: {"output_base64": encoded, "returncode": 124})
+    import codex_critic_runner
+    result = canary._recover_controller_cleanup_timeout(
+        {"request_id": "req-tool", "durable_result_present": True},
+        codex_critic_runner, codex_user_runner,
+    )
+    assert result["adopted"] is False
+    assert result["image_generation_call_count"] == 1
+
+
+def test_controller_cleanup_timeout_requires_durable_result(monkeypatch):
+    import codex_critic_runner
+    result = canary._recover_controller_cleanup_timeout(
+        {"request_id": "req-missing", "durable_result_present": False},
+        codex_critic_runner, codex_user_runner,
+    )
+    assert result["adopted"] is False
+    assert result["reason"] == "DURABLE_RESULT_UNAVAILABLE"
 
 
 def test_controller_diagnostics_classify_local_websocket_426_without_raw_output():
