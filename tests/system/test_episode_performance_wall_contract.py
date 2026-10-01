@@ -114,14 +114,15 @@ def test_execution_sessions_split_active_host_user_and_idle_wall():
     assert duration["runtime_active_seconds"] == 15.0
     assert duration["host_wait_seconds"] == 15.0
     assert duration["user_wait_seconds"] == 5.0
-    assert duration["primary_runtime_metric"] == "latest_session_active_seconds"
+    assert duration["primary_runtime_metric"] == "runtime_active_seconds"
+    assert duration["latest_session_metric_role"] == "diagnostic_only"
     assert duration["latest_session_active_seconds"] == 15.0
     assert duration["aggregate_scope"] == "all_execution_sessions_interval_union"
     assert duration["stage_wall_includes_wait"] is True
     assert duration["external_host_execution_seconds"] is None
 
 
-def test_new_execution_session_closes_previous_wait_and_latest_slo_ignores_history():
+def test_new_execution_session_closes_previous_wait_and_slo_keeps_episode_history():
     tests_root = ROOT / "episodes/_tests"
     tests_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="perf-session-", dir=tests_root) as raw:
@@ -147,7 +148,38 @@ def test_new_execution_session_closes_previous_wait_and_latest_slo_ignores_histo
         assert duration["runtime_active_seconds"] == 30.0
         assert duration["latest_session_active_seconds"] == 20.0
         assert duration["host_wait_seconds"] == 90.0
-        assert data["summary"]["performance_slo"]["active_wall_seconds"] == 20.0
+        assert data["summary"]["performance_slo"]["active_wall_seconds"] == 30.0
+        assert execution["active_wall_seconds"] == 30.0
+        assert execution["active_wall_metric"] == "all_execution_sessions_active_interval_union"
+
+
+def test_resume_sessions_use_interval_union_not_session_sum_for_active_clock():
+    data = {
+        "started_at": _ts(0), "updated_at": _ts(30), "finalized_at": None,
+        "stages": {}, "named_spans": {}, "image_attempts": [], "summary": {},
+        "execution_sessions": [
+            {
+                "session_id": "old", "source": "test", "started_at": _ts(0),
+                "ended_at": _ts(20), "status": "HANDOFF_TO_NEXT_SESSION",
+                "states": [
+                    {"state": "ACTIVE", "started_at": _ts(0), "ended_at": _ts(20)},
+                ],
+            },
+            {
+                "session_id": "resume", "source": "test", "started_at": _ts(15),
+                "ended_at": _ts(30), "status": "COMPLETE",
+                "states": [
+                    {"state": "ACTIVE", "started_at": _ts(15), "ended_at": _ts(30)},
+                ],
+            },
+        ],
+    }
+    perf._refresh_summary(data)
+    execution = data["summary"]["execution_wall"]
+    assert execution["latest"]["active_seconds"] == 15.0
+    assert execution["aggregate"]["active_seconds"] == 30.0
+    assert execution["active_wall_seconds"] == 30.0
+    assert data["summary"]["performance_slo"]["active_wall_seconds"] == 30.0
 
 
 def test_execution_result_classification_keeps_waits_out_of_active_time():

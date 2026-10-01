@@ -98,3 +98,20 @@ def test_runtime_status_snapshot_reads_runner_action_and_queue_from_boundaries(m
 
     assert result["execution_status"] == "RUNNING"
     assert result["image_progress"]["queued_frames"] == []
+
+
+def test_runtime_fast_path_slo_uses_episode_aggregate_clock(tmp_path, monkeypatch):
+    monkeypatch.setattr(runtime_fast_path.episode_performance, "load",
+                        lambda *_a, **_k: {"execution_sessions": [{"session_id": "x"}]})
+    monkeypatch.setattr(runtime_fast_path.episode_performance, "episode_summary",
+                        lambda *_a, **_k: {
+                            "performance_slo": {
+                                "health": "GREEN",
+                                "active_wall_seconds": 33.0,
+                                "green_max_seconds": 5400,
+                                "yellow_max_seconds": 7200,
+                            }
+                        })
+    row = runtime_fast_path.slo(tmp_path)
+    assert row["active_wall_seconds"] == 33.0
+    assert row["metric"] == "all_execution_sessions_active_interval_union"

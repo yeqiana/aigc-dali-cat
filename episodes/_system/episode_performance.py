@@ -481,7 +481,10 @@ def _execution_summary(d):
     latest=session_summaries[-1] if session_summaries else None
     total={state.lower()+"_seconds":_interval_union_seconds(aggregate[state]) for state in sorted(EXECUTION_STATES)}
     return {"session_count":len(sessions),"latest":latest,"aggregate":total,
-            "active_wall_seconds":None if latest is None else latest["active_seconds"]}
+            # Production performance clock is Episode-scoped, not process/session-scoped.
+            # Resume/restart must never reset the primary active-wall measurement.
+            "active_wall_seconds":None if not sessions else total.get("active_seconds"),
+            "active_wall_metric":"all_execution_sessions_active_interval_union"}
 
 def _overlap_union_seconds(intervals, state_intervals):
     intersections=[]
@@ -592,12 +595,13 @@ def _refresh_summary(d):
       "latest_session_host_wait_seconds":latest_execution.get("host_wait_seconds"),
       "latest_session_user_wait_seconds":latest_execution.get("user_wait_seconds"),
       "latest_session_idle_seconds":latest_execution.get("idle_seconds"),
-      "primary_runtime_metric":"latest_session_active_seconds",
+      "primary_runtime_metric":"runtime_active_seconds",
       "aggregate_scope":"all_execution_sessions_interval_union",
+      "latest_session_metric_role":"diagnostic_only",
       "stage_wall_includes_wait":True,
       "external_host_execution_seconds":None,
       "external_host_execution_policy":"measure only explicit host start/complete evidence; never infer execution from HOST_WAIT",
-      "note":"episode aggregate covers all execution sessions with interval-union de-duplication; current efficiency/SLO uses the latest session active wall. stage_wall may include HOST_WAIT and is not production execution time.",
+      "note":"episode performance/SLO uses ACTIVE interval-union across all execution sessions so Resume/Restart cannot reset the clock. latest_session_* fields are diagnostics only. stage_wall may include HOST_WAIT and is not production execution time.",
     }
     active_wall=execution_wall.get("active_wall_seconds")
     if not isinstance(active_wall,(int,float)): active_wall=((d.get("run_wall") or {}).get("active_wall_seconds"))

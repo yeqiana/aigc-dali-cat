@@ -10,12 +10,26 @@ import hot_state_bridge
 ROOT=Path(__file__).resolve().parents[2]
 REL=Path("meta/runtime/fast-path-state.json")
 def slo(ep):
-    ep=Path(ep).resolve();d=episode_performance.load(ep,False)
+    ep=Path(ep).resolve()
+    d=episode_performance.load(ep,False)
     if not d:return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
-    active=((d.get("run_wall") or {}).get("active_wall_seconds"));active=active if isinstance(active,(int,float)) else d.get("total_wall_seconds")
-    if not isinstance(active,(int,float)):return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
-    health="GREEN" if active<=5400 else ("YELLOW" if active<=7200 else "RED")
-    return {"health":health,"active_wall_seconds":round(float(active),3),"green_max_seconds":5400,"yellow_max_seconds":7200,"gate":False}
+    summary=episode_performance.episode_summary(ep)
+    slo_row=summary.get("performance_slo") if isinstance(summary,dict) else None
+    if not isinstance(slo_row,dict):
+        return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
+    active=slo_row.get("active_wall_seconds")
+    if not isinstance(active,(int,float)):
+        return {"health":"UNKNOWN","active_wall_seconds":None,"gate":False}
+    return {
+        "health":slo_row.get("health") or (
+            "GREEN" if active<=5400 else ("YELLOW" if active<=7200 else "RED")
+        ),
+        "active_wall_seconds":round(float(active),3),
+        "green_max_seconds":int(slo_row.get("green_max_seconds") or 5400),
+        "yellow_max_seconds":int(slo_row.get("yellow_max_seconds") or 7200),
+        "gate":False,
+        "metric":"all_execution_sessions_active_interval_union",
+    }
 def read_state(ep):
     ep=Path(ep).resolve();hot=hot_state_bridge.read(ep,"FAST_PATH")
     if hot.get("redis_read") and isinstance(hot.get("value"),dict):return hot["value"]
