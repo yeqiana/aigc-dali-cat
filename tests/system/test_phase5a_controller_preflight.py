@@ -14,7 +14,7 @@ import codex_user_runner  # noqa: E402
 import model_policy  # noqa: E402
 import runtime_observability  # noqa: E402
 import scoped_codex_worker  # noqa: E402
-import openai_images_provider  # noqa: E402
+import image_payload_transport  # noqa: E402
 
 
 def test_exact_probe_uses_regular_scoped_text_route_and_does_not_enable_image_tool(monkeypatch, tmp_path):
@@ -86,8 +86,9 @@ def test_unsupported_controller_blocks_before_global_claim_scheduler_or_attempt(
         "episode": episode, "logical_asset_key": "canary/frame-01",
         "runtime_request_id": "request-1", "policy_sha256": "a" * 64,
     })
-    monkeypatch.setattr(openai_images_provider, "payload_capability_preflight", lambda **_k: {
-        "status": "PASS", "provider": "openai_images_api"
+    monkeypatch.setattr(image_payload_transport, "payload_capability_preflight", lambda **_k: {
+        "status": "PASS", "provider": "codex_subscription",
+        "transport_model": "gpt-5.6-sol", "transport_effort": "low",
     })
     original_resolve = model_policy.resolve
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
@@ -125,9 +126,9 @@ def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatc
     monkeypatch.setattr(model_policy, "resolve", lambda role, **kwargs:
                         ({"model": "gpt-image-2.5-flare", "quality": "high"}
                          if role == "image.payload" else original_resolve(role, **kwargs)))
-    monkeypatch.setattr(openai_images_provider, "payload_capability_preflight", lambda **_k: {
-        "status": "BLOCKED", "failure_class": "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER",
-        "provider": "openai_images_api", "credential_available": False,
+    monkeypatch.setattr(image_payload_transport, "payload_capability_preflight", lambda **_k: {
+        "status": "BLOCKED", "failure_class": "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE",
+        "provider": "codex_subscription", "image_attempt_authority_called": False,
     })
     monkeypatch.setattr(canary, "exact_controller_capability_preflight",
                         lambda *_a, **_k: calls.append("controller"))
@@ -141,7 +142,7 @@ def test_payload_provider_missing_blocks_before_controller_or_attempt(monkeypatc
     result = canary.run_production_subpath(episode, canary_id="test-canary")
 
     assert result["status"] == "CANARY_PAYLOAD_PREFLIGHT_BLOCKED"
-    assert result["failure_class"] == "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER"
+    assert result["failure_class"] == "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE"
     assert result["image_attempt_reserve_called"] is False
     assert result["image_scheduler_called"] is False
     assert result["controller_preflight_called"] is False

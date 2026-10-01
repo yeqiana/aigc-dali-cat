@@ -115,8 +115,12 @@ class GenerationAttemptContextTests(TestCase):
                     "controller_call_id": "controller-call",
                 }
             )),
-            patch.object(image_worker_pool.openai_images_provider, "payload_capability_preflight", side_effect=lambda **_k: (
-                call_order.append("payload_preflight") or {"status": "PASS"}
+            patch.object(image_worker_pool.image_payload_transport, "payload_capability_preflight", side_effect=lambda **_k: (
+                call_order.append("payload_preflight") or {
+                    "status": "PASS", "provider": "codex_subscription",
+                    "runner": "codex_user_runner", "transport_model": "gpt-5.6-sol",
+                    "transport_effort": "low",
+                }
             )),
             patch.object(image_worker_pool.raw_candidate_budget, "kind_for_queue_item", return_value="original"),
             patch.object(image_worker_pool.raw_candidate_budget, "semantic_key_for_queue_item", return_value=None),
@@ -137,8 +141,10 @@ class GenerationAttemptContextTests(TestCase):
         self.assertEqual(captured["payload_quality"], "high")
         self.assertEqual(captured["model_policy_version"], "lean-2026-09-30-v1")
         self.assertEqual(captured["model_policy_sha256"], policy_sha)
-        self.assertEqual(captured["provider_candidate"], "openai_images_api")
-        self.assertEqual(captured["runner_candidate"], "python-openai-images-http")
+        self.assertEqual(captured["provider_candidate"], "codex_subscription")
+        self.assertEqual(captured["runner_candidate"], "codex_user_runner")
+        self.assertEqual(captured["transport_model"], "gpt-5.6-sol")
+        self.assertEqual(captured["transport_effort"], "low")
 
 
 if __name__ == "__main__":

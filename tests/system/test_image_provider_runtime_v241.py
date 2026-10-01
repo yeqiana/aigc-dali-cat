@@ -26,11 +26,11 @@ class ProviderRuntimeTests(unittest.TestCase):
         self.assertFalse(row["native_multi_image"])
         self.assertEqual(row["max_images"],1)
 
-    def test_key_routes_openai(self):
+    def test_disabled_api_route_ignores_present_key(self):
         with patch.dict(os.environ,{"OPENAI_API_KEY":"test-not-a-real-key","STORY_OS_IMAGE_RUNTIME":"AUTO"},clear=False):
             row=image_provider_runtime.select_batch_provider(5)
-        self.assertEqual(row["provider"],"openai_images_api")
-        self.assertTrue(row["native_multi_image"])
+        self.assertNotEqual(row["provider"],"openai_images_api")
+        self.assertFalse(image_provider_runtime.capability_snapshot()["openai_images_api"]["configured"])
 
     def test_api_key_cannot_override_locked_codex(self):
         with patch.dict(os.environ,{"OPENAI_API_KEY":"test-only","STORY_OS_IMAGE_RUNTIME":"CODEX"}):
