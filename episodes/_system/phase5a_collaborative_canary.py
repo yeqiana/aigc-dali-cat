@@ -68,6 +68,7 @@ _FORBIDDEN_ACTIONS = frozenset({
 WORKSPACE_REL = Path(".codex_tmp/phase5a")
 MARKER_REL = Path("meta/phase5a-canary.json")
 GLOBAL_CLAIM_REL = WORKSPACE_REL / ".phase5a-collaborative-canary-claim.json"
+REPLACEMENT_CLAIM_REL = WORKSPACE_REL / ".phase5a-collaborative-canary-replacement.json"
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -235,18 +236,54 @@ def validate_generation_count(count: int) -> int:
     return count
 
 
-def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
-    """Atomically reserve the single Phase 5A real-canary identity.
+def validate_replacement_attempt_state(asset_state: Mapping[str, Any],
+                                       attempt: Mapping[str, Any] | None) -> None:
+    """Allow exactly one new canary identity after a terminal unknown first run."""
+    if int((asset_state or {}).get("attempts_consumed") or 0) != 1:
+        raise CanaryContractError("CANARY_REPLACEMENT_SOURCE_ATTEMPT_COUNT_INVALID")
+    if (asset_state or {}).get("active_attempt_index") is not None:
+        raise CanaryContractError("CANARY_REPLACEMENT_SOURCE_ATTEMPT_ACTIVE")
+    if not isinstance(attempt, Mapping) or int(attempt.get("attempt_index") or 0) != 1:
+        raise CanaryContractError("CANARY_REPLACEMENT_SOURCE_ATTEMPT_MISSING")
+    if str(attempt.get("status") or "") != "OUTCOME_UNKNOWN":
+        raise CanaryContractError("CANARY_REPLACEMENT_SOURCE_NOT_OUTCOME_UNKNOWN")
+    if str(attempt.get("result_ref") or "").strip():
+        raise CanaryContractError("CANARY_REPLACEMENT_SOURCE_HAS_RESULT")
 
-    The claim is deliberately persistent: after a crash, only the same marked
-    workspace may resume. A second id must not get another real Provider budget.
+
+def _replacement_source_evidence(previous_episode: Path) -> dict[str, Any]:
+    import generation_attempt_authority
+    import logical_asset_identity
+
+    key = logical_asset_identity.frame_asset_key(previous_episode, 1)
+    state = generation_attempt_authority.load_asset_state(previous_episode, key)
+    attempt = generation_attempt_authority.load_attempt(previous_episode, key, 1)
+    validate_replacement_attempt_state(state, attempt)
+    return {
+        "logical_asset_key": key,
+        "generation_key": (attempt or {}).get("generation_key"),
+        "status": (attempt or {}).get("status"),
+        "failure_class": (attempt or {}).get("failure_class"),
+    }
+
+
+def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
+    """Reserve the first canary or one explicit replacement after OUTCOME_UNKNOWN.
+
+    The original claim is immutable. A replacement is recorded in a second
+    durable claim file and is allowed only when Attempt Authority proves that
+    the first canary consumed Attempt1, has no active lease, ended
+    OUTCOME_UNKNOWN, and produced no result artifact. A second replacement is
+    always rejected.
     """
     episode, _marker = validate_workspace(ep, canary_id)
     claim_path = (ROOT / GLOBAL_CLAIM_REL).resolve()
-    try:
-        claim_path.relative_to(ROOT.resolve())
-    except ValueError as exc:
-        raise CanaryContractError("CANARY_GLOBAL_CLAIM_PATH_ESCAPE") from exc
+    replacement_path = (ROOT / REPLACEMENT_CLAIM_REL).resolve()
+    for path in (claim_path, replacement_path):
+        try:
+            path.relative_to(ROOT.resolve())
+        except ValueError as exc:
+            raise CanaryContractError("CANARY_GLOBAL_CLAIM_PATH_ESCAPE") from exc
     claim_path.parent.mkdir(parents=True, exist_ok=True)
     expected = {
         "canary_type": CANARY_TYPE,
@@ -260,9 +297,52 @@ def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
             current = json.loads(claim_path.read_text(encoding="utf-8-sig"))
         except (OSError, ValueError) as exc:
             raise CanaryContractError("CANARY_GLOBAL_CLAIM_INVALID_FAIL_CLOSED") from exc
-        if current != expected:
-            raise CanaryContractError("CANARY_GLOBAL_SINGLETON_ALREADY_CLAIMED")
-        return {**expected, "resumed": True}
+        if current == expected:
+            return {**expected, "resumed": True, "replacement": False}
+
+        if replacement_path.exists():
+            try:
+                replacement = json.loads(replacement_path.read_text(encoding="utf-8-sig"))
+            except (OSError, ValueError) as exc:
+                raise CanaryContractError("CANARY_REPLACEMENT_CLAIM_INVALID_FAIL_CLOSED") from exc
+            if (replacement.get("canary_type") == CANARY_TYPE
+                    and replacement.get("canary_id") == expected["canary_id"]
+                    and replacement.get("workspace") == expected["workspace"]
+                    and replacement.get("previous_canary_id") == current.get("canary_id")
+                    and replacement.get("previous_workspace") == current.get("workspace")):
+                return {**expected, "resumed": True, "replacement": True,
+                        "previous_canary_id": current.get("canary_id")}
+            raise CanaryContractError("CANARY_GLOBAL_REPLACEMENT_ALREADY_CLAIMED")
+
+        previous_workspace = Path(str(current.get("workspace") or "")).resolve()
+        previous_id = str(current.get("canary_id") or "")
+        validate_workspace(previous_workspace, previous_id)
+        evidence = _replacement_source_evidence(previous_workspace)
+        replacement = {
+            "canary_type": CANARY_TYPE,
+            "canary_id": expected["canary_id"],
+            "workspace": expected["workspace"],
+            "previous_canary_id": previous_id,
+            "previous_workspace": str(previous_workspace),
+            "reason": "PRIOR_CANARY_OUTCOME_UNKNOWN_NO_ARTIFACT",
+            "previous_generation_key": evidence.get("generation_key"),
+            "previous_failure_class": evidence.get("failure_class"),
+        }
+        try:
+            replacement_descriptor = os.open(
+                str(replacement_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        except FileExistsError:
+            raise CanaryContractError("CANARY_GLOBAL_REPLACEMENT_ALREADY_CLAIMED")
+        try:
+            with os.fdopen(replacement_descriptor, "w", encoding="utf-8", newline="\n") as stream:
+                json.dump(replacement, stream, ensure_ascii=False, indent=2)
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+        except Exception:
+            raise CanaryContractError("CANARY_REPLACEMENT_CLAIM_WRITE_FAILED_FAIL_CLOSED")
+        return {**expected, "resumed": False, "replacement": True,
+                "previous_canary_id": previous_id}
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
             json.dump(expected, stream, ensure_ascii=False, indent=2)
@@ -272,7 +352,7 @@ def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
     except Exception:
         # Keep a partial claim as a fail-closed marker; never silently free a slot.
         raise CanaryContractError("CANARY_GLOBAL_CLAIM_WRITE_FAILED_FAIL_CLOSED")
-    return {**expected, "resumed": False}
+    return {**expected, "resumed": False, "replacement": False}
 
 
 def validate_queued_attempt(item: Mapping[str, Any], asset_state: Mapping[str, Any]) -> None:

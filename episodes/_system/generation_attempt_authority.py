@@ -452,6 +452,35 @@ def load_asset_state(ep: str | Path, logical_asset_key: str) -> dict:
         connection.close()
 
 
+def load_attempt(ep: str | Path, logical_asset_key: str, attempt_index: int) -> dict | None:
+    connection = _connect()
+    try:
+        row = connection.query_one(
+            "SELECT * FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s "
+            "AND ATTEMPT_INDEX=%s",
+            (_episode_id(ep), str(logical_asset_key), int(attempt_index)),
+        )
+        if not row:
+            return None
+        return {
+            "episode_id": row.get("EPISODE_ID"),
+            "logical_asset_key": row.get("LOGICAL_ASSET_KEY"),
+            "attempt_index": int(row.get("ATTEMPT_INDEX") or 0),
+            "generation_key": row.get("GENERATION_KEY"),
+            "status": row.get("STATUS"),
+            "dispatch_committed_at": row.get("DISPATCH_COMMITTED_AT"),
+            "generation_observed_at": row.get("GENERATION_OBSERVED_AT"),
+            "terminal_at": row.get("TERMINAL_AT"),
+            "failure_class": row.get("FAILURE_CLASS"),
+            "result_ref": row.get("RESULT_REF"),
+            "provider": row.get("PROVIDER"),
+            "payload_model": row.get("PAYLOAD_MODEL"),
+            "payload_quality": row.get("PAYLOAD_QUALITY"),
+        }
+    finally:
+        connection.close()
+
+
 def remaining(ep: str | Path, logical_asset_key: str) -> int:
     return int(load_asset_state(ep, logical_asset_key)["remaining_attempts"])
 
