@@ -8,21 +8,29 @@
 
 ## Result
 
-`PHASE_5A_REAL_PROVIDER_BLOCKED`. No compatible execution environment has been demonstrated for the frozen `image.controller` binding `gpt-6-luna / high`. No new Canary, Image Attempt, or image was created in this capability check.
+`PHASE_5A_PROVIDER_PATH_BLOCKED`. The two execution roles can use separate routes: the local Codex CLI route has passed the frozen `image.controller` text call `gpt-6-luna / high`, while no automated independent Pixel Provider is configured for `gpt-image-2.5-flare / high`. No new Canary, Image Attempt, or image was created in this capability check.
 
-The exact-model text probe against the same configured endpoint used by the image route explicitly requested `gpt-6-luna` and `reasoning_effort=high`; it was rejected with HTTP 400 / unsupported model. The response body is intentionally not retained here. A probe against the CLI default endpoint is not evidence for the configured production endpoint and is excluded from the capability decision.
+The dedicated Controller probe uses a regular text-only scoped call with explicit `-m gpt-6-luna` and `model_reasoning_effort="high"`; it does not enable `image_generation`. The previous fused ChatGPT Codex image-tool route rejected Luna with HTTP 400 / unsupported model. The independent OpenAI Images API route is statically registered for Flare/high, but its required API credential is absent, so this route is unavailable. The response body and all secret values are intentionally excluded.
 
 ## Candidate matrix
 
 | Candidate | Finding | Phase 5A eligible |
 |---|---|---:|
-| `codex_subscription` / configured image endpoint | Exact `gpt-6-luna/high` text probe rejected as unsupported | No |
-| Direct Codex CLI / `codex_user_runner` default endpoint | Tiny `gpt-6-luna/high` text probe passed in about 25.5 seconds with `EXPLICIT_RUNTIME_BINDING`; this endpoint differs from the image worker's configured ChatGPT endpoint, so it does not establish capability on the production image route | No |
+| Controller: Direct Codex CLI / `codex_user_runner` default endpoint | Exact `gpt-6-luna/high` text-only scoped probe passed with explicit CLI binding; no image tool enabled | Yes, Controller only |
+| Payload: OpenAI Images API | Registry contract supports Flare/high; non-generation capability check found credential absent | No |
+| Legacy fused `codex_subscription` image route | Exact Luna was rejected as unsupported on the configured ChatGPT Codex endpoint; it couples Controller and image tool execution | No |
 | WORK / Workspace Provider | Model and reasoning are host-selected; exact Luna binding is not proven | No |
-| `api_http` | Required route configuration/environment is absent | No |
-| Registry-declared image provider capability | Registry declares image capability, but exact-model execution and image E2E remain unconfirmed | No |
+| Product Runtime image action | Requires a host action and returned artifact; current execution is not automated from this environment | No |
 
-No candidate passed `PHASE5A_PROVIDER_ENV_READY`. The frozen Model Policy was not changed, and no fallback or model substitution was used.
+The Controller/Payload coupling has been removed from the active single-frame worker path: Luna now produces a validated canonical payload request before the independent Pixel route is checked. If the Flare API route is not configured, the worker blocks before Attempt claim. Legacy Batch dispatch is denied for split-policy episodes so it cannot silently route around the Controller or the canonical request. No candidate passed `PHASE5A_EXECUTION_PATH_READY` because the Pixel lane has no configured automated provider. The frozen Model Policy was not changed, and no fallback or model substitution was used.
+
+## Execution topology audit
+
+- `codex_subscription_image.invoke_codex()` builds the legacy `codex exec` argv with `--enable image_generation` and a worker prompt that requires the tool as its first action. That is why the old route made the Controller transport own the Pixel tool call; it is an implementation coupling, not an Attempt Authority requirement.
+- The split path now builds the `ImagePayloadRequest` via the text-only scoped Controller in `image_payload_controller.py`. The request is fingerprinted and checked against the Episode-bound policy, contract, references, canvas, and asset identity.
+- `openai_images_provider.generate_native_batch()` is an independent Pixel Provider. It calls `image_generation_gateway.provider_generate_many()`, where the durable Attempt lease/fence is committed immediately before provider handoff. The active worker checks its non-generation route configuration before claiming an Attempt.
+- `WORKER_DISPATCH_COMMITTED` therefore protects Pixel dispatch, not the Luna text Controller. Controller or Payload preflight failures occur before Attempt claim; after Gateway commit, the Attempt stays consumed under the Phase 1 contract.
+- The current route matrix has no eligible automatic Pixel path: OpenAI Images API lacks configured credentials, and Product Runtime requires a host action. WORK is host-selected and cannot certify exact Luna. No shim model is being used.
 
 ## Attempt and asset accounting
 
@@ -41,5 +49,5 @@ Its status, receipt, and generation key were not rewritten or reused. Because no
 - The formal four-admission Visual Lock gate remains unchanged.
 - No Stage or Release authority was written.
 - No credentials, tokens, or raw provider response content are included in this report.
-- Phase 5A remains blocked pending an execution environment that proves exact `gpt-6-luna/high` capability on the same configured endpoint and auth context.
+- Phase 5A remains blocked pending an automated independent Pixel Provider configured for `gpt-image-2.5-flare/high`.
 - Phase 5B is `NOT STARTED`.
