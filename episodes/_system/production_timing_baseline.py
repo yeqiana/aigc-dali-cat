@@ -10,6 +10,7 @@ from pathlib import Path
 
 import logical_asset_identity
 import runtime_observability
+import runtime_status_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -48,6 +49,74 @@ def _read_legacy_performance(ep: Path) -> dict:
         return value if isinstance(value, dict) else {}
     except (OSError, ValueError):
         return {}
+
+
+
+def _read_json(path: Path) -> dict:
+    if not path.is_file():
+        return {}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8-sig"))
+        return value if isinstance(value, dict) else {}
+    except (OSError, ValueError, TypeError):
+        return {}
+
+
+def _explicit_user_override(ep: Path, events: list[dict], *, source: str) -> tuple[bool | None, list[str]]:
+    """Return explicit user-override evidence without inferring hidden actions."""
+    evidence: list[str] = []
+    event_types = {
+        "USER_OVERRIDE",
+        "USER_OVERRIDE_APPLIED",
+        "DIRECT_USER_VISUAL_ADMISSION",
+        "USER_ACCEPTED_KNOWN_DEFECT",
+    }
+    if any(str(row.get("event_type") or "").upper() in event_types for row in events):
+        evidence.append("runtime_trace")
+
+    admissions = _read_json(ep / "meta/visual-lock-admissions.json")
+    for row in (admissions.get("items") or {}).values() if isinstance(admissions.get("items"), dict) else []:
+        override = row.get("direct_user_override") if isinstance(row, dict) else None
+        if isinstance(override, dict) and override.get("accepted") is True:
+            evidence.append("visual_lock_admission")
+            break
+
+    profile = _read_json(ep / "meta/visual-profile.json")
+    override = profile.get("user_override") if isinstance(profile, dict) else None
+    if isinstance(override, dict) and override:
+        evidence.append("visual_profile")
+
+    if evidence:
+        return True, sorted(set(evidence))
+    # Instrumented runs are required to preserve explicit override evidence.
+    if source in {"INSTRUMENTED_RUNTIME", "INSTRUMENTED_CANARY"}:
+        return False, []
+    return None, []
+
+
+def _episode_outcome(ep: Path, events: list[dict], *, source: str) -> dict:
+    try:
+        status = runtime_status_snapshot.snapshot(ep)
+    except Exception:
+        status = {}
+    execution_status = str(status.get("execution_status") or "") or None
+    needs_user = status.get("needs_user") if isinstance(status.get("needs_user"), bool) else None
+    override, override_evidence = _explicit_user_override(ep, events, source=source)
+
+    if execution_status == "COMPLETE" and needs_user is False and override is False:
+        automatic_completion: bool | None = True
+    elif execution_status in {"NEEDS_USER", "BLOCKED", "HARD_STOP"} or needs_user is True or override is True:
+        automatic_completion = False
+    else:
+        automatic_completion = None
+
+    return {
+        "execution_status": execution_status,
+        "needs_user": needs_user,
+        "user_override": override,
+        "automatic_completion": automatic_completion,
+        "user_override_evidence": override_evidence,
+    }
 
 
 def _union_ms(intervals) -> float | None:
@@ -241,6 +310,7 @@ def build_baseline(ep: str | Path, *, source: str = "INSTRUMENTED_RUNTIME", run_
                     item["authority_store"] = "episode_meta_store"
     except Exception:
         pass
+    outcome = _episode_outcome(episode, events, source=source)
     return {
         "schema_version": 1, "kind": "storyos_production_timing_baseline",
         "generated_at": dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="seconds"),
@@ -264,6 +334,7 @@ def build_baseline(ep: str | Path, *, source: str = "INSTRUMENTED_RUNTIME", run_
                   "peak_repair_queue": queues["repair"], "oldest_review_wait_ms": None,
                   "oldest_generation_wait_ms": None},
         "failure": {"count": sum(1 for row in events if row.get("event_type") in {"IMAGE_GENERATION_FAILED", "STEP_FAILED"}), "classes": {}},
+        "outcome": outcome,
         "source_evidence": evidence_inventory,
         "limitations": ["Missing timestamps remain null; no timestamp is inferred from file mtime.",
                         "Provider internal duration is null unless the Provider exposes it; observed wall is kept separate."],

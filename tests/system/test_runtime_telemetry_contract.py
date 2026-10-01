@@ -250,3 +250,54 @@ def test_thousand_event_overhead_benchmark(tmp_path, monkeypatch, capsys):
                       "write_ms": round(write_ms, 3), "aggregate_ms": round(aggregate_ms, 3)}))
     assert result["event_count"] == 1000
     assert serialization_ms >= 0 and write_ms >= 0 and aggregate_ms >= 0
+
+
+def test_baseline_exposes_user_burden_outcome(monkeypatch, tmp_path):
+    monkeypatch.setattr(baseline.logical_asset_identity, "episode_id", lambda _ep: "episode-outcome")
+    monkeypatch.setattr(
+        baseline.runtime_status_snapshot,
+        "snapshot",
+        lambda _ep: {"execution_status": "COMPLETE", "needs_user": False},
+    )
+    result = baseline.build_baseline(tmp_path, source="INSTRUMENTED_RUNTIME")
+    assert result["outcome"]["execution_status"] == "COMPLETE"
+    assert result["outcome"]["needs_user"] is False
+    assert result["outcome"]["user_override"] is False
+    assert result["outcome"]["automatic_completion"] is True
+
+
+def test_baseline_preserves_explicit_user_override(monkeypatch, tmp_path):
+    monkeypatch.setattr(baseline.logical_asset_identity, "episode_id", lambda _ep: "episode-override")
+    monkeypatch.setattr(
+        baseline.runtime_status_snapshot,
+        "snapshot",
+        lambda _ep: {"execution_status": "COMPLETE", "needs_user": False},
+    )
+    meta = tmp_path / "meta"
+    meta.mkdir(parents=True)
+    (meta / "visual-lock-admissions.json").write_text(json.dumps({
+        "items": {
+            "asset-1": {
+                "direct_user_override": {
+                    "accepted": True,
+                    "known_automatic_defect": True,
+                }
+            }
+        }
+    }), encoding="utf-8")
+    result = baseline.build_baseline(tmp_path, source="INSTRUMENTED_RUNTIME")
+    assert result["outcome"]["user_override"] is True
+    assert result["outcome"]["automatic_completion"] is False
+    assert "visual_lock_admission" in result["outcome"]["user_override_evidence"]
+
+
+def test_historical_baseline_keeps_unknown_override_unknown(monkeypatch, tmp_path):
+    monkeypatch.setattr(baseline.logical_asset_identity, "episode_id", lambda _ep: "episode-historical")
+    monkeypatch.setattr(
+        baseline.runtime_status_snapshot,
+        "snapshot",
+        lambda _ep: {"execution_status": "UNKNOWN", "needs_user": None},
+    )
+    result = baseline.build_baseline(tmp_path, source="HISTORICAL_REPLAY")
+    assert result["outcome"]["user_override"] is None
+    assert result["outcome"]["automatic_completion"] is None
