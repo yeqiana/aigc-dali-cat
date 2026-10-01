@@ -259,6 +259,38 @@ class Phase5APayloadCapabilityScopeTests(unittest.TestCase):
         self.assertFalse(result["image_attempt_authority_called"])
         self.assertEqual(runner.call_count, 1)
 
+    def test_validation_epoch_claim_is_accepted_for_fresh_zero_of_two_scope(self) -> None:
+        epoch_dir = self.root / ".codex_tmp" / "phase5a" / ".phase5a-validation-epochs"
+        epoch_dir.mkdir(parents=True, exist_ok=True)
+        epoch_id = "phase5a-validation-2"
+        epoch_workspace = self.root / ".codex_tmp" / "phase5a" / epoch_id
+        (epoch_workspace / "meta").mkdir(parents=True)
+        (epoch_workspace / "meta" / "phase5a-canary.json").write_text(
+            json.dumps({
+                "workspace_class": "TEST_ONLY",
+                "promotion_class": "NON_PROMOTABLE",
+                "canary_type": backend._PHASE5A_CANARY_TYPE,
+                "canary_id": epoch_id,
+            }),
+            encoding="utf-8",
+        )
+        (epoch_dir / "epoch-0002.json").write_text(
+            json.dumps({
+                "canary_type": backend._PHASE5A_CANARY_TYPE,
+                "canary_id": epoch_id,
+                "workspace": str(epoch_workspace),
+                "validation_epoch": 2,
+                "previous_canary_id": CANARY_ID,
+                "previous_workspace": str(self.workspace),
+            }),
+            encoding="utf-8",
+        )
+        scope = backend._validated_phase5a_canary_scope(
+            epoch_workspace, epoch_id, require_claim=True)
+        self.assertIsNotNone(scope)
+        self.assertEqual(scope["attempts_consumed"], 0)
+        self.assertEqual(scope["remaining_attempts"], 2)
+
     def test_bounded_technical_retry_scope_is_accepted_at_one_of_two(self) -> None:
         self.queue_item["generation_attempt_reason"] = "TECHNICAL_RETRY"
         self.queue_item["technical_retry_source_code"] = "ASPECT_RATIO_MISMATCH"

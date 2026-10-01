@@ -70,6 +70,7 @@ WORKSPACE_REL = Path(".codex_tmp/phase5a")
 MARKER_REL = Path("meta/phase5a-canary.json")
 GLOBAL_CLAIM_REL = WORKSPACE_REL / ".phase5a-collaborative-canary-claim.json"
 REPLACEMENT_CLAIM_REL = WORKSPACE_REL / ".phase5a-collaborative-canary-replacement.json"
+VALIDATION_EPOCH_DIR_REL = WORKSPACE_REL / ".phase5a-validation-epochs"
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -268,14 +269,159 @@ def _replacement_source_evidence(previous_episode: Path) -> dict[str, Any]:
     }
 
 
-def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
-    """Reserve the first canary or one explicit replacement after OUTCOME_UNKNOWN.
+def _validation_epoch_claims() -> list[dict[str, Any]]:
+    """Read append-only validation epoch claims in strict contiguous order."""
+    directory = (ROOT / VALIDATION_EPOCH_DIR_REL).resolve()
+    if not directory.exists():
+        return []
+    try:
+        directory.relative_to(ROOT.resolve())
+    except ValueError as exc:
+        raise CanaryContractError("CANARY_VALIDATION_EPOCH_PATH_ESCAPE") from exc
+    rows = []
+    for path in sorted(directory.glob("epoch-*.json")):
+        match = re.fullmatch(r"epoch-(\d{4})\.json", path.name)
+        if not match:
+            raise CanaryContractError("CANARY_VALIDATION_EPOCH_CLAIM_INVALID_FAIL_CLOSED")
+        try:
+            row = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, ValueError) as exc:
+            raise CanaryContractError("CANARY_VALIDATION_EPOCH_CLAIM_INVALID_FAIL_CLOSED") from exc
+        row = dict(row)
+        row["_path"] = str(path)
+        row["_epoch_index"] = int(match.group(1))
+        rows.append(row)
+    expected = list(range(2, 2 + len(rows)))
+    actual = [int(row["_epoch_index"]) for row in rows]
+    if actual != expected:
+        raise CanaryContractError("CANARY_VALIDATION_EPOCH_SEQUENCE_INVALID_FAIL_CLOSED")
+    return rows
 
-    The original claim is immutable. A replacement is recorded in a second
-    durable claim file and is allowed only when Attempt Authority proves that
-    the first canary consumed Attempt1, has no active lease, ended
-    OUTCOME_UNKNOWN, and produced no result artifact. A second replacement is
-    always rejected.
+
+def _validation_epoch_source_evidence(previous_episode: Path) -> dict[str, Any]:
+    """Require the previous validation canary to be fully exhausted and terminal."""
+    import generation_attempt_authority
+    import logical_asset_identity
+    import scheduler_core
+
+    key = logical_asset_identity.frame_asset_key(previous_episode, 1)
+    state = generation_attempt_authority.load_asset_state(previous_episode, key)
+    if int(state.get("attempts_consumed") or 0) != 2:
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_NOT_EXHAUSTED")
+    if int(state.get("remaining_attempts") or 0) != 0:
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_BUDGET_REMAINS")
+    if state.get("active_attempt_index") is not None:
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_ATTEMPT_ACTIVE")
+
+    queue = scheduler_core.load_queue(previous_episode)
+    items = [row for row in queue.get("items") or [] if isinstance(row, dict)]
+    reviews = [row for row in queue.get("review_work_items") or [] if isinstance(row, dict)]
+    if len(items) != 1:
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_QUEUE_INVALID")
+    item = items[0]
+    if (int(item.get("frame") or 0) != 1
+            or item.get("kind") != "original"
+            or item.get("scope") != "batch"
+            or item.get("status") not in {"external_blocked", "blocked"}):
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_NOT_TERMINAL")
+    if reviews:
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_HAS_REVIEW_CANDIDATE")
+
+    attempt2 = generation_attempt_authority.load_attempt(previous_episode, key, 2)
+    if not isinstance(attempt2, Mapping) or int(attempt2.get("attempt_index") or 0) != 2:
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_ATTEMPT2_MISSING")
+    if str(attempt2.get("result_ref") or "").strip():
+        raise CanaryContractError("CANARY_VALIDATION_SOURCE_ATTEMPT2_HAS_RESULT")
+    return {
+        "logical_asset_key": key,
+        "attempts_consumed": 2,
+        "remaining_attempts": 0,
+        "attempt2_generation_key": attempt2.get("generation_key"),
+        "attempt2_status": attempt2.get("status"),
+        "attempt2_failure_class": attempt2.get("failure_class"),
+        "queue_status": item.get("status"),
+        "external_block_reason": (
+            (item.get("external_block") or {}).get("reason")
+            if isinstance(item.get("external_block"), Mapping) else None
+        ),
+    }
+
+
+def _claim_validation_epoch(ep: Path, canary_id: str, *, previous_claim: Mapping[str, Any]) -> dict[str, Any]:
+    episode, _marker = validate_workspace(ep, canary_id)
+    previous_workspace = Path(str(previous_claim.get("workspace") or "")).resolve()
+    previous_id = str(previous_claim.get("canary_id") or "")
+    validate_workspace(previous_workspace, previous_id)
+    evidence = _validation_epoch_source_evidence(previous_workspace)
+
+    existing = _validation_epoch_claims()
+    epoch_index = 2 + len(existing)
+    directory = (ROOT / VALIDATION_EPOCH_DIR_REL).resolve()
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"epoch-{epoch_index:04d}.json"
+    claim = {
+        "canary_type": CANARY_TYPE,
+        "canary_id": str(canary_id),
+        "workspace": str(episode),
+        "validation_epoch": epoch_index,
+        "previous_canary_id": previous_id,
+        "previous_workspace": str(previous_workspace),
+        "reason": "PRIOR_VALIDATION_CANARY_EXHAUSTED_NO_REVIEW_CANDIDATE",
+        "previous_logical_asset_key": evidence.get("logical_asset_key"),
+        "previous_attempts_consumed": evidence.get("attempts_consumed"),
+        "previous_attempt2_generation_key": evidence.get("attempt2_generation_key"),
+        "previous_attempt2_status": evidence.get("attempt2_status"),
+        "previous_attempt2_failure_class": evidence.get("attempt2_failure_class"),
+        "previous_queue_status": evidence.get("queue_status"),
+        "previous_external_block_reason": evidence.get("external_block_reason"),
+    }
+    try:
+        descriptor = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        raise CanaryContractError("CANARY_VALIDATION_EPOCH_ALREADY_CLAIMED")
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+            json.dump(claim, stream, ensure_ascii=False, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+    except Exception:
+        raise CanaryContractError("CANARY_VALIDATION_EPOCH_WRITE_FAILED_FAIL_CLOSED")
+    return {
+        "canary_type": CANARY_TYPE,
+        "canary_id": str(canary_id),
+        "workspace": str(episode),
+        "resumed": False,
+        "replacement": False,
+        "validation_epoch": epoch_index,
+        "previous_canary_id": previous_id,
+    }
+
+
+def _matching_validation_epoch_claim(expected: Mapping[str, Any]) -> dict[str, Any] | None:
+    rows = _validation_epoch_claims()
+    if not rows:
+        return None
+    latest = rows[-1]
+    if (latest.get("canary_type") == CANARY_TYPE
+            and latest.get("canary_id") == expected.get("canary_id")
+            and latest.get("workspace") == expected.get("workspace")):
+        return latest
+    return None
+
+
+def claim_global_canary(
+    ep: str | Path,
+    canary_id: str,
+    *,
+    allow_validation_epoch: bool = False,
+) -> dict[str, Any]:
+    """Reserve or resume the fixed Canary chain.
+
+    Base + replacement behavior is unchanged. Additional validation epochs are
+    append-only, require explicit allow_validation_epoch=True, and are admitted
+    only after the immediately previous Canary exhausted its full 2-attempt
+    budget with no Review candidate and no active Attempt.
     """
     episode, _marker = validate_workspace(ep, canary_id)
     claim_path = (ROOT / GLOBAL_CLAIM_REL).resolve()
@@ -313,7 +459,23 @@ def claim_global_canary(ep: str | Path, canary_id: str) -> dict[str, Any]:
                     and replacement.get("previous_workspace") == current.get("workspace")):
                 return {**expected, "resumed": True, "replacement": True,
                         "previous_canary_id": current.get("canary_id")}
-            raise CanaryContractError("CANARY_GLOBAL_REPLACEMENT_ALREADY_CLAIMED")
+
+            matching_epoch = _matching_validation_epoch_claim(expected)
+            if matching_epoch is not None:
+                return {
+                    **expected,
+                    "resumed": True,
+                    "replacement": False,
+                    "validation_epoch": int(matching_epoch.get("validation_epoch") or 0),
+                    "previous_canary_id": matching_epoch.get("previous_canary_id"),
+                }
+            if not allow_validation_epoch:
+                raise CanaryContractError("CANARY_GLOBAL_REPLACEMENT_ALREADY_CLAIMED")
+
+            existing_epochs = _validation_epoch_claims()
+            previous_claim = existing_epochs[-1] if existing_epochs else replacement
+            return _claim_validation_epoch(
+                episode, str(canary_id), previous_claim=previous_claim)
 
         previous_workspace = Path(str(current.get("workspace") or "")).resolve()
         previous_id = str(current.get("canary_id") or "")
@@ -902,7 +1064,8 @@ def _controller_failure_diagnostics(output: str, returncode: int | None,
 
 
 def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900,
-                           codex: str | None = None, dry_run: bool = False) -> dict[str, Any]:
+                           codex: str | None = None, dry_run: bool = False,
+                           allow_validation_epoch: bool = False) -> dict[str, Any]:
     """Run/resume exactly one item through the existing Production Scheduler.
 
     The harness owns no Stage, Release, Attempt, Provider, or Review authority.
@@ -920,7 +1083,9 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
         # claimed Phase 5A replacement. Persist that single bounded claim
         # before its live text-only preflight; this writes no image Attempt and
         # does not authorize any dispatch by itself.
-        global_claim = claim_global_canary(preflight["episode"], canary_id)
+        global_claim = claim_global_canary(
+            preflight["episode"], canary_id,
+            allow_validation_epoch=allow_validation_epoch)
         payload_probe = codex_subscription_image.payload_capability_preflight(
             model=str(payload_binding.get("model") or ""),
             quality=str(payload_binding.get("quality") or ""),
@@ -977,7 +1142,9 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
                 "image_scheduler_called": False,
                 "preflight": {k: v for k, v in preflight.items() if k != "episode"}}
     if str(payload_route.get("provider") or "") != "codex_subscription":
-        global_claim = claim_global_canary(preflight["episode"], canary_id)
+        global_claim = claim_global_canary(
+            preflight["episode"], canary_id,
+            allow_validation_epoch=allow_validation_epoch)
     import runtime_trace
     run_id = f"phase5a-{canary_id}"
     trace_id = runtime_trace.start_run(
@@ -1256,11 +1423,13 @@ def main() -> int:
     run.add_argument("--timeout", type=int, default=900)
     run.add_argument("--codex")
     run.add_argument("--dry-run", action="store_true")
+    run.add_argument("--allow-validation-epoch", action="store_true")
     args = parser.parse_args()
     try:
         result = run_production_subpath(args.episode_dir, canary_id=args.canary_id,
                                         timeout=args.timeout, codex=args.codex,
-                                        dry_run=args.dry_run)
+                                        dry_run=args.dry_run,
+                                        allow_validation_epoch=args.allow_validation_epoch)
     except Exception as exc:
         result = {"status": "BLOCKED", "error": f"{type(exc).__name__}: {exc}"}
         print(json.dumps(result, ensure_ascii=False, indent=2, default=str))

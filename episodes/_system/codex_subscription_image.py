@@ -461,13 +461,17 @@ def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
                 or str(payload.get("quality") or "").lower() != "high"):
             return None
         if require_claim:
-            global_path = ROOT / ".codex_tmp" / "phase5a" / ".phase5a-collaborative-canary-claim.json"
-            replacement_path = ROOT / ".codex_tmp" / "phase5a" / ".phase5a-collaborative-canary-replacement.json"
+            claims_root = ROOT / ".codex_tmp" / "phase5a"
+            global_path = claims_root / ".phase5a-collaborative-canary-claim.json"
+            replacement_path = claims_root / ".phase5a-collaborative-canary-replacement.json"
             global_claim = json.loads(global_path.read_text(encoding="utf-8-sig"))
             expected_workspace = str(episode)
-            if global_claim.get("canary_id") == value and global_claim.get("workspace") == expected_workspace:
-                claim_valid = global_claim.get("canary_type") == _PHASE5A_CANARY_TYPE
-            elif replacement_path.is_file():
+            claim_valid = bool(
+                global_claim.get("canary_type") == _PHASE5A_CANARY_TYPE
+                and global_claim.get("canary_id") == value
+                and global_claim.get("workspace") == expected_workspace
+            )
+            if not claim_valid and replacement_path.is_file():
                 replacement = json.loads(replacement_path.read_text(encoding="utf-8-sig"))
                 claim_valid = bool(
                     global_claim.get("canary_type") == _PHASE5A_CANARY_TYPE
@@ -477,8 +481,23 @@ def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
                     and replacement.get("previous_canary_id") == global_claim.get("canary_id")
                     and replacement.get("previous_workspace") == global_claim.get("workspace")
                 )
-            else:
-                claim_valid = False
+            if not claim_valid:
+                epoch_dir = claims_root / ".phase5a-validation-epochs"
+                epoch_rows = []
+                if epoch_dir.is_dir():
+                    for path in sorted(epoch_dir.glob("epoch-*.json")):
+                        if not re.fullmatch(r"epoch-\d{4}\.json", path.name):
+                            return None
+                        row = json.loads(path.read_text(encoding="utf-8-sig"))
+                        epoch_rows.append(row)
+                if epoch_rows:
+                    latest = epoch_rows[-1]
+                    claim_valid = bool(
+                        latest.get("canary_type") == _PHASE5A_CANARY_TYPE
+                        and latest.get("canary_id") == value
+                        and latest.get("workspace") == expected_workspace
+                        and int(latest.get("validation_epoch") or 0) >= 2
+                    )
             if not claim_valid:
                 return None
         identity = {
@@ -1330,10 +1349,12 @@ def payload_transport_prompt(request: dict, size: str, reference_count: int) -> 
         "Canvas geometry has higher priority than shot-scale wording. Terms such as "
         "'wide', 'wide shot', 'close-up', or lens language describe composition inside "
         "the locked canvas and MUST NOT change canvas orientation or aspect ratio. "
-        "When image_generation exposes size/aspect controls, use the closest control "
-        "that preserves EXACT_ASPECT_RATIO and EXACT_ORIENTATION. If the tool cannot "
-        "honor a compatible aspect/orientation, fail instead of silently defaulting "
-        "to a different canvas.\n"
+        "When image_generation exposes size/aspect controls, request the closest control "
+        "that preserves EXACT_ASPECT_RATIO and EXACT_ORIENTATION. If exact geometry cannot "
+        "be guaranteed by the tool, still call image_generation exactly once using the "
+        "closest compatible portrait option; do not skip generation solely because exact "
+        "canvas geometry is unavailable. StoryOS validates actual output geometry after "
+        "artifact commit.\n"
         "Use every attached reference exactly as an identity/continuity reference; do not add others.\n"
         "<exact_scene_prompt>\n"
         f"{str(request.get('scene_prompt') or '')}\n"

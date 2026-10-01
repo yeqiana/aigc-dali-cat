@@ -25,6 +25,13 @@ def test_global_claim_allows_only_one_workspace_and_same_id_resume(tmp_path, mon
 
     second_id = "phase5a-singleton-two"
     second = canary.initialize_workspace(second_id)
+    monkeypatch.setattr(
+        canary,
+        "_replacement_source_evidence",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            canary.CanaryContractError("CANARY_REPLACEMENT_SOURCE_ATTEMPT_COUNT_INVALID")
+        ),
+    )
     try:
         canary.claim_global_canary(second, second_id)
     except canary.CanaryContractError as exc:
@@ -104,7 +111,7 @@ def test_subscription_canary_claim_precedes_unknown_capability_preflight(monkeyp
     monkeypatch.setattr(canary, "_preflight", lambda *_args: preflight)
     monkeypatch.setattr(
         canary, "claim_global_canary",
-        lambda *_args: order.append("claim") or {"canary_id": preflight["canary_id"]},
+        lambda *_args, **_kwargs: order.append("claim") or {"canary_id": preflight["canary_id"]},
     )
     monkeypatch.setattr(image_payload_transport, "selected_route",
                         lambda *_args: {"provider": "codex_subscription"})

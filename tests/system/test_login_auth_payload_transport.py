@@ -723,7 +723,9 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertIn("EXACT_ORIENTATION: PORTRAIT", prompt)
         self.assertIn("wide documentary still", prompt)
         self.assertIn("MUST NOT change canvas orientation or aspect ratio", prompt)
-        self.assertIn("fail instead of silently defaulting", prompt)
+        self.assertIn("still call image_generation exactly once", prompt)
+        self.assertIn("do not skip generation solely because exact canvas geometry is unavailable", prompt)
+        self.assertIn("StoryOS validates actual output geometry after artifact commit", prompt)
         self.assertIn("Do not rewrite", prompt)
 
     def test_provider_adapter_delegates_to_selected_codex_login_route(self):

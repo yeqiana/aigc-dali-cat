@@ -476,6 +476,54 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         self.assertEqual(staged, workdir / bridge.EXPORT_DIR_NAME)
         self.assertEqual((staged / "thread-1" / "out.png").read_bytes(), b"png-bytes")
 
+    def test_case10d_settle_wait_recovers_late_thread_artifact_without_redispatch(self):
+        user_home = self.tmp / "settle-user-home"
+        workdir = self.tmp / "settle-workdir"
+        workdir.mkdir(parents=True, exist_ok=True)
+        calls = {"count": 0}
+        clock = {"value": 0.0}
+
+        def fake_export(_home, _workdir, *, thread_ids=None):
+            calls["count"] += 1
+            return [] if calls["count"] < 3 else ["thread-current/out.png"]
+
+        def fake_sleep(seconds):
+            clock["value"] += seconds
+
+        def fake_monotonic():
+            return clock["value"]
+
+        with mock.patch.object(bridge, "_export_generated_artifacts", side_effect=fake_export):
+            exported, settle = bridge._settle_generated_artifacts(
+                user_home, workdir, thread_ids=["thread-current"],
+                timeout_seconds=1.0, poll_seconds=0.1,
+                sleep_fn=fake_sleep, monotonic_fn=fake_monotonic,
+            )
+        self.assertEqual(exported, ["thread-current/out.png"])
+        self.assertTrue(settle["used"])
+        self.assertEqual(settle["polls"], 3)
+        self.assertGreaterEqual(settle["waited_seconds"], 0.2)
+
+    def test_case10d_settle_wait_times_out_without_provider_redispatch(self):
+        clock = {"value": 0.0}
+
+        def fake_sleep(seconds):
+            clock["value"] += seconds
+
+        def fake_monotonic():
+            return clock["value"]
+
+        with mock.patch.object(bridge, "_export_generated_artifacts", return_value=[]) as export:
+            exported, settle = bridge._settle_generated_artifacts(
+                self.tmp, self.tmp, thread_ids=["thread-empty"],
+                timeout_seconds=0.25, poll_seconds=0.1,
+                sleep_fn=fake_sleep, monotonic_fn=fake_monotonic,
+            )
+        self.assertEqual(exported, [])
+        self.assertTrue(settle["used"])
+        self.assertGreaterEqual(settle["waited_seconds"], 0.25)
+        self.assertGreaterEqual(export.call_count, 2)
+
     def test_case10d_inherited_home_exports_only_current_image_thread(self):
         user_home = self.tmp / "shared-user-codex-home"
         current = user_home / "generated_images" / "thread-current" / "out.png"

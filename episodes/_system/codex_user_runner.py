@@ -74,6 +74,8 @@ RUNNER_INPUT_DIR_NAME = "codex-inputs"
 # which the caller cannot read; the runner mirrors them into the caller-owned
 # task workdir under this name so cross-bridge image recovery still works.
 EXPORT_DIR_NAME = "codex-generated-images"
+IMAGE_ARTIFACT_SETTLE_SECONDS = 2.0
+IMAGE_ARTIFACT_SETTLE_POLL_SECONDS = 0.10
 
 DRIVER_EXE = "exe"
 DRIVER_CMD = "cmd"
@@ -776,6 +778,47 @@ def _thread_ids_from_output(output: bytes) -> list[str]:
     return found
 
 
+def _settle_generated_artifacts(
+    home: Path,
+    workdir: Path,
+    *,
+    thread_ids: list[str],
+    timeout_seconds: float = IMAGE_ARTIFACT_SETTLE_SECONDS,
+    poll_seconds: float = IMAGE_ARTIFACT_SETTLE_POLL_SECONDS,
+    sleep_fn=time.sleep,
+    monotonic_fn=time.monotonic,
+) -> tuple[list[str], dict]:
+    """Wait briefly for already-generated thread artifacts to reach disk.
+
+    This never invokes Codex or image_generation. It only re-reads the current
+    thread's generated_images directory after the Codex process has exited.
+    """
+    started = monotonic_fn()
+    exported = _export_generated_artifacts(home, workdir, thread_ids=thread_ids)
+    polls = 1
+    if exported or timeout_seconds <= 0:
+        return exported, {
+            "used": False,
+            "polls": polls,
+            "waited_seconds": 0.0,
+            "timeout_seconds": float(timeout_seconds),
+        }
+    deadline = started + float(timeout_seconds)
+    while monotonic_fn() < deadline:
+        sleep_fn(float(poll_seconds))
+        polls += 1
+        exported = _export_generated_artifacts(home, workdir, thread_ids=thread_ids)
+        if exported:
+            break
+    waited = max(0.0, monotonic_fn() - started)
+    return exported, {
+        "used": True,
+        "polls": polls,
+        "waited_seconds": round(waited, 3),
+        "timeout_seconds": float(timeout_seconds),
+    }
+
+
 def _export_generated_artifacts(home: Path, workdir: Path, *, thread_ids: list[str] | None = None) -> list[str]:
     """Mirror only this task's provider artifacts into the caller workdir.
 
@@ -924,8 +967,16 @@ def execute_task(task: CodexTask) -> ExecResult:
     elif task.task_type == "image" and active_home is not None:
         thread_ids = _thread_ids_from_output(output)
         evidence["thread_ids"] = thread_ids
-        evidence["generated_artifacts"] = _export_generated_artifacts(
-            active_home, workdir, thread_ids=thread_ids)
+        if thread_ids:
+            exported, settle = _settle_generated_artifacts(
+                active_home, workdir, thread_ids=thread_ids)
+        else:
+            exported, settle = [], {
+                "used": False, "polls": 0, "waited_seconds": 0.0,
+                "timeout_seconds": IMAGE_ARTIFACT_SETTLE_SECONDS,
+            }
+        evidence["generated_artifacts"] = exported
+        evidence["artifact_settle"] = settle
     return ExecResult(returncode=124 if timed_out else rc, output=output, remote=evidence)
 
 
