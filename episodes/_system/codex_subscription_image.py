@@ -1254,6 +1254,19 @@ def payload_capability_preflight(*, model: str, quality: str,
 
 def payload_transport_prompt(request: dict, size: str, reference_count: int) -> str:
     """Mechanical image-tool shim. Business semantics are frozen upstream."""
+    canvas = request.get("canvas") if isinstance(request.get("canvas"), dict) else {}
+    width = int(canvas.get("width") or 0)
+    height = int(canvas.get("height") or 0)
+    aspect_ratio = str(canvas.get("aspect_ratio") or "").strip()
+    if (width <= 0 or height <= 0) and re.fullmatch(r"\d{2,5}x\d{2,5}", str(size or "")):
+        width, height = [int(value) for value in str(size).lower().split("x", 1)]
+    if not aspect_ratio and width > 0 and height > 0:
+        import math
+        divisor = math.gcd(width, height)
+        aspect_ratio = f"{width // divisor}:{height // divisor}"
+    orientation = (
+        "PORTRAIT" if height > width else "LANDSCAPE" if width > height else "SQUARE"
+    )
     return (
         "You are an image tool transport only. Do not rewrite, summarize, reinterpret, "
         "improve, or alter the payload. FIRST ACTION: call image_generation exactly once. "
@@ -1262,7 +1275,16 @@ def payload_transport_prompt(request: dict, size: str, reference_count: int) -> 
         f"EXACT_IMAGE_MODEL: {request.get('payload_model')}\n"
         f"EXACT_IMAGE_QUALITY: {request.get('payload_quality')}\n"
         f"EXACT_CANVAS: {size}\n"
+        f"EXACT_ASPECT_RATIO: {aspect_ratio or 'UNSPECIFIED'}\n"
+        f"EXACT_ORIENTATION: {orientation}\n"
         f"EXACT_REFERENCE_COUNT: {int(reference_count)}\n"
+        "Canvas geometry has higher priority than shot-scale wording. Terms such as "
+        "'wide', 'wide shot', 'close-up', or lens language describe composition inside "
+        "the locked canvas and MUST NOT change canvas orientation or aspect ratio. "
+        "When image_generation exposes size/aspect controls, use the closest control "
+        "that preserves EXACT_ASPECT_RATIO and EXACT_ORIENTATION. If the tool cannot "
+        "honor a compatible aspect/orientation, fail instead of silently defaulting "
+        "to a different canvas.\n"
         "Use every attached reference exactly as an identity/continuity reference; do not add others.\n"
         "<exact_scene_prompt>\n"
         f"{str(request.get('scene_prompt') or '')}\n"

@@ -674,14 +674,19 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             "request_fingerprint": "f" * 64,
             "payload_model": "gpt-image-2.5-flare",
             "payload_quality": "high",
-            "scene_prompt": "exact scene prompt",
+            "canvas": {"width": 1080, "height": 1350, "aspect_ratio": "4:5"},
+            "scene_prompt": "eye-level wide documentary still; exact scene prompt",
         }
         prompt = codex_subscription_image.payload_transport_prompt(request, "1080x1350", 2)
         self.assertIn("image_generation exactly once", prompt)
         self.assertIn("EXACT_IMAGE_MODEL: gpt-image-2.5-flare", prompt)
         self.assertIn("EXACT_IMAGE_QUALITY: high", prompt)
         self.assertIn("EXACT_CANVAS: 1080x1350", prompt)
-        self.assertIn("exact scene prompt", prompt)
+        self.assertIn("EXACT_ASPECT_RATIO: 4:5", prompt)
+        self.assertIn("EXACT_ORIENTATION: PORTRAIT", prompt)
+        self.assertIn("wide documentary still", prompt)
+        self.assertIn("MUST NOT change canvas orientation or aspect ratio", prompt)
+        self.assertIn("fail instead of silently defaulting", prompt)
         self.assertIn("Do not rewrite", prompt)
 
     def test_provider_adapter_delegates_to_selected_codex_login_route(self):
