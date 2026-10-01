@@ -259,6 +259,19 @@ class Phase5APayloadCapabilityScopeTests(unittest.TestCase):
         self.assertFalse(result["image_attempt_authority_called"])
         self.assertEqual(runner.call_count, 1)
 
+    def test_scope_ignores_superseded_queue_history(self) -> None:
+        self.queue["items"].insert(0, {
+            **dict(self.queue_item),
+            "id": "superseded-history",
+            "status": "superseded",
+            "last_error": "historical pre-dispatch rejection",
+        })
+        scope = self._scope()
+        self.assertIsNotNone(scope)
+        self.assertEqual(scope["queue_item_id"], self.queue_item["id"])
+        self.assertEqual(scope["attempts_consumed"], 0)
+        self.assertEqual(scope["remaining_attempts"], 2)
+
     def test_validation_epoch_claim_is_accepted_for_fresh_zero_of_two_scope(self) -> None:
         epoch_dir = self.root / ".codex_tmp" / "phase5a" / ".phase5a-validation-epochs"
         epoch_dir.mkdir(parents=True, exist_ok=True)

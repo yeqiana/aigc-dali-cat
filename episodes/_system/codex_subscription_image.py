@@ -430,7 +430,14 @@ def _validated_phase5a_canary_scope(ep: Path, canary_id: str,
                 or not re.fullmatch(r"[0-9a-f]{64}", str(controller.get("model_policy_sha256") or ""))):
             return None
         queue = scheduler_core.load_queue(episode)
-        items = [row for row in queue.get("items") or [] if isinstance(row, dict)]
+        # Superseded rows are immutable historical evidence, not active Canary
+        # production items. Keep them in Queue history but exclude them from the
+        # single-current-item Phase5A scope invariant.
+        items = [
+            row for row in queue.get("items") or []
+            if isinstance(row, dict)
+            and str(row.get("status") or "") != "superseded"
+        ]
         if len(items) != 1:
             return None
         item = items[0]
