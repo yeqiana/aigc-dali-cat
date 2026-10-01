@@ -19,21 +19,162 @@ import image_payload_transport
 
 
 class LoginAuthPayloadTransportTests(unittest.TestCase):
+    @staticmethod
+    def _catalog_payload(*models):
+        rows = []
+        for index, item in enumerate(models, start=1):
+            model, effort = item if isinstance(item, tuple) else (item, "low")
+            rows.append({
+                "model": model,
+                "effort": effort,
+                "priority": index,
+                "candidate_catalog_member": True,
+                "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
+                "catalog_sha256": "a" * 64,
+                "catalog_entry_count": len(models),
+                "image_tool_capability": "UNKNOWN",
+            })
+        return {
+            "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
+            "catalog_sha256": "a" * 64,
+            "catalog_entry_count": len(models),
+            "candidate_models": [row["model"] for row in rows],
+            "candidates": rows,
+        }
+
+    @staticmethod
+    def _provenance(model="transport-a", effort="low"):
+        return {
+            "model": model,
+            "effort": effort,
+            "priority": 1,
+            "candidate_catalog_member": True,
+            "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
+            "catalog_sha256": "a" * 64,
+            "catalog_entry_count": 2,
+            "image_tool_capability": "UNKNOWN",
+        }
+
     def test_catalog_prefers_visible_provider_models_and_excludes_business_controller(self):
-        rows = codex_subscription_image._catalog_candidates({
+        payload = {
             "models": [
                 {"slug": "gpt-6-luna", "visibility": "list", "priority": 1,
                  "default_reasoning_level": "high", "supported_reasoning_levels": ["high"]},
                 {"slug": "gpt-hidden", "visibility": "hide", "priority": 2},
                 {"slug": "transport-b", "visibility": "list", "priority": 8,
-                 "default_reasoning_level": "medium", "supported_reasoning_levels": ["medium"]},
+                 "default_reasoning_level": "medium", "supported_reasoning_levels": ["medium"],
+                 "supported_tools": ["image_generation"]},
                 {"slug": "transport-a", "visibility": "list", "priority": 3,
                  "default_reasoning_level": "medium",
                  "supported_reasoning_levels": [{"effort": "low"}, {"effort": "medium"}]},
             ]
-        })
+        }
+        rows = codex_subscription_image._catalog_candidates(payload)
         self.assertEqual([row["model"] for row in rows], ["transport-a", "transport-b"])
         self.assertEqual(rows[0]["effort"], "low")
+        self.assertEqual(rows[0]["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
+        self.assertTrue(all(row["candidate_catalog_member"] for row in rows))
+        self.assertTrue(all(row["catalog_entry_count"] == 4 for row in rows))
+        self.assertTrue(all(row["catalog_sha256"] == rows[0]["catalog_sha256"] for row in rows))
+        self.assertEqual(rows[0]["image_tool_capability"], "UNKNOWN")
+        self.assertEqual(rows[1]["image_tool_capability"], "AVAILABLE")
+
+    def test_catalog_attestation_hash_is_stable_and_uses_safe_fields(self):
+        payload = {"models": [
+            {"slug": "transport-a", "visibility": "list", "priority": 1,
+             "supported_reasoning_levels": ["low", "high"],
+             "instructions_template": "DO NOT PERSIST THIS PRIVATE TEMPLATE"},
+            {"slug": "gpt-6-luna", "visibility": "list", "priority": 2,
+             "supported_reasoning_levels": ["high"]},
+        ]}
+        first = codex_subscription_image._catalog_candidates(payload)
+        second = codex_subscription_image._catalog_candidates(payload)
+        self.assertEqual(first[0]["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
+        self.assertEqual(first[0]["catalog_entry_count"], 2)
+        self.assertEqual(first[0]["catalog_sha256"], second[0]["catalog_sha256"])
+        self.assertRegex(first[0]["catalog_sha256"], r"^[0-9a-f]{64}$")
+        self.assertNotIn("instructions_template", json.dumps(first))
+
+    def test_catalog_image_tool_capability_is_extracted_without_guessing(self):
+        rows = codex_subscription_image._catalog_candidates({"models": [
+            {"slug": "tool-model", "visibility": "list", "priority": 1,
+             "supported_tools": [{"name": "image_generation"}]},
+            {"slug": "text-model", "visibility": "list", "priority": 2,
+             "supported_tools": []},
+            {"slug": "unknown-model", "visibility": "list", "priority": 3},
+        ]})
+        self.assertEqual([row["image_tool_capability"] for row in rows],
+                         ["AVAILABLE", "UNAVAILABLE", "UNKNOWN"])
+
+    def test_no_external_runner_for_fake_model_fixtures(self):
+        """Test catalog slugs stay behind an in-process probe mock."""
+        diagnostic = {
+            "status": "BLOCKED",
+            "failure_class": "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+            "returncode": 0,
+            "timed_out": False,
+            "request_id": None,
+            "durable_result_found": False,
+            "sentinel_completed": False,
+            "turn_completed": True,
+            "image_generation_call_count": 0,
+            "codex_resolution": "user_runner",
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
+        }
+        with (
+            patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+            patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
+            patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                         return_value=self._catalog_payload(
+                             ("transport-a", "low"), ("transport-b", "medium"))),
+            patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
+                         return_value=diagnostic) as in_process_probe,
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex",
+                         side_effect=AssertionError(
+                             "fake transport fixture reached the external Codex runner")) as external_runner,
+        ):
+            row = codex_subscription_image.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high")
+
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertEqual(in_process_probe.call_count, 2)
+        self.assertEqual(
+            [(call.args[1], call.args[2]) for call in in_process_probe.call_args_list],
+            [("transport-a", "low"), ("transport-b", "medium")],
+        )
+        for call in in_process_probe.call_args_list:
+            attestation = call.kwargs["candidate_provenance"]
+            self.assertTrue(attestation["candidate_catalog_member"])
+            self.assertEqual(attestation["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
+            self.assertEqual(attestation["catalog_sha256"], "a" * 64)
+        external_runner.assert_not_called()
+        self.assertFalse(row["image_attempt_authority_called"])
+        self.assertFalse(row["image_generation_called"])
+
+    def test_unattested_fake_candidate_is_denied_before_external_runner(self):
+        mismatched = self._provenance(model="transport-b")
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex",
+                         side_effect=AssertionError("unattested model crossed runner boundary")) as runner,
+        ):
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low", candidate_provenance=mismatched)
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_CANDIDATE")
+        self.assertFalse(row["candidate_catalog_member"])
+        runner.assert_not_called()
+
+    def test_unattested_candidate_missing_provenance_is_denied_before_external_runner(self):
+        with patch.object(codex_subscription_image.codex_user_runner, "run_codex",
+                          side_effect=AssertionError("unattested model crossed runner boundary")) as runner:
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_CANDIDATE")
+        self.assertFalse(row["candidate_catalog_member"])
+        runner.assert_not_called()
 
     def test_bridge_execution_prefix_defers_executable_resolution_to_user_runner(self):
         with patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True):
@@ -62,7 +203,29 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             row = codex_subscription_image.payload_capability_preflight(
                 model="gpt-image-2.5-flare", quality="high")
         self.assertEqual(row["status"], "BLOCKED")
-        self.assertEqual(row["failure_class"], "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_RUNNER_UNAVAILABLE")
+        self.assertEqual(row["safe_failure_stage"], "runner_preflight")
+        self.assertEqual(row["safe_failure_class"], "LOGIN_AUTH_RUNNER_UNAVAILABLE")
+        self.assertEqual(row["exception_class"], "BackendError")
+        self.assertNotIn("reason", row)
+        self.assertFalse(row["image_attempt_authority_called"])
+        self.assertFalse(row["image_generation_called"])
+
+    def test_catalog_failure_has_safe_stage_and_does_not_return_exception_text(self):
+        with (
+            patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+            patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
+            patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                         side_effect=codex_subscription_image.BackendError(
+                             "LOGIN_AUTH_MODEL_CATALOG_FAILED: private-config-detail")),
+        ):
+            row = codex_subscription_image.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_MODEL_CATALOG_FAILED")
+        self.assertEqual(row["safe_failure_stage"], "model_catalog")
+        self.assertEqual(row["safe_failure_class"], "LOGIN_AUTH_MODEL_CATALOG_FAILED")
+        self.assertNotIn("private-config-detail", json.dumps(row))
         self.assertFalse(row["image_attempt_authority_called"])
         self.assertFalse(row["image_generation_called"])
 
@@ -81,14 +244,114 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             "returncode": 124,
         }
         with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex", side_effect=exc) as runner,
+            patch.object(codex_subscription_image.codex_user_runner, "read_task_result", return_value=result),
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
+        self.assertEqual(row["status"], "PASS_WITH_CLEANUP_TIMEOUT")
+        runner.assert_called_once()
+
+    def test_timeout_diagnostic_keeps_only_safe_probe_metadata(self):
+        raw = (
+            '{"type":"item.completed","item":{"type":"agent_message",'
+            '"text":"STORYOS_TRANSPORT_OK"}}\n'
+            '{"type":"turn.completed"}\n'
+        )
+        exc = codex_subscription_image.codex_user_runner.CodexUserRunnerTimeout(
+            ["codex"], 30, "cleanup timeout")
+        exc.remote = {"request_id": "safe-request-id", "timed_out": True, "returncode": 124}
+        result = {"output_base64": base64.b64encode(raw.encode("utf-8")).decode("ascii")}
+        with (
             patch.object(codex_subscription_image.codex_user_runner, "run_codex", side_effect=exc),
             patch.object(codex_subscription_image.codex_user_runner, "read_task_result", return_value=result),
             patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
         ):
-            ok, evidence = codex_subscription_image._probe_transport_model(
-                Path("codex.exe"), "transport-a", "low")
-        self.assertTrue(ok)
-        self.assertEqual(evidence, "PASS_WITH_CLEANUP_TIMEOUT")
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
+        self.assertEqual(row["status"], "PASS_WITH_CLEANUP_TIMEOUT")
+        self.assertTrue(row["timed_out"])
+        self.assertEqual(row["request_id"], "safe-request-id")
+        self.assertTrue(row["durable_result_found"])
+        self.assertTrue(row["sentinel_completed"])
+        self.assertTrue(row["turn_completed"])
+        self.assertEqual(row["image_generation_call_count"], 0)
+        self.assertNotIn("STORYOS_TRANSPORT_OK", json.dumps(row))
+        self.assertNotIn("output_base64", json.dumps(row))
+
+    def test_transport_nonzero_result_is_classified_without_raw_output(self):
+        raw = '{"type":"error","message":"private-token-like-value"}\n'
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex",
+                         return_value=SimpleNamespace(returncode=1, stdout=raw)),
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_TRANSPORT_EXEC_FAILED")
+        self.assertEqual(row["returncode"], 1)
+        self.assertNotIn("private-token-like-value", json.dumps(row))
+
+    def test_corrupt_durable_timeout_result_is_reported_found_but_fails_closed(self):
+        exc = codex_subscription_image.codex_user_runner.CodexUserRunnerTimeout(
+            ["codex"], 30, "cleanup timeout")
+        exc.remote = {"request_id": "safe-request-id", "timed_out": True, "returncode": 124}
+        with (
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex", side_effect=exc),
+            patch.object(codex_subscription_image.codex_user_runner, "read_task_result",
+                         return_value={"output_base64": "%%%"}) as read_result,
+            patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
+        ):
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT")
+        self.assertTrue(row["durable_result_found"])
+        self.assertFalse(row["sentinel_completed"])
+        read_result.assert_called_once_with("safe-request-id")
+
+    def test_websocket_upgrade_failure_is_safe_protocol_metadata(self):
+        raw = "codex_api::endpoint::responses_websocket failed: HTTP error 426 Upgrade Required"
+        facts = codex_subscription_image._safe_transport_failure_facts(raw, 1)
+        self.assertEqual(facts["failure_class"], "LOGIN_AUTH_TRANSPORT_EXEC_FAILED")
+        self.assertEqual(facts["http_status"], 426)
+        self.assertTrue(facts["websocket_attempted"])
+        self.assertEqual(facts["protocol_failure_class"], "TRANSPORT_WEBSOCKET_UPGRADE_REJECTED")
+        self.assertNotIn(raw, json.dumps(facts))
+
+    def test_unsupported_catalog_model_has_precise_failure_class(self):
+        facts = codex_subscription_image._safe_transport_failure_facts(
+            "HTTP 400: model gpt-example is not supported", 1)
+        self.assertEqual(facts["failure_class"], "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE")
+
+    def test_missing_image_tool_configuration_has_precise_failure_class(self):
+        facts = codex_subscription_image._safe_transport_failure_facts(
+            "image_generation tool is not enabled for this provider", 1)
+        self.assertEqual(facts["failure_class"], "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE")
+
+    def test_auth_rejection_is_distinct_from_runner_unavailability(self):
+        facts = codex_subscription_image._safe_transport_failure_facts(
+            "HTTP 401 Unauthorized: authentication failed", 1)
+        self.assertEqual(facts["failure_class"], "LOGIN_AUTH_AUTH_FAILED")
+
+    def test_runner_preflight_auth_failure_is_distinct_and_sanitized(self):
+        with (
+            patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+            patch.object(codex_subscription_image, "image_runtime_preflight",
+                         side_effect=codex_subscription_image.BackendError(
+                             "IMAGE_RUNTIME_PREFLIGHT_FAILED: authentication context unavailable")),
+        ):
+            row = codex_subscription_image.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_AUTH_FAILED")
+        self.assertEqual(row["safe_failure_stage"], "runner_preflight")
+        self.assertNotIn("authentication context", json.dumps(row).lower())
 
     def test_normal_jsonl_exact_sentinel_and_completed_turn_passes(self):
         raw = (
@@ -102,10 +365,15 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                          return_value=SimpleNamespace(returncode=0, stdout=raw)) as run,
             patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
         ):
-            ok, evidence = codex_subscription_image._probe_transport_model(
-                Path("codex.exe"), "transport-a", "low")
-        self.assertTrue(ok)
-        self.assertEqual(evidence, "PASS")
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
+        self.assertEqual(row["status"], "PASS")
+        self.assertTrue(row["candidate_catalog_member"])
+        self.assertEqual(row["candidate_model"], "transport-a")
+        self.assertEqual(row["candidate_effort"], "low")
+        self.assertEqual(row["catalog_sha256"], "a" * 64)
+        self.assertEqual(row["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
         run.assert_called_once()
 
     def _timeout_probe(self, *, remote, result=None):
@@ -118,14 +386,16 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                          return_value=result or {}) as read_result,
             patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
         ):
-            outcome = codex_subscription_image._probe_transport_model(
-                Path("codex.exe"), "transport-a", "low")
+            outcome = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
         run.assert_called_once()
         return outcome, read_result
 
     def test_cleanup_timeout_without_request_id_fails_without_readback(self):
-        (ok, _), read_result = self._timeout_probe(remote={"timed_out": True})
-        self.assertFalse(ok)
+        row, read_result = self._timeout_probe(remote={"timed_out": True})
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT")
         read_result.assert_not_called()
 
     def test_cleanup_timeout_reads_request_id_from_remote_object(self):
@@ -135,44 +405,46 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             '{"type":"turn.completed"}\n'
         )
         encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
-        (ok, evidence), read_result = self._timeout_probe(
+        row, read_result = self._timeout_probe(
             remote=SimpleNamespace(request_id="request-object"),
             result={"output_base64": encoded},
         )
-        self.assertTrue(ok)
-        self.assertEqual(evidence, "PASS_WITH_CLEANUP_TIMEOUT")
+        self.assertEqual(row["status"], "PASS_WITH_CLEANUP_TIMEOUT")
+        self.assertTrue(row["candidate_catalog_member"])
+        self.assertEqual(row["catalog_sha256"], "a" * 64)
+        self.assertEqual(row["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
         read_result.assert_called_once_with("request-object")
 
     def test_cleanup_timeout_without_durable_result_fails(self):
-        (ok, _), read_result = self._timeout_probe(remote={"request_id": "abc123"})
-        self.assertFalse(ok)
+        row, read_result = self._timeout_probe(remote={"request_id": "abc123"})
+        self.assertEqual(row["status"], "BLOCKED")
         read_result.assert_called_once_with("abc123")
 
     def test_cleanup_timeout_rejects_corrupt_durable_base64(self):
-        (ok, _), _ = self._timeout_probe(
+        row, _ = self._timeout_probe(
             remote={"request_id": "abc123"}, result={"output_base64": "%%%"})
-        self.assertFalse(ok)
+        self.assertEqual(row["status"], "BLOCKED")
 
     def test_cleanup_timeout_rejects_invalid_utf8_durable_output(self):
         encoded = base64.b64encode(b"\xff").decode("ascii")
-        (ok, _), _ = self._timeout_probe(
+        row, _ = self._timeout_probe(
             remote={"request_id": "abc123"}, result={"output_base64": encoded})
-        self.assertFalse(ok)
+        self.assertEqual(row["status"], "BLOCKED")
 
     def test_cleanup_timeout_requires_turn_completed(self):
         raw = '{"type":"item.completed","item":{"type":"agent_message","text":"STORYOS_TRANSPORT_OK"}}\n'
         encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
-        (ok, _), _ = self._timeout_probe(
+        row, _ = self._timeout_probe(
             remote={"request_id": "abc123"}, result={"output_base64": encoded})
-        self.assertFalse(ok)
+        self.assertEqual(row["status"], "BLOCKED")
 
     def test_cleanup_timeout_rejects_ordinary_text_sentinel(self):
         raw = 'Some ordinary text says STORYOS_TRANSPORT_OK\n{"type":"turn.completed"}\n'
         self.assertFalse(codex_subscription_image._transport_probe_completed(raw))
         encoded = base64.b64encode(raw.encode("utf-8")).decode("ascii")
-        (ok, _), _ = self._timeout_probe(
+        row, _ = self._timeout_probe(
             remote={"request_id": "abc123"}, result={"output_base64": encoded})
-        self.assertFalse(ok)
+        self.assertEqual(row["status"], "BLOCKED")
 
     def test_probe_rejects_malformed_jsonl_instead_of_skipping_unknown_event(self):
         raw = (
@@ -196,9 +468,11 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                          return_value=SimpleNamespace(returncode=0, stdout=raw)),
             patch.object(codex_subscription_image, "execution_command_prefix", return_value=["codex"]),
         ):
-            ok, _ = codex_subscription_image._probe_transport_model(
-                Path("codex.exe"), "transport-a", "low")
-        self.assertFalse(ok)
+            row = codex_subscription_image._probe_transport_model_diagnostic(
+                Path("codex.exe"), "transport-a", "low",
+                candidate_provenance=self._provenance())
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertEqual(row["image_generation_call_count"], 1)
 
     def test_probe_rejects_provider_image_generation_item_type(self):
         raw = (
@@ -223,14 +497,34 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
             patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
             patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
             patch.object(codex_subscription_image, "image_runtime_preflight", return_value={"transport": "user_runner"}),
-            patch.object(codex_subscription_image, "_subscription_model_catalog", return_value=[
-                {"model": "transport-a", "effort": "low", "priority": 1},
-                {"model": "transport-b", "effort": "medium", "priority": 2},
-            ]),
-            patch.object(codex_subscription_image, "_probe_transport_model",
-                         side_effect=lambda _c, model, effort: (
-                             probes.append((model, effort)) or (model == "transport-b", "probe")
+            patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                         return_value=self._catalog_payload(
+                             ("transport-a", "low"), ("transport-b", "medium"))),
+            patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
+                         side_effect=lambda _c, model, effort, *, candidate_provenance: (
+                             probes.append((model, effort)) or {
+                                 "status": "PASS" if model == "transport-b" else "BLOCKED",
+                                 "failure_class": None if model == "transport-b"
+                                 else "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+                                 "returncode": 0,
+                                 "timed_out": False,
+                                 "request_id": None,
+                                 "durable_result_found": False,
+                                 "sentinel_completed": model == "transport-b",
+                                 "turn_completed": model == "transport-b",
+                                 "image_generation_call_count": 0,
+                                 "codex_resolution": "user_runner",
+                                 "transport_model_source": "LOGIN_CATALOG_PROBE",
+                                 "candidate_model": candidate_provenance["model"],
+                                 "candidate_effort": candidate_provenance["effort"],
+                                 "candidate_priority": candidate_provenance["priority"],
+                                 "candidate_catalog_member": candidate_provenance["candidate_catalog_member"],
+                                 "catalog_source": candidate_provenance["catalog_source"],
+                                 "catalog_sha256": candidate_provenance["catalog_sha256"],
+                                 "catalog_entry_count": candidate_provenance["catalog_entry_count"],
+                             }
                          )),
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex") as external_runner,
         ):
             row = codex_subscription_image.payload_capability_preflight(
                 model="gpt-image-2.5-flare", quality="high")
@@ -238,7 +532,106 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertEqual(row["transport_model"], "transport-b")
         self.assertEqual(row["transport_effort"], "medium")
         self.assertEqual(probes, [("transport-a", "low"), ("transport-b", "medium")])
+        self.assertTrue(row["candidate_catalog_member"])
+        self.assertEqual(row["catalog_source"], "LOGIN_ACCOUNT_MODEL_CATALOG")
+        self.assertEqual(row["catalog_sha256"], "a" * 64)
+        external_runner.assert_not_called()
         self.assertFalse(row["api_key_required"])
+        self.assertFalse(row["image_attempt_authority_called"])
+        self.assertFalse(row["image_generation_called"])
+
+    def test_success_on_first_candidate_does_not_fan_out(self):
+        probe = {
+            "status": "PASS", "failure_class": None, "returncode": 0, "timed_out": False,
+            "request_id": None, "durable_result_found": False, "sentinel_completed": True,
+            "turn_completed": True, "image_generation_call_count": 0,
+            "codex_resolution": "user_runner", "transport_model_source": "LOGIN_CATALOG_PROBE",
+        }
+        with (
+            patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+            patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
+            patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                         return_value=self._catalog_payload(
+                             ("transport-a", "low"), ("transport-b", "medium"))),
+            patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
+                         return_value=probe) as transport_probe,
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex") as external_runner,
+        ):
+            result = codex_subscription_image.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high")
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(transport_probe.call_count, 1)
+        self.assertEqual(transport_probe.call_args.kwargs["candidate_provenance"]["model"], "transport-a")
+        external_runner.assert_not_called()
+
+    def test_timeout_or_invalid_result_does_not_probe_second_catalog_model(self):
+        for failure_class in (
+            "LOGIN_AUTH_TRANSPORT_PROBE_TIMEOUT",
+            "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT",
+        ):
+            with self.subTest(failure_class=failure_class):
+                probe = {
+                    "status": "BLOCKED", "failure_class": failure_class, "returncode": None,
+                    "timed_out": failure_class.endswith("TIMEOUT"), "request_id": "safe-id",
+                    "durable_result_found": False, "sentinel_completed": False,
+                    "turn_completed": False, "image_generation_call_count": 0,
+                }
+                with (
+                    patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+                    patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+                    patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
+                    patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                                 return_value=self._catalog_payload("transport-a", "transport-b")),
+                    patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
+                                 return_value=probe) as transport_probe,
+                    patch.object(codex_subscription_image.codex_user_runner, "run_codex") as external_runner,
+                ):
+                    result = codex_subscription_image.payload_capability_preflight(
+                        model="gpt-image-2.5-flare", quality="high")
+                self.assertEqual(result["status"], "BLOCKED")
+                self.assertEqual(transport_probe.call_count, 1)
+                self.assertEqual(transport_probe.call_args.kwargs["candidate_provenance"]["model"], "transport-a")
+                external_runner.assert_not_called()
+
+    def test_blocked_transport_preflight_preserves_failure_class_and_no_raw_text(self):
+        with (
+            patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=True),
+            patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
+            patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                         return_value=self._catalog_payload("transport-a")),
+            patch.object(codex_subscription_image, "_probe_transport_model_diagnostic", return_value={
+                "status": "BLOCKED",
+                "failure_class": "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT",
+                "failure_stage": "transport_probe",
+                "candidate_model": "transport-a",
+                "returncode": 0,
+                "timed_out": False,
+                "request_id": None,
+                "durable_result_found": False,
+                "sentinel_completed": False,
+                "turn_completed": True,
+                "image_generation_call_count": 0,
+                "exception_class": None,
+                "codex_resolution": "user_runner",
+                "transport_model_source": "LOGIN_CATALOG_PROBE",
+                "candidate_catalog_member": True,
+                "catalog_source": "LOGIN_ACCOUNT_MODEL_CATALOG",
+                "catalog_sha256": "a" * 64,
+                "catalog_entry_count": 1,
+            }),
+            patch.object(codex_subscription_image.codex_user_runner, "run_codex") as external_runner,
+        ):
+            row = codex_subscription_image.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high")
+        self.assertEqual(row["failure_class"], "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT")
+        self.assertEqual(row["safe_failure_class"], "LOGIN_AUTH_TRANSPORT_PROBE_INVALID_RESULT")
+        self.assertEqual(row["failure_stage"], "transport_probe")
+        self.assertEqual(row["candidate_failures"][0]["candidate_model"], "transport-a")
+        self.assertTrue(row["candidate_failures"][0]["candidate_catalog_member"])
+        self.assertEqual(row["candidate_failures"][0]["catalog_sha256"], "a" * 64)
+        external_runner.assert_not_called()
         self.assertFalse(row["image_attempt_authority_called"])
         self.assertFalse(row["image_generation_called"])
 
