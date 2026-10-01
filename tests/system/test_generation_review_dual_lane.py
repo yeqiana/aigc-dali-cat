@@ -207,6 +207,14 @@ def test_slow_review_pauses_refill_then_resumes_without_canceling_active_generat
             stack.enter_context(patch.object(image_scheduler, "async_backend_worker", generation))
             stack.enter_context(patch.object(image_scheduler, "ledger_begin", lambda *_a: (True, "")))
             stack.enter_context(patch.object(image_scheduler, "ledger_success", lambda *_a: (True, "")))
+            stack.enter_context(patch.object(
+                image_scheduler, "_persist_generation_identity",
+                lambda _ep, item, _result=None: {
+                    "ok": True,
+                    "generation_key": item.get("generation_key"),
+                    "attempt_index": item.get("attempt_index") or 1,
+                    "reason": "synthetic_dual_lane_fixture",
+                }))
             stack.enter_context(patch.object(image_scheduler, "ledger_tech_fail", lambda *_a: None))
             stack.enter_context(patch.object(image_scheduler.raw_candidate_budget, "summary", lambda *_a, **_k: {"available": 99}))
             stack.enter_context(patch.object(image_scheduler.frame_scout, "required", lambda *_a: True))

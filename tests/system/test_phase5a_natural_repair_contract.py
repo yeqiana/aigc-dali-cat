@@ -186,6 +186,14 @@ def test_natural_final_review_repair_flows_through_one_wave_scheduler_and_review
     monkeypatch.setattr(generation_attempt_authority, "reserve", reserve_stub)
     monkeypatch.setattr(generation_attempt_authority, "commit_dispatch", commit)
     monkeypatch.setattr(generation_attempt_authority, "mark_observed", lambda *_a, **_k: None)
+    monkeypatch.setattr(
+        generation_attempt_authority, "load_attempt",
+        lambda *_a, **_k: {
+            "attempt_index": 2,
+            "generation_key": "canary/frame-01/attempt-2",
+            "status": "SUCCEEDED",
+        },
+    )
     monkeypatch.setattr(image_scheduler.resource_library, "ensure_fresh", lambda *_a, **_k: None)
     monkeypatch.setattr(image_scheduler.production_recovery, "reconcile_locked", lambda *_a, **_k: None)
     monkeypatch.setattr(scheduler_core, "terminalize_superseded_history", lambda *_a, **_k: None)

@@ -494,6 +494,135 @@ async def async_backend_worker(ep:Path,item:dict,timeout:int,codex:str|None)->di
     return result
 
 
+def _generation_identity_from_result(ep: Path, item: dict, result: dict | None = None) -> dict:
+    """Resolve one committed Generation Attempt identity from durable evidence."""
+    result = result if isinstance(result, dict) else {}
+    budget = result.get("candidate_budget") if isinstance(result.get("candidate_budget"), dict) else {}
+    authority = budget.get("authority") if isinstance(budget.get("authority"), dict) else {}
+    lifecycle = production_recovery._read(production_recovery.lifecycle_path(ep, item))
+    if not isinstance(lifecycle, dict):
+        lifecycle = {}
+
+    generation_key = str(
+        budget.get("generation_key")
+        or authority.get("generation_key")
+        or lifecycle.get("generation_key")
+        or production_recovery.generation_key_for_item(ep, item)
+        or ""
+    )
+    attempt_index = int(
+        budget.get("attempt_index")
+        or authority.get("attempt_index")
+        or lifecycle.get("attempt_index")
+        or lifecycle.get("attempt")
+        or item.get("attempt_index")
+        or item.get("attempts")
+        or 0
+    )
+    if not generation_key or attempt_index <= 0:
+        return {
+            "ok": False,
+            "generation_key": generation_key or None,
+            "attempt_index": attempt_index or None,
+            "reason": "generation_identity_missing",
+        }
+
+    key = logical_asset_identity.frame_asset_key(ep, int(item.get("frame") or 0))
+    try:
+        attempt = generation_attempt_authority.load_attempt(ep, key, attempt_index)
+    except Exception as exc:
+        return {
+            "ok": False,
+            "generation_key": generation_key,
+            "attempt_index": attempt_index,
+            "reason": f"generation_attempt_authority_unavailable:{type(exc).__name__}",
+        }
+    if not isinstance(attempt, dict):
+        return {
+            "ok": False,
+            "generation_key": generation_key,
+            "attempt_index": attempt_index,
+            "reason": "generation_attempt_authority_missing",
+        }
+    if str(attempt.get("generation_key") or "") != generation_key:
+        return {
+            "ok": False,
+            "generation_key": generation_key,
+            "attempt_index": attempt_index,
+            "reason": "generation_key_authority_mismatch",
+        }
+    if str(attempt.get("status") or "").upper() != "SUCCEEDED":
+        return {
+            "ok": False,
+            "generation_key": generation_key,
+            "attempt_index": attempt_index,
+            "reason": "generation_attempt_not_succeeded",
+        }
+    return {
+        "ok": True,
+        "generation_key": generation_key,
+        "attempt_index": attempt_index,
+        "reason": "generation_attempt_authority_verified",
+    }
+
+
+def _persist_generation_identity(ep: Path, item: dict, result: dict | None = None) -> dict:
+    """Persist Generation identity on the canonical Queue Item after success."""
+    identity = _generation_identity_from_result(ep, item, result)
+    if identity.get("ok") is not True:
+        return identity
+    existing_key = str(item.get("generation_key") or "")
+    existing_attempt = int(item.get("attempt_index") or 0)
+    if existing_key and existing_key != identity["generation_key"]:
+        return {**identity, "ok": False, "reason": "queue_generation_key_conflict"}
+    if existing_attempt and existing_attempt != int(identity["attempt_index"]):
+        return {**identity, "ok": False, "reason": "queue_attempt_index_conflict"}
+    item["generation_key"] = identity["generation_key"]
+    item["attempt_index"] = int(identity["attempt_index"])
+    return identity
+
+
+def reconcile_generated_identities(ep: Path) -> dict:
+    """Repair missing Queue identity from lifecycle + MySQL Attempt Authority only.
+
+    Resume-safe: this never dispatches a Provider or reserves an Attempt.
+    """
+    ep = Path(ep).resolve()
+    repaired = []
+    blocked = []
+    with queue_transaction(ep):
+        q = load_queue(ep)
+        changed = False
+        for item in q.get("items") or []:
+            if not isinstance(item, dict) or item.get("status") != "generated":
+                continue
+            if item.get("generation_key") and int(item.get("attempt_index") or 0) > 0:
+                continue
+            identity = _persist_generation_identity(ep, item)
+            if identity.get("ok") is True:
+                repaired.append({
+                    "id": item.get("id"),
+                    "frame": item.get("frame"),
+                    "generation_key": identity.get("generation_key"),
+                    "attempt_index": identity.get("attempt_index"),
+                })
+                changed = True
+            else:
+                blocked.append({
+                    "id": item.get("id"),
+                    "frame": item.get("frame"),
+                    "reason": identity.get("reason"),
+                })
+        if changed:
+            save_queue(ep, q)
+    return {
+        "repaired": repaired,
+        "blocked": blocked,
+        "provider_dispatch_count": 0,
+        "attempt_reservation_count": 0,
+    }
+
+
 def run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|None)->int:
     """V2.7 async scheduler entry.
 
@@ -699,28 +828,33 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
                     production_recovery.mark_terminal(ep,item,"SUCCESS_PREPARED")
                     ok,msg=ledger_success(ep,item,result)
             if ok:
-                item["status"]="generated"
-                item["output_path"]=repo_rel(Path(result["output"]))
-                if result.get("log"):
-                    item["log_path"]=repo_rel(Path(result["log"]))
-                item["completed_at"]=now()
-                item["last_error"]=None
-                item.pop("technical_failure_code",None)
-                item.pop("external_block",None)
-                item.pop("retry_exhausted",None)
-                item["prompt_package"]=result.get("prompt_package")
-                production_recovery.mark_terminal(ep,item,"COMMITTED")
-                episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
-                _telemetry_image(ep,obs_item,"IMAGE_GENERATION_SUCCEEDED",duration_ms=observed_ms,status="generated")
-                _telemetry_image(ep,obs_item,"ARTIFACT_COMMITTED",duration_ms=_observed_ms(observed_at,now()),status="committed")
-                if item.get("scope")=="repair":
-                    _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status="generated")
-                    _telemetry_image(ep,obs_item,"REPAIR_GENERATION_FINISHED",duration_ms=observed_ms,status="generated")
-                if review_enabled:
-                    queued=review_queue.enqueue_generated(q,episode=ep,source_item=item,
-                        artifact=Path(result["output"]),artifact_path=item["output_path"])
-                    if queued.get("status")=="ENQUEUED":
-                        review_changed.set()
+                identity=_persist_generation_identity(ep,item,result)
+                if identity.get("ok") is not True:
+                    ok=False
+                    msg="GENERATION_IDENTITY_PERSIST_FAILED:"+str(identity.get("reason") or "unknown")
+                else:
+                    item["status"]="generated"
+                    item["output_path"]=repo_rel(Path(result["output"]))
+                    if result.get("log"):
+                        item["log_path"]=repo_rel(Path(result["log"]))
+                    item["completed_at"]=now()
+                    item["last_error"]=None
+                    item.pop("technical_failure_code",None)
+                    item.pop("external_block",None)
+                    item.pop("retry_exhausted",None)
+                    item["prompt_package"]=result.get("prompt_package")
+                    production_recovery.mark_terminal(ep,item,"COMMITTED")
+                    episode_performance.safe_record_queue_image_attempt(ep,item,status="generated")
+                    _telemetry_image(ep,obs_item,"IMAGE_GENERATION_SUCCEEDED",duration_ms=observed_ms,status="generated")
+                    _telemetry_image(ep,obs_item,"ARTIFACT_COMMITTED",duration_ms=_observed_ms(observed_at,now()),status="committed")
+                    if item.get("scope")=="repair":
+                        _telemetry_image(ep,obs_item,"REPAIR_FINISHED",duration_ms=observed_ms,status="generated")
+                        _telemetry_image(ep,obs_item,"REPAIR_GENERATION_FINISHED",duration_ms=observed_ms,status="generated")
+                    if review_enabled:
+                        queued=review_queue.enqueue_generated(q,episode=ep,source_item=item,
+                            artifact=Path(result["output"]),artifact_path=item["output_path"])
+                        if queued.get("status")=="ENQUEUED":
+                            review_changed.set()
             else:
                 if not msg:
                     msg="image backend failed without terminal output"
@@ -782,6 +916,7 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
         review_stop.set();review_changed.set()
         await review_task
 
+    reconcile_generated_identities(ep)
     final_q=load_queue(ep)
     rc=_scheduler_terminal_rc(final_q,has_block=has_block,has_failure=has_failure,ep=ep)
     try:
