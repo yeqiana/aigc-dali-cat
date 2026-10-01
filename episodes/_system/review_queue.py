@@ -13,6 +13,7 @@ ACTIVE = {"queued", "running"}
 TERMINAL = {"finalized", "failed", "stale"}
 FAST_SCOUT = "FAST_SCOUT"
 FINAL_SEMANTIC = "FINAL_SEMANTIC"
+PHASE5A_SINGLE_FRAME = "PHASE5A_SINGLE_FRAME"
 _REVIEW_ROLES = {FAST_SCOUT: "vision.fast", FINAL_SEMANTIC: "vision.final"}
 
 
@@ -58,6 +59,12 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
         "attempt_index": int(source_item.get("attempt_index") or source_item.get("attempts") or 1),
         "artifact_path": str(artifact_path).replace("\\", "/"),
         "artifact_sha256": artifact_sha256.lower(),
+        "frame_contract_sha256": str(source_item.get("frame_contract_sha256") or "").lower(),
+        "prompt_package_sha256": str(
+            source_item.get("prompt_package_sha256")
+            or ((source_item.get("prompt_package") or {}).get("sha256")
+                if isinstance(source_item.get("prompt_package"), dict) else "")
+        ).lower(),
         "review_kind": review_kind,
         "source_scope": str(source_item.get("scope") or ""),
         "repair_wave_id": str(source_item.get("repair_wave_id") or ""),
@@ -80,7 +87,8 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
 
 
 def enqueue_final_semantic(q: dict, *, episode: Path, source_item: dict,
-                           artifact: Path, artifact_path: str) -> dict:
+                           artifact: Path, artifact_path: str,
+                           review_scope: str | None = None) -> dict:
     """Enqueue the official final semantic review for one committed candidate.
 
     The caller owns persistence/queue locking, just as with enqueue_generated.
@@ -105,7 +113,24 @@ def enqueue_final_semantic(q: dict, *, episode: Path, source_item: dict,
                      artifact_path=artifact_path,
                      artifact_sha256=fast_frame_scout.sha256_file(artifact),
                      policy=policy, review_kind=FINAL_SEMANTIC)
-    if result.get("status") == "ENQUEUED":
+    row = result.get("item") if isinstance(result.get("item"), dict) else None
+    scope = str(review_scope or "").strip()
+    if scope:
+        if scope != PHASE5A_SINGLE_FRAME:
+            return {"status": "BLOCKED", "reason": "UNSUPPORTED_FINAL_REVIEW_SCOPE"}
+        if row is not None:
+            existing_scope = str(row.get("review_scope") or "")
+            if existing_scope and existing_scope != scope:
+                return {"status": "BLOCKED", "reason": "FINAL_REVIEW_SCOPE_CONFLICT"}
+            row["review_scope"] = scope
+    if result.get("status") == "ALREADY_ENQUEUED" and row is not None:
+        if scope == PHASE5A_SINGLE_FRAME and row.get("status") == "stale":
+            row.update(
+                status="queued", claim_token=None, lease_expires_at=None,
+                receipt=None, queued_at=now(), review_scope=scope,
+            )
+            result = {"status": "REENQUEUED_STALE", "item": row}
+    if result.get("status") in {"ENQUEUED", "REENQUEUED_STALE"}:
         telemetry(episode, "REVIEW_ENQUEUED", result["item"], queue_depth=depth(q))
     return result
 
@@ -147,8 +172,11 @@ def _current_final_candidate_matches(ep: Path, item: dict) -> bool:
     import frame_semantic_review
 
     try:
+        only_frames = ([int(item.get("frame") or 0)]
+                       if item.get("review_scope") == PHASE5A_SINGLE_FRAME else None)
         frame = next((row for row in frame_semantic_review.reviewable_frame_records(
-            ep, require_files=True) if str(row.get("frame") or "").zfill(2)
+            ep, require_files=True, only_frames=only_frames)
+            if str(row.get("frame") or "").zfill(2)
             == f"{int(item.get('frame') or 0):02d}"), None)
     except Exception:
         return False
@@ -180,7 +208,19 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
     # If official evidence was committed before the queue completion write,
     # adopt it. `verify_episode` checks the canonical receipt bindings and does
     # not make another model call.
-    verified = not frame_semantic_review.verify_episode(ep, metadata_only=True)
+    scoped = item.get("review_scope") == PHASE5A_SINGLE_FRAME
+    if scoped:
+        try:
+            scoped_frames = frame_semantic_review.frame_records(
+                ep, require_files=False, only_frames=[int(item["frame"])])
+            verified = not frame_semantic_review.verify_scoped_review(
+                ep, scoped_frames,
+                review_scope=frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE,
+                metadata_only=True)
+        except Exception:
+            verified = False
+    else:
+        verified = not frame_semantic_review.verify_episode(ep, metadata_only=True)
     current_review = frame_review_persistence.load(ep, int(item["frame"])) if verified else None
     if (verified and isinstance(current_review, dict)
             and current_review.get("generation_key") == item.get("generation_key")
@@ -195,7 +235,11 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
     else:
         reused = False
         rc = frame_semantic_review.run_critic(
-            ep, attempt=review_attempt, codex_raw=codex, timeout=timeout)
+            ep, attempt=review_attempt, codex_raw=codex, timeout=timeout,
+            target_frames=([int(item["frame"])] if scoped else None),
+            review_scope=(frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE
+                          if scoped else "FULL_FRAME_SET"),
+            review_item=item)
         pending = frame_semantic_review.pending_request_path(ep, review_attempt)
         candidate = ep / frame_semantic_review.CANDIDATE_REL
         if rc == 0 and pending.is_file() and candidate.is_file():
@@ -208,7 +252,15 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
                           if (ep / frame_semantic_review.SUMMARY_REL).is_file() else {})
         critic_receipt = ((critic_summary.get("critic_provenance") or {}).get("model_execution_receipt")
                           if isinstance(critic_summary, dict) else None)
-        verify_errors = frame_semantic_review.verify_episode(ep, metadata_only=True)
+        if scoped and rc == 0:
+            scoped_frames = frame_semantic_review.frame_records(
+                ep, require_files=False, only_frames=[int(item["frame"])])
+            verify_errors = frame_semantic_review.verify_scoped_review(
+                ep, scoped_frames,
+                review_scope=frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE,
+                metadata_only=True)
+        else:
+            verify_errors = frame_semantic_review.verify_episode(ep, metadata_only=True)
     if reused:
         verify_errors = []
 
@@ -225,12 +277,21 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
 
     issues = current_review.get("issue_codes") or []
     content_finding = bool(issues or current_review.get("decision") == "fail")
-    critic_receipt_valid = isinstance(critic_receipt, dict) and (
-        critic_receipt.get("status") == "SUCCESS"
-        and critic_receipt.get("model_role") == "vision.final"
-        and critic_receipt.get("effective_model") == bound.get("model")
-        and critic_receipt.get("reasoning_effort") == bound.get("reasoning_effort")
-        and critic_receipt.get("model_policy_sha256") == bound.get("model_policy_sha256")
+    critic_receipt_valid = isinstance(critic_receipt, dict) and not (
+        frame_semantic_review.validate_final_semantic_execution_receipt(
+            critic_receipt,
+            {
+                "review_item_id": str(item.get("review_key") or ""),
+                "logical_asset_key": item.get("logical_asset_key"),
+                "generation_key": item.get("generation_key"),
+                "attempt_index": review_attempt,
+                "candidate_sha256": item.get("artifact_sha256"),
+                "frame_contract_sha256": item.get("frame_contract_sha256"),
+                "prompt_package_sha256": item.get("prompt_package_sha256"),
+                "model_policy_sha256": item.get("model_policy_sha256"),
+                "evidence_fingerprint": current_review.get("evidence_fingerprint"),
+            },
+        )
     )
     passed = (current_review.get("decision") == "pass" and not issues and rc == 0
               and not verify_errors and critic_receipt_valid)

@@ -1301,8 +1301,10 @@ def run_production_subpath(ep: str | Path, *, canary_id: str, timeout: int = 900
                                  if row.get("id") == preflight["queue_item_id"]), {})
             enqueued_final = review_queue.enqueue_final_semantic(
                 q, episode=preflight["episode"], source_item=current_item,
-                artifact=artifact, artifact_path=artifact_rel)
-            if enqueued_final.get("status") not in {"ENQUEUED", "ALREADY_ENQUEUED"}:
+                artifact=artifact, artifact_path=artifact_rel,
+                review_scope=review_queue.PHASE5A_SINGLE_FRAME)
+            if enqueued_final.get("status") not in {
+                    "ENQUEUED", "ALREADY_ENQUEUED", "REENQUEUED_STALE"}:
                 raise CanaryContractError("CANARY_FINAL_REVIEW_ENQUEUE_FAILED: "
                                           + str(enqueued_final.get("reason") or enqueued_final.get("status")))
             scheduler_core.save_queue(preflight["episode"], q)

@@ -267,7 +267,15 @@ def launch(
             "started_at": started_at,
             "finished_at": finished_at,
             "duration_ms": duration_ms,
-            "status": "SUCCESS" if int(done.returncode) == 0 else "FAILED",
+            # Final Semantic success is not authoritative until the caller has
+            # validated turn completion, durable output and the candidate's
+            # review-item/generation bindings. Its receipt is finalized later.
+            "status": ("PENDING_VALIDATION" if role == "vision.final"
+                       and context.get("defer_final_semantic_success") is True
+                       else "SUCCESS" if int(done.returncode) == 0 else "FAILED"),
+            "returncode": int(done.returncode),
+            "runner_request_id": str(remote.get("request_id") or ""),
+            "thread_id": str(remote.get("thread_id") or ""),
             "model_binding_source": "EPISODE_BOUND_POLICY",
             "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
             **context,

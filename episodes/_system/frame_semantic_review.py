@@ -52,6 +52,7 @@ TARGET_CONTRACT = (2, 0, 3, 3)
 SCHEMA_VERSION = 2
 ABSOLUTE_MAX_FULL_REVIEW_SHARDS = 6
 FULL_REVIEW_FANOUT_MIN_FRAMES = 6
+PHASE5A_SINGLE_FRAME_SCOPE = "PHASE5A_SINGLE_FRAME"
 
 CHECKS = [
     "scene_storyboard_fidelity",
@@ -391,6 +392,339 @@ def frame_evidence_fingerprint(frame: dict, *, contexts: dict, phase3_contexts: 
     return hashlib.sha256(raw).hexdigest()
 
 
+def review_evidence_fingerprint(
+    frame: dict, *, contexts: dict, phase3_contexts: dict,
+    policy_sha256: str | None, review_item_id: str, attempt_index: int,
+    frame_contract_sha256: str | None = None,
+    prompt_package_sha256: str | None = None,
+    reviewer_role: str = "vision.final",
+    schema_version: int = SCHEMA_VERSION,
+) -> str | None:
+    """Canonical identity for a queue-bound final semantic review.
+
+    This extends the stable frame evidence fingerprint with the review work item
+    and reviewer role. It deliberately excludes paths, process IDs and clocks.
+    """
+    base = frame_evidence_fingerprint(
+        frame, contexts=contexts, phase3_contexts=phase3_contexts,
+        policy_sha256=policy_sha256, schema_version=schema_version)
+    item_id = str(review_item_id or "").strip()
+    role = str(reviewer_role or "").strip()
+    if not base or not item_id or not role:
+        return None
+    payload = {
+        "evidence_type": "FINAL_SEMANTIC_REVIEW",
+        "frame_evidence_fingerprint": base,
+        "review_item_id": item_id,
+        "attempt_index": int(attempt_index),
+        "logical_asset_key": str(frame.get("logical_asset_key") or ""),
+        "generation_key": str(frame.get("generation_key") or ""),
+        "candidate_sha256": str(frame.get("sha256") or "").lower(),
+        "frame_contract_sha256": str(frame_contract_sha256 or "").lower(),
+        "prompt_package_sha256": str(prompt_package_sha256 or "").lower(),
+        "model_policy_sha256": str(policy_sha256 or "").lower(),
+        "reviewer_role": role,
+        "review_schema_version": int(schema_version),
+    }
+    raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def validate_final_semantic_execution_receipt(receipt: dict, expected: dict) -> list[str]:
+    """Validate durable Final Semantic execution evidence against one work item."""
+    errors: list[str] = []
+    if not isinstance(receipt, dict):
+        return ["model execution receipt missing"]
+    required = {
+        "receipt_schema_version": 2,
+        "status": "SUCCESS",
+        "model_role": "vision.final",
+        "profile": "vision_final",
+        "requested_model": "gpt-6-luna",
+        "effective_model": "gpt-6-luna",
+        "reasoning_effort": "high",
+        "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+        "returncode": 0,
+        "turn_completed": True,
+    }
+    for field, value in required.items():
+        if receipt.get(field) != value:
+            errors.append(f"receipt {field} mismatch")
+    for field in (
+        "review_item_id", "logical_asset_key", "generation_key", "attempt_index",
+        "candidate_sha256", "frame_contract_sha256", "prompt_package_sha256",
+        "model_policy_sha256", "evidence_fingerprint", "runner_request_id",
+        "result_sha256", "result_ref", "created_at",
+    ):
+        actual = receipt.get(field)
+        wanted = expected.get(field)
+        if field == "attempt_index":
+            try:
+                matches = int(actual or 0) == int(wanted or 0)
+            except (TypeError, ValueError):
+                matches = False
+        else:
+            matches = str(actual or "").lower() == str(wanted or "").lower()
+        if wanted not in (None, "") and not matches:
+            errors.append(f"receipt {field} mismatch")
+        elif actual in (None, ""):
+            errors.append(f"receipt {field} missing")
+    if receipt.get("provider_reported_model"):
+        errors.append("receipt must not claim provider-reported model without provider evidence")
+    return errors
+
+
+def _read_model_execution_receipt(ep: Path, receipt_ref: str | None) -> tuple[dict | None, Path | None]:
+    raw = str(receipt_ref or "").strip()
+    if not raw:
+        return None, None
+    path = repo_path(raw, "Final Semantic model execution receipt")
+    if not path.is_absolute():
+        path = (ROOT / path).resolve()
+    if not path.is_file():
+        return None, path
+    try:
+        value = read_json(path)
+    except Exception:
+        return None, path
+    return (value if isinstance(value, dict) else None), path
+
+
+def _find_pending_final_semantic_receipt(
+    ep: Path, *, review_item: dict, frame: dict, attempt: int,
+) -> tuple[dict, Path]:
+    """Find exactly one provisional receipt matching a pending review item."""
+    directory = Path(ep) / "meta/provider-receipts/model-executions"
+    expected = {
+        "status": "PENDING_VALIDATION",
+        "model_role": "vision.final",
+        "profile": "vision_final",
+        "requested_model": "gpt-6-luna",
+        "effective_model": "gpt-6-luna",
+        "reasoning_effort": "high",
+        "model_policy_sha256": bound_review_policy_sha256(ep),
+        "logical_asset_key": frame.get("logical_asset_key"),
+        "generation_key": frame.get("generation_key"),
+        "attempt_index": int(attempt),
+        "artifact_sha256": str(frame.get("sha256") or "").lower(),
+        "review_item_id": str(review_item.get("review_key") or review_item.get("id") or ""),
+    }
+    matches: list[tuple[dict, Path]] = []
+    for path in sorted(directory.glob("*.json")) if directory.is_dir() else []:
+        try:
+            value = read_json(path)
+        except Exception:
+            continue
+        if isinstance(value, dict) and all(value.get(key) == expected_value
+                                           for key, expected_value in expected.items()):
+            matches.append((value, path))
+    if len(matches) != 1:
+        raise RuntimeError("FINAL_SEMANTIC_PENDING_RECEIPT_NOT_UNIQUE")
+    return matches[0]
+
+
+def _finalize_final_semantic_receipt(
+    ep: Path, *, receipt_ref: str | None, review_item: dict | None,
+    frame: dict, candidate: Path, log_path: Path, returncode: int,
+    remote: dict, contexts: dict,
+) -> dict:
+    """Promote a provisional runner receipt only after completed durable output."""
+    receipt, path = _read_model_execution_receipt(ep, receipt_ref)
+    if not isinstance(receipt, dict) or path is None:
+        raise RuntimeError("FINAL_SEMANTIC_MODEL_EXECUTION_RECEIPT_MISSING")
+    item = review_item if isinstance(review_item, dict) else {}
+    item_id = str(item.get("review_item_id") or item.get("id") or item.get("review_key") or "")
+    request_id = str((remote or {}).get("request_id") or "")
+    if not item_id or not request_id or int(returncode) != 0:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_EXECUTION_BINDING_MISSING")
+    try:
+        import base64
+        import codex_user_runner
+        durable = codex_user_runner.read_task_result(request_id)
+        raw = base64.b64decode(str(durable.get("output_base64") or ""), validate=True)
+        durable_log = raw.decode("utf-8-sig", errors="replace")
+    except Exception as exc:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_RESULT_INVALID") from exc
+    if (not durable or str(durable.get("request_id") or "") != request_id
+            or int(durable.get("returncode", -1)) != 0):
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_RESULT_NOT_COMPLETED")
+    events = []
+    thread_id = ""
+    for raw_line in durable_log.splitlines():
+        try:
+            event = json.loads(raw_line)
+        except Exception:
+            continue
+        if isinstance(event, dict):
+            events.append(event)
+            if event.get("type") == "thread.started":
+                thread_id = str((event.get("thread") or {}).get("id") or "")
+    has_turn_completed = any(row.get("type") == "turn.completed" for row in events)
+    if not has_turn_completed:
+        raise RuntimeError("FINAL_SEMANTIC_TURN_NOT_COMPLETED")
+    import codex_critic_runner
+    durable_result = codex_critic_runner.recover_completed_agent_json(durable_log)
+    if not isinstance(durable_result, dict):
+        raise RuntimeError("FINAL_SEMANTIC_STRUCTURED_RESULT_NOT_DURABLE")
+    try:
+        result = read_json(candidate)
+    except Exception as exc:
+        raise RuntimeError("FINAL_SEMANTIC_RESULT_INVALID") from exc
+    if not isinstance(result, dict):
+        raise RuntimeError("FINAL_SEMANTIC_RESULT_INVALID")
+    if durable_result != result:
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_RESULT_MISMATCH")
+    if not log_path.is_file():
+        raise RuntimeError("FINAL_SEMANTIC_RUNNER_LOG_MISSING")
+    frame_no = str(frame.get("frame") or "").zfill(2)
+    phase3 = phase3_context_hashes(ep, frame_no)
+    policy_sha = bound_review_policy_sha256(ep)
+    identity = {**frame, "source_binding": source_binding(ep, frame_no)}
+    fingerprint = review_evidence_fingerprint(
+        identity, contexts=contexts, phase3_contexts=phase3,
+        policy_sha256=policy_sha, review_item_id=item_id,
+        attempt_index=int(item.get("attempt_index") or 0),
+        frame_contract_sha256=phase3.get("frame_contract_sha256"),
+        prompt_package_sha256=item.get("prompt_package_sha256"),
+    )
+    if not fingerprint:
+        raise RuntimeError("FINAL_SEMANTIC_EVIDENCE_FINGERPRINT_MISSING")
+    receipt.update({
+        "receipt_schema_version": 2,
+        "status": "SUCCESS",
+        "returncode": int(returncode),
+        "turn_completed": True,
+        "runner_request_id": request_id,
+        "thread_id": thread_id or str((remote or {}).get("thread_id") or ""),
+        "review_item_id": item_id,
+        "logical_asset_key": frame.get("logical_asset_key"),
+        "generation_key": frame.get("generation_key"),
+        "attempt_index": int(item.get("attempt_index") or 0),
+        "candidate_sha256": str(frame.get("sha256") or "").lower(),
+        "frame_contract_sha256": phase3.get("frame_contract_sha256"),
+        "prompt_package_sha256": item.get("prompt_package_sha256"),
+        "model_policy_sha256": policy_sha,
+        "evidence_fingerprint": fingerprint,
+        "candidate_result_sha256": sha256_file(candidate),
+        "result_sha256": hashlib.sha256(raw).hexdigest(),
+        "result_ref": repo_rel(log_path),
+        "result_sha256_source": "USER_RUNNER_DURABLE_OUTPUT",
+        "execution_completion_source": "USER_RUNNER_DURABLE_RESULT",
+        "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
+        "created_at": now(),
+    })
+    if not receipt.get("prompt_package_sha256"):
+        raise RuntimeError("FINAL_SEMANTIC_PROMPT_PACKAGE_BINDING_MISSING")
+    # Keep the SUCCESS receipt in memory until the candidate, frame/source
+    # bindings, queue identity, policy and fingerprint have all passed the
+    # pure commit planner. The runner's durable receipt remains
+    # PENDING_VALIDATION in the meantime.
+    return receipt
+
+
+def _commit_final_semantic_execution_receipt(
+    ep: Path, *, receipt_ref: str | None, validated_receipt: dict | None,
+) -> None:
+    """Persist a validated execution receipt at the start of the commit phase."""
+    if not isinstance(validated_receipt, dict):
+        raise RuntimeError("FINAL_SEMANTIC_MODEL_EXECUTION_RECEIPT_MISSING")
+    stored, path = _read_model_execution_receipt(ep, receipt_ref)
+    if not isinstance(stored, dict) or path is None:
+        raise RuntimeError("FINAL_SEMANTIC_MODEL_EXECUTION_RECEIPT_MISSING")
+    if (stored.get("status") not in {"PENDING_VALIDATION", "SUCCESS"}
+            or str(stored.get("call_id") or "") != str(validated_receipt.get("call_id") or "")):
+        raise RuntimeError("FINAL_SEMANTIC_PROVISIONAL_RECEIPT_BINDING_MISMATCH")
+    if stored.get("status") == "SUCCESS":
+        if stored != validated_receipt:
+            raise RuntimeError("FINAL_SEMANTIC_COMMITTED_RECEIPT_CONFLICT")
+        return
+    write_json(path, validated_receipt)
+
+
+def prepare_review_commit(
+    ep: Path, *, data: dict, reviewed: list[dict], contexts: dict,
+    provenance: dict, attempt: int, review_scope: str,
+    review_item: dict | None = None,
+) -> dict:
+    """Purely validate Final Semantic authority and construct a commit plan.
+
+    This function performs no filesystem, Ledger, queue, or Episode-stage writes.
+    """
+    version = episode_contract_version(ep)
+    directing_v3 = directing_v3_required(ep)
+    errors = validate_candidate_gate_rows(data.get("frames"), reviewed, version, directing_v3)
+    rows_by_frame = {str(row.get("frame") or "").zfill(2): row
+                     for row in (data.get("frames") or []) if isinstance(row, dict)}
+    candidate_errors = validate_candidate_rows(
+        data.get("frames"), reviewed, version=version, directing_v3=directing_v3)
+    errors.extend("candidate validation: " + error for error in candidate_errors)
+    global_codes = data.get("issue_codes")
+    if not isinstance(global_codes, list):
+        errors.append("global issue_codes must be list")
+    elif any(code not in ISSUE_CODES for code in global_codes):
+        errors.append(f"global issue_codes contain unknown values: {global_codes}")
+    elif global_codes:
+        errors.append(f"global issue_codes must be empty for PASS: {global_codes}")
+    if (data.get("summary") or {}).get("passed") is not True:
+        errors.append("critic summary.passed must be true")
+    for error in runtime_provenance.validate_critic_provenance(provenance):
+        errors.append("critic provenance invalid: " + error)
+    if review_scope not in {"FULL_FRAME_SET", PHASE5A_SINGLE_FRAME_SCOPE}:
+        errors.append("review scope invalid")
+    review_item_id = (str((review_item or {}).get("review_item_id")
+                          or (review_item or {}).get("id")
+                          or (review_item or {}).get("review_key") or "").strip())
+    if review_scope == PHASE5A_SINGLE_FRAME_SCOPE and (
+            not isinstance(review_item, dict) or not review_item_id):
+        errors.append("Phase5A final semantic review item binding missing")
+
+    if isinstance(review_item, dict):
+        frame = reviewed[0] if len(reviewed) == 1 else {}
+        phase3 = phase3_context_hashes(ep, str(frame.get("frame") or "")) if frame else {}
+        policy_sha = bound_review_policy_sha256(ep)
+        expected_fp = review_evidence_fingerprint(
+            {**frame, "source_binding": source_binding(ep, str(frame.get("frame") or ""))},
+            contexts=contexts, phase3_contexts=phase3,
+            policy_sha256=policy_sha, review_item_id=review_item_id,
+            attempt_index=int((review_item or {}).get("attempt_index") or 0),
+            frame_contract_sha256=phase3.get("frame_contract_sha256"),
+            prompt_package_sha256=(review_item or {}).get("prompt_package_sha256"),
+        ) if frame else None
+        expected = {
+            "review_item_id": review_item_id,
+            "logical_asset_key": review_item.get("logical_asset_key"),
+            "generation_key": review_item.get("generation_key"),
+            "attempt_index": review_item.get("attempt_index"),
+            "candidate_sha256": review_item.get("artifact_sha256"),
+            "frame_contract_sha256": phase3.get("frame_contract_sha256"),
+            "prompt_package_sha256": review_item.get("prompt_package_sha256"),
+            "model_policy_sha256": policy_sha,
+            "evidence_fingerprint": expected_fp,
+        }
+        receipt = provenance.get("model_execution_receipt")
+        errors.extend(validate_final_semantic_execution_receipt(receipt, expected))
+        if frame and (frame.get("logical_asset_key") != expected["logical_asset_key"]
+                      or frame.get("generation_key") != expected["generation_key"]
+                      or str(frame.get("sha256") or "").lower() != str(expected["candidate_sha256"] or "").lower()):
+            errors.append("review item does not bind the candidate generation identity")
+        if not expected["prompt_package_sha256"] or not expected["frame_contract_sha256"]:
+            errors.append("review item source contract binding missing")
+    elif review_scope == PHASE5A_SINGLE_FRAME_SCOPE:
+        errors.append("Phase5A model execution receipt missing")
+    if len(reviewed) != len(rows_by_frame) and review_scope == PHASE5A_SINGLE_FRAME_SCOPE:
+        errors.append("Phase5A candidate contains frames outside the bound review item")
+    if errors:
+        raise RuntimeError("final semantic authority validation failed: " + "; ".join(errors))
+    return {
+        "attempt": int(attempt),
+        "review_scope": review_scope,
+        "review_item_id": review_item_id or None,
+        "frames": [str(row.get("frame") or "").zfill(2) for row in reviewed],
+        "candidate_sha256": [str(row.get("sha256") or "").lower() for row in reviewed],
+        "ledger_actions": "prevalidated",
+    }
+
+
 def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
     if not phase4_contract.required(ep):
         return []
@@ -407,13 +741,25 @@ def phase4_binding_errors(ep: Path, frames: list[dict]) -> list[str]:
 
 
 
-def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
+def _normalized_frame_keys(only_frames: list[int | str] | tuple[int | str, ...] | None) -> set[str] | None:
+    if only_frames is None:
+        return None
+    keys = {f"{int(value):02d}" for value in only_frames}
+    if not keys:
+        raise ValueError("only_frames must not be empty")
+    return keys
+
+
+def frame_records(ep: Path, *, require_files: bool, only_frames: list[int | str] | tuple[int | str, ...] | None = None) -> list[dict]:
     ledger = production_ledger.load_authority(ep, default={}) or {}
     frames = ledger.get("frames")
     if not isinstance(frames, dict) or not frames:
         raise ValueError("production ledger frames missing")
+    selected = _normalized_frame_keys(only_frames)
     rows: list[dict] = []
     for key in sorted(frames):
+        if selected is not None and str(key).zfill(2) not in selected:
+            continue
         frame = frames[key]
         if not isinstance(frame, dict):
             raise ValueError(f"ledger frame {key} invalid")
@@ -447,10 +793,14 @@ def frame_records(ep: Path, *, require_files: bool) -> list[dict]:
             "sha256": expected_sha,
             **current_generation_binding(ep, key, asset, ledger),
         })
+    if selected is not None:
+        missing = sorted(selected - {row["frame"] for row in rows})
+        if missing:
+            raise ValueError(f"requested approved frames missing: {missing}")
     return rows
 
 
-def reviewable_frame_records(ep: Path, *, require_files: bool) -> list[dict]:
+def reviewable_frame_records(ep: Path, *, require_files: bool, only_frames: list[int | str] | tuple[int | str, ...] | None = None) -> list[dict]:
     """Return the complete production frame set before final promotion.
 
     Final semantic review is the authority that grants Production PASS.  It
@@ -462,8 +812,11 @@ def reviewable_frame_records(ep: Path, *, require_files: bool) -> list[dict]:
     frames = ledger.get("frames")
     if not isinstance(frames, dict) or not frames:
         raise ValueError("production ledger frames missing")
+    selected = _normalized_frame_keys(only_frames)
     rows: list[dict] = []
     for key in sorted(frames):
+        if selected is not None and str(key).zfill(2) not in selected:
+            continue
         frame = frames[key]
         if not isinstance(frame, dict):
             raise ValueError(f"ledger frame {key} invalid")
@@ -496,6 +849,10 @@ def reviewable_frame_records(ep: Path, *, require_files: bool) -> list[dict]:
             "ledger_status": status,
             **current_generation_binding(ep, key, asset, ledger),
         })
+    if selected is not None:
+        missing = sorted(selected - {row["frame"] for row in rows})
+        if missing:
+            raise ValueError(f"requested reviewable frames missing: {missing}")
     return rows
 
 
@@ -709,10 +1066,14 @@ def pending_request_path(ep: Path, attempt: int) -> Path:
     return ep / "meta" / f"{PENDING_REQUEST_PREFIX}{attempt}.json"
 
 
-def _pending_request_payload(ep: Path, frames: list[dict], attempt: int) -> dict:
+def _pending_request_payload(ep: Path, frames: list[dict], attempt: int,
+                             review_scope: str = "FULL_FRAME_SET",
+                             review_item: dict | None = None) -> dict:
     return {
         "schema_version": 1,
         "attempt": attempt,
+        "review_scope": review_scope,
+        "review_item": dict(review_item) if isinstance(review_item, dict) else None,
         "recorded_at": now(),
         "contexts": context_hashes(ep),
         "assets": [
@@ -744,6 +1105,8 @@ def _apply_candidate_gate(
     contexts: dict,
     provenance: dict,
     attempt: int,
+    review_scope: str = "FULL_FRAME_SET",
+    review_item: dict | None = None,
 ) -> int:
     """Let the final semantic critic close candidate -> PASS -> approved -> lock."""
     version = episode_contract_version(ep)
@@ -759,6 +1122,14 @@ def _apply_candidate_gate(
         for error in errors:
             print("FAIL:", error)
         return 3
+
+    # Final Semantic authority, source bindings, receipt and evidence identity
+    # must all validate before the first Ledger/projection mutation.
+    commit_plan = prepare_review_commit(
+        ep, data=data, reviewed=reviewed, contexts=contexts,
+        provenance=provenance, attempt=attempt, review_scope=review_scope,
+        review_item=review_item,
+    )
 
     rows = {str(row.get("frame") or "").zfill(2): row for row in data.get("frames") or []}
 
@@ -799,6 +1170,36 @@ def _apply_candidate_gate(
             preflight_errors.append(f"frame {key} cannot close FAIL from status={status}")
     if preflight_errors:
         raise RuntimeError("final semantic Ledger preflight failed: " + "; ".join(preflight_errors))
+
+    # Validate all remaining source/generation bindings before any PASS/LOCK
+    # write. The Ledger attempt already contains the canonical request contract;
+    # validate that recorded contract directly instead of waiting for the
+    # approved projection to exist.
+    frozen_sources = review_source_bindings(ep, reviewed)
+    if provenance.get("review_source_bindings") != frozen_sources:
+        raise RuntimeError("final semantic source bindings changed before commit")
+    for source in reviewed:
+        key = source["frame"]
+        if phase4_contract.required(ep):
+            ledger_row = ledger_frames.get(key) or {}
+            matching_attempt = next((entry for entry in reversed(ledger_row.get("attempts") or [])
+                                    if str(((entry.get("candidate") or {}).get("sha256") or "")).lower()
+                                    == str(source.get("sha256") or "").lower()), None)
+            if not isinstance(matching_attempt, dict):
+                raise RuntimeError(f"frame {key} has no generation attempt bound to candidate SHA")
+            phase4_errors = phase4_contract.verify_recorded_provenance(
+                ep, key, (matching_attempt.get("request") or {}).get("frame_contract"))
+            if phase4_errors:
+                raise RuntimeError("approved Frame Contract preflight failed: " + "; ".join(phase4_errors))
+
+    if isinstance(review_item, dict):
+        # The Final Semantic Model Execution Receipt is part of this commit,
+        # not something promoted to SUCCESS before the authority checks above.
+        _commit_final_semantic_execution_receipt(
+            ep,
+            receipt_ref=provenance.get("model_execution_receipt_ref"),
+            validated_receipt=provenance.get("model_execution_receipt"),
+        )
 
     failures: list[str] = []
     forced_frames: list[str] = []
@@ -846,7 +1247,7 @@ def _apply_candidate_gate(
     evidence = {
         "schema_version": 1,
         "attempt": attempt,
-        "review_scope": "CANDIDATE_FULL_FRAME_SET",
+        "review_scope": (PHASE5A_SINGLE_FRAME_SCOPE if review_scope == PHASE5A_SINGLE_FRAME_SCOPE else "CANDIDATE_FULL_FRAME_SET"),
         "critic_provenance": provenance,
         "reviewed_assets": [{"frame": x["frame"], "path": x["path_rel"], "sha256": x["sha256"]} for x in reviewed],
         "critic_result": data,
@@ -854,12 +1255,17 @@ def _apply_candidate_gate(
         "forced_pass_frames": forced_frames,
         "recorded_at": now(),
     }
+    evidence["review_commit_plan"] = commit_plan
     write_json(ep / "meta" / f"frame-semantic-candidate-attempt-{attempt}.json", evidence)
     if failures:
         print("FRAME SEMANTIC REVIEW FAIL: repair required frames=" + ",".join(failures))
         return 2
 
-    approved = frame_records(ep, require_files=True)
+    reviewed_keys = [row["frame"] for row in reviewed]
+    approved = frame_records(
+        ep, require_files=True,
+        only_frames=reviewed_keys if review_scope == PHASE5A_SINGLE_FRAME_SCOPE else None,
+    )
     before_sha = {row["frame"]: row["sha256"] for row in reviewed}
     after_sha = {row["frame"]: row["sha256"] for row in approved}
     if before_sha != after_sha:
@@ -869,7 +1275,10 @@ def _apply_candidate_gate(
         raise RuntimeError("approved Frame Contract binding failed: " + "; ".join(binding_errors))
     approved_sources = review_source_bindings(ep, approved)
     provenance = dict(provenance)
-    provenance["review_scope"] = "FULL_FRAME_SET"
+    provenance["review_scope"] = (
+        PHASE5A_SINGLE_FRAME_SCOPE
+        if review_scope == PHASE5A_SINGLE_FRAME_SCOPE else "FULL_FRAME_SET"
+    )
     provenance["reviewed_candidate_assets"] = evidence["reviewed_assets"]
     return _persist_candidate(
         ep,
@@ -879,6 +1288,8 @@ def _apply_candidate_gate(
         phashes=perceptual_rows(approved),
         provenance=provenance,
         frozen_sources=approved_sources,
+        verification_scope=review_scope,
+        review_item=review_item,
     )
 
 
@@ -892,8 +1303,34 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
     if not candidate.is_file():
         raise RuntimeError(f"semantic candidate missing: {candidate}")
     pending = read_json(request_path)
-    current = reviewable_frame_records(ep, require_files=True)
     expected_assets = pending.get("assets")
+    if not isinstance(expected_assets, list) or not expected_assets:
+        raise RuntimeError("pending semantic request asset set missing")
+    target_frames = [row.get("frame") for row in expected_assets
+                     if isinstance(row, dict) and row.get("frame") is not None]
+    if len(target_frames) != len(expected_assets):
+        raise RuntimeError("pending semantic request asset set invalid")
+    review_scope = str(pending.get("review_scope") or "")
+    if not review_scope:
+        # Older pending requests predate persisted scope. Recover a one-frame
+        # subset only inside the explicit, non-promotable Phase 5A workspace.
+        try:
+            marker = read_json(ep / "meta" / "phase5a-canary.json")
+        except Exception:
+            marker = None
+        if (isinstance(marker, dict)
+                and marker.get("workspace_class") == "TEST_ONLY"
+                and marker.get("promotion_class") == "NON_PROMOTABLE"
+                and marker.get("canary_type") == "PHASE5A_COLLABORATIVE_REGRESSION"
+                and len(expected_assets) == 1):
+            review_scope = PHASE5A_SINGLE_FRAME_SCOPE
+        else:
+            review_scope = "FULL_FRAME_SET"
+    if review_scope not in {"FULL_FRAME_SET", PHASE5A_SINGLE_FRAME_SCOPE}:
+        raise RuntimeError("pending semantic request review scope invalid")
+    current = reviewable_frame_records(
+        ep, require_files=True,
+        only_frames=target_frames if review_scope == PHASE5A_SINGLE_FRAME_SCOPE else None)
     actual_assets = [{"frame": x["frame"], "path": x["path_rel"], "sha256": x["sha256"]} for x in current]
     if expected_assets != actual_assets:
         raise RuntimeError("pending semantic request asset set drifted; refuse orphan recovery")
@@ -903,6 +1340,7 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
     if binding_errors:
         raise RuntimeError("pending semantic request Frame Contract drifted: " + "; ".join(binding_errors))
     data = read_json(candidate)
+    review_item = pending.get("review_item") if isinstance(pending.get("review_item"), dict) else None
     sharded_path = ep / "meta" / f"frame-semantic-sharded-attempt-{attempt}.json"
     if sharded_path.is_file():
         sharded = read_json(sharded_path)
@@ -957,12 +1395,39 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
             raise RuntimeError(f"semantic critic log missing: {log}")
         log_rel = log.relative_to(ROOT).as_posix() if log.stat().st_size > 0 else None
         provenance = runtime_provenance.build_vision_critic_provenance(
-            attempt=attempt, log=log_rel, review_scope="FULL_FRAME_SET")
+            attempt=attempt, log=log_rel, review_scope=review_scope)
         if log.stat().st_size <= 0:
             provenance["critic_stdout_log_empty_after_parent_timeout"] = True
     provenance["anatomy_integrity_enforced"] = True
     provenance["recovered_after_parent_timeout"] = True
     provenance["candidate_sha256"] = sha256_file(candidate)
+    if isinstance(review_item, dict):
+        if len(current) != 1:
+            raise RuntimeError("FINAL_SEMANTIC_PENDING_FRAME_SCOPE_INVALID")
+        provisional, receipt_path = _find_pending_final_semantic_receipt(
+            ep, review_item=review_item, frame=current[0], attempt=attempt)
+        request_id = str(provisional.get("runner_request_id") or "")
+        if not request_id:
+            raise RuntimeError("FINAL_SEMANTIC_DURABLE_EXECUTION_BINDING_MISSING")
+        receipt = _finalize_final_semantic_receipt(
+            ep,
+            receipt_ref=repo_rel(receipt_path),
+            review_item=review_item,
+            frame=current[0],
+            candidate=candidate,
+            log_path=log,
+            returncode=int(provisional.get("returncode", -1)),
+            remote={"request_id": request_id, "thread_id": provisional.get("thread_id")},
+            contexts=context_hashes(ep),
+        )
+        provenance.update({
+            "review_scope": review_scope,
+            "review_item_id": str(review_item.get("review_key") or review_item.get("id") or ""),
+            "review_source_bindings": review_source_bindings(ep, current),
+            "prompt_package_sha256": review_item.get("prompt_package_sha256"),
+            "model_execution_receipt": receipt,
+            "model_execution_receipt_ref": repo_rel(receipt_path),
+        })
     return _apply_candidate_gate(
         ep,
         data=data,
@@ -970,6 +1435,8 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
         contexts=context_hashes(ep),
         provenance=provenance,
         attempt=attempt,
+        review_scope=review_scope,
+        review_item=review_item,
     )
 
 
@@ -1119,11 +1586,37 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
             "sha256": frame["sha256"],
             "source_binding": source_binding(ep, key),
         }
-        expected_fingerprint = frame_evidence_fingerprint(
-            expected_identity, contexts=contexts,
-            phase3_contexts=phase3_contexts or phase3_context_hashes(ep, key),
-            policy_sha256=expected_policy_sha,
-        )
+        phase3 = phase3_contexts or phase3_context_hashes(ep, key)
+        if provenance.get("review_scope") == PHASE5A_SINGLE_FRAME_SCOPE:
+            review_item_id = str(data.get("review_item_id") or "")
+            review_attempt_index = int(data.get("attempt_index") or 0)
+            prompt_sha = str(provenance.get("prompt_package_sha256") or "")
+            expected_fingerprint = review_evidence_fingerprint(
+                expected_identity, contexts=contexts, phase3_contexts=phase3,
+                policy_sha256=expected_policy_sha, review_item_id=review_item_id,
+                attempt_index=review_attempt_index,
+                frame_contract_sha256=phase3.get("frame_contract_sha256"),
+                prompt_package_sha256=prompt_sha,
+            )
+            receipt = provenance.get("model_execution_receipt")
+            receipt_expected = {
+                "review_item_id": review_item_id,
+                "logical_asset_key": expected_logical_key,
+                "generation_key": expected_generation_key,
+                "attempt_index": review_attempt_index,
+                "candidate_sha256": frame["sha256"],
+                "frame_contract_sha256": phase3.get("frame_contract_sha256"),
+                "prompt_package_sha256": prompt_sha,
+                "model_policy_sha256": expected_policy_sha,
+                "evidence_fingerprint": expected_fingerprint,
+            }
+            errors.extend(validate_final_semantic_execution_receipt(receipt, receipt_expected))
+        else:
+            expected_fingerprint = frame_evidence_fingerprint(
+                expected_identity, contexts=contexts,
+                phase3_contexts=phase3,
+                policy_sha256=expected_policy_sha,
+            )
         if not expected_fingerprint or str(data.get("evidence_fingerprint") or "").lower() != expected_fingerprint:
             errors.append(f"frame {key} evidence_fingerprint does not bind current evidence identity")
     if str(data.get("asset_path") or "") != frame["path_rel"]:
@@ -1140,8 +1633,8 @@ def validate_bound_review(data: dict, *, frame: dict, contexts: dict, version: s
     provenance = data.get("critic_provenance") or {}
     for error in runtime_provenance.validate_critic_provenance(provenance):
         errors.append(f"frame {key} {error}")
-    if provenance.get("review_scope") not in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"}:
-        errors.append(f"frame {key} critic review_scope must be FULL_FRAME_SET or INCREMENTAL_CONTEXT_SET")
+    if provenance.get("review_scope") not in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET", PHASE5A_SINGLE_FRAME_SCOPE}:
+        errors.append(f"frame {key} critic review_scope is not an allowed production/scoped scope")
     attempt = provenance.get("attempt")
     if attempt not in {1, 2} and not (attempt == 3 and provenance.get("direct_user_exception_review") is True):
         errors.append(f"frame {key} critic attempt must be 1/2, or 3 for a direct-user-exception re-review")
@@ -1271,6 +1764,143 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
     return errors
 
 
+def verify_scoped_review(ep: Path, frames: list[dict], *, review_scope: str, metadata_only: bool = False) -> list[str]:
+    if review_scope != PHASE5A_SINGLE_FRAME_SCOPE:
+        return [f"unsupported scoped review scope: {review_scope}"]
+    errors: list[str] = []
+    contexts = context_hashes(ep)
+    errors.extend(phase4_binding_errors(ep, frames))
+    summary_path = ep / SUMMARY_REL
+    if not summary_path.is_file():
+        return ["meta/frame-semantic-review.json missing"]
+    try:
+        summary = read_json(summary_path)
+    except Exception as exc:
+        return [str(exc)]
+    version = episode_contract_version(ep)
+    if summary.get("schema_version") != SCHEMA_VERSION:
+        errors.append(f"frame semantic summary schema_version must be {SCHEMA_VERSION}")
+    if summary.get("story_os_version") != version:
+        errors.append("frame semantic summary story_os_version mismatch")
+    for field, expected in contexts.items():
+        if str(summary.get(field) or "").lower() != str(expected).lower():
+            errors.append(f"frame semantic summary {field} mismatch")
+    provenance = summary.get("critic_provenance") or {}
+    for error in runtime_provenance.validate_critic_provenance(provenance):
+        errors.append("frame semantic summary critic provenance invalid: " + error)
+    if provenance.get("review_scope") != review_scope:
+        errors.append("frame semantic summary review_scope mismatch")
+    expected_bound = [{"frame": row["frame"], "asset_sha256": row["sha256"]} for row in frames]
+    if summary.get("frames") != expected_bound:
+        errors.append("frame semantic summary asset set does not match scoped reviewed frame set")
+    if (summary.get("summary") or {}).get("passed") is not True:
+        errors.append("frame semantic summary is not PASS")
+    if summary.get("issue_codes") not in ([], None) and not summary.get("forced_pass_frames"):
+        errors.append(f"frame semantic summary issue_codes not empty: {summary.get('issue_codes')}")
+    directing_v3 = directing_v3_required(ep)
+    for frame in frames:
+        data = frame_review_persistence.load(ep, int(frame["frame"]))
+        if not isinstance(data, dict):
+            errors.append(f"missing frame semantic review: {REVIEW_DIR.as_posix()}/{frame['frame']}.json")
+            continue
+        errors.extend(validate_bound_review(
+            data, frame=frame, contexts=contexts, version=version, metadata_only=metadata_only,
+            phase3_contexts=phase3_context_hashes(ep, frame["frame"]),
+            directing_v3=directing_v3, ep=ep))
+    return errors
+
+
+def reconcile_review_projection(ep: Path, *, write_report: bool = False) -> dict:
+    """Classify existing PASS/LOCK projections without repairing history or rerunning work.
+
+    The report is diagnostic authority only. It never changes Ledger status,
+    approved pixels, review queue state, Episode stage, or model/provider work.
+    """
+    ep = Path(ep).resolve()
+    import production_ledger
+    import production_queue_store
+    import logical_asset_identity
+
+    ledger = production_ledger.load_authority(ep, default={}) or {}
+    queue_path = production_queue_store.read_path(ep)
+    try:
+        queue = read_json(queue_path) if queue_path.is_file() else {}
+    except Exception:
+        queue = {}
+    queue_items = queue.get("review_work_items") if isinstance(queue, dict) else []
+    queue_items = queue_items if isinstance(queue_items, list) else []
+    projections = []
+    for frame_key, row in sorted((ledger.get("frames") or {}).items()):
+        if not isinstance(row, dict):
+            continue
+        approved = row.get("approved_asset") if isinstance(row.get("approved_asset"), dict) else {}
+        if not approved and isinstance(row.get("current_candidate"), dict):
+            approved = row["current_candidate"]
+        if str(row.get("status") or "").upper() not in {"PASSED", "LOCKED"} and not approved:
+            continue
+        frame_no = str(frame_key).zfill(2)
+        review = frame_review_persistence.load(ep, int(frame_no))
+        provenance = (review.get("critic_provenance") or {}) if isinstance(review, dict) else {}
+        model_receipt = review_receipt_for_frame(ep, frame_no)
+        review_item_id = str((review or {}).get("review_item_id") or "")
+        matching = [item for item in queue_items if isinstance(item, dict)
+                    and item.get("review_key") == review_item_id]
+        queue_terminal = next((item for item in matching
+                               if item.get("status") == "finalized"
+                               and isinstance(item.get("receipt"), dict)
+                               and item["receipt"].get("status") == "SUCCESS"), None)
+        errors = []
+        if not isinstance(review, dict):
+            errors.append("frame review record missing")
+        else:
+            try:
+                frames = frame_records(ep, require_files=False, only_frames=[int(frame_no)])
+                errors.extend(verify_scoped_review(
+                    ep, frames, review_scope=PHASE5A_SINGLE_FRAME_SCOPE, metadata_only=True))
+            except Exception as exc:
+                errors.append(str(exc))
+        if not isinstance(model_receipt, dict):
+            errors.append("Final Semantic Model Execution Receipt missing")
+        if not queue_terminal:
+            errors.append("Review Queue terminal SUCCESS receipt missing")
+        projections.append({
+            "frame": frame_no,
+            "ledger_status": str(row.get("status") or ""),
+            "approved_sha256": str(approved.get("sha256") or "").lower(),
+            "review_item_id": review_item_id or None,
+            "classification": "VERIFIED" if not errors else "UNVERIFIED_REVIEW_PROJECTION",
+            "errors": sorted(set(errors)),
+        })
+    report = {
+        "schema_version": 1,
+        "episode_id": logical_asset_identity.episode_id(ep),
+        "authority": "DIAGNOSTIC_ONLY",
+        "model_dispatch_count": 0,
+        "provider_dispatch_count": 0,
+        "projections": projections,
+        "status": ("UNVERIFIED_REVIEW_PROJECTION"
+                   if any(item["classification"] != "VERIFIED" for item in projections)
+                   else "VERIFIED" if projections else "NO_REVIEW_PROJECTIONS"),
+    }
+    if write_report:
+        report_path = ep / "meta" / "review-projection-reconciliation.json"
+        current = read_json(report_path) if report_path.is_file() else None
+        if current != report:
+            write_json(report_path, report)
+    return report
+
+
+def review_receipt_for_frame(ep: Path, frame: str | int) -> dict | None:
+    """Read the persisted Final Semantic receipt for one frame, if present."""
+    try:
+        data = frame_review_persistence.load(Path(ep).resolve(), int(frame))
+    except Exception:
+        return None
+    provenance = data.get("critic_provenance") if isinstance(data, dict) else None
+    receipt = provenance.get("model_execution_receipt") if isinstance(provenance, dict) else None
+    return receipt if isinstance(receipt, dict) else None
+
+
 resolve_codex = critic_runner.resolve_codex
 command_prefix = critic_runner.prefix
 
@@ -1289,7 +1919,7 @@ def _local_triage_prompt_block(ep: Path, rows: list[dict]) -> str:
     return "\n".join(hints) if hints else "none"
 
 
-def critic_prompt(ep: Path, frames: list[dict], candidate: Path, attempt: int) -> str:
+def critic_prompt(ep: Path, frames: list[dict], candidate: Path, attempt: int, *, review_scope: str = "FULL_FRAME_SET") -> str:
     rel_ep = ep.relative_to(ROOT).as_posix()
     story, storyboard = episode_files(ep)
     rel_story = story.relative_to(ROOT).as_posix()
@@ -1305,9 +1935,16 @@ def critic_prompt(ep: Path, frames: list[dict], candidate: Path, attempt: int) -
     # critic attempt fails with "checks.X must be true" for keys never requested.
     required_checks = checks_for_version(version, directing_v3)
     checks_block = ",\n".join(f'        "{name}": true' for name in required_checks)
+    scope_intro = (
+        f"You are reviewing a NON_PROMOTABLE Phase5A single-frame Production Subpath canary for exactly {rel_ep}. "
+        "Judge only the supplied actual frame against the complete locked Story/storyboard/Frame Contract context; "
+        "do not require ungenerated Episode frames."
+        if review_scope == PHASE5A_SINGLE_FRAME_SCOPE
+        else f"You are reviewing the COMPLETE final approved frame set for exactly {rel_ep}."
+    )
     return f"""You are an adversarial Production Frame Semantic Critic in a FRESH isolated session.
 Do NOT generate or edit images. Do NOT rewrite the story. Do NOT trust previous PASS labels.
-You are reviewing the COMPLETE final approved frame set for exactly {rel_ep}.
+{scope_intro}
 
 Read these locked sources before judging:
 - {rel_story}
@@ -1997,6 +2634,8 @@ def _persist_candidate(
     phashes: list[dict],
     provenance: dict,
     frozen_sources: dict,
+    verification_scope: str = "FULL_FRAME_SET",
+    review_item: dict | None = None,
 ) -> int:
     if review_source_bindings(ep, current) != frozen_sources:
         raise RuntimeError("frame semantic review sources drifted during review; candidate cannot be rebound")
@@ -2037,9 +2676,21 @@ def _persist_candidate(
             "logical_asset_key": frame.get("logical_asset_key"),
             "generation_key": frame.get("generation_key"),
             "model_policy_sha256": policy_sha,
-            "evidence_fingerprint": frame_evidence_fingerprint(
-                identity, contexts=contexts, phase3_contexts=phase3_contexts,
-                policy_sha256=policy_sha),
+            "evidence_fingerprint": (
+                review_evidence_fingerprint(
+                    identity, contexts=contexts, phase3_contexts=phase3_contexts,
+                    policy_sha256=policy_sha,
+                    review_item_id=str((review_item or {}).get("review_key") or ""),
+                    attempt_index=int((review_item or {}).get("attempt_index") or 0),
+                    frame_contract_sha256=(review_item or {}).get("frame_contract_sha256"),
+                    prompt_package_sha256=(review_item or {}).get("prompt_package_sha256"),
+                ) if verification_scope == PHASE5A_SINGLE_FRAME_SCOPE else
+                frame_evidence_fingerprint(
+                    identity, contexts=contexts, phase3_contexts=phase3_contexts,
+                    policy_sha256=policy_sha)
+            ),
+            "review_item_id": str((review_item or {}).get("review_key") or "") or None,
+            "attempt_index": int((review_item or {}).get("attempt_index") or 0) or None,
             "critic_provenance": provenance,
             "checks": source.get("checks") or {},
             "issue_codes": source.get("issue_codes") if isinstance(source.get("issue_codes"), list) else ["FRAME_SCENE_MISMATCH"],
@@ -2067,7 +2718,11 @@ def _persist_candidate(
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
     _rebind_incremental_captions(ep)
 
-    verify_errors = verify_episode(ep, metadata_only=False, write_audit=True)
+    verify_errors = (
+        verify_scoped_review(ep, current, review_scope=verification_scope, metadata_only=False)
+        if verification_scope == PHASE5A_SINGLE_FRAME_SCOPE
+        else verify_episode(ep, metadata_only=False, write_audit=True)
+    )
     errors = candidate_errors + [x for x in verify_errors if x not in candidate_errors]
     if errors:
         print("FRAME SEMANTIC REVIEW FAIL")
@@ -2111,18 +2766,25 @@ def finalize_product_review(ep: Path, *, attempt: int, runtime: str) -> int:
         phashes=phashes,
         provenance=provenance,
         frozen_sources=frozen_sources,
+        review_item=None,
     )
     if rc == 0:
         product_review_adapter.mark_complete(ep, "frame-semantic", attempt=attempt, final_path=ep / SUMMARY_REL)
     return rc
 
 
-def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
+def _run_critic_uninstrumented(
+    ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None,
+    target_frames: list[int | str] | tuple[int | str, ...] | None = None,
+    review_scope: str = "FULL_FRAME_SET",
+    review_item: dict | None = None,
+) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("deep_semantic_review")
     if attempt not in {1, 2}:
         raise RuntimeError("attempt must be 1 or 2; only one automatic content-repair round is permitted")
-    if (ep / SUMMARY_REL).is_file() and review_required(ep) and not verify_episode(ep):
+    if (target_frames is None and (ep / SUMMARY_REL).is_file()
+            and review_required(ep) and not verify_episode(ep)):
         try:
             prior_frames = (read_json(ep / SUMMARY_REL).get("frames") or [])
             episode_performance.safe_update_named_span(
@@ -2135,11 +2797,17 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
         print("FRAME SEMANTIC REVIEW REUSED: current assets, contracts and critic evidence verified")
         return 0
     candidate_gate = False
-    try:
-        frames = frame_records(ep, require_files=True)
-    except ValueError:
-        frames = reviewable_frame_records(ep, require_files=True)
+    if target_frames is not None:
+        if review_scope != PHASE5A_SINGLE_FRAME_SCOPE:
+            raise RuntimeError("target_frames require PHASE5A_SINGLE_FRAME review scope")
+        frames = reviewable_frame_records(ep, require_files=True, only_frames=target_frames)
         candidate_gate = True
+    else:
+        try:
+            frames = frame_records(ep, require_files=True)
+        except ValueError:
+            frames = reviewable_frame_records(ep, require_files=True)
+            candidate_gate = True
     episode_performance.safe_update_named_span(
         ep,
         episode_performance.review_span_name("FULL", attempt),
@@ -2213,7 +2881,7 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
             kind="frame-semantic",
             runtime=active_runtime,
             attempt=attempt,
-            prompt=critic_prompt(ep, frames, candidate, attempt),
+            prompt=critic_prompt(ep, frames, candidate, attempt, review_scope=review_scope),
             source_paths=sources,
             candidate_path=candidate,
             source_bindings=frozen_sources,
@@ -2222,7 +2890,9 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
         return product_review_adapter.HOST_ACTION_REQUIRED_RC
 
     candidate.unlink(missing_ok=True)
-    write_json(pending_request_path(ep, attempt), _pending_request_payload(ep, frames, attempt))
+    write_json(pending_request_path(ep, attempt),
+               _pending_request_payload(ep, frames, attempt, review_scope=review_scope,
+                                        review_item=review_item))
     codex = resolve_codex(codex_raw)
     if len(frames) >= FULL_REVIEW_FANOUT_MIN_FRAMES:
         return _run_sharded_full_critic(
@@ -2242,7 +2912,7 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
     critic_binding = model_policy.resolve("vision.final", episode=ep)
     critic_asset = frames[0] if frames else {}
     completed = critic_runner.launch(
-        critic_prompt(ep, frames, candidate, attempt),
+        critic_prompt(ep, frames, candidate, attempt, review_scope=review_scope),
         codex=codex,
         root=ROOT,
         timeout=timeout,
@@ -2261,6 +2931,8 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
             "generation_key": critic_asset.get("generation_key"),
             "attempt_index": attempt,
             "artifact_sha256": critic_asset.get("sha256"),
+            "review_item_id": str((review_item or {}).get("review_key") or "") if isinstance(review_item, dict) else "",
+            "defer_final_semantic_success": isinstance(review_item, dict),
         },
     )
     if completed.returncode != 0:
@@ -2268,7 +2940,12 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
     if not candidate.is_file():
         raise RuntimeError(f"frame semantic critic did not produce {candidate}")
 
-    current = reviewable_frame_records(ep, require_files=True) if candidate_gate else frame_records(ep, require_files=True)
+    current = (
+        reviewable_frame_records(ep, require_files=True, only_frames=target_frames)
+        if candidate_gate and target_frames is not None else
+        reviewable_frame_records(ep, require_files=True) if candidate_gate else
+        frame_records(ep, require_files=True)
+    )
     if {row["frame"]: sha256_file(row["path"]) for row in current} != before:
         raise RuntimeError("frame semantic critic modified reviewed image assets")
     stable_after = {
@@ -2281,10 +2958,25 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
 
     data = read_json(candidate)
     provenance = runtime_provenance.build_vision_critic_provenance(
-        attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope="FULL_FRAME_SET"
+        attempt=attempt, log=log.relative_to(ROOT).as_posix(), review_scope=review_scope
     )
     provenance["anatomy_integrity_enforced"] = True
-    provenance["model_execution_receipt"] = completed.model_execution_receipt
+    receipt = None
+    if isinstance(review_item, dict):
+        receipt = _finalize_final_semantic_receipt(
+            ep, receipt_ref=completed.model_execution_receipt,
+            review_item=review_item, frame=critic_asset, candidate=candidate,
+            log_path=log, returncode=int(completed.returncode), remote=completed.remote or {},
+            contexts=contexts,
+        )
+    elif completed.model_execution_receipt:
+        receipt, _receipt_path = _read_model_execution_receipt(ep, completed.model_execution_receipt)
+    provenance["model_execution_receipt"] = receipt
+    provenance["model_execution_receipt_ref"] = completed.model_execution_receipt
+    provenance["review_item_id"] = str((review_item or {}).get("review_key") or "") if isinstance(review_item, dict) else None
+    provenance["review_source_bindings"] = frozen_sources
+    if isinstance(review_item, dict):
+        provenance["prompt_package_sha256"] = review_item.get("prompt_package_sha256")
     if candidate_gate:
         return _apply_candidate_gate(
             ep,
@@ -2293,6 +2985,8 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
             contexts=contexts,
             provenance=provenance,
             attempt=attempt,
+            review_scope=review_scope,
+            review_item=review_item,
         )
     return _persist_candidate(
         ep,
@@ -2302,14 +2996,23 @@ def _run_critic_uninstrumented(ep: Path, *, attempt: int, codex_raw: str | None,
         phashes=phashes,
         provenance=provenance,
         frozen_sources=frozen_sources,
+        review_item=review_item,
     )
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None) -> int:
-    """Run a FULL review and record best-effort performance diagnostics."""
+def run_critic(
+    ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None,
+    target_frames: list[int | str] | tuple[int | str, ...] | None = None,
+    review_scope: str = "FULL_FRAME_SET",
+    review_item: dict | None = None,
+) -> int:
+    """Run a full review or explicit non-promotable Phase5A scoped review."""
     episode_performance.safe_begin_review_span(ep, "FULL", attempt)
     try:
-        result = _run_critic_uninstrumented(ep, attempt=attempt, codex_raw=codex_raw, timeout=timeout)
+        result = _run_critic_uninstrumented(
+            ep, attempt=attempt, codex_raw=codex_raw, timeout=timeout,
+            target_frames=target_frames, review_scope=review_scope, review_item=review_item,
+        )
     except BaseException as exc:
         episode_performance.safe_end_review_span(
             ep, "FULL", attempt, status="ERROR", metadata={"error_type": type(exc).__name__})

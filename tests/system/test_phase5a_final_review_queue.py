@@ -102,14 +102,31 @@ def test_final_semantic_worker_calls_official_receipt_path_and_persists_queue_re
     summary_path = tmp_path / "summary.json"
     summary_path.write_text("{}", encoding="utf-8")
     model_receipt = {
-        "call_id": "vision-call", "status": "SUCCESS", "model_role": "vision.final",
+        "receipt_schema_version": 2, "call_id": "vision-call",
+        "status": "SUCCESS", "returncode": 0, "turn_completed": True,
+        "review_item_id": item["review_key"],
+        "logical_asset_key": item["logical_asset_key"],
+        "generation_key": item["generation_key"], "attempt_index": 1,
+        "candidate_sha256": sha,
+        "frame_contract_sha256": "b" * 64, "prompt_package_sha256": "c" * 64,
+        "evidence_fingerprint": "f" * 64, "runner_request_id": "runner-request",
+        "result_sha256": "d" * 64, "result_ref": "meta/critic.jsonl",
+        "created_at": "2026-10-01T00:00:00+08:00",
+        "model_role": "vision.final",
+        "profile": "vision_final", "requested_model": "gpt-6-luna",
         "effective_model": "gpt-6-luna", "reasoning_effort": "high",
         "model_policy_sha256": "a" * 64,
+        "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
     }
     summary = {"critic_provenance": {"model_execution_receipt": model_receipt}}
     verify_calls = []
 
-    monkeypatch.setattr(model_policy, "resolve", lambda *_a, **_k: _policy())
+    original_resolve = model_policy.resolve
+    monkeypatch.setattr(
+        model_policy, "resolve",
+        lambda role, *a, **k: _policy() if role == "vision.final"
+        else original_resolve(role, *a, **k),
+    )
     monkeypatch.setattr(frame_semantic_review, "reviewable_frame_records", lambda *_a, **_k: [{
         "frame": "01", "logical_asset_key": item["logical_asset_key"],
         "generation_key": item["generation_key"], "sha256": sha,
@@ -128,7 +145,7 @@ def test_final_semantic_worker_calls_official_receipt_path_and_persists_queue_re
     with apply as apply_mock:
         _run_lane(monkeypatch, tmp_path, q)
 
-    assert item["status"] == "finalized"
+    assert item["status"] == "finalized", item.get("receipt", {}).get("notes") or item.get("receipt")
     receipt = item["receipt"]
     assert receipt["status"] == "SUCCESS"
     assert receipt["review_outcome"] == "PASS"
