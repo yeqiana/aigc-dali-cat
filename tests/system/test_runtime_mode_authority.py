@@ -13,6 +13,12 @@ import production_mode
 
 
 class RuntimeModeAuthorityTests(unittest.TestCase):
+    def test_runtime_mapping_is_pure_and_explicit(self):
+        self.assertEqual(production_mode.runtime_for_mode("COLLABORATIVE"), "WORK")
+        self.assertEqual(production_mode.runtime_for_mode("CODEX_MANAGED"), "CODEX")
+        with self.assertRaises(ValueError):
+            production_mode.runtime_for_mode("AUTO")
+
     def test_legacy_runtime_cannot_switch_configured_production_mode(self):
         for configured, runtime in (("COLLABORATIVE", "WORK"), ("CODEX_MANAGED", "CODEX")):
             for legacy in ("WORK", "WEB", "CODEX"):

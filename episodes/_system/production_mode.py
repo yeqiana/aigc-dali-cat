@@ -9,6 +9,13 @@ MODES = {"COLLABORATIVE", "CODEX_MANAGED"}
 RUNTIMES = {"WORK", "WEB", "CODEX"}
 
 
+def runtime_for_mode(mode: str) -> str:
+    value = str(mode or "").strip().upper()
+    if value not in MODES:
+        raise ValueError(f"production mode must be one of {', '.join(sorted(MODES))}")
+    return "CODEX" if value == "CODEX_MANAGED" else "WORK"
+
+
 def resolve(cfg: dict | None = None) -> dict:
     """Return configured/effective mode and runtime with explicit provenance.
 
@@ -27,12 +34,12 @@ def resolve(cfg: dict | None = None) -> dict:
         if production_override not in MODES:
             raise ValueError(f"invalid STORY_OS_PRODUCTION_MODE: {production_override!r}")
         effective_mode = production_override
-        effective_runtime = "CODEX" if effective_mode == "CODEX_MANAGED" else "WORK"
+        effective_runtime = runtime_for_mode(effective_mode)
         source = "env:STORY_OS_PRODUCTION_MODE"
     else:
         legacy_runtime = os.getenv("STORY_OS_RUNTIME", "").strip().upper()
         effective_mode = configured
-        effective_runtime = "CODEX" if configured == "CODEX_MANAGED" else "WORK"
+        effective_runtime = runtime_for_mode(configured)
         source = "config/storyos.yaml#production.mode"
 
     return {
