@@ -123,6 +123,9 @@ def test_explicit_true_override_is_production_blocked(monkeypatch: pytest.Monkey
     monkeypatch.setenv("STORY_OS_WEBCODEX_AVAILABLE", "1")
     monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
     monkeypatch.delenv("STORY_OS_ENV", raising=False)
+    monkeypatch.delenv("WEBCODEX_SERVICE_ROOT", raising=False)
+    monkeypatch.delenv("WEBCODEX_ENV_FILE", raising=False)
+    monkeypatch.delenv("WEBCODEX_PROJECT_ROOT", raising=False)
     monkeypatch.setattr(attachment, "ATTACHMENT_PATH", tmp_path / "absent.json")
     assert runtime_router.webcodex_available() == (False, "production WebCodex availability override ignored; fresh Host attachment required")
 

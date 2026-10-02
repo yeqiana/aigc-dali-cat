@@ -118,6 +118,13 @@ class EntryBehavior(unittest.TestCase):
                 'model': 'gpt-6-luna', 'profile': 'vision_fast', 'model_policy_sha256': 'a' * 64}))
             if lane is image_scheduler:
                 stack.enter_context(patch.object(lane.raw_candidate_budget, 'summary', lambda *_a, **_k: {'available': 20}))
+                # This case isolates refill/barrier behavior and replaces the
+                # real worker that owns Generation Attempt Authority. Keep the
+                # authority contract out of scope instead of fabricating a DB
+                # Attempt row for each synthetic PNG.
+                stack.enter_context(patch.object(
+                    lane, '_persist_generation_identity',
+                    lambda *_a, **_k: {'ok': True, 'generation_key': 'TEST', 'attempt_index': 1}))
             if lane is image_scheduler:
                 stack.enter_context(patch.object(lane, 'async_backend_worker', async_worker))
                 rc = lane.run_scheduler_async(ep, 3, 30, None)
@@ -168,6 +175,9 @@ class EntryBehavior(unittest.TestCase):
                 self.exercise(lane, failures=(1, 2))
 
     def test_single_scheduler_no_output_is_explicit_retryable_failure(self):
+        hot_state_mode = patch.dict(os.environ, {'STORYOS_HOT_STATE_MODE': 'file'})
+        hot_state_mode.start()
+        self.addCleanup(hot_state_mode.stop)
         td, ep = make_episode([{'frame': 1}])
         self.addCleanup(td.cleanup)
 
@@ -245,6 +255,13 @@ class BudgetResolution(unittest.TestCase):
 
 class EvidenceRecovery(unittest.TestCase):
     def setUp(self):
+        self._storage = patch.dict(os.environ, {
+            'STORYOS_RUNTIME_STORE_MODE': 'jsonl',
+            'STORYOS_EPISODE_META_STORE_MODE': 'json',
+            'STORYOS_HOT_STATE_MODE': 'file',
+        }, clear=False)
+        self._storage.start()
+        self.addCleanup(self._storage.stop)
         self.tmp = tempfile.TemporaryDirectory(dir=ROOT, prefix='evidence-test-')
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
@@ -729,6 +746,13 @@ class SourceProofEntries(unittest.TestCase):
     """S4 residual entries: admission freeze at dispatch and provider entry guards."""
 
     def setUp(self):
+        self._storage = patch.dict(os.environ, {
+            'STORYOS_RUNTIME_STORE_MODE': 'jsonl',
+            'STORYOS_EPISODE_META_STORE_MODE': 'json',
+            'STORYOS_HOT_STATE_MODE': 'file',
+        }, clear=False)
+        self._storage.start()
+        self.addCleanup(self._storage.stop)
         self.tmp = tempfile.TemporaryDirectory(dir=ROOT, prefix='source-proof-')
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
@@ -845,24 +869,21 @@ class SourceProofEntries(unittest.TestCase):
                 single_backend.generate_for_frame(ns)
         self.assertEqual(len(calls), 1)  # Drift blocks before any backend invocation.
 
-    def test_batch_delivery_entry_fails_closed_on_prompt_source_drift_before_provider_send(self):
+    def test_batch_delivery_requires_canonical_payload_split_before_provider_send(self):
         contract = {'planned_count': 1, 'batch_id': 'B1',
                     'frames': [{'queue_item_id': 'Q1', 'frame': 1, 'output_index': 1}]}
         items = [{'id': 'Q1', 'frame': 1, 'model': 'gpt-image-2', 'quality': 'high',
                   'attempts': 1, 'references': []}]
-        route = {'provider': 'openai_images_api', 'execution_mode': 'native_n',
-                 'native_multi_image': True, 'single_http_request': True}
-        with patch.object(batch_delivery, 'read_canvas', return_value=(1088, 1360, '4:5')), \
-                patch.object(batch_delivery.image_provider_router, 'select_for_batch', return_value=route), \
-                patch.object(batch_delivery.openai_batch_prompt_compiler, 'compile_batch',
-                             side_effect=ValueError('PROMPT_SOURCE_DRIFT: unchanged scene prompt belongs to an older Frame Contract')), \
+        with patch('image_payload_controller.separate_execution_required', return_value=True), \
+                patch.object(batch_delivery.openai_batch_prompt_compiler, 'compile_batch') as compile_batch, \
                 patch.object(batch_delivery.raw_candidate_budget, 'claim') as claim, \
                 patch.object(batch_delivery.runtime_trace, 'start_span') as start_span, \
                 patch.object(batch_delivery, '_invoke_openai_native_n') as invoke:
-            # Compile happens before the provider/trace section, so drift
-            # escapes the module boundary and fails closed without a send.
-            with self.assertRaisesRegex(ValueError, 'PROMPT_SOURCE_DRIFT'):
+            with self.assertRaisesRegex(
+                    batch_delivery.BatchBackendError,
+                    'CANONICAL_CONTROLLER_PAYLOAD_SPLIT_REQUIRED'):
                 batch_delivery.execute_batch(self.ep, contract, items, 60, None)
+        compile_batch.assert_not_called()
         invoke.assert_not_called()
         claim.assert_not_called()
         start_span.assert_not_called()
