@@ -719,9 +719,31 @@ def _run_patch(ep: Path, plan: dict, *, attempt: int, codex_raw: str | None, tim
 
 
 def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool = False) -> list[str]:
-    errors = list(base.verify_episode(ep, metadata_only=metadata_only, write_audit=False))
     if not review_required(ep):
-        return errors
+        return list(base.verify_episode(ep, metadata_only=metadata_only, write_audit=False))
+
+    # Phase5A is an explicitly TEST_ONLY, NON_PROMOTABLE single-frame canary.
+    # Its authoritative Final Semantic evidence is intentionally scoped and must
+    # not be rejected by the full-Episode baseline/caption contract. Production
+    # Episodes continue through base.verify_episode() unchanged.
+    scoped_phase5a = False
+    scoped_frames: list[dict] = []
+    try:
+        scoped_frames = base.frame_records(ep, require_files=not metadata_only)
+        if len(scoped_frames) == 1:
+            scoped_data = _review_data(ep, scoped_frames[0]["frame"])
+            scoped_phase5a = _phase5a_scoped_evidence_allowed(ep, scoped_data)
+    except Exception:
+        scoped_phase5a = False
+    errors = list(
+        base.verify_scoped_review(
+            ep, scoped_frames,
+            review_scope=base.PHASE5A_SINGLE_FRAME_SCOPE,
+            metadata_only=metadata_only,
+        )
+        if scoped_phase5a else
+        base.verify_episode(ep, metadata_only=metadata_only, write_audit=False)
+    )
     authority = verified_review_authority.verify_episode_review_authority(
         ep, metadata_only=metadata_only)
     errors.extend(authority["errors"])
@@ -735,28 +757,29 @@ def verify_episode(ep: Path, *, metadata_only: bool = False, write_audit: bool =
         if write_audit:
             write_json(ep / AUDIT_REL, {"checked_at": now(), "legacy_contract": version, "errors": errors, "summary": {"passed": not errors}})
         return errors
-    try:
-        frames = base.frame_records(ep, require_files=not metadata_only)
-        captions = caption_state(ep, frames)
-        for frame in frames:
-            data = _review_data(ep, frame["frame"])
-            if not isinstance(data, dict):
-                errors.append(f"missing incremental-bound frame review: {frame['frame']}")
-                continue
-            expected = captions["frame_sha256"][frame["frame"]]
-            if str(data.get("caption_sha256") or "").lower() != expected.lower():
-                errors.append(f"frame {frame['frame']} caption_sha256 stale")
-        summary_path = ep / base.SUMMARY_REL
-        if summary_path.is_file():
-            summary = read_json(summary_path)
-            if summary.get("caption_source_sha256") != captions["source_sha256"]:
-                errors.append("frame semantic summary caption source SHA stale")
-            if summary.get("caption_frame_sha256") != captions["frame_sha256"]:
-                errors.append("frame semantic summary caption frame hashes stale")
-            if not isinstance(summary.get("incremental_contract"), dict):
-                errors.append("frame semantic summary missing incremental_contract")
-    except Exception as exc:
-        errors.append(str(exc))
+    if not scoped_phase5a:
+        try:
+            frames = base.frame_records(ep, require_files=not metadata_only)
+            captions = caption_state(ep, frames)
+            for frame in frames:
+                data = _review_data(ep, frame["frame"])
+                if not isinstance(data, dict):
+                    errors.append(f"missing incremental-bound frame review: {frame['frame']}")
+                    continue
+                expected = captions["frame_sha256"][frame["frame"]]
+                if str(data.get("caption_sha256") or "").lower() != expected.lower():
+                    errors.append(f"frame {frame['frame']} caption_sha256 stale")
+            summary_path = ep / base.SUMMARY_REL
+            if summary_path.is_file():
+                summary = read_json(summary_path)
+                if summary.get("caption_source_sha256") != captions["source_sha256"]:
+                    errors.append("frame semantic summary caption source SHA stale")
+                if summary.get("caption_frame_sha256") != captions["frame_sha256"]:
+                    errors.append("frame semantic summary caption frame hashes stale")
+                if not isinstance(summary.get("incremental_contract"), dict):
+                    errors.append("frame semantic summary missing incremental_contract")
+        except Exception as exc:
+            errors.append(str(exc))
     if write_audit:
         write_json(ep / AUDIT_REL, {
             "schema_version": 1,

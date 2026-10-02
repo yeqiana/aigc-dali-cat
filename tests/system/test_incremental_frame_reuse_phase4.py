@@ -24,6 +24,43 @@ class IncrementalFrameReusePhase4Tests(unittest.TestCase):
             self.assertEqual(evidence, incremental._review_data(ep, "01"))
         load.assert_called_once_with(ep.resolve(), 1)
 
+    def test_phase5a_scoped_canary_verify_does_not_require_full_incremental_baseline(self) -> None:
+        ep = ROOT / "episodes" / "test"
+        frame = {"frame": "01", "sha256": "a" * 64, "path_rel": "approved/01.png"}
+        review = {"critic_provenance": {"review_scope": semantic.PHASE5A_SINGLE_FRAME_SCOPE}}
+        with (
+            mock.patch.object(incremental, "review_required", return_value=True),
+            mock.patch.object(incremental.base, "frame_records", return_value=[frame]),
+            mock.patch.object(incremental, "_review_data", return_value=review),
+            mock.patch.object(incremental, "_phase5a_scoped_evidence_allowed", return_value=True),
+            mock.patch.object(incremental.base, "verify_scoped_review", return_value=[]) as scoped,
+            mock.patch.object(incremental.base, "verify_episode", return_value=["full-only-error"]) as full,
+            mock.patch.object(incremental.verified_review_authority, "verify_episode_review_authority",
+                              return_value={"status": "PASS", "errors": []}),
+            mock.patch.object(incremental.base, "episode_contract_version", return_value="2.1.0"),
+            mock.patch.object(incremental, "caption_state") as captions,
+        ):
+            self.assertEqual([], incremental.verify_episode(ep, metadata_only=True))
+        scoped.assert_called_once()
+        full.assert_not_called()
+        captions.assert_not_called()
+
+    def test_formal_episode_verify_keeps_full_episode_authority(self) -> None:
+        ep = ROOT / "episodes" / "test"
+        frame = {"frame": "01", "sha256": "a" * 64, "path_rel": "approved/01.png"}
+        with (
+            mock.patch.object(incremental, "review_required", return_value=True),
+            mock.patch.object(incremental.base, "frame_records", return_value=[frame]),
+            mock.patch.object(incremental, "_review_data", return_value={}),
+            mock.patch.object(incremental, "_phase5a_scoped_evidence_allowed", return_value=False),
+            mock.patch.object(incremental.base, "verify_episode", return_value=["full-authority-error"]) as full,
+            mock.patch.object(incremental.verified_review_authority, "verify_episode_review_authority",
+                              return_value={"status": "PASS", "errors": []}),
+            mock.patch.object(incremental.base, "episode_contract_version", return_value="2.0.3.3"),
+        ):
+            self.assertEqual(["full-authority-error"], incremental.verify_episode(ep, metadata_only=True))
+        full.assert_called_once()
+
     def _frames(self, *, changed: str | None = None, attempt2: str | None = None) -> list[dict]:
         frames = []
         for number in range(1, 21):
