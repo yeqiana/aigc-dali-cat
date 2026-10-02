@@ -173,6 +173,30 @@ def test_pending_final_semantic_receipt_is_adopted_only_for_exact_review_identit
             )
 
 
+
+def test_decided_review_commit_replay_accepts_same_immutable_success_receipt(tmp_path):
+    candidate = tmp_path / frame_semantic_review.CANDIDATE_REL
+    request = frame_semantic_review.pending_request_path(tmp_path, 1)
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    request.parent.mkdir(parents=True, exist_ok=True)
+    candidate.write_bytes(b"candidate")
+    request.write_text('{"review_item_id":"review-01"}', encoding="utf-8")
+    receipt = {
+        "status": "SUCCESS", "call_id": "call-01", "runner_request_id": "request-01",
+        "created_at": "2026-10-02T21:54:48+08:00", "turn_completed": True,
+    }
+    plan = {
+        "review_commit_id": frame_semantic_review.review_commit_id(
+            "review-01", "generation-01-a1", 1, "a" * 64),
+        "review_item_id": "review-01", "generation_key": "generation-01-a1",
+        "logical_asset_key": "asset-01", "attempt_index": 1, "attempt": 1,
+        "frames": ["01"], "candidate_sha256": ["b" * 64],
+        "frame_contract_sha256": "c" * 64, "prompt_package_sha256": "d" * 64,
+        "model_policy_sha256": "e" * 64, "evidence_fingerprint": "a" * 64,
+    }
+    commit_id = frame_semantic_review._write_review_commit_decision(tmp_path, plan, receipt)
+    assert frame_semantic_review._write_review_commit_decision(tmp_path, plan, dict(receipt)) == commit_id
+
 def test_success_receipt_commit_requires_validated_provisional_receipt(tmp_path):
     path = tmp_path / "execution.json"
     stored = {"status": "PENDING_VALIDATION", "call_id": "call-01"}

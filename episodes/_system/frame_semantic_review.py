@@ -706,7 +706,10 @@ def _finalize_final_semantic_receipt(
         "candidate_result_sha256": sha256_file(candidate),
         "execution_completion_source": "USER_RUNNER_DURABLE_RESULT",
         "effective_model_source": "EXPLICIT_RUNTIME_BINDING",
-        "created_at": now(),
+        # SUCCESS receipts are immutable replay evidence. Preserve the original
+        # timestamp so deterministic recovery keeps the exact receipt SHA bound
+        # by an already-decided Review Commit Manifest.
+        "created_at": receipt.get("created_at") or now(),
     })
     if not receipt.get("prompt_package_sha256"):
         raise RuntimeError("FINAL_SEMANTIC_PROMPT_PACKAGE_BINDING_MISSING")
