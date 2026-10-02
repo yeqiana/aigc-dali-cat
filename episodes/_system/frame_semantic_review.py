@@ -3124,7 +3124,10 @@ def _persist_candidate(
                     policy_sha256=policy_sha,
                     review_item_id=str((review_item or {}).get("review_key") or ""),
                     attempt_index=int((review_item or {}).get("attempt_index") or 0),
-                    frame_contract_sha256=(review_item or {}).get("frame_contract_sha256"),
+                    # Phase3 contract is the verified authority. Review Queue's
+                    # copied frame_contract_sha256 may be blank on older rows and
+                    # must not poison the durable review fingerprint.
+                    frame_contract_sha256=phase3_contexts.get("frame_contract_sha256"),
                     prompt_package_sha256=(review_item or {}).get("prompt_package_sha256"),
                 ) if verification_scope == PHASE5A_SINGLE_FRAME_SCOPE else
                 frame_evidence_fingerprint(
