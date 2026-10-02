@@ -74,6 +74,22 @@ def _phase5a_manifest_errors(
     return []
 
 
+def _is_phase5a_test_only(ep: Path) -> bool:
+    marker = Path(ep) / "meta" / "phase5a-canary.json"
+    if not marker.is_file():
+        return False
+    try:
+        value = json.loads(marker.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return False
+    return (
+        isinstance(value, dict)
+        and value.get("workspace_class") == "TEST_ONLY"
+        and value.get("promotion_class") == "NON_PROMOTABLE"
+        and value.get("canary_type") == "PHASE5A_COLLABORATIVE_REGRESSION"
+    )
+
+
 def verify_episode_review_authority(
     ep: Path, *, metadata_only: bool = False,
 ) -> dict:
@@ -96,9 +112,29 @@ def verify_episode_review_authority(
         return {"status": "BLOCKED", "errors": ["production ledger frames missing"], "frames": []}
 
     # Reuse the canonical verifier for policy, frame/candidate identity, receipt,
-    # and evidence-fingerprint validation. This is read-only in metadata mode.
-    semantic_errors = frame_semantic_review.verify_episode(
-        episode, metadata_only=metadata_only, write_audit=False)
+    # and evidence-fingerprint validation. Production episodes require the normal
+    # full review authority. The isolated Phase5A canary is intentionally one
+    # TEST_ONLY / NON_PROMOTABLE frame and must be verified with its scoped
+    # contract rather than being forced through FULL_FRAME_SET semantics.
+    if _is_phase5a_test_only(episode):
+        accepted_keys = [
+            str(key).zfill(2) for key, row in frames.items()
+            if isinstance(row, dict)
+            and str(row.get("status") or "").upper() in production_ledger.ACCEPTED_LEDGER_STATES
+        ]
+        if len(accepted_keys) != 1:
+            semantic_errors = ["Phase5A TEST_ONLY authority requires exactly one accepted frame"]
+        else:
+            scoped_frames = frame_semantic_review.frame_records(
+                episode, require_files=not metadata_only, only_frames=accepted_keys)
+            semantic_errors = frame_semantic_review.verify_scoped_review(
+                episode, scoped_frames,
+                review_scope=frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE,
+                metadata_only=metadata_only,
+            )
+    else:
+        semantic_errors = frame_semantic_review.verify_episode(
+            episode, metadata_only=metadata_only, write_audit=False)
     if semantic_errors:
         errors.extend("final semantic evidence invalid: " + str(error)
                       for error in semantic_errors)
@@ -167,7 +203,9 @@ def verify_episode_review_authority(
             policy_sha256=frame_semantic_review.bound_review_policy_sha256(episode),
             review_item_id=str(queue_item.get("review_key") or ""),
             attempt_index=int(queue_item.get("attempt_index") or 0),
-            frame_contract_sha256=str(queue_item.get("frame_contract_sha256") or ""),
+            # The verified Phase3 contract is canonical. Older Review Queue rows
+            # may carry an empty copied frame_contract_sha256.
+            frame_contract_sha256=str(phase3.get("frame_contract_sha256") or ""),
             prompt_package_sha256=str(queue_item.get("prompt_package_sha256") or ""),
         )
         if not expected_fingerprint:

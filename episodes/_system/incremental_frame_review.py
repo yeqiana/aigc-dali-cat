@@ -202,11 +202,57 @@ def _binding_match(data: dict, ep: Path, frame: str) -> bool:
     return data.get("source_binding") == expected
 
 
-def _scope_ok(data: dict) -> bool:
-    p = data.get("critic_provenance") or {}
-    return not runtime_provenance.validate_critic_provenance(p) and p.get("review_scope") in {
-        "FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"
+def _phase5a_scoped_evidence_allowed(ep: Path, data: dict | None = None) -> bool:
+    marker = Path(ep) / "meta" / "phase5a-canary.json"
+    if not marker.is_file():
+        return False
+    try:
+        value = read_json(marker)
+    except Exception:
+        return False
+    provenance = (data or {}).get("critic_provenance") or {}
+    return (
+        isinstance(value, dict)
+        and value.get("workspace_class") == "TEST_ONLY"
+        and value.get("promotion_class") == "NON_PROMOTABLE"
+        and value.get("canary_type") == "PHASE5A_COLLABORATIVE_REGRESSION"
+        and provenance.get("review_scope") == base.PHASE5A_SINGLE_FRAME_SCOPE
+    )
+
+
+def _expected_review_fingerprint(ep: Path, data: dict, frame: dict,
+                                 contexts: dict, phase3: dict,
+                                 policy_sha256: str | None) -> str | None:
+    identity = {
+        "logical_asset_key": frame.get("logical_asset_key"),
+        "generation_key": frame.get("generation_key"),
+        "sha256": frame.get("sha256"),
+        "source_binding": base.source_binding(ep, frame["frame"]),
     }
+    provenance = data.get("critic_provenance") or {}
+    if _phase5a_scoped_evidence_allowed(ep, data):
+        return base.review_evidence_fingerprint(
+            identity, contexts=contexts, phase3_contexts=phase3,
+            policy_sha256=policy_sha256,
+            review_item_id=str(data.get("review_item_id") or ""),
+            attempt_index=int(data.get("attempt_index") or 0),
+            frame_contract_sha256=phase3.get("frame_contract_sha256"),
+            prompt_package_sha256=str(provenance.get("prompt_package_sha256") or ""),
+        )
+    return base.frame_evidence_fingerprint(
+        identity, contexts=contexts, phase3_contexts=phase3,
+        policy_sha256=policy_sha256)
+
+
+def _scope_ok(data: dict, ep: Path | None = None) -> bool:
+    p = data.get("critic_provenance") or {}
+    if runtime_provenance.validate_critic_provenance(p):
+        return False
+    scope = p.get("review_scope")
+    if scope in {"FULL_FRAME_SET", "INCREMENTAL_CONTEXT_SET"}:
+        return True
+    return bool(ep is not None and scope == base.PHASE5A_SINGLE_FRAME_SCOPE
+                and _phase5a_scoped_evidence_allowed(ep, data))
 
 
 def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, caption_hash: str,
@@ -245,16 +291,15 @@ def _review_clean(ep: Path, data: dict | None, frame: dict, contexts: dict, capt
         reasons.append("model_policy_binding_missing")
     elif str(data.get("model_policy_sha256") or "").lower() != str(policy_sha256).lower():
         reasons.append("policy_sha_changed")
-    expected_fingerprint = base.frame_evidence_fingerprint(
-        expected_identity, contexts=contexts, phase3_contexts=phase3,
-        policy_sha256=policy_sha256)
+    expected_fingerprint = _expected_review_fingerprint(
+        ep, data, frame, contexts, phase3, policy_sha256)
     if not expected_fingerprint:
         reasons.append("evidence_fingerprint_inputs_missing")
     elif str(data.get("evidence_fingerprint") or "").lower() != expected_fingerprint:
         reasons.append("evidence_fingerprint_invalid")
     # STORY_OS_V2_6_0_PERFORMANCE_RUNTIME:
     # Caption changes are audited independently by caption_image_audit.py and MUST NOT dirty visual review.
-    if not _scope_ok(data):
+    if not _scope_ok(data, ep):
         reasons.append("review_scope_invalid")
     issue_codes = data.get("issue_codes")
     if data.get("decision") != "pass" or not isinstance(issue_codes, list) or issue_codes:
@@ -363,8 +408,12 @@ def build_plan(ep: Path) -> dict:
             "sha256": frame.get("sha256"),
             "source_binding": base.source_binding(ep, frame["frame"]),
         }
-        new_fingerprint = base.frame_evidence_fingerprint(
-            identity, contexts=contexts, phase3_contexts=phase3, policy_sha256=policy_sha)
+        new_fingerprint = (_expected_review_fingerprint(
+            ep, data, frame, contexts, phase3, policy_sha)
+            if isinstance(data, dict) else
+            base.frame_evidence_fingerprint(
+                identity, contexts=contexts, phase3_contexts=phase3,
+                policy_sha256=policy_sha))
         new_fingerprints[frame["frame"]] = new_fingerprint
         old_fingerprints[frame["frame"]] = (
             str(data.get("evidence_fingerprint")) if isinstance(data, dict)
