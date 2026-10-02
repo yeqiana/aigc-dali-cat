@@ -1670,6 +1670,55 @@ def _apply_candidate_gate(
     return result
 
 
+def _pending_assets_match_exact_promotion(
+    expected_assets: list[dict], actual_assets: list[dict], ledger: dict,
+) -> bool:
+    """Allow candidate->approved path drift only for the exact same pixels.
+
+    This is recovery for a partially committed review: the pending request still
+    names the candidate path while the ledger has already promoted those bytes.
+    Frame, SHA, candidate path, approved path and source_sha256 must all bind.
+    """
+    if len(expected_assets) != len(actual_assets):
+        return False
+    actual_by_frame = {
+        str(row.get("frame") or "").zfill(2): row
+        for row in actual_assets if isinstance(row, dict)
+    }
+    frames = ledger.get("frames") if isinstance(ledger, dict) else None
+    if not isinstance(frames, dict):
+        return False
+    for expected in expected_assets:
+        if not isinstance(expected, dict):
+            return False
+        key = str(expected.get("frame") or "").zfill(2)
+        actual = actual_by_frame.get(key)
+        row = frames.get(key)
+        if not isinstance(actual, dict) or not isinstance(row, dict):
+            return False
+        sha = str(expected.get("sha256") or "").lower()
+        if len(sha) != 64 or str(actual.get("sha256") or "").lower() != sha:
+            return False
+        if str(row.get("status") or "") not in production_ledger.ACCEPTED_LEDGER_STATES:
+            return False
+        candidate = row.get("current_candidate")
+        approved = row.get("approved_asset")
+        if not isinstance(candidate, dict) or not isinstance(approved, dict):
+            return False
+        normalize = lambda value: str(value or "").replace("\\", "/")
+        if normalize(expected.get("path")) != normalize(candidate.get("path") or candidate.get("asset_path")):
+            return False
+        if normalize(actual.get("path")) != normalize(approved.get("path") or approved.get("asset_path")):
+            return False
+        if str(candidate.get("sha256") or "").lower() != sha:
+            return False
+        if str(approved.get("sha256") or "").lower() != sha:
+            return False
+        if str(approved.get("source_sha256") or "").lower() != sha:
+            return False
+    return True
+
+
 def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
     """Resume a critic whose parent process vanished after the model wrote JSON."""
     request_path = pending_request_path(ep, attempt)
@@ -1710,7 +1759,9 @@ def apply_pending_candidate(ep: Path, *, attempt: int) -> int:
         only_frames=target_frames if review_scope == PHASE5A_SINGLE_FRAME_SCOPE else None)
     actual_assets = [{"frame": x["frame"], "path": x["path_rel"], "sha256": x["sha256"]} for x in current]
     if expected_assets != actual_assets:
-        raise RuntimeError("pending semantic request asset set drifted; refuse orphan recovery")
+        ledger = production_ledger.load_authority(ep, default={}) or {}
+        if not _pending_assets_match_exact_promotion(expected_assets, actual_assets, ledger):
+            raise RuntimeError("pending semantic request asset set drifted; refuse orphan recovery")
     if pending.get("contexts") != context_hashes(ep):
         raise RuntimeError("pending semantic request Story/Storyboard/visual context drifted")
     binding_errors = reviewable_phase4_binding_errors(ep, current)

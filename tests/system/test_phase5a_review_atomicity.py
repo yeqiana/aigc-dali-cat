@@ -107,6 +107,27 @@ def test_approved_asset_generation_recovery_fails_closed_on_ambiguous_sha(tmp_pa
         tmp_path, "01", asset=ledger["frames"]["01"]["approved_asset"], ledger=ledger)
     assert binding == {"logical_asset_key": "asset-01", "generation_key": None}
 
+
+def test_pending_recovery_accepts_only_exact_candidate_to_approved_promotion():
+    sha = "a" * 64
+    expected = [{"frame": "01", "path": "media/candidates/01.png", "sha256": sha}]
+    actual = [{"frame": "01", "path": "media/approved/01.png", "sha256": sha}]
+    ledger = {"frames": {"01": {
+        "status": "LOCKED",
+        "current_candidate": {"path": "media/candidates/01.png", "sha256": sha},
+        "approved_asset": {"path": "media/approved/01.png", "sha256": sha,
+                           "source_sha256": sha},
+    }}}
+    assert frame_semantic_review._pending_assets_match_exact_promotion(expected, actual, ledger)
+
+    wrong_source = {"frames": {"01": {**ledger["frames"]["01"],
+        "approved_asset": {**ledger["frames"]["01"]["approved_asset"],
+                           "source_sha256": "b" * 64}}}}
+    assert not frame_semantic_review._pending_assets_match_exact_promotion(expected, actual, wrong_source)
+
+    wrong_path = [{"frame": "01", "path": "media/approved/other.png", "sha256": sha}]
+    assert not frame_semantic_review._pending_assets_match_exact_promotion(expected, wrong_path, ledger)
+
 def test_review_commit_manifest_has_stable_identity_and_is_not_projection_completion(tmp_path):
     commit_id = frame_semantic_review.review_commit_id(
         "review-01", "generation-01-a1", 1, "a" * 64)
