@@ -350,6 +350,27 @@ def current_generation_binding(ep: Path, frame: str | int, asset: dict | None = 
             if attempt_id and str(attempt.get("attempt_id") or "") == attempt_id:
                 generation_key = str(attempt.get("generation_key") or "")
                 break
+    if not generation_key:
+        # Promotion copies the exact pixels into approved_asset but older ledger
+        # rows did not copy generation_key/attempt_id with them. Recover identity
+        # only by exact artifact SHA and only when it resolves to one unique
+        # generation key; never guess from frame number or latest attempt.
+        selected_sha = str((selected or {}).get("sha256") or "").lower()
+        matching_keys: set[str] = set()
+        current_candidate = row.get("current_candidate")
+        if (selected_sha and isinstance(current_candidate, dict)
+                and str(current_candidate.get("sha256") or "").lower() == selected_sha):
+            value = str(current_candidate.get("generation_key") or "")
+            if value:
+                matching_keys.add(value)
+        for attempt in [x for x in (row.get("attempts") or []) if isinstance(x, dict)]:
+            candidate = attempt.get("candidate") if isinstance(attempt.get("candidate"), dict) else {}
+            if selected_sha and str(candidate.get("sha256") or "").lower() == selected_sha:
+                value = str(candidate.get("generation_key") or attempt.get("generation_key") or "")
+                if value:
+                    matching_keys.add(value)
+        if len(matching_keys) == 1:
+            generation_key = next(iter(matching_keys))
     logical_key = generation_attempt_authority.frame_key(ep, key)
     return {"logical_asset_key": logical_key, "generation_key": generation_key or None}
 

@@ -77,6 +77,36 @@ def test_candidate_contract_failure_happens_before_any_success_projection(tmp_pa
     assert not (tmp_path / "media" / "approved" / "01.png").exists()
 
 
+
+def test_approved_asset_recovers_generation_key_only_by_exact_unique_sha(tmp_path, monkeypatch):
+    sha = "a" * 64
+    ledger = {"frames": {"01": {
+        "approved_asset": {"sha256": sha, "path": "approved/01.png"},
+        "current_candidate": {"sha256": sha, "generation_key": "generation-01-a1"},
+        "attempts": [{"generation_key": "generation-01-a1", "candidate": {
+            "sha256": sha, "generation_key": "generation-01-a1"}}],
+    }}}
+    monkeypatch.setattr(frame_semantic_review.generation_attempt_authority,
+                        "frame_key", lambda *_a, **_k: "asset-01")
+    binding = frame_semantic_review.current_generation_binding(
+        tmp_path, "01", asset=ledger["frames"]["01"]["approved_asset"], ledger=ledger)
+    assert binding == {"logical_asset_key": "asset-01", "generation_key": "generation-01-a1"}
+
+
+def test_approved_asset_generation_recovery_fails_closed_on_ambiguous_sha(tmp_path, monkeypatch):
+    sha = "a" * 64
+    ledger = {"frames": {"01": {
+        "approved_asset": {"sha256": sha, "path": "approved/01.png"},
+        "current_candidate": {"sha256": sha, "generation_key": "generation-01-a2"},
+        "attempts": [{"generation_key": "generation-01-a1", "candidate": {
+            "sha256": sha, "generation_key": "generation-01-a1"}}],
+    }}}
+    monkeypatch.setattr(frame_semantic_review.generation_attempt_authority,
+                        "frame_key", lambda *_a, **_k: "asset-01")
+    binding = frame_semantic_review.current_generation_binding(
+        tmp_path, "01", asset=ledger["frames"]["01"]["approved_asset"], ledger=ledger)
+    assert binding == {"logical_asset_key": "asset-01", "generation_key": None}
+
 def test_review_commit_manifest_has_stable_identity_and_is_not_projection_completion(tmp_path):
     commit_id = frame_semantic_review.review_commit_id(
         "review-01", "generation-01-a1", 1, "a" * 64)
