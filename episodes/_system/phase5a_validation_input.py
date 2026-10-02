@@ -28,6 +28,7 @@ import image_scheduler
 import logical_asset_identity
 import model_policy
 import phase5a_collaborative_canary as canary
+import prompt_package
 import prompt_package_persistence
 import runtime_request
 import scheduler_core
@@ -292,6 +293,12 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
         raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_CARDINALITY_INVALID")
     item = active[0]
     package = prompt_package_persistence.load_latest(episode, 1)
+    if not isinstance(package, dict):
+        # Resume-safe recovery: an earlier preflight may have admitted the Queue
+        # Item but lost only the derived Prompt Package projection. Recompile the
+        # deterministic package without reserving an Attempt or calling a model.
+        prompt_package.compile_frame(episode, 1, docs["prompt_path"], write=True)
+        package = prompt_package_persistence.load_latest(episode, 1)
     if not isinstance(package, dict):
         raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_MISSING")
     if (item.get("prompt_package") or {}).get("package_sha256") != package.get("package_sha256"):
