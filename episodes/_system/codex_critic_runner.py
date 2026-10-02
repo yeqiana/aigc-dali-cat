@@ -119,7 +119,9 @@ def default_log_path(root, tag="critic"):
     return directory / f"{tag}-run.jsonl"
 
 
-def _persist_final_semantic_durable_result(episode, remote, expected_returncode):
+def _persist_final_semantic_durable_result(
+    episode, remote, expected_returncode, *, output_path=None,
+):
     """Persist the exact User Runner output bytes referenced by a final receipt.
 
     A local Critic log is useful diagnostics, but it is not the durable result
@@ -152,14 +154,35 @@ def _persist_final_semantic_durable_result(episode, remote, expected_returncode)
                 events.append(event)
         if not any(event.get("type") == "turn.completed" for event in events):
             return {"durable_result_status": "TURN_NOT_COMPLETED"}
-        if recover_completed_agent_json(text) is None:
+        structured_result = recover_completed_agent_json(text)
+        structured_result_source = "USER_RUNNER_AGENT_MESSAGE"
+        if structured_result is None and output_path is not None:
+            # Newer Codex CLI builds may keep the schema-bound answer in `-o`
+            # while the final agent_message is a human-readable summary. The
+            # output file is acceptable only when it is inside the same Episode
+            # and the durable runner record proves rc=0 + turn.completed for
+            # this exact request.
+            candidate = Path(output_path).resolve()
+            episode_root = Path(episode).resolve()
+            try:
+                candidate.relative_to(episode_root)
+            except ValueError:
+                return {"durable_result_status": "OUTPUT_PATH_OUTSIDE_EPISODE"}
+            if candidate.is_file():
+                try:
+                    parsed = json.loads(candidate.read_bytes().decode("utf-8-sig"))
+                except Exception:
+                    parsed = None
+                if isinstance(parsed, dict):
+                    structured_result = parsed
+                    structured_result_source = "CODEX_OUTPUT_FILE"
+        if structured_result is None:
             return {"durable_result_status": "STRUCTURED_RESULT_MISSING"}
         # Keep the full task-result JSON in place in the User Runner. Copy only
         # a minimal, secret-safe projection into the Episode evidence area.
         durable_json = durable_path.read_bytes()
         if json.loads(durable_json.decode("utf-8-sig")) != durable:
             return {"durable_result_status": "DURABLE_JSON_MISMATCH"}
-        structured_result = recover_completed_agent_json(text)
     except Exception:
         return {"durable_result_status": "DURABLE_RESULT_UNAVAILABLE"}
 
@@ -173,6 +196,7 @@ def _persist_final_semantic_durable_result(episode, remote, expected_returncode)
         "returncode": int(expected_returncode),
         "turn_completed": True,
         "structured_result": structured_result,
+        "structured_result_source": structured_result_source,
         "output_sha256": hashlib.sha256(raw).hexdigest(),
         "copied_at": dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds"),
     }
@@ -327,7 +351,9 @@ def launch(
         if not all((selected_model, effort, policy_sha, policy_version, profile, role)):
             raise ValueError("model execution context requires bound role/profile/model/effort/policy")
         durable_result_evidence = (
-            _persist_final_semantic_durable_result(episode, remote, done.returncode)
+            _persist_final_semantic_durable_result(
+                episode, remote, done.returncode, output_path=output_path,
+            )
             if role == "vision.final" else {}
         )
         receipt = {

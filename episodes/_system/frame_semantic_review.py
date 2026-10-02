@@ -523,10 +523,10 @@ def _find_pending_final_semantic_receipt(
     return matches[0]
 
 
-def _validate_durable_result_projection(
-    ep: Path, receipt: dict, *, request_id: str, durable_result: dict,
-) -> Path:
-    """Validate Slot2's secret-safe durable result projection without rewriting it."""
+def _read_durable_result_projection(
+    ep: Path, receipt: dict, *, request_id: str,
+) -> tuple[Path, dict]:
+    """Read and validate the secret-safe durable projection without rewriting it."""
     if receipt.get("durable_result_status") != "VALIDATED":
         raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_NOT_VALIDATED")
     raw_ref = str(receipt.get("result_ref") or "").strip()
@@ -555,7 +555,18 @@ def _validate_durable_result_projection(
             or str(projection.get("request_id") or "") != request_id
             or int(projection.get("returncode", -1)) != 0
             or projection.get("turn_completed") is not True
-            or projection.get("structured_result") != durable_result):
+            or not isinstance(projection.get("structured_result"), dict)):
+        raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_BINDING_MISMATCH")
+    return projection_path, projection
+
+
+def _validate_durable_result_projection(
+    ep: Path, receipt: dict, *, request_id: str, durable_result: dict,
+) -> Path:
+    """Validate Slot2's secret-safe durable result projection without rewriting it."""
+    projection_path, projection = _read_durable_result_projection(
+        ep, receipt, request_id=request_id)
+    if projection.get("structured_result") != durable_result:
         raise RuntimeError("FINAL_SEMANTIC_DURABLE_PROJECTION_BINDING_MISMATCH")
     return projection_path
 
@@ -601,6 +612,15 @@ def _finalize_final_semantic_receipt(
         raise RuntimeError("FINAL_SEMANTIC_TURN_NOT_COMPLETED")
     import codex_critic_runner
     durable_result = codex_critic_runner.recover_completed_agent_json(durable_log)
+    if not isinstance(durable_result, dict):
+        # With schema-bound `-o`, recent Codex builds can emit a prose final
+        # agent_message while persisting the actual structured result to the
+        # output file. Slot2 already bound that file into a SHA-verified durable
+        # projection after rc=0 + turn.completed, so recover from that projection
+        # rather than treating a successful review as a technical failure.
+        _projection_path, projection = _read_durable_result_projection(
+            ep, receipt, request_id=request_id)
+        durable_result = projection.get("structured_result")
     if not isinstance(durable_result, dict):
         raise RuntimeError("FINAL_SEMANTIC_STRUCTURED_RESULT_NOT_DURABLE")
     _validate_durable_result_projection(
