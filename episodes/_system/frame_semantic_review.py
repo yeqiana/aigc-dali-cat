@@ -514,10 +514,15 @@ def _read_model_execution_receipt(ep: Path, receipt_ref: str | None) -> tuple[di
 def _find_pending_final_semantic_receipt(
     ep: Path, *, review_item: dict, frame: dict, attempt: int,
 ) -> tuple[dict, Path]:
-    """Find exactly one provisional receipt matching a pending review item."""
+    """Find one exact receipt for the pending review item.
+
+    Recovery is idempotent: the same receipt may already have advanced from
+    PENDING_VALIDATION to SUCCESS after an earlier partial commit. A validated
+    SUCCESS receipt is reusable only when every immutable review identity field
+    still matches; failed/cancelled/foreign receipts are never selected.
+    """
     directory = Path(ep) / "meta/provider-receipts/model-executions"
     expected = {
-        "status": "PENDING_VALIDATION",
         "model_role": "vision.final",
         "profile": "vision_final",
         "requested_model": "gpt-6-luna",
@@ -536,8 +541,14 @@ def _find_pending_final_semantic_receipt(
             value = read_json(path)
         except Exception:
             continue
-        if isinstance(value, dict) and all(value.get(key) == expected_value
-                                           for key, expected_value in expected.items()):
+        if not isinstance(value, dict):
+            continue
+        if not all(value.get(key) == expected_value for key, expected_value in expected.items()):
+            continue
+        status = str(value.get("status") or "")
+        if status == "PENDING_VALIDATION":
+            matches.append((value, path))
+        elif status == "SUCCESS" and value.get("durable_result_status") == "VALIDATED":
             matches.append((value, path))
     if len(matches) != 1:
         raise RuntimeError("FINAL_SEMANTIC_PENDING_RECEIPT_NOT_UNIQUE")

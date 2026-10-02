@@ -128,6 +128,67 @@ def test_pending_recovery_accepts_only_exact_candidate_to_approved_promotion():
     wrong_path = [{"frame": "01", "path": "media/approved/other.png", "sha256": sha}]
     assert not frame_semantic_review._pending_assets_match_exact_promotion(expected, wrong_path, ledger)
 
+
+def test_pending_receipt_finder_reuses_unique_validated_success(tmp_path, monkeypatch):
+    ep = tmp_path / "ep"
+    directory = ep / "meta/provider-receipts/model-executions"
+    directory.mkdir(parents=True)
+    policy_sha = "p" * 64
+    artifact_sha = "a" * 64
+    review_item = {
+        "review_key": "review-01", "attempt_index": 1,
+        "prompt_package_sha256": "package-01",
+    }
+    frame = {
+        "logical_asset_key": "asset-01", "generation_key": "generation-01-a1",
+        "sha256": artifact_sha,
+    }
+    receipt = {
+        "status": "SUCCESS", "durable_result_status": "VALIDATED",
+        "model_role": "vision.final", "profile": "vision_final",
+        "requested_model": "gpt-6-luna", "effective_model": "gpt-6-luna",
+        "reasoning_effort": "high", "model_policy_sha256": policy_sha,
+        "logical_asset_key": "asset-01", "generation_key": "generation-01-a1",
+        "attempt_index": 1, "artifact_sha256": artifact_sha,
+        "review_item_id": "review-01", "runner_request_id": "request-01",
+    }
+    path = directory / "call-01.json"
+    path.write_text(__import__("json").dumps(receipt), encoding="utf-8")
+    monkeypatch.setattr(frame_semantic_review, "bound_review_policy_sha256",
+                        lambda _ep: policy_sha)
+    found, found_path = frame_semantic_review._find_pending_final_semantic_receipt(
+        ep, review_item=review_item, frame=frame, attempt=1)
+    assert found["status"] == "SUCCESS"
+    assert found_path == path
+
+
+def test_pending_receipt_finder_rejects_unvalidated_success(tmp_path, monkeypatch):
+    ep = tmp_path / "ep"
+    directory = ep / "meta/provider-receipts/model-executions"
+    directory.mkdir(parents=True)
+    policy_sha = "p" * 64
+    receipt = {
+        "status": "SUCCESS", "durable_result_status": "STRUCTURED_RESULT_MISSING",
+        "model_role": "vision.final", "profile": "vision_final",
+        "requested_model": "gpt-6-luna", "effective_model": "gpt-6-luna",
+        "reasoning_effort": "high", "model_policy_sha256": policy_sha,
+        "logical_asset_key": "asset-01", "generation_key": "generation-01-a1",
+        "attempt_index": 1, "artifact_sha256": "a" * 64,
+        "review_item_id": "review-01",
+    }
+    (directory / "call-01.json").write_text(
+        __import__("json").dumps(receipt), encoding="utf-8")
+    monkeypatch.setattr(frame_semantic_review, "bound_review_policy_sha256",
+                        lambda _ep: policy_sha)
+    with pytest.raises(RuntimeError, match="PENDING_RECEIPT_NOT_UNIQUE"):
+        frame_semantic_review._find_pending_final_semantic_receipt(
+            ep,
+            review_item={"review_key": "review-01", "attempt_index": 1},
+            frame={"logical_asset_key": "asset-01", "generation_key": "generation-01-a1",
+                   "sha256": "a" * 64},
+            attempt=1,
+        )
+
 def test_review_commit_manifest_has_stable_identity_and_is_not_projection_completion(tmp_path):
     commit_id = frame_semantic_review.review_commit_id(
         "review-01", "generation-01-a1", 1, "a" * 64)
