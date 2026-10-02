@@ -27,15 +27,14 @@ class ReportTests(unittest.TestCase):
             self.assertEqual(queue["max_parallel"],1)
             self.assertEqual(queue["adaptive_parallel"],1)
 
-    def test_subscription_route_does_not_inherit_global_gateway(self):
+    def test_subscription_route_delegates_auto_provider_to_runner(self):
         import os
         import codex_subscription_image as backend
         with patch.dict(os.environ,{"STORY_OS_IMAGE_PROVIDER_ROUTE":"","OPENAI_BASE_URL":"http://127.0.0.1:10100/v1"}):
             args=backend.controller_args()
-            self.assertIn('openai_base_url="https://chatgpt.com/backend-api/codex"',args)
-            self.assertIn('gpt-5.6-luna',args)
-            self.assertIn('model_reasoning_effort="medium"',args)
-            self.assertFalse(any('10100' in x for x in args))
+            self.assertIn(backend.CODEX_IMAGE_CONTROLLER_MODEL,args)
+            self.assertIn(f'model_reasoning_effort="{backend.CODEX_IMAGE_REASONING_EFFORT}"',args)
+            self.assertFalse(any('model_provider=' in x or 'openai_base_url=' in x for x in args))
         with patch.dict(os.environ,{"STORY_OS_IMAGE_PROVIDER_ROUTE":"api_http","OPENAI_BASE_URL":"http://127.0.0.1:9999/v1"}):
             self.assertTrue(any('9999' in x for x in backend.controller_args()))
 

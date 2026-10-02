@@ -198,12 +198,10 @@ def _codex_http_only_provider_args() -> list[str]:
     """
     route = str(os.environ.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
     if route != "api_http":
-        # This adapter is the ChatGPT subscription image lane. The built-in
-        # provider otherwise inherits global OpenCodex openai_base_url, which
-        # can return rc=0/text-only without exposing image generation.
-        # Override only this child process; preserve the user's global config.
-        return ['-c', 'model_provider="openai"',
-                '-c', 'openai_base_url="https://chatgpt.com/backend-api/codex"']
+        # Auto provider selection is centralized in codex_user_runner.run_codex().
+        # Keeping this list empty prevents the image adapter from creating a
+        # second provider authority or masking OpenCodex/native fallback evidence.
+        return []
     base_url = os.environ.get("OPENAI_BASE_URL")
     if not base_url:
         return []
@@ -1557,7 +1555,11 @@ def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
     return 'workspace-write'
 
 
+<<<<<<< HEAD
 def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None, transport_model: str | None = None, transport_effort: str | None = None, transport_request: dict | None = None) -> float:
+=======
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None) -> tuple[float, dict]:
+>>>>>>> 3358cba (fix(runtime): add resilient codex transport fallback)
     if episode_dir is None or not isinstance(generation_attempt_lease, dict):
         raise BackendError('GENERATION_ATTEMPT_LEASE_REQUIRED')
     scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
@@ -1703,7 +1705,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         # the canonical source of PROVIDER_RAW_CANVAS_DEGENERATE evidence.
         raw_output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(candidate, raw_output)
-    return round(time.monotonic() - started, 2)
+    return round(time.monotonic() - started, 2), codex_user_runner.provider_transport_evidence(getattr(completed, "remote", {}))
 
 def common_validate(args: argparse.Namespace) -> tuple[Path, list[Path], Path, Path]:
     prompt_path = args.prompt_file.expanduser().resolve()
@@ -1759,6 +1761,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         manual_src = matches[-1]
         if not valid_image(manual_src):
             raise BackendError(f'manual raw invalid: {manual_src}')
+    transport_evidence = {}
     if recovered_src is not None:
         raw_output.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(recovered_src, raw_output)
@@ -1847,7 +1850,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         if bool(getattr(args, "_raw_candidate_budget_preclaimed", False)):
             raise BackendError("INDEPENDENT_IMAGE_PAYLOAD_REQUEST_REQUIRED")
-        elapsed = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, payload_model_policy['model'], payload_model_policy['quality'], payload_model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
+        elapsed, transport_evidence = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, payload_model_policy['model'], payload_model_policy['quality'], payload_model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=payload_model_policy["model"], route=backend_name, frame=int(args.frame))
     receipt_data.update(provider_receipt_model_bindings(
@@ -1877,6 +1880,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         receipt_data["reference_transport"] = "codex_subscription_cli_attachment"
     receipt_data["references"] = [] if manual_src else provider_capability.reference_evidence(refs)
+    receipt_data.update(transport_evidence)
     if recovered_src is not None:
         receipt_data["recovery"] = {
             "kind": "interrupted_user_runner_success",
@@ -1939,6 +1943,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             'generation_route_note': f'generated via built-in image_gen tool in the Codex desktop interface when STORY_OS_MANUAL_RAW_DIR is set; model contract stays {payload_model_policy["model"]}',
         } if manual_src else {**payload_model_policy, 'enforcement': 'runtime_request_to_worker_contract', 'provider_attestation': False},
         'elapsed_seconds': elapsed,
+        'transport': transport_evidence or None,
     }
 
 def generate_legacy(args: argparse.Namespace) -> dict:
@@ -1946,11 +1951,11 @@ def generate_legacy(args: argparse.Namespace) -> dict:
     size = args.size
     legacy_model_policy = image_model_policy.resolve_model(explicit=args.image_model, explicit_quality=getattr(args, 'image_quality', None))
     tmp_raw = output.with_name('.' + output.name + '.raw.png')
-    elapsed = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None, None, legacy_model_policy['model'], legacy_model_policy['quality'], legacy_model_policy['strict_model'])
+    elapsed, transport_evidence = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None, None, legacy_model_policy['model'], legacy_model_policy['quality'], legacy_model_policy['strict_model'], episode_dir=getattr(args, 'episode_dir', None), generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
     if output.exists() and args.overwrite:
         output.unlink()
     os.replace(tmp_raw, output)
-    return {'ok': True, 'backend':'codex_subscription', 'output':str(output), 'log':str(log), 'size':size, 'references':[str(p) for p in refs], 'elapsed_seconds':elapsed}
+    return {'ok': True, 'backend':'codex_subscription', 'output':str(output), 'log':str(log), 'size':size, 'references':[str(p) for p in refs], 'elapsed_seconds':elapsed, 'transport': transport_evidence or None}
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
@@ -2013,8 +2018,6 @@ def main() -> int:
             assert controller_args() == [
                 '-m', CODEX_IMAGE_CONTROLLER_MODEL,
                 '-c', f'model_reasoning_effort="{CODEX_IMAGE_REASONING_EFFORT}"',
-                '-c', 'model_provider="openai"',
-                '-c', 'openai_base_url="https://chatgpt.com/backend-api/codex"',
             ]
         assert not valid_image(Path('__missing__'))
         print('CODEX SUBSCRIPTION IMAGE BACKEND SELF-TEST PASS')

@@ -24,6 +24,9 @@ def test_mysql_mode_write_and_finalize_do_not_create_receipt_json(monkeypatch, t
         "provider": "test-provider",
         "capability_id": "CAP-1",
         "raw_sha256": "a" * 64,
+        "transport_route": "native_codex",
+        "transport_route_reason": "opencodex_unreachable",
+        "transport_base_url": "https://chatgpt.com/backend-api/codex",
     }
     persisted = []
     monkeypatch.setattr(
@@ -61,4 +64,7 @@ def test_mysql_mode_write_and_finalize_do_not_create_receipt_json(monkeypatch, t
     )
     assert not receipt_path.exists()
     assert finalized["receipt"]["release_canvas"]["width"] == 1080
+    assert finalized["receipt"]["transport_route"] == "native_codex"
+    assert finalized["receipt"]["transport_route_reason"] == "opencodex_unreachable"
+    assert finalized["receipt"]["transport_base_url"] == "https://chatgpt.com/backend-api/codex"
     assert persisted[-1][2]["status"] == "FINALIZED"
