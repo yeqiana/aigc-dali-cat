@@ -19,7 +19,7 @@ models:
   profiles:
     orchestration:
       model: gpt-6-luna
-      reasoning_effort: medium
+      reasoning_effort: high
     authoring:
       model: gpt-6-luna
       reasoning_effort: high
@@ -34,7 +34,7 @@ models:
       reasoning_effort: high
     vision_fast:
       model: gpt-6-luna
-      reasoning_effort: low
+      reasoning_effort: high
     vision_final:
       model: gpt-6-luna
       reasoning_effort: high
