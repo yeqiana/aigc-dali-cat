@@ -1555,11 +1555,7 @@ def image_worker_sandbox_mode(*, bridged: bool, has_references: bool) -> str:
     return 'workspace-write'
 
 
-<<<<<<< HEAD
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None, transport_model: str | None = None, transport_effort: str | None = None, transport_request: dict | None = None) -> float:
-=======
-def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None) -> tuple[float, dict]:
->>>>>>> 3358cba (fix(runtime): add resilient codex transport fallback)
+def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Path, size: str, timeout: int, codex_raw: str | None, visual_contract: str | None = None, frame_contract_text: str | None = None, image_model: str = DEFAULT_IMAGE_MODEL, image_quality: str = DEFAULT_IMAGE_QUALITY, strict_model: bool = False, *, scene_text: str | None = None, runner_request_id: str | None = None, episode_dir: Path | None = None, generation_attempt_lease: dict | None = None, transport_model: str | None = None, transport_effort: str | None = None, transport_request: dict | None = None) -> tuple[float, dict]:
     if episode_dir is None or not isinstance(generation_attempt_lease, dict):
         raise BackendError('GENERATION_ATTEMPT_LEASE_REQUIRED')
     scene = scene_text if scene_text is not None else prompt_path.read_text(encoding='utf-8-sig').strip()
@@ -1707,6 +1703,14 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
         shutil.copy2(candidate, raw_output)
     return round(time.monotonic() - started, 2), codex_user_runner.provider_transport_evidence(getattr(completed, "remote", {}))
 
+def _invoke_result(value) -> tuple[float, dict]:
+    """Accept both the new transport-aware result and legacy/mocked float results."""
+    if isinstance(value, tuple) and len(value) == 2:
+        elapsed, evidence = value
+        return float(elapsed), dict(evidence or {}) if isinstance(evidence, dict) else {}
+    return float(value), {}
+
+
 def common_validate(args: argparse.Namespace) -> tuple[Path, list[Path], Path, Path]:
     prompt_path = args.prompt_file.expanduser().resolve()
     if not prompt_path.is_file():
@@ -1850,7 +1854,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
     else:
         if bool(getattr(args, "_raw_candidate_budget_preclaimed", False)):
             raise BackendError("INDEPENDENT_IMAGE_PAYLOAD_REQUEST_REQUIRED")
-        elapsed, transport_evidence = invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, payload_model_policy['model'], payload_model_policy['quality'], payload_model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
+        elapsed, transport_evidence = _invoke_result(invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, payload_model_policy['model'], payload_model_policy['quality'], payload_model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None)))
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=payload_model_policy["model"], route=backend_name, frame=int(args.frame))
     receipt_data.update(provider_receipt_model_bindings(
@@ -1951,7 +1955,7 @@ def generate_legacy(args: argparse.Namespace) -> dict:
     size = args.size
     legacy_model_policy = image_model_policy.resolve_model(explicit=args.image_model, explicit_quality=getattr(args, 'image_quality', None))
     tmp_raw = output.with_name('.' + output.name + '.raw.png')
-    elapsed, transport_evidence = invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None, None, legacy_model_policy['model'], legacy_model_policy['quality'], legacy_model_policy['strict_model'], episode_dir=getattr(args, 'episode_dir', None), generation_attempt_lease=getattr(args, '_generation_attempt_lease', None))
+    elapsed, transport_evidence = _invoke_result(invoke_codex(prompt_path, refs, tmp_raw, log, size, args.timeout, args.codex, None, None, legacy_model_policy['model'], legacy_model_policy['quality'], legacy_model_policy['strict_model'], episode_dir=getattr(args, 'episode_dir', None), generation_attempt_lease=getattr(args, '_generation_attempt_lease', None)))
     if output.exists() and args.overwrite:
         output.unlink()
     os.replace(tmp_raw, output)
