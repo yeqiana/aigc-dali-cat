@@ -186,6 +186,69 @@ def test_prepare_recovers_missing_prompt_package_without_generation_attempt(tmp_
     assert row["provider_calls"] == 0
     assert row["model_calls"] == 0
 
+
+def test_prepare_readmits_stale_zero_attempt_queue_projection(tmp_path, monkeypatch):
+    ep = tmp_path / ".codex_tmp" / "phase5a" / "phase5a-validation-e3-test"
+    (ep / "meta").mkdir(parents=True)
+    profile = tmp_path / "profile.json"
+    profile.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(prep, "ROOT", tmp_path)
+    monkeypatch.setattr(prep.canary, "validate_workspace", lambda *_a, **_k: (ep, {}))
+    monkeypatch.setattr(prep.canary, "claim_global_canary", lambda *_a, **_k: {"validation_epoch": 3})
+    monkeypatch.setattr(prep.visual_profile_registry, "registry_entry", lambda *_a, **_k: {"path": "profile.json"})
+    request = {
+        "mode": "image_continue",
+        "story_input": {"mode": "locked_story"},
+        "provenance": {"original_request": prep.RUNTIME_REQUEST_TEXT},
+    }
+    monkeypatch.setattr(prep.runtime_request, "effective_for_episode", lambda _ep: request)
+    monkeypatch.setattr(prep.canary, "bind_and_freeze", lambda *_a, **_k: {
+        "runtime_request_id": "request-1",
+        "policy_sha256": "p" * 64,
+        "payload": {"model": "gpt-image-2.5-flare", "quality": "high", "strict_model": False},
+    })
+    monkeypatch.setattr(prep.model_policy, "resolve", lambda *_a, **_k: {
+        "model": "gpt-image-2.5-flare", "quality": "high", "strict_model": False,
+    })
+    monkeypatch.setattr(prep.frame_contract, "compile_frame", lambda *_a, **_k: {
+        "contract_sha256": "n" * 64,
+    })
+    monkeypatch.setattr(prep.image_scheduler, "import_batch", lambda *_a, **_k: {"added": [], "skipped": [1]})
+    old_queue = {"items": [{
+        "id": "old-queue", "frame": 1, "kind": "original", "scope": "batch",
+        "status": "external_blocked",
+        "prompt_package": {"package_sha256": "o" * 64, "frame_contract_sha256": "o" * 64},
+    }]}
+    new_queue = {"items": [{
+        "id": "new-queue", "frame": 1, "kind": "original", "scope": "batch",
+        "status": "queued",
+        "prompt_package": {"package_sha256": "q" * 64, "frame_contract_sha256": "n" * 64},
+    }]}
+    queues = iter([copy.deepcopy(old_queue), copy.deepcopy(new_queue)])
+    monkeypatch.setattr(prep.scheduler_core, "load_queue", lambda _ep: next(queues))
+    package = {
+        "package_sha256": "q" * 64,
+        "scene_prompt_sha256": "s" * 64,
+        "frame_contract_sha256": "n" * 64,
+    }
+    monkeypatch.setattr(prep.prompt_package_persistence, "load_latest", lambda *_a, **_k: package)
+    monkeypatch.setattr(prep.logical_asset_identity, "frame_asset_key", lambda *_a, **_k: "_external/test/frame-01")
+    monkeypatch.setattr(prep.generation_attempt_authority, "load_asset_state", lambda *_a, **_k: _attempt())
+    monkeypatch.setattr(prep.image_scheduler, "contract_references", lambda *_a, **_k: [])
+    monkeypatch.setattr(prep.image_scheduler, "directive_dependency", lambda *_a, **_k: [])
+    readmissions = []
+    monkeypatch.setattr(prep.image_scheduler, "add_item", lambda *_a, **kwargs: readmissions.append(kwargs) or new_queue["items"][0])
+
+    row = prep.prepare(ep, canary_id="phase5a-validation-e3-test")
+
+    assert len(readmissions) == 1
+    assert readmissions[0]["replace"] is True
+    assert readmissions[0]["model"] == "gpt-image-2.5-flare"
+    assert row["queue_item_id"] == "new-queue"
+    assert row["queue_status"] == "queued"
+    assert row["attempts_consumed"] == 0
+    assert row["remaining_attempts"] == 2
+
 def test_prepare_fails_closed_if_attempt_was_consumed(tmp_path, monkeypatch):
     ep = tmp_path / ".codex_tmp" / "phase5a" / "phase5a-validation-e3-test"
     (ep / "meta").mkdir(parents=True)

@@ -292,6 +292,13 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
     if len(active) != 1:
         raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_CARDINALITY_INVALID")
     item = active[0]
+    asset_key = logical_asset_identity.frame_asset_key(episode, 1)
+    attempt = generation_attempt_authority.load_asset_state(episode, asset_key)
+    consumed = int(attempt.get("attempts_consumed") or 0)
+    active_attempt = attempt.get("active_attempt_index")
+    if consumed != 0 or active_attempt is not None:
+        raise ValidationInputError("PHASE5A_VALIDATION_PREPARATION_CONSUMED_ATTEMPT")
+
     package = prompt_package_persistence.load_latest(episode, 1)
     if not isinstance(package, dict):
         # Resume-safe recovery: an earlier preflight may have admitted the Queue
@@ -301,17 +308,51 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
         package = prompt_package_persistence.load_latest(episode, 1)
     if not isinstance(package, dict):
         raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_MISSING")
+
+    package_mismatch = (
+        (item.get("prompt_package") or {}).get("package_sha256") != package.get("package_sha256")
+        or (item.get("prompt_package") or {}).get("frame_contract_sha256") != contract.get("contract_sha256")
+    )
+    stale_zero_attempt_projection = item.get("status") in {
+        "blocked", "external_blocked", "tech_failed"
+    }
+    if package_mismatch or stale_zero_attempt_projection:
+        if item.get("status") == "generated":
+            raise ValidationInputError("PHASE5A_VALIDATION_GENERATED_BINDING_DRIFT")
+        payload = binding["payload"]
+        image_scheduler.add_item(
+            episode,
+            frame=1,
+            kind="original",
+            prompt_file=docs["prompt_path"],
+            scope="batch",
+            references=image_scheduler.contract_references(episode, 1, scope="batch"),
+            capture_id="batch-01",
+            model=str(payload.get("model") or ""),
+            quality=str(payload.get("quality") or "high"),
+            strict_model=bool(payload.get("strict_model")),
+            depends_on=image_scheduler.directive_dependency(episode, 1),
+            replace=True,
+        )
+        queue = scheduler_core.load_queue(episode)
+        active = [
+            row for row in queue.get("items") or []
+            if isinstance(row, dict)
+            and int(row.get("frame") or 0) == 1
+            and row.get("kind") == "original"
+            and row.get("status") != "superseded"
+        ]
+        if len(active) != 1:
+            raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_READMISSION_INVALID")
+        item = active[0]
+        package = prompt_package_persistence.load_latest(episode, 1)
+        if not isinstance(package, dict):
+            raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_MISSING_AFTER_READMISSION")
+
     if (item.get("prompt_package") or {}).get("package_sha256") != package.get("package_sha256"):
         raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_BINDING_INVALID")
     if (item.get("prompt_package") or {}).get("frame_contract_sha256") != contract.get("contract_sha256"):
         raise ValidationInputError("PHASE5A_VALIDATION_FRAME_CONTRACT_BINDING_INVALID")
-
-    asset_key = logical_asset_identity.frame_asset_key(episode, 1)
-    attempt = generation_attempt_authority.load_asset_state(episode, asset_key)
-    consumed = int(attempt.get("attempts_consumed") or 0)
-    active_attempt = attempt.get("active_attempt_index")
-    if consumed != 0 or active_attempt is not None:
-        raise ValidationInputError("PHASE5A_VALIDATION_PREPARATION_CONSUMED_ATTEMPT")
 
     preparation = {
         "schema_version": 1,
