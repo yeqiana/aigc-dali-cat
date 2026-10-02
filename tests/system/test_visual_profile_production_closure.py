@@ -34,11 +34,13 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import shutil
 import sys
 import tempfile
 import threading
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,6 +49,8 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import machine_gate  # noqa: E402
+import model_policy  # noqa: E402
+import runtime_request  # noqa: E402
 import production_ledger_manage  # noqa: E402
 import runtime_dag  # noqa: E402
 import visual_profile_closure as closure  # noqa: E402
@@ -86,6 +90,17 @@ def selection_evidence() -> dict:
 
 class VisualProfileProductionClosureTest(unittest.TestCase):
     def setUp(self) -> None:
+        self._storage_env = mock.patch.dict(
+            os.environ,
+            {
+                "STORYOS_RUNTIME_STORE_MODE": "jsonl",
+                "STORYOS_EPISODE_META_STORE_MODE": "json",
+                "STORYOS_HOT_STATE_MODE": "file",
+            },
+            clear=False,
+        )
+        self._storage_env.start()
+        self.addCleanup(self._storage_env.stop)
         self._tmp = tempfile.TemporaryDirectory(prefix="visual-profile-production-closure-")
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name) / "repo"
@@ -180,14 +195,23 @@ class VisualProfileProductionClosureTest(unittest.TestCase):
         Only the DAG's step list is stubbed to empty, so the run exercises the real pre-resume
         reconciliation and nothing else. No model host, no image backend, no subprocess.
         """
+        if runtime_request.authority_for_episode(ep) is None:
+            request = runtime_request.compile_request(
+                '"Visual Profile Closure Test"\nimage_continue'
+            )
+            runtime_request.bind_data(request, ep, repository_root=self.root)
+        model_policy.freeze_for_episode(ep)
         original = runtime_dag.spec_rows
+        original_handoff_verify = runtime_dag.preproduction_handoff.verify
         runtime_dag.spec_rows = lambda: []
+        runtime_dag.preproduction_handoff.verify = lambda _ep: []
         buffer = io.StringIO()
         try:
             with contextlib.redirect_stdout(buffer):
                 return runtime_dag.execute(ep)
         finally:
             runtime_dag.spec_rows = original
+            runtime_dag.preproduction_handoff.verify = original_handoff_verify
 
     def frame_row(self, key: str, *, status: str = "PASSED", approved: bool = True,
                   attempt_id="att", result: str = "success") -> dict:

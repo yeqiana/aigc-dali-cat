@@ -396,7 +396,10 @@ def lease_for_token(token: str) -> dict | None:
 
 
 def commit(ep, token, reason="candidate_file_committed"):
+    import episode_lifecycle
     import generation_attempt_authority as authority
+    ep = Path(ep).resolve()
+    episode_lifecycle.assert_writable(ep, "raw_candidate_budget.commit")
     lease = lease_for_token(token)
     if not lease:
         return False, {"decision": "LEASE_NOT_FOUND", "token": str(token)}

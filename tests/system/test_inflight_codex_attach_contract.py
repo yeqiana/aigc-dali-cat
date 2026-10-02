@@ -83,8 +83,10 @@ class InflightCodexAttachContractTests(unittest.TestCase):
             "全自动做一篇「Runtime Request Authority Test」。")
         self.model_binding = {
             "role": "story.authoring",
+            "profile": "default",
             "model": "gpt-6-luna",
             "reasoning_effort": "high",
+            "policy_version": "test-policy-v1",
             "model_policy_sha256": "a" * 64,
         }
         self.runtime = Path(self._td.name) / "runner-runtime"
@@ -368,11 +370,12 @@ class InflightCodexAttachContractTests(unittest.TestCase):
                                   side_effect=AssertionError("reached the Codex call")) as run_codex, \
                 mock.patch.object(worker.episode_performance, "safe_begin_stage", return_value=None), \
                 mock.patch.object(worker.episode_performance, "safe_end_stage", return_value=None):
-            with self.assertRaises(AssertionError):
-                worker.run_step(self.ep, STEP, codex_raw="codex", timeout=60)
+            rc, _log = worker.run_step(self.ep, STEP, codex_raw="codex", timeout=60)
+        self.assertEqual(rc, 1)
         self.assertTrue(run_codex.called, "任务已确认消失时却没有重新提交")
-        # The fresh submission records a new request_id before it runs.
-        self.assertNotEqual(inflight_codex_task.lookup(self.ep, STEP)["request_id"], RID(15))
+        # The stale RID is never retained. This mocked fresh submission fails
+        # immediately, so the terminal failure clears its in-flight record.
+        self.assertIsNone(inflight_codex_task.lookup(self.ep, STEP))
 
     def test_status_is_a_read_only_projection(self):
         self.record_task(RID(16), timeout_seconds=3600)

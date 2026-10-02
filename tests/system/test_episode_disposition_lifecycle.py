@@ -18,6 +18,13 @@ import raw_candidate_budget
 import scheduler_core
 
 
+@pytest.fixture(autouse=True)
+def _local_episode_authorities(monkeypatch):
+    monkeypatch.setenv("STORYOS_RUNTIME_STORE_MODE", "jsonl")
+    monkeypatch.setenv("STORYOS_EPISODE_META_STORE_MODE", "json")
+    monkeypatch.setenv("STORYOS_HOT_STATE_MODE", "file")
+
+
 def _episode(td: str) -> Path:
     ep = Path(td)
     (ep / "meta").mkdir(parents=True, exist_ok=True)
