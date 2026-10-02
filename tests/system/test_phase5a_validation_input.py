@@ -219,13 +219,26 @@ def test_prepare_readmits_stale_zero_attempt_queue_projection(tmp_path, monkeypa
         "status": "external_blocked",
         "prompt_package": {"package_sha256": "o" * 64, "frame_contract_sha256": "o" * 64},
     }]}
-    new_queue = {"items": [{
-        "id": "new-queue", "frame": 1, "kind": "original", "scope": "batch",
-        "status": "queued",
-        "prompt_package": {"package_sha256": "q" * 64, "frame_contract_sha256": "n" * 64},
-    }]}
-    queues = iter([copy.deepcopy(old_queue), copy.deepcopy(new_queue)])
+    mixed_queue = {"items": [
+        copy.deepcopy(old_queue["items"][0]),
+        {
+            "id": "new-queue", "frame": 1, "kind": "original", "scope": "batch",
+            "status": "queued",
+            "prompt_package": {"package_sha256": "q" * 64, "frame_contract_sha256": "n" * 64},
+        },
+    ]}
+    final_queue = {"items": [
+        {**copy.deepcopy(old_queue["items"][0]), "status": "superseded"},
+        copy.deepcopy(mixed_queue["items"][1]),
+    ]}
+    queues = iter([copy.deepcopy(old_queue), mixed_queue, final_queue])
     monkeypatch.setattr(prep.scheduler_core, "load_queue", lambda _ep: next(queues))
+    monkeypatch.setattr(prep.scheduler_core, "save_queue", lambda *_a, **_k: None)
+    class _Lock:
+        def __enter__(self): return self
+        def __exit__(self, *_a): return False
+    monkeypatch.setattr(prep.scheduler_core, "queue_transaction", lambda *_a, **_k: _Lock())
+    monkeypatch.setattr(prep.scheduler_core, "now", lambda: "2026-10-02T20:00:00+08:00")
     package = {
         "package_sha256": "q" * 64,
         "scene_prompt_sha256": "s" * 64,
@@ -237,7 +250,7 @@ def test_prepare_readmits_stale_zero_attempt_queue_projection(tmp_path, monkeypa
     monkeypatch.setattr(prep.image_scheduler, "contract_references", lambda *_a, **_k: [])
     monkeypatch.setattr(prep.image_scheduler, "directive_dependency", lambda *_a, **_k: [])
     readmissions = []
-    monkeypatch.setattr(prep.image_scheduler, "add_item", lambda *_a, **kwargs: readmissions.append(kwargs) or new_queue["items"][0])
+    monkeypatch.setattr(prep.image_scheduler, "add_item", lambda *_a, **kwargs: readmissions.append(kwargs) or mixed_queue["items"][1])
 
     row = prep.prepare(ep, canary_id="phase5a-validation-e3-test")
 

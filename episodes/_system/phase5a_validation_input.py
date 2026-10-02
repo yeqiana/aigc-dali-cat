@@ -320,7 +320,7 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
         if item.get("status") == "generated":
             raise ValidationInputError("PHASE5A_VALIDATION_GENERATED_BINDING_DRIFT")
         payload = binding["payload"]
-        image_scheduler.add_item(
+        replacement = image_scheduler.add_item(
             episode,
             frame=1,
             kind="original",
@@ -334,6 +334,31 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
             depends_on=image_scheduler.directive_dependency(episode, 1),
             replace=True,
         )
+        replacement_id = str((replacement or {}).get("id") or "")
+        if not replacement_id:
+            raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_READMISSION_MISSING_ID")
+        # The legacy image lane may preserve external_blocked history when a new
+        # item is admitted. Because Attempt Authority is proven 0/2 above, it is
+        # safe to terminalize only the older same-frame projection here. This is
+        # queue-history repair, not a generation retry.
+        with scheduler_core.queue_transaction(episode):
+            repaired_queue = scheduler_core.load_queue(episode)
+            for row in repaired_queue.get("items") or []:
+                if (not isinstance(row, dict)
+                        or str(row.get("id") or "") == replacement_id
+                        or int(row.get("frame") or 0) != 1
+                        or row.get("kind") != "original"
+                        or row.get("status") not in {"blocked", "external_blocked", "tech_failed"}):
+                    continue
+                row["superseded_from_status"] = row.get("status")
+                row["status"] = "superseded"
+                row["superseded_at"] = scheduler_core.now()
+                row["superseded_by"] = {
+                    "type": "queue_item",
+                    "id": replacement_id,
+                    "reason": "phase5a_zero_attempt_projection_readmission",
+                }
+            scheduler_core.save_queue(episode, repaired_queue)
         queue = scheduler_core.load_queue(episode)
         active = [
             row for row in queue.get("items") or []
