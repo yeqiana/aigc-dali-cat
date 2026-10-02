@@ -963,6 +963,110 @@ def review_commit_projections_verified(ep: Path, commit_id: str) -> bool:
         return False
 
 
+def _recover_review_commit_from_archive(ep: Path, manifest: dict) -> dict | None:
+    """Rebuild missing local review projections from the bound review archive.
+
+    This path is intentionally model/provider-free. It is allowed only when the
+    archive proves the exact decided commit, original critic candidate byte SHA,
+    SUCCESS receipt, approved pixels, pending request and current source bindings.
+    """
+    ep = Path(ep).resolve()
+    attempt = int(manifest.get("review_attempt") or 0)
+    frame_no = str(manifest.get("frame") or "").zfill(2)
+    if attempt <= 0 or frame_no == "00":
+        return None
+    archive_path = ep / "meta" / f"frame-semantic-candidate-attempt-{attempt}.json"
+    request_path = pending_request_path(ep, attempt)
+    if not archive_path.is_file() or not request_path.is_file():
+        return None
+    try:
+        archive = read_json(archive_path)
+        pending = read_json(request_path)
+    except Exception:
+        return None
+    if not isinstance(archive, dict) or not isinstance(pending, dict):
+        return None
+    data = archive.get("critic_result")
+    provenance = archive.get("critic_provenance")
+    plan = archive.get("review_commit_plan")
+    review_item = pending.get("review_item")
+    if not all(isinstance(value, dict) for value in (data, provenance, plan, review_item)):
+        return None
+    if (int(archive.get("attempt") or 0) != attempt
+            or archive.get("review_scope") != PHASE5A_SINGLE_FRAME_SCOPE
+            or str(provenance.get("review_commit_id") or "") != str(manifest.get("review_commit_id") or "")):
+        return None
+
+    inputs = manifest.get("replay_inputs") if isinstance(manifest.get("replay_inputs"), dict) else {}
+    expected_candidate_input_sha = str(inputs.get("candidate_input_sha256") or "").lower()
+    if (len(expected_candidate_input_sha) != 64
+            or str(provenance.get("candidate_sha256") or "").lower() != expected_candidate_input_sha):
+        return None
+    pending_sha = str(inputs.get("pending_request_sha256") or "").lower()
+    if len(pending_sha) != 64 or sha256_file(request_path).lower() != pending_sha:
+        return None
+
+    direct_fields = (
+        "review_commit_id", "review_item_id", "generation_key", "logical_asset_key",
+        "attempt_index", "frame_contract_sha256", "prompt_package_sha256",
+        "model_policy_sha256", "evidence_fingerprint",
+    )
+    if any(plan.get(key) != manifest.get(key) for key in direct_fields):
+        return None
+    candidate_shas = plan.get("candidate_sha256") if isinstance(plan.get("candidate_sha256"), list) else []
+    if (len(candidate_shas) != 1
+            or str(candidate_shas[0] or "").lower() != str(manifest.get("candidate_sha256") or "").lower()):
+        return None
+    if str(review_item.get("review_key") or review_item.get("id") or "") != str(manifest.get("review_item_id") or ""):
+        return None
+
+    receipt = provenance.get("model_execution_receipt")
+    if not isinstance(receipt, dict) or receipt.get("status") != "SUCCESS" or receipt.get("durable_result_status") != "VALIDATED":
+        return None
+    receipt_raw = json.dumps(receipt, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    if hashlib.sha256(receipt_raw).hexdigest() != str(manifest.get("receipt_sha256") or ""):
+        return None
+
+    try:
+        current = frame_records(ep, require_files=True, only_frames=[int(frame_no)])
+    except Exception:
+        return None
+    if len(current) != 1:
+        return None
+    current_frame = current[0]
+    if (str(current_frame.get("sha256") or "").lower() != str(manifest.get("candidate_sha256") or "").lower()
+            or str(current_frame.get("generation_key") or "") != str(manifest.get("generation_key") or "")
+            or str(current_frame.get("logical_asset_key") or "") != str(manifest.get("logical_asset_key") or "")):
+        return None
+    reviewed_assets = archive.get("reviewed_assets") if isinstance(archive.get("reviewed_assets"), list) else []
+    current_assets = [{"frame": current_frame["frame"], "path": current_frame["path_rel"],
+                       "sha256": current_frame["sha256"]}]
+    if reviewed_assets != current_assets:
+        return None
+    frozen_sources = review_source_bindings(ep, current)
+    if provenance.get("review_source_bindings") != frozen_sources:
+        return None
+
+    replay_provenance = dict(provenance)
+    replay_provenance["review_scope"] = PHASE5A_SINGLE_FRAME_SCOPE
+    replay_provenance["reviewed_candidate_assets"] = reviewed_assets
+    result = _persist_candidate(
+        ep,
+        data=data,
+        current=current,
+        contexts=context_hashes(ep),
+        phashes=perceptual_rows(current),
+        provenance=replay_provenance,
+        frozen_sources=frozen_sources,
+        verification_scope=PHASE5A_SINGLE_FRAME_SCOPE,
+        review_item=review_item,
+    )
+    if result != 0 or not review_commit_projections_verified(ep, str(manifest.get("review_commit_id") or "")):
+        return {"status": "COMMIT_INCOMPLETE", "reason": "ARCHIVE_REPLAY_DID_NOT_VERIFY",
+                "apply_result": result}
+    return {"status": "PROJECTIONS_APPLIED", "archive_replayed": True}
+
+
 def reconcile_review_commit(ep: Path, commit_id: str) -> dict:
     """Idempotently finish a decided single-frame commit without model/provider work."""
     ep = Path(ep).resolve()
@@ -990,13 +1094,22 @@ def reconcile_review_commit(ep: Path, commit_id: str) -> dict:
         return {"status": "PROJECTIONS_APPLIED", "review_commit_id": commit_id,
                 "replayed": True}
 
-    # Candidate cleanup happens only after local verification. If it is gone,
-    # adopt only when every local projection still proves the exact receipt and
-    # identity. Review Queue terminal SUCCESS remains an independent condition.
+    # Candidate cleanup normally happens only after local verification. If it is
+    # already gone, first adopt projections that still verify. Otherwise recover
+    # only from the immutable archive produced by the same decided commit; this
+    # never dispatches a model or image provider.
     if not candidate.exists() and review_commit_projections_verified(ep, commit_id):
         mark_review_commit_projections_applied(ep, commit_id)
         return {"status": "PROJECTIONS_APPLIED", "review_commit_id": commit_id,
                 "replayed": False, "adopted_verified_projections": True}
+    if not candidate.exists():
+        archived = _recover_review_commit_from_archive(ep, manifest)
+        if isinstance(archived, dict) and archived.get("status") == "PROJECTIONS_APPLIED":
+            mark_review_commit_projections_applied(ep, commit_id)
+            return {"status": "PROJECTIONS_APPLIED", "review_commit_id": commit_id,
+                    "replayed": False, "archive_replayed": True}
+        if isinstance(archived, dict):
+            return {"review_commit_id": commit_id, "replayed": False, **archived}
     return {"status": "COMMIT_INCOMPLETE", "review_commit_id": commit_id,
             "reason": "REPLAY_INPUTS_OR_VERIFIED_PROJECTIONS_MISSING", "replayed": False}
 def prepare_review_commit(

@@ -304,6 +304,64 @@ def test_reconcile_decided_commit_replays_candidate_once_then_is_idempotent(tmp_
     replay.assert_called_once_with(tmp_path.resolve(), attempt=1)
 
 
+
+def test_reconcile_missing_candidate_can_use_strict_bound_archive(tmp_path, monkeypatch):
+    commit_id = frame_semantic_review.review_commit_id(
+        "review-01", "generation-01-a1", 1, "a" * 64)
+    manifest_path = frame_semantic_review.review_commit_manifest_path(tmp_path, commit_id)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest = {
+        "schema": frame_semantic_review.REVIEW_COMMIT_SCHEMA,
+        "status": "COMMIT_DECIDED",
+        "review_commit_id": commit_id,
+        "review_item_id": "review-01",
+        "generation_key": "generation-01-a1",
+        "logical_asset_key": "asset-01",
+        "attempt_index": 1,
+        "review_attempt": 1,
+        "frame": "01",
+        "candidate_sha256": "a" * 64,
+        "projection_recovery": "REPLAY_FROM_BOUND_PENDING_CANDIDATE",
+    }
+    frame_semantic_review.write_json(manifest_path, manifest)
+    monkeypatch.setattr(frame_semantic_review, "review_commit_projections_verified", lambda *_a, **_k: False)
+    monkeypatch.setattr(frame_semantic_review, "_recover_review_commit_from_archive",
+                        lambda *_a, **_k: {"status": "PROJECTIONS_APPLIED", "archive_replayed": True})
+    marked = []
+    monkeypatch.setattr(frame_semantic_review, "mark_review_commit_projections_applied",
+                        lambda *_a, **_k: marked.append(True) or manifest)
+
+    result = frame_semantic_review.reconcile_review_commit(tmp_path, commit_id)
+
+    assert result["status"] == "PROJECTIONS_APPLIED"
+    assert result["archive_replayed"] is True
+    assert marked == [True]
+
+
+def test_reconcile_missing_candidate_rejects_unbound_archive(tmp_path, monkeypatch):
+    commit_id = frame_semantic_review.review_commit_id(
+        "review-01", "generation-01-a1", 1, "a" * 64)
+    manifest_path = frame_semantic_review.review_commit_manifest_path(tmp_path, commit_id)
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest = {
+        "schema": frame_semantic_review.REVIEW_COMMIT_SCHEMA,
+        "status": "COMMIT_DECIDED",
+        "review_commit_id": commit_id,
+        "review_item_id": "review-01",
+        "generation_key": "generation-01-a1",
+        "attempt_index": 1,
+        "evidence_fingerprint": "a" * 64,
+        "projection_recovery": "REPLAY_FROM_BOUND_PENDING_CANDIDATE",
+    }
+    frame_semantic_review.write_json(manifest_path, manifest)
+    monkeypatch.setattr(frame_semantic_review, "review_commit_projections_verified", lambda *_a, **_k: False)
+    monkeypatch.setattr(frame_semantic_review, "_recover_review_commit_from_archive", lambda *_a, **_k: None)
+
+    result = frame_semantic_review.reconcile_review_commit(tmp_path, commit_id)
+
+    assert result["status"] == "COMMIT_INCOMPLETE"
+    assert result["reason"] == "REPLAY_INPUTS_OR_VERIFIED_PROJECTIONS_MISSING"
+
 def test_reconcile_without_replay_inputs_or_verified_projection_fails_closed(tmp_path):
     commit_id = frame_semantic_review.review_commit_id(
         "review-01", "generation-01-a1", 1, "a" * 64)
