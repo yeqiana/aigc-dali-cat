@@ -268,6 +268,85 @@ def _ensure_runtime_request_and_policy(ep: Path) -> dict[str, Any]:
     return {**result, "request": request, "payload": payload}
 
 
+_PREPARATION_IMMUTABLE_KEYS = (
+    "canary_id", "validation_epoch", "fixture_id", "source_sha256",
+    "model_policy_sha256", "logical_asset_key",
+)
+_PREPARATION_DERIVED_KEYS = (
+    "runtime_request_id", "frame_contract_sha256", "prompt_package_sha256",
+    "scene_prompt_sha256", "queue_item_id", "queue_status",
+)
+
+
+def _persist_preparation_receipt(
+    episode: Path,
+    receipt_path: Path,
+    preparation: dict[str, Any],
+    *,
+    attempt: dict[str, Any],
+    queue: dict[str, Any],
+) -> dict[str, Any]:
+    """Persist or narrowly reconcile a pre-dispatch validation preparation.
+
+    The validation epoch identity remains immutable. Derived materialization IDs
+    may be refreshed only while canonical Generation Attempt Authority proves
+    0/2, no lease exists, and no generated/review work exists. The previous
+    receipt is archived by content SHA before replacement.
+    """
+    if not receipt_path.is_file():
+        _write_json_exact(receipt_path, preparation)
+        return preparation
+
+    current = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
+    for key in _PREPARATION_IMMUTABLE_KEYS:
+        if current.get(key) != preparation.get(key):
+            raise ValidationInputError(f"PHASE5A_VALIDATION_PREPARATION_DRIFT:{key}")
+
+    changed = [
+        key for key in _PREPARATION_DERIVED_KEYS
+        if current.get(key) != preparation.get(key)
+    ]
+    if not changed:
+        return current
+
+    if (int(attempt.get("attempts_consumed") or 0) != 0
+            or int(attempt.get("remaining_attempts") or 0) != 2
+            or attempt.get("active_attempt_index") is not None):
+        raise ValidationInputError("PHASE5A_VALIDATION_PREPARATION_RECONCILE_ATTEMPT_STATE_INVALID")
+    if (int(current.get("attempts_consumed") or 0) != 0
+            or int(current.get("provider_calls") or 0) != 0
+            or int(current.get("model_calls") or 0) != 0):
+        raise ValidationInputError("PHASE5A_VALIDATION_PREPARATION_RECONCILE_PRIOR_DISPATCH_PRESENT")
+
+    active_items = [
+        row for row in queue.get("items") or []
+        if isinstance(row, dict) and str(row.get("status") or "") != "superseded"
+    ]
+    if any(str(row.get("status") or "") in {"generated", "running"} for row in active_items):
+        raise ValidationInputError("PHASE5A_VALIDATION_PREPARATION_RECONCILE_GENERATION_PRESENT")
+    if any(isinstance(row, dict) for row in queue.get("review_work_items") or []):
+        raise ValidationInputError("PHASE5A_VALIDATION_PREPARATION_RECONCILE_REVIEW_PRESENT")
+
+    raw = json.dumps(current, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    previous_sha = hashlib.sha256(raw).hexdigest()
+    history_path = episode / "meta/phase5a-validation-preparation-history" / f"{previous_sha}.json"
+    _write_json_exact(history_path, current)
+    reconciled = {
+        **preparation,
+        "reconciliation": {
+            "reason": "PRE_DISPATCH_DERIVED_PROJECTION_REFRESH",
+            "previous_receipt_sha256": previous_sha,
+            "changed_fields": changed,
+        },
+    }
+    receipt_path.write_text(
+        json.dumps(reconciled, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8", newline="\n",
+    )
+    return reconciled
+
+
+
 def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
     episode, marker = canary.validate_workspace(ep, canary_id)
     claim = canary.claim_global_canary(
@@ -401,24 +480,10 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
         "marker": marker,
     }
     receipt_path = episode / "meta/phase5a-validation-preparation.json"
-    if receipt_path.is_file():
-        current = json.loads(receipt_path.read_text(encoding="utf-8-sig"))
-        # Queue/item timestamps can remain historical, but preparation identity
-        # itself must be immutable across resume.
-        identity_keys = (
-            "canary_id", "validation_epoch", "fixture_id", "source_sha256",
-            "runtime_request_id", "model_policy_sha256", "frame_contract_sha256",
-            "prompt_package_sha256", "scene_prompt_sha256", "queue_item_id",
-            "logical_asset_key",
-        )
-        for key in identity_keys:
-            if current.get(key) != preparation.get(key):
-                raise ValidationInputError(
-                    f"PHASE5A_VALIDATION_PREPARATION_DRIFT:{key}"
-                )
-    else:
-        _write_json_exact(receipt_path, preparation)
-    return preparation
+    stored = _persist_preparation_receipt(
+        episode, receipt_path, preparation, attempt=attempt, queue=queue
+    )
+    return stored
 
 
 def main() -> int:
