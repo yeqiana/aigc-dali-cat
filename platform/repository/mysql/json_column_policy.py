@@ -19,6 +19,7 @@ APPROVED_JSON_COLUMNS: dict[tuple[str, str], str] = {
     ("TB_REVIEW_RECORD", "PAYLOAD"): "review summary/issues/document reference",
     ("TB_FRAME_REVIEW", "PAYLOAD"): "frame review summary/issues/document reference",
     ("TB_PRODUCTION_ATTEMPT", "PAYLOAD"): "low-frequency attempt evidence extension",
+    ("TB_GENERATION_ATTEMPT", "CONTEXT"): "bounded generation lease/model dispatch context",
     ("TB_PROVIDER_RECEIPT", "PAYLOAD"): "sanitized provider extension fields",
     ("TB_RUNTIME_REQUEST", "PAYLOAD"): "runtime request projection/document reference",
     ("TB_HOST_REQUEST", "PAYLOAD"): "host request projection/document reference",
