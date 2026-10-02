@@ -87,6 +87,31 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
     return {"status": "ENQUEUED", "item": item}
 
 
+def _official_final_semantic_evidence_available(episode: Path, item: dict) -> bool:
+    """Whether a failed Phase5A queue item can be adopted without a model rerun."""
+    try:
+        import frame_review_persistence
+        import frame_semantic_review
+        current = frame_review_persistence.load(episode, int(item.get("frame") or 0))
+        if not isinstance(current, dict):
+            return False
+        if (current.get("generation_key") != item.get("generation_key")
+                or str(current.get("asset_sha256") or "").lower()
+                != str(item.get("artifact_sha256") or "").lower()
+                or current.get("logical_asset_key") != item.get("logical_asset_key")
+                or current.get("model_policy_sha256") != item.get("model_policy_sha256")):
+            return False
+        scoped_frames = frame_semantic_review.frame_records(
+            episode, require_files=False, only_frames=[int(item.get("frame") or 0)])
+        return not frame_semantic_review.verify_scoped_review(
+            episode, scoped_frames,
+            review_scope=frame_semantic_review.PHASE5A_SINGLE_FRAME_SCOPE,
+            metadata_only=True,
+        )
+    except Exception:
+        return False
+
+
 def enqueue_final_semantic(q: dict, *, episode: Path, source_item: dict,
                            artifact: Path, artifact_path: str,
                            review_scope: str | None = None) -> dict:
@@ -131,7 +156,18 @@ def enqueue_final_semantic(q: dict, *, episode: Path, source_item: dict,
                 receipt=None, queued_at=now(), review_scope=scope,
             )
             result = {"status": "REENQUEUED_STALE", "item": row}
-    if result.get("status") in {"ENQUEUED", "REENQUEUED_STALE"}:
+        elif (scope == PHASE5A_SINGLE_FRAME
+              and row.get("status") == "failed"
+              and ((row.get("receipt") or {}).get("review_outcome") == "TECH_FAILED")
+              and _official_final_semantic_evidence_available(episode, row)):
+            # Recovery-only requeue. Official evidence already exists, so the
+            # worker must adopt it rather than dispatching another model call.
+            row.update(
+                status="queued", claim_token=None, lease_expires_at=None,
+                receipt=None, queued_at=now(), review_scope=scope,
+            )
+            result = {"status": "REENQUEUED_RECOVERED_EVIDENCE", "item": row}
+    if result.get("status") in {"ENQUEUED", "REENQUEUED_STALE", "REENQUEUED_RECOVERED_EVIDENCE"}:
         telemetry(episode, "REVIEW_ENQUEUED", result["item"], queue_depth=depth(q))
     return result
 

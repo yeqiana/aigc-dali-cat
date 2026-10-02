@@ -611,6 +611,13 @@ def _finalize_final_semantic_receipt(
     if not has_turn_completed:
         raise RuntimeError("FINAL_SEMANTIC_TURN_NOT_COMPLETED")
     import codex_critic_runner
+    if receipt.get("durable_result_status") != "VALIDATED":
+        recovered_projection = codex_critic_runner._persist_final_semantic_durable_result(
+            ep, {"request_id": request_id}, int(returncode), output_path=candidate,
+        )
+        if recovered_projection.get("durable_result_status") != "VALIDATED":
+            raise RuntimeError("FINAL_SEMANTIC_STRUCTURED_RESULT_NOT_DURABLE")
+        receipt.update(recovered_projection)
     durable_result = codex_critic_runner.recover_completed_agent_json(durable_log)
     if not isinstance(durable_result, dict):
         # With schema-bound `-o`, recent Codex builds can emit a prose final

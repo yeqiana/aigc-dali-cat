@@ -119,6 +119,74 @@ def test_stale_final_review_is_requeued_in_place_for_phase5a_scope(
     assert existing["review_scope"] == review_queue.PHASE5A_SINGLE_FRAME
 
 
+
+def test_tech_failed_final_review_requeues_only_after_official_evidence_recovery(
+        monkeypatch, tmp_path):
+    import production_recovery  # noqa: F401
+    artifact = tmp_path / "candidate.png"
+    artifact.write_bytes(b"candidate")
+    existing = {
+        "review_key": "same-key",
+        "status": "failed",
+        "receipt": {"status": "TECH_FAILED", "review_outcome": "TECH_FAILED"},
+        "claim_token": "old",
+        "lease_expires_at": "old",
+    }
+    monkeypatch.setattr(
+        review_queue, "enqueue",
+        lambda *_a, **_k: {"status": "ALREADY_ENQUEUED", "item": existing},
+    )
+    import model_policy
+    import fast_frame_scout
+    monkeypatch.setattr(model_policy, "resolve", lambda *_a, **_k: {
+        "role": "vision.final", "model": "gpt-6-luna",
+        "profile": "vision_final", "reasoning_effort": "high",
+        "model_policy_sha256": "f" * 64,
+    })
+    monkeypatch.setattr(fast_frame_scout, "sha256_file", lambda _p: "b" * 64)
+    monkeypatch.setattr(review_queue, "_official_final_semantic_evidence_available",
+                        lambda *_a, **_k: True)
+    result = review_queue.enqueue_final_semantic(
+        {"review_work_items": [existing]}, episode=tmp_path,
+        source_item={"frame": 1, "generation_key": "ga-1", "attempt_index": 1},
+        artifact=artifact, artifact_path=str(artifact),
+        review_scope=review_queue.PHASE5A_SINGLE_FRAME,
+    )
+    assert result["status"] == "REENQUEUED_RECOVERED_EVIDENCE"
+    assert existing["status"] == "queued"
+    assert existing["receipt"] is None
+
+
+def test_tech_failed_final_review_does_not_requeue_without_recovered_evidence(
+        monkeypatch, tmp_path):
+    import production_recovery  # noqa: F401
+    artifact = tmp_path / "candidate.png"
+    artifact.write_bytes(b"candidate")
+    existing = {
+        "review_key": "same-key", "status": "failed",
+        "receipt": {"status": "TECH_FAILED", "review_outcome": "TECH_FAILED"},
+    }
+    monkeypatch.setattr(review_queue, "enqueue",
+                        lambda *_a, **_k: {"status": "ALREADY_ENQUEUED", "item": existing})
+    import model_policy
+    import fast_frame_scout
+    monkeypatch.setattr(model_policy, "resolve", lambda *_a, **_k: {
+        "role": "vision.final", "model": "gpt-6-luna",
+        "profile": "vision_final", "reasoning_effort": "high",
+        "model_policy_sha256": "f" * 64,
+    })
+    monkeypatch.setattr(fast_frame_scout, "sha256_file", lambda _p: "b" * 64)
+    monkeypatch.setattr(review_queue, "_official_final_semantic_evidence_available",
+                        lambda *_a, **_k: False)
+    result = review_queue.enqueue_final_semantic(
+        {"review_work_items": [existing]}, episode=tmp_path,
+        source_item={"frame": 1, "generation_key": "ga-1", "attempt_index": 1},
+        artifact=artifact, artifact_path=str(artifact),
+        review_scope=review_queue.PHASE5A_SINGLE_FRAME,
+    )
+    assert result["status"] == "ALREADY_ENQUEUED"
+    assert existing["status"] == "failed"
+
 def test_scoped_candidate_gate_closes_only_reviewed_frame(monkeypatch, tmp_path):
     import hashlib
 
