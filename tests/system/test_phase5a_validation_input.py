@@ -168,7 +168,7 @@ def test_prepare_recovers_missing_prompt_package_without_generation_attempt(tmp_
         "scene_prompt_sha256": "s" * 64,
         "frame_contract_sha256": "c" * 64,
     }
-    loads = iter([None, package])
+    loads = iter([None, package, package])
     monkeypatch.setattr(prep.prompt_package_persistence, "load_latest", lambda *_a, **_k: next(loads))
     compile_calls = []
     monkeypatch.setattr(

@@ -281,17 +281,6 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
 
     contract = frame_contract.compile_frame(episode, 1, write_cache=True)
     imported = image_scheduler.import_batch(episode, docs["prompt_path"].parent)
-    queue = scheduler_core.load_queue(episode)
-    active = [
-        row for row in queue.get("items") or []
-        if isinstance(row, dict)
-        and int(row.get("frame") or 0) == 1
-        and row.get("kind") == "original"
-        and row.get("status") != "superseded"
-    ]
-    if len(active) != 1:
-        raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_CARDINALITY_INVALID")
-    item = active[0]
     asset_key = logical_asset_identity.frame_asset_key(episode, 1)
     attempt = generation_attempt_authority.load_asset_state(episode, asset_key)
     consumed = int(attempt.get("attempts_consumed") or 0)
@@ -309,18 +298,36 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
     if not isinstance(package, dict):
         raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_MISSING")
 
-    package_mismatch = (
-        (item.get("prompt_package") or {}).get("package_sha256") != package.get("package_sha256")
-        or (item.get("prompt_package") or {}).get("frame_contract_sha256") != contract.get("contract_sha256")
-    )
-    stale_zero_attempt_projection = item.get("status") in {
-        "blocked", "external_blocked", "tech_failed"
-    }
-    if package_mismatch or stale_zero_attempt_projection:
-        if item.get("status") == "generated":
-            raise ValidationInputError("PHASE5A_VALIDATION_GENERATED_BINDING_DRIFT")
+    def _active_original_rows(queue_data: dict[str, Any]) -> list[dict[str, Any]]:
+        return [
+            row for row in queue_data.get("items") or []
+            if isinstance(row, dict)
+            and int(row.get("frame") or 0) == 1
+            and row.get("kind") == "original"
+            and row.get("status") != "superseded"
+        ]
+
+    def _matches_current(row: dict[str, Any]) -> bool:
+        frozen = row.get("prompt_package") or {}
+        return (
+            row.get("status") == "queued"
+            and frozen.get("package_sha256") == package.get("package_sha256")
+            and frozen.get("frame_contract_sha256") == contract.get("contract_sha256")
+        )
+
+    queue = scheduler_core.load_queue(episode)
+    active = _active_original_rows(queue)
+    if any(row.get("status") == "generated" for row in active):
+        raise ValidationInputError("PHASE5A_VALIDATION_GENERATED_BINDING_DRIFT")
+    current = [row for row in active if _matches_current(row)]
+    if len(current) > 1:
+        raise ValidationInputError("PHASE5A_VALIDATION_CURRENT_QUEUE_DUPLICATED")
+
+    if current:
+        item = current[0]
+    else:
         payload = binding["payload"]
-        replacement = image_scheduler.add_item(
+        item = image_scheduler.add_item(
             episode,
             frame=1,
             kind="original",
@@ -334,50 +341,39 @@ def prepare(ep: str | Path, *, canary_id: str) -> dict[str, Any]:
             depends_on=image_scheduler.directive_dependency(episode, 1),
             replace=True,
         )
-        replacement_id = str((replacement or {}).get("id") or "")
-        if not replacement_id:
+        if not isinstance(item, dict) or not item.get("id"):
             raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_READMISSION_MISSING_ID")
-        # The legacy image lane may preserve external_blocked history when a new
-        # item is admitted. Because Attempt Authority is proven 0/2 above, it is
-        # safe to terminalize only the older same-frame projection here. This is
-        # queue-history repair, not a generation retry.
+
+    canonical_id = str(item.get("id") or "")
+    stale = [row for row in active if str(row.get("id") or "") != canonical_id]
+    if stale or not current:
         with scheduler_core.queue_transaction(episode):
             repaired_queue = scheduler_core.load_queue(episode)
-            for row in repaired_queue.get("items") or []:
-                if (not isinstance(row, dict)
-                        or str(row.get("id") or "") == replacement_id
-                        or int(row.get("frame") or 0) != 1
-                        or row.get("kind") != "original"
-                        or row.get("status") not in {"blocked", "external_blocked", "tech_failed"}):
+            for row in _active_original_rows(repaired_queue):
+                if str(row.get("id") or "") == canonical_id:
                     continue
+                if row.get("status") not in {"queued", "blocked", "external_blocked", "tech_failed"}:
+                    raise ValidationInputError("PHASE5A_VALIDATION_STALE_QUEUE_NOT_TERMINALIZABLE")
                 row["superseded_from_status"] = row.get("status")
                 row["status"] = "superseded"
                 row["superseded_at"] = scheduler_core.now()
                 row["superseded_by"] = {
                     "type": "queue_item",
-                    "id": replacement_id,
-                    "reason": "phase5a_zero_attempt_projection_readmission",
+                    "id": canonical_id,
+                    "reason": "phase5a_zero_attempt_projection_reconcile",
                 }
             scheduler_core.save_queue(episode, repaired_queue)
-        queue = scheduler_core.load_queue(episode)
-        active = [
-            row for row in queue.get("items") or []
-            if isinstance(row, dict)
-            and int(row.get("frame") or 0) == 1
-            and row.get("kind") == "original"
-            and row.get("status") != "superseded"
-        ]
-        if len(active) != 1:
-            raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_READMISSION_INVALID")
-        item = active[0]
-        package = prompt_package_persistence.load_latest(episode, 1)
-        if not isinstance(package, dict):
-            raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_MISSING_AFTER_READMISSION")
 
-    if (item.get("prompt_package") or {}).get("package_sha256") != package.get("package_sha256"):
-        raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_BINDING_INVALID")
-    if (item.get("prompt_package") or {}).get("frame_contract_sha256") != contract.get("contract_sha256"):
-        raise ValidationInputError("PHASE5A_VALIDATION_FRAME_CONTRACT_BINDING_INVALID")
+    queue = scheduler_core.load_queue(episode)
+    active = _active_original_rows(queue)
+    if len(active) != 1 or str(active[0].get("id") or "") != canonical_id:
+        raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_READMISSION_INVALID")
+    item = active[0]
+    if not _matches_current(item):
+        raise ValidationInputError("PHASE5A_VALIDATION_QUEUE_BINDING_INVALID")
+    package = prompt_package_persistence.load_latest(episode, 1)
+    if not isinstance(package, dict):
+        raise ValidationInputError("PHASE5A_VALIDATION_PROMPT_PACKAGE_MISSING_AFTER_READMISSION")
 
     preparation = {
         "schema_version": 1,
