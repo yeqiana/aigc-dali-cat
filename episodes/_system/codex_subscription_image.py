@@ -303,11 +303,14 @@ def _catalog_tool_names(row: dict, key: str) -> list[str] | None:
     return sorted(set(name for name in names if name))
 
 
-def _catalog_candidates(payload: dict) -> list[dict]:
+def _catalog_candidates(payload: dict, *, target_model: str | None = None,
+                        target_effort: str | None = None) -> list[dict]:
     rows = payload.get("models") if isinstance(payload, dict) else None
     if not isinstance(rows, list):
         return []
     controller_model = str(_IMAGE_CONTROLLER_POLICY.get("model") or "")
+    requested_model = str(target_model or "").strip()
+    requested_effort = str(target_effort or "").strip().lower()
     candidates = []
     safe_catalog_entries = []
     for row in rows:
@@ -329,9 +332,21 @@ def _catalog_candidates(payload: dict) -> list[dict]:
             "experimental_supported_tools": _catalog_tool_names(row, "experimental_supported_tools"),
             "tool_mode": str(row.get("tool_mode") or ""),
         })
-        if slug == controller_model or visibility != "list":
+        if visibility != "list":
             continue
-        effort = "low" if "low" in levels else str(row.get("default_reasoning_level") or "medium")
+        if requested_model:
+            if slug != requested_model:
+                continue
+            effort = requested_effort or str(row.get("default_reasoning_level") or "medium")
+            if levels and effort not in levels:
+                continue
+        else:
+            # Legacy generic catalog discovery excludes the business controller.
+            # Production Phase5 transport discovery below supplies an explicit
+            # target and therefore never falls through to an unrelated Sol model.
+            if slug == controller_model:
+                continue
+            effort = "low" if "low" in levels else str(row.get("default_reasoning_level") or "medium")
         candidates.append({
             "model": slug,
             "effort": effort,
@@ -376,7 +391,11 @@ def _subscription_model_catalog_with_evidence(codex: Path) -> dict[str, object]:
         payload = json.loads(raw[start:])
     except json.JSONDecodeError as exc:
         raise BackendError("LOGIN_AUTH_MODEL_CATALOG_INVALID") from exc
-    rows = _catalog_candidates(payload)
+    rows = _catalog_candidates(
+        payload,
+        target_model=CODEX_IMAGE_CONTROLLER_MODEL,
+        target_effort=CODEX_IMAGE_REASONING_EFFORT,
+    )
     if not rows:
         raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE")
     return {

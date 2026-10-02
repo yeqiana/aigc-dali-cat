@@ -80,6 +80,30 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         self.assertEqual(rows[0]["tool_capability_state"], "UNKNOWN")
         self.assertEqual(rows[1]["tool_capability_state"], "UNKNOWN")
 
+    def test_phase5_transport_catalog_is_pinned_to_luna_high(self):
+        payload = {"models": [
+            {"slug": "gpt-5.6-sol", "visibility": "list", "priority": 1,
+             "default_reasoning_level": "low", "supported_reasoning_levels": ["low", "high"]},
+            {"slug": "gpt-6-luna", "visibility": "list", "priority": 9,
+             "default_reasoning_level": "high", "supported_reasoning_levels": ["high"]},
+        ]}
+        rows = codex_subscription_image._catalog_candidates(
+            payload, target_model="gpt-6-luna", target_effort="high"
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["model"], "gpt-6-luna")
+        self.assertEqual(rows[0]["effort"], "high")
+
+    def test_phase5_transport_catalog_does_not_fallback_to_sol(self):
+        payload = {"models": [
+            {"slug": "gpt-5.6-sol", "visibility": "list", "priority": 1,
+             "supported_reasoning_levels": ["low", "high"]},
+        ]}
+        rows = codex_subscription_image._catalog_candidates(
+            payload, target_model="gpt-6-luna", target_effort="high"
+        )
+        self.assertEqual(rows, [])
+
     def test_catalog_attestation_hash_is_stable_and_uses_safe_fields(self):
         payload = {"models": [
             {"slug": "transport-a", "visibility": "list", "priority": 1,
