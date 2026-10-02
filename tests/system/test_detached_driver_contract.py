@@ -130,6 +130,35 @@ class DetachedDriverContractTests(unittest.TestCase):
     def tearDown(self) -> None:
         for stop in self._beats:
             stop.set()
+
+        # A real detached Driver launched by this test outlives the launcher and
+        # continues to emit hot-state heartbeats. Product code deliberately has
+        # no kill path, so test isolation must terminate only the Driver PID
+        # belonging to this temporary Episode before later tests monkeypatch the
+        # shared hot-state bridge.
+        try:
+            record = runtime_driver._read_record(self.ep)
+            pid = int(record.get("pid") or 0)
+        except Exception:
+            pid = 0
+        owns_test_driver = (
+            pid > 0
+            and pid != os.getpid()
+            and str(record.get("episode") or "") == str(self.ep.resolve())
+            and str(record.get("carrier") or "") in {
+                "WINDOWS_TASK_SCHEDULER", "DIRECT_BREAKAWAY"
+            }
+        )
+        if owns_test_driver and runtime_driver.liveness(pid) != "DEAD":
+            try:
+                subprocess.run(
+                    ["taskkill", "/PID", str(pid), "/T", "/F"],
+                    capture_output=True, check=False, timeout=30,
+                )
+            except Exception:
+                pass
+            wait_for(lambda: runtime_driver.liveness(pid) == "DEAD", 30)
+
         if os.name == "nt":
             task = runtime_driver.carrier_task_name(self.ep)
             script = f"Unregister-ScheduledTask -TaskName '{task}' -Confirm:$false -ErrorAction SilentlyContinue"
