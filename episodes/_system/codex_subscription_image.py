@@ -249,10 +249,12 @@ def transport_args(model: str, effort: str) -> list[str]:
     effort = str(effort or "").strip().lower() or "low"
     if not model:
         raise BackendError("LOGIN_AUTH_TRANSPORT_MODEL_REQUIRED")
+    # Provider routing is a per-dispatch responsibility of codex_user_runner.
+    # Pinning the native subscription URL here would turn this adapter into a
+    # second transport authority and bypass OpenCodex -> native fallback.
     return [
         '-m', model,
         '-c', f'model_reasoning_effort="{effort}"',
-        *_subscription_provider_args(),
     ]
 
 

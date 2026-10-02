@@ -193,6 +193,13 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                 ["resolved-codex"],
             )
 
+    def test_transport_args_leave_provider_route_to_user_runner(self):
+        args = codex_subscription_image.transport_args("transport-a", "low")
+        self.assertEqual(args[:2], ["-m", "transport-a"])
+        self.assertIn('model_reasoning_effort="low"', args)
+        self.assertFalse(any("model_provider=" in token for token in args))
+        self.assertFalse(any("openai_base_url=" in token for token in args))
+
     def test_login_preflight_failure_is_before_attempt_and_generation(self):
         with (
             patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
