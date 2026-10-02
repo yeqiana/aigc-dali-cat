@@ -742,16 +742,31 @@ def main(argv: list[str] | None = None) -> int:
 
     args = ap.parse_args(argv)
 
-    if args.cmd in {"_serve", "_serve_task"}:
+    if args.cmd == "_serve":
         _load_child_runtime_environment(
             runtime_store_mode=args.runtime_store_mode,
             episode_meta_store_mode=args.episode_meta_store_mode,
             hot_state_mode=args.hot_state_mode,
         )
-
-    if args.cmd == "_serve":
         return serve(Path(args.episode_dir), codex=args.codex, interval=args.interval, resume=args.resume)
+
     if args.cmd == "_serve_task":
+        # Task Scheduler otherwise discards Python bootstrap exceptions before
+        # serve_task() has redirected stdout/stderr to the durable Driver log.
+        try:
+            _load_child_runtime_environment(
+                runtime_store_mode=args.runtime_store_mode,
+                episode_meta_store_mode=args.episode_meta_store_mode,
+                hot_state_mode=args.hot_state_mode,
+            )
+        except Exception:
+            import traceback
+            log_path = Path(args.log).resolve()
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            with log_path.open("a", encoding="utf-8", errors="replace", buffering=1) as handle:
+                print("DRIVER TASK BOOTSTRAP FAILED", file=handle)
+                traceback.print_exc(file=handle)
+            return 1
         return serve_task(Path(args.episode_dir), Path(args.log), codex=args.codex,
                           interval=args.interval, resume=args.resume)
     if args.cmd == "start":

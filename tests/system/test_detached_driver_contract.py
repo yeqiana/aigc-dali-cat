@@ -90,10 +90,39 @@ def read_log(path: Path) -> str:
 class DetachedDriverContractTests(unittest.TestCase):
 
     def setUp(self) -> None:
+        # This suite validates the detached Windows carrier boundary, not the
+        # external MySQL/Redis stores. Keep both parent and detached child on
+        # deterministic local test authorities so storage credentials cannot
+        # turn an OS lifecycle test into an environment-dependent failure.
+        self._storage_env = mock.patch.dict(
+            os.environ,
+            {
+                "STORYOS_RUNTIME_STORE_MODE": "jsonl",
+                "STORYOS_EPISODE_META_STORE_MODE": "json",
+                "STORYOS_HOT_STATE_MODE": "file",
+            },
+            clear=False,
+        )
+        self._storage_env.start()
+        self.addCleanup(self._storage_env.stop)
         base = ROOT / "episodes" / "_tests"
         base.mkdir(parents=True, exist_ok=True)
         self._td = tempfile.TemporaryDirectory(prefix="driver-", dir=base)
         self.ep = Path(self._td.name)
+        # The test host may run as SYSTEM while the durable Windows carrier
+        # correctly runs as the interactive user. TemporaryDirectory on this
+        # host creates a SYSTEM-only DACL, unlike real Episode directories.
+        # Grant only the proven carrier user access so the integration test
+        # exercises the production Task Scheduler boundary rather than ACL noise.
+        if os.name == "nt":
+            carrier_user, _source = runtime_driver.resolve_task_carrier_user()
+            grant = subprocess.run(
+                ["icacls", str(self.ep), "/grant", f"{carrier_user}:(OI)(CI)M"],
+                capture_output=True, text=True, encoding="utf-8", errors="replace",
+                check=False, timeout=30,
+            )
+            if grant.returncode != 0:
+                self.fail(f"test fixture ACL grant failed: {grant.stderr or grant.stdout}")
         (self.ep / "meta").mkdir(parents=True, exist_ok=True)
         self._probes = []
         self._beats = []
@@ -381,7 +410,21 @@ class DetachedDriverContractTests(unittest.TestCase):
         result = runtime_driver.launch(self.ep, interval=0, settle_seconds=3.0)
         self.assertTrue(result.get("started"), result)
         self.assertEqual(result["reason"] if "reason" in result else "", "")
-        self.assertTrue(result.get("exit_code"), result)
+        # Runtime initialization can legitimately outlive the short launch
+        # observation window. That is still a successful detached start; the
+        # durable record must eventually carry the terminal exit code.
+        if not result.get("exit_code"):
+            self.assertEqual(result.get("driver_state"), "RUNNING", result)
+            self.assertTrue(
+                wait_for(
+                    lambda: runtime_driver.exit_code_of(
+                        runtime_driver._read_record(self.ep)) != "",
+                    timeout=90,
+                ),
+                "??? Episode ? Driver ?????????",
+            )
+            result["exit_code"] = runtime_driver.exit_code_of(
+                runtime_driver._read_record(self.ep))
         self.assertTrue(runtime_driver.interpret_rc(result["exit_code"]) is not None)
 
     def test_the_official_entrypoint_reports_driver_state(self):
