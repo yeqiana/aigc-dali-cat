@@ -10,6 +10,7 @@ from pathlib import Path
 
 import codex_critic_runner as critic_runner
 import frame_semantic_review as base
+import frame_review_persistence
 # STORY_OS_V22_VISUAL_NARRATIVE_CORE
 from story_os_contract import story_os_version
 import final_acceptance
@@ -182,13 +183,13 @@ def _review_path(ep: Path, frame: str) -> Path:
 
 
 def _review_data(ep: Path, frame: str) -> dict | None:
-    p = _review_path(ep, frame)
-    if not p.is_file():
-        return None
+    # Frame Review Authority may be MySQL-backed. Never infer "missing review"
+    # from the absence of the legacy filesystem projection.
     try:
-        return read_json(p)
+        value = frame_review_persistence.load(Path(ep).resolve(), int(frame))
     except Exception:
         return None
+    return value if isinstance(value, dict) else None
 
 
 def _context_match(data: dict, contexts: dict) -> bool:

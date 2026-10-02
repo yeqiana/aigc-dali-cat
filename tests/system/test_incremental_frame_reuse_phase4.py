@@ -15,6 +15,15 @@ import incremental_frame_review as incremental
 
 
 class IncrementalFrameReusePhase4Tests(unittest.TestCase):
+    def test_review_data_reads_canonical_persistence_without_file_projection(self) -> None:
+        evidence = {"frame": "01", "decision": "pass"}
+        ep = ROOT / "episodes" / "test"
+        with mock.patch.object(
+            incremental.frame_review_persistence, "load", return_value=evidence
+        ) as load:
+            self.assertEqual(evidence, incremental._review_data(ep, "01"))
+        load.assert_called_once_with(ep.resolve(), 1)
+
     def _frames(self, *, changed: str | None = None, attempt2: str | None = None) -> list[dict]:
         frames = []
         for number in range(1, 21):
