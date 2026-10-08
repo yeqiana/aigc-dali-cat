@@ -905,6 +905,45 @@ no Markdown fences and no status summary. The parent process persists it.
     )
 
 
+def project_verified_story_gate(ep: Path) -> dict:
+    """Project only a genuinely verified, SHA-bound independent Story Critic PASS."""
+    ep = Path(ep).resolve()
+    failures = verify(ep)
+    if failures:
+        raise ValueError("cannot project invalid Story Critic: " + "; ".join(failures[:8]))
+    result = load_review(ep)
+    if not isinstance(result, dict) or (result.get("summary") or {}).get("passed") is not True:
+        raise ValueError("cannot project Story Critic without real summary PASS")
+    authority_sha = review_authority_sha256(ep)
+    if not authority_sha:
+        raise ValueError("cannot project Story Critic without durable Review Authority SHA")
+    story, storyboard = story_paths(ep)
+    if (result.get("story_sha256") != sha256_file(story)
+            or result.get("storyboard_sha256") != sha256_file(storyboard)):
+        raise ValueError("cannot project Story Critic when source SHA differs")
+    path = ep / "meta/story-gates.json"
+    gates = read_json(path)
+    reviews = gates.get("reviews")
+    if not isinstance(reviews, dict) or reviews.get("story") not in {"pending", "passed"}:
+        raise ValueError("review story gate projection state is not admissible")
+    binding = {
+        "authority_sha256": authority_sha,
+        "story_sha256": sha256_file(story),
+        "storyboard_sha256": sha256_file(storyboard),
+        "attempt": (result.get("critic_provenance") or {}).get("attempt"),
+        "review_scope": (result.get("critic_provenance") or {}).get("review_scope", "STANDARD"),
+    }
+    old_binding = (gates.get("review_authority_bindings") or {}).get("story")
+    if reviews.get("story") == "passed" and old_binding != binding:
+        raise ValueError("existing Story Gate PASS binding drift")
+    if reviews.get("story") == "passed":
+        return binding
+    gates.setdefault("review_authority_bindings", {})["story"] = binding
+    reviews["story"] = "passed"
+    write_json(path, gates)
+    return binding
+
+
 def self_test() -> None:
     h = "a" * 64
     data = {
@@ -952,6 +991,8 @@ def main() -> int:
     p.add_argument("episode_dir")
     p.add_argument("--attempt", type=int, default=1)
     p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
+    p = sub.add_parser("project-verified-gate")
+    p.add_argument("episode_dir")
     p = sub.add_parser("verify")
     p.add_argument("episode_dir")
     p = sub.add_parser("show")
@@ -980,6 +1021,13 @@ def main() -> int:
             return finalize_product_review(ep, attempt=args.attempt, runtime=args.runtime)
         except (OSError, RuntimeError, ValueError) as exc:
             print("STORY SEMANTIC REVIEW FINALIZE ERROR:", exc)
+            return 3
+    if args.cmd == "project-verified-gate":
+        try:
+            print(json.dumps(project_verified_story_gate(ep), ensure_ascii=False, indent=2))
+            return 0
+        except (OSError, RuntimeError, ValueError) as exc:
+            print("STORY GATE PROJECTION REFUSED:", exc)
             return 3
     if args.cmd == "show":
         print(json.dumps(load_review(ep) or {}, ensure_ascii=False, indent=2))
