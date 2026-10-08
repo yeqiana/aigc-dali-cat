@@ -22,6 +22,7 @@ import runtime_timeout_policy
 import episode_state_persistence
 import review_record_persistence
 import review_policy_binding
+import runtime_request
 
 ROOT = Path(__file__).resolve().parents[2]
 REVIEW_REL = Path("meta/story-semantic-review.json")
@@ -312,6 +313,21 @@ def command_prefix(codex: Path) -> list[str]:
     return codex_cli_contract.command_prefix(codex)
 
 
+def _locked_documentary_rubric(ep: Path) -> bool:
+    """Only user-locked stories explicitly scoped as real-life/non-anomalous."""
+    try:
+        request = runtime_request.authority_for_episode(Path(ep).resolve())
+        story_input = (request or {}).get("story_input") if isinstance(request, dict) else None
+        return (
+            isinstance(story_input, dict)
+            and story_input.get("mode") == "locked_story"
+            and story_input.get("allow_structure_rewrite") is False
+            and not propagation_core_gate.anomaly_applicable(ep)
+        )
+    except Exception:
+        return False
+
+
 def critic_prompt(ep: Path, story: Path, storyboard: Path, candidate: Path, attempt: int) -> str:
     rel_ep = ep.relative_to(ROOT).as_posix()
     rel_story = story.relative_to(ROOT).as_posix()
@@ -326,7 +342,7 @@ ORDINARY-LIFE OVERRIDE (takes precedence over anomaly-specific rules below):
 - ending_recontextualization may pay off at least three earlier ordinary-life facts, objects, or relationship beats; it does not need a twist.
 - V2.5 anomaly propagation_core is NOT required for this explicitly ordinary-life Episode. Omit it rather than fabricating an abnormal_response.
 """
-    return f"""You are an adversarial Story Critic in a fresh isolated session.
+    prompt = f"""You are an adversarial Story Critic in a fresh isolated session.
 Do NOT rewrite the story. Do NOT score it politely. Your job is to find reasons it should NOT enter production.
 Read:
 - {rel_story}
@@ -412,6 +428,30 @@ Required JSON shape:
 If any hard rule fails, set its boolean false, add specific codes such as STORY_COMPREHENSION_FAIL, CAUSAL_CHAIN_BROKEN, MECHANISM_CONTRADICTION, CLIMAX_DISCOVERY_ONLY, ENDING_PAYOFF_TOO_WEAK, STORYBOARD_STALL, and set summary.passed=false.
 Episode: {rel_ep}
 """
+    if _locked_documentary_rubric(ep):
+        # Replace incompatible anomaly-oriented *instructions*, not the review
+        # authority, mandatory fields, true/false checks or independent critic.
+        # The original full rubric remains unchanged for authored/mystery stories.
+        start = prompt.index("Hard rules:\n")
+        end = prompt.index("Write ONLY valid JSON", start)
+        documentary_rules = """LOCKED NON-ANOMALOUS DOCUMENTARY HARD RULES:
+1. Do not rewrite any user-locked scene, subtitle, character, age, amount, diagnosis, legal outcome or frame count. Check exact source fidelity.
+2. Check real chronology and age arithmetic. A visual casting age may differ from chronological age only when clearly identified as appearance; never silently excuse a numerical contradiction.
+3. In cumulative real-life hardship, disaster, illness and accidents can be independently caused; judge the credibility of each asserted relation and the accumulation of financial/caregiving consequences, not a fictional shared mechanism.
+4. The midpoint may be a grounded change of stakes or role, not a supernatural revelation. The emotional peak may be a loss; any closing moral choice must come from the actual words, not invented actions.
+5. An open ending with debts unpaid can be a truthful payoff. Revisit three concrete earlier facts; do not imply forgiveness, legal relief, new income, or a happy rescue unless the source states it.
+6. Judge each locked frame by its unique factual, visual, chronological or emotional contribution. Flag true repetition without requiring deletion of frames the user expressly locked.
+7. Treat suicide, cancer, disability and poverty with dignity; avoid sensationalism and unearned blame.
+8. For the schema's anomaly/rule/trigger/core_anomaly_rule fields, give explicit non-empty NOT_APPLICABLE explanations. Do not invent paranormal phenomena or an abnormal response. propagation_core is not required here.
+9. Evaluate every hard check truthfully. If source facts are contradictory, or any check fails, give specific issue_codes and summary.passed=false.
+"""
+        prompt = prompt[:start] + documentary_rules + "\n" + prompt[end:]
+        # The generic example requires an invented abnormal-response object.
+        # Omit that optional shape entirely for non-anomalous locked stories.
+        example_start = prompt.index('  "propagation_core": {')
+        example_end = prompt.index('  "blind_retell": {', example_start)
+        prompt = prompt[:example_start] + prompt[example_end:]
+    return prompt
 
 
 def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, before_board: str, provenance: dict) -> int:
