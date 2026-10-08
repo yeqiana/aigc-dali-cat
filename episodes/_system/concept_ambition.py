@@ -61,7 +61,25 @@ def episode_contract_version(ep):
     return max(versions, key=lambda x:x[0])[1] if versions else story_os_version()
 
 def required(ep):
-    return version_tuple(episode_contract_version(ep)) >= MIN_VERSION
+    if version_tuple(episode_contract_version(ep)) < MIN_VERSION:
+        return False
+    try:
+        # Resolve the immutable request lazily to avoid import cycles during
+        # episode bootstrapping and fail closed when authority is unavailable.
+        import runtime_request
+        request = runtime_request.authority_for_episode(Path(ep).resolve())
+    except Exception:
+        return True
+    story_input = (request or {}).get("story_input") if isinstance(request, dict) else None
+    if (
+        isinstance(story_input, dict)
+        and story_input.get("mode") == "locked_story"
+        and story_input.get("allow_structure_rewrite") is False
+    ):
+        # A 8-12 concept pool would invent alternatives the user forbade.
+        # Independent Story Review and later production quality gates remain.
+        return False
+    return True
 
 def resolve_ep(raw):
     ep = Path(raw).resolve()
