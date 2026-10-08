@@ -279,8 +279,10 @@ class ProductRuntimeFirstTests(unittest.TestCase):
     def test_codex_image_controller_uses_policy_profile(self) -> None:
         args = codex_subscription_image.controller_args()
         self.assertEqual(args[:4], ['-m', 'gpt-6-luna', '-c', 'model_reasoning_effort="high"'])
-        self.assertIn('model_provider="openai"', args)
-        self.assertIn('openai_base_url="https://chatgpt.com/backend-api/codex"', args)
+        # The User Runner exclusively selects OpenCodex vs native per dispatch.
+        # The image controller may not hardcode provider/base URL here.
+        self.assertFalse(any('model_provider=' in token for token in args))
+        self.assertFalse(any('openai_base_url=' in token for token in args))
 
     def test_resource_selection_stale_guard_rebuilds_wrong_location(self) -> None:
         with self.temp_episode() as td:
