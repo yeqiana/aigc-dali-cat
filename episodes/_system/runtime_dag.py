@@ -741,6 +741,23 @@ def execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None):
                 episode_performance.safe_finish_execution_session(ep,session_id=session,status="COMPLETE" if rc==0 else "BLOCKED")
 
 
+def preimage_worker_timeout(task: dict, supervisor_timeout: int | None) -> int:
+    """Honor each PREIMAGE candidate's bounded execution budget.
+
+    The supervisor may run for hours, but a single image-planning candidate may
+    not inherit that entire budget. This is also the deadline persisted in the
+    User Runner / in-flight recovery record.
+    """
+    budget = (task.get("execution_budget") or {}).get("timeout_seconds")
+    if type(budget) is not int or budget <= 0:
+        raise ValueError("PREIMAGE worker has no valid positive timeout_seconds budget")
+    if supervisor_timeout is None:
+        return budget
+    if type(supervisor_timeout) is not int or supervisor_timeout <= 0:
+        raise ValueError("supervisor timeout must be a positive integer")
+    return min(budget, supervisor_timeout)
+
+
 def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,telemetry_run_id=None):
     # W-11: a recorded production-owner switch only becomes effective when the
     # Production Kernel consumes it. Direct DAG execution is a production entry,
@@ -1027,7 +1044,9 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
                 def _worker(task):
                     step=preimage_task_contract.canonical_step(task["task_type"])
                     execution_capsule.compile_capsule(ep,step,write=True)
-                    value, _log=scoped_codex_worker.run_step(ep,step,codex_raw=codex,timeout=timeout)
+                    value, _log=scoped_codex_worker.run_step(
+                        ep,step,codex_raw=codex,
+                        timeout=preimage_worker_timeout(task,timeout))
                     return value
                 outcome=preimage_protocol.execute_local(ep,_worker,max_workers=workers)
                 rc=0 if outcome.get("status")=="PASS" else 4

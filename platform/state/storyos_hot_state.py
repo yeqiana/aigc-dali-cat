@@ -22,7 +22,12 @@ SPECS = {
     "DRIVER_STATE": HotStateSpec("DRIVER_STATE", 180),
     "DRIVER_HEARTBEAT": HotStateSpec("DRIVER_HEARTBEAT", 90),
     "CIRCUIT_BREAKER": HotStateSpec("CIRCUIT_BREAKER", 300),
-    "INFLIGHT": HotStateSpec("INFLIGHT", 600),
+    # In-flight scoped Codex task identity must outlive its remote runner request.
+    # A fixed TTL (formerly 600s) expired while the User Runner was still busy,
+    # preventing the next Driver from safely attaching to that paid request.
+    # Only explicit completion/clear may remove it; stale identities are checked
+    # against the runner + immutable result receipts before reuse.
+    "INFLIGHT": HotStateSpec("INFLIGHT", None),
     "HOST_REQUEST_CURRENT": HotStateSpec("HOST_REQUEST_CURRENT", 900),
     # Pending production work is authoritative Redis hot-state. It must survive
     # idle review/approval windows; expiring the key silently drops queued frames.
