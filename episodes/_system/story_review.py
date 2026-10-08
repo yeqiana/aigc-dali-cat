@@ -237,12 +237,26 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
                 for k in ("previous_review_sha256", "previous_storyboard_sha256", "current_rubric_sha256"))
         and provenance.get("previous_storyboard_sha256") != storyboard_sha
     )
-    if attempt not in {1, 2} and not (continuation or source_revision):
-        errors.append("critic attempt must be 1 or 2 unless explicitly authorized policy continuation attempt 3 or SHA-bound source revision attempt 4")
-    revisions = {0, 1, 2, 3} if source_revision else ({0, 1, 2} if continuation else {0, 1})
+    symbolic_remediation = (
+        attempt == 5
+        and provenance.get("direct_user_continuation_review") is True
+        and provenance.get("review_scope") == "LOCKED_DOCUMENTARY_SYMBOLIC_REMEDIATION"
+        and provenance.get("review_epoch") == 4
+        and provenance.get("epoch_attempt") == 1
+        and all(isinstance(provenance.get(k), str)
+                and len(provenance[k]) == 64
+                and all(ch in "0123456789abcdef" for ch in provenance[k].lower())
+                for k in ("previous_review_sha256", "previous_storyboard_sha256",
+                          "previous_rubric_sha256", "current_rubric_sha256"))
+        and provenance.get("previous_storyboard_sha256") != storyboard_sha
+        and provenance.get("previous_rubric_sha256") != provenance.get("current_rubric_sha256")
+    )
+    if attempt not in {1, 2} and not (continuation or source_revision or symbolic_remediation):
+        errors.append("critic attempt must be 1 or 2 unless explicitly authorized policy continuation attempt 3 or SHA-bound source revision attempt 4/5")
+    revisions = {0, 1, 2, 3, 4} if symbolic_remediation else ({0, 1, 2, 3} if source_revision else ({0, 1, 2} if continuation else {0, 1}))
     if data.get("revision_count") not in revisions:
         errors.append("revision_count invalid for critic review scope")
-    elif attempt in {1, 2, 3, 4} and data.get("revision_count") != attempt - 1:
+    elif attempt in {1, 2, 3, 4, 5} and data.get("revision_count") != attempt - 1:
         errors.append("revision_count must equal critic attempt - 1")
 
     contract = data.get("contract") or {}
@@ -326,7 +340,10 @@ def verify(ep: Path) -> list[str]:
         errors.remove("storyboard_sha256 mismatch")
     if (data.get("critic_provenance") or {}).get("direct_user_continuation_review") is True:
         source_revision = data["critic_provenance"].get("review_scope") == "LOCKED_DOCUMENTARY_SOURCE_REVISION"
-        evidence_path = Path(ep) / ("meta/runtime/story-review-source-revision-a4.json" if source_revision else "meta/runtime/story-review-policy-continuation-a3.json")
+        symbolic_remediation = data["critic_provenance"].get("review_scope") == "LOCKED_DOCUMENTARY_SYMBOLIC_REMEDIATION"
+        evidence_path = Path(ep) / ("meta/runtime/story-review-symbolic-remediation-a5.json" if symbolic_remediation
+                                    else "meta/runtime/story-review-source-revision-a4.json" if source_revision
+                                    else "meta/runtime/story-review-policy-continuation-a3.json")
         try:
             evidence = read_json(evidence_path)
             provenance = data["critic_provenance"]
@@ -338,7 +355,8 @@ def verify(ep: Path) -> list[str]:
                     or evidence.get("current_rubric_sha256") != provenance.get("current_rubric_sha256")
                     or evidence.get("story_sha256") != sha256_file(story)
                     or evidence.get("storyboard_sha256") != sha256_file(storyboard)
-                    or (source_revision and evidence.get("previous_storyboard_sha256") != provenance.get("previous_storyboard_sha256"))
+                    or ((source_revision or symbolic_remediation) and evidence.get("previous_storyboard_sha256") != provenance.get("previous_storyboard_sha256"))
+                    or (symbolic_remediation and evidence.get("previous_rubric_sha256") != provenance.get("previous_rubric_sha256"))
                     or evidence.get("current_rubric_sha256") != _review_rubric_digest(Path(__file__).read_text(encoding="utf-8-sig"))):
                 errors.append("policy continuation authority or current rubric SHA mismatch")
         except (OSError, ValueError, KeyError, RuntimeError):
@@ -488,6 +506,7 @@ Episode: {rel_ep}
 6. Judge each locked frame by its unique factual, visual, chronological or emotional contribution. Flag true repetition without requiring deletion of frames the user expressly locked.
 7. Treat suicide, cancer, disability and poverty with dignity; avoid sensationalism and unearned blame.
 8. For the schema's anomaly/rule/trigger/core_anomaly_rule fields, give explicit non-empty NOT_APPLICABLE explanations. Do not invent paranormal phenomena or an abnormal response. propagation_core is not required here.
+8a. User-authored locked storyboard imagery is an authoritative *visual brief*, not an assertion that each prop was independently documented in the prose story. A visibly symbolic object or composite shot may appear even without a narrated physical discovery. Do NOT mistake such a visual metaphor for new forensic evidence. Fail when the storyboard or its production notes asserts that an undocumented object was actually recovered, identified, investigated or used as real proof.
 9. Evaluate every hard check truthfully. If source facts are contradictory, or any check fails, give specific issue_codes and summary.passed=false.
 """
         prompt = prompt[:start] + documentary_rules + "\n" + prompt[end:]
@@ -728,18 +747,72 @@ def _authorize_source_revision(ep: Path, *, attempt: int) -> dict:
     return evidence
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None, direct_user_continuation: bool = False, prior_rubric_ref: str | None = None, direct_user_source_revision: bool = False) -> int:
+def _authorize_symbolic_remediation(ep: Path, *, attempt: int) -> dict:
+    """One final, source-and-rubric-bound review after evidence/metaphor conflation."""
+    if attempt != 5 or not _locked_documentary_rubric(ep):
+        raise RuntimeError("symbolic remediation requires locked documentary attempt=5")
+    target = ep / "meta/runtime/story-review-symbolic-remediation-a5.json"
+    if target.exists():
+        raise RuntimeError("symbolic remediation attempt 5 already authorized")
+    prior = load_review(ep)
+    if (not isinstance(prior, dict)
+            or (prior.get("critic_provenance") or {}).get("attempt") != 4
+            or (prior.get("summary") or {}).get("passed") is not False
+            or "DOCUMENTARY_EVIDENCE_UNSUPPORTED" not in (prior.get("issue_codes") or [])):
+        raise RuntimeError("must have actual failed documentary evidence review #4")
+    earlier_path = ep / "meta/runtime/story-review-source-revision-a4.json"
+    if not earlier_path.is_file():
+        raise RuntimeError("source revision #4 authority missing")
+    old_rubric = read_json(earlier_path).get("current_rubric_sha256")
+    new_rubric = _review_rubric_digest(Path(__file__).read_text(encoding="utf-8-sig"))
+    if not old_rubric or old_rubric == new_rubric:
+        raise RuntimeError("symbolic evidence rubric must materially change")
+    story, board = story_paths(ep)
+    story_sha, board_sha = sha256_file(story), sha256_file(board)
+    old_board = str(prior.get("storyboard_sha256") or "")
+    if story_sha != prior.get("story_sha256") or board_sha == old_board:
+        raise RuntimeError("source SHA must change only for storyboard, not story")
+    board_text = board.read_text(encoding="utf-8-sig")
+    if not all(s in board_text for s in ("象征性哀伤空镜", "不表述发现鞋", "用户指定的岸边球鞋")):
+        raise RuntimeError("source still lacks clear symbol-versus-evidence distinction")
+    prior_review_sha = review_authority_sha256(ep)
+    if not prior_review_sha:
+        raise RuntimeError("prior review identity missing")
+    evidence = {
+        "schema": "storyos.story_critic_symbolic_remediation.v1",
+        "authorization": "direct_user_continuation",
+        "review_scope": "LOCKED_DOCUMENTARY_SYMBOLIC_REMEDIATION",
+        "global_review_attempt": 5, "review_epoch": 4, "epoch_attempt": 1,
+        "previous_review_attempt": 4,
+        "previous_review_passed": False,
+        "previous_issue_codes": list(prior.get("issue_codes") or []),
+        "previous_review_sha256": prior_review_sha,
+        "previous_storyboard_sha256": old_board,
+        "storyboard_sha256": board_sha, "story_sha256": story_sha,
+        "previous_rubric_sha256": old_rubric,
+        "current_rubric_sha256": new_rubric,
+        "reason": "The user explicitly authored shoes as a symbolic visual; distinguish illustration from forensic evidence",
+    }
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_json(target, evidence)
+    return evidence
+
+
+def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None, direct_user_continuation: bool = False, prior_rubric_ref: str | None = None, direct_user_source_revision: bool = False, direct_user_symbolic_remediation: bool = False) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("review_critic")
-    if attempt not in {1, 2} and not (attempt == 3 and direct_user_continuation) and not (attempt == 4 and direct_user_source_revision):
+    if attempt not in {1, 2} and not (attempt == 3 and direct_user_continuation) and not (attempt == 4 and direct_user_source_revision) and not (attempt == 5 and direct_user_symbolic_remediation):
         raise RuntimeError("attempts above 2 require explicit direct-user, SHA-bound continuation")
     if direct_user_continuation and (attempt != 3 or direct_user_source_revision):
         raise RuntimeError("policy continuation is only attempt 3")
-    if direct_user_source_revision and (attempt != 4 or direct_user_continuation):
+    if direct_user_source_revision and (attempt != 4 or direct_user_continuation or direct_user_symbolic_remediation):
         raise RuntimeError("source revision is only attempt 4")
+    if direct_user_symbolic_remediation and (attempt != 5 or direct_user_continuation or direct_user_source_revision):
+        raise RuntimeError("symbolic remediation is only attempt 5")
     continuation = (_authorize_policy_continuation(ep, attempt=attempt, prior_rubric_ref=prior_rubric_ref)
                     if direct_user_continuation else _authorize_source_revision(ep, attempt=attempt)
-                    if direct_user_source_revision else None)
+                    if direct_user_source_revision else _authorize_symbolic_remediation(ep, attempt=attempt)
+                    if direct_user_symbolic_remediation else None)
     story, storyboard = story_paths(ep)
     before_story = sha256_file(story)
     before_board = sha256_file(storyboard)
@@ -873,6 +946,7 @@ def main() -> int:
     p.add_argument("--timeout", type=int, default=None)
     p.add_argument("--direct-user-continuation", action="store_true")
     p.add_argument("--direct-user-source-revision", action="store_true")
+    p.add_argument("--direct-user-symbolic-remediation", action="store_true")
     p.add_argument("--prior-rubric-ref")
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
@@ -896,7 +970,8 @@ def main() -> int:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout,
                               direct_user_continuation=args.direct_user_continuation,
                               prior_rubric_ref=args.prior_rubric_ref,
-                              direct_user_source_revision=args.direct_user_source_revision)
+                              direct_user_source_revision=args.direct_user_source_revision,
+                              direct_user_symbolic_remediation=args.direct_user_symbolic_remediation)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("STORY SEMANTIC REVIEW ERROR:", exc)
             return 3
