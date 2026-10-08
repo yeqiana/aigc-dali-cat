@@ -38,6 +38,17 @@ def test_locked_documentary_critic_uses_realistic_rubric_without_abnormal_respon
     assert 'summary.passed=false' in prompt
 
 
+def test_locked_documentary_review_pairs_25_frames_with_captions(monkeypatch):
+    monkeypatch.setattr(story_review.runtime_request, 'authority_for_episode', lambda _ep: {
+        'story_input': {'mode': 'locked_story', 'allow_structure_rewrite': False},
+    })
+    monkeypatch.setattr(story_review.propagation_core_gate, 'anomaly_applicable', lambda _ep: False)
+    prompt = _prompt()
+    assert 'docs/subtitles.yaml' in prompt
+    assert 'corresponding user subtitle' in prompt
+    assert 'combined pair' in prompt
+
+
 @pytest.mark.parametrize('case_data,anomaly_applicable', [
     ({'story_input': {'mode': 'auto_create', 'allow_structure_rewrite': True}}, False),
     ({'story_input': {'mode': 'locked_story', 'allow_structure_rewrite': False}}, True),

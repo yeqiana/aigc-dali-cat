@@ -212,6 +212,10 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
 
     provenance = data.get("critic_provenance") or {}
     errors.extend(runtime_provenance.validate_critic_provenance(provenance))
+    caption_sha = str(provenance.get("subtitle_source_sha256") or "")
+    if caption_sha and (len(caption_sha) != 64 or any(ch not in "0123456789abcdef" for ch in caption_sha.lower())
+                        or data.get("subtitle_source_sha256") != caption_sha):
+        errors.append("review subtitle source SHA binding mismatch")
     attempt = provenance.get("attempt")
     continuation = (
         attempt == 3
@@ -328,6 +332,11 @@ def verify(ep: Path) -> list[str]:
     except Exception as exc:
         return [str(exc)]
     current_storyboard_sha = sha256_file(storyboard)
+    caption_sha = str(data.get("subtitle_source_sha256") or "")
+    if caption_sha:
+        captions = ep / "docs/subtitles.yaml"
+        if not captions.is_file() or caption_sha != sha256_file(captions):
+            return ["current captions SHA does not match reviewed subtitle source"]
     errors = validate_payload(
         data,
         story_sha=sha256_file(story),
@@ -395,6 +404,7 @@ def critic_prompt(ep: Path, story: Path, storyboard: Path, candidate: Path, atte
     rel_ep = ep.relative_to(ROOT).as_posix()
     rel_story = story.relative_to(ROOT).as_posix()
     rel_board = storyboard.relative_to(ROOT).as_posix()
+    rel_captions = (ep / "docs/subtitles.yaml").relative_to(ROOT).as_posix()
     rel_out = candidate.relative_to(ROOT).as_posix()
     ordinary_life_override = "" if propagation_core_gate.anomaly_applicable(ep) else """
 ORDINARY-LIFE OVERRIDE (takes precedence over anomaly-specific rules below):
@@ -410,6 +420,7 @@ Do NOT rewrite the story. Do NOT score it politely. Your job is to find reasons 
 Read:
 - {rel_story}
 - {rel_board}
+- {rel_captions} (authoritative user subtitles by frame number; evaluate each scene WITH its matching caption)
 - standards/制作规范_正式版.md
 - standards/创作执行强制规范_V2.0.3.2.md
 - standards/story_regressions/cases.json
@@ -503,7 +514,7 @@ Episode: {rel_ep}
 3. In cumulative real-life hardship, disaster, illness and accidents can be independently caused; judge the credibility of each asserted relation and the accumulation of financial/caregiving consequences, not a fictional shared mechanism.
 4. The midpoint may be a grounded change of stakes or role, not a supernatural revelation. The emotional peak may be a loss; any closing moral choice must come from the actual words, not invented actions.
 5. An open ending with debts unpaid can be a truthful payoff. Revisit three concrete earlier facts; do not imply forgiveness, legal relief, new income, or a happy rescue unless the source states it.
-6. Judge each locked frame by its unique factual, visual, chronological or emotional contribution. Flag true repetition without requiring deletion of frames the user expressly locked.
+6. This is a locked 25-frame PHOTO-TEXT carousel, not a standalone silent-image show. Evaluate each visual + the exact corresponding user subtitle as one unit. A deliberately quiet image may supply emotional pacing while its paired subtitle introduces a new claim or decision. Fail redundancy only when the combined pair adds no distinct factual, visual, emotional or chronological information. Do not demand deleting a user-locked frame when its subtitle carries unique content.
 7. Treat suicide, cancer, disability and poverty with dignity; avoid sensationalism and unearned blame.
 8. For the schema's anomaly/rule/trigger/core_anomaly_rule fields, give explicit non-empty NOT_APPLICABLE explanations. Do not invent paranormal phenomena or an abnormal response. propagation_core is not required here.
 8a. User-authored locked storyboard imagery is an authoritative *visual brief*, not an assertion that each prop was independently documented in the prose story. A visibly symbolic object or composite shot may appear even without a narrated physical discovery. Do NOT mistake such a visual metaphor for new forensic evidence. Fail when the storyboard or its production notes asserts that an undocumented object was actually recovered, identified, investigated or used as real proof.
@@ -525,6 +536,8 @@ def _finalize_review(ep: Path, data: dict, *, attempt: int, before_story: str, b
     data["storyboard_sha256"] = before_board
     data["revision_count"] = attempt - 1
     data["critic_provenance"] = provenance
+    if provenance.get("subtitle_source_sha256"):
+        data["subtitle_source_sha256"] = provenance["subtitle_source_sha256"]
     errors = validate_payload(
         data,
         story_sha=before_story,
@@ -817,6 +830,10 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
     before_story = sha256_file(story)
     before_board = sha256_file(storyboard)
     candidate = ep / CANDIDATE_REL
+    captions = ep / "docs/subtitles.yaml"
+    if _locked_documentary_rubric(ep) and not captions.is_file():
+        raise RuntimeError("locked photo-text story requires frame-by-frame subtitles")
+    before_captions = sha256_file(captions) if captions.is_file() else None
     candidate.unlink(missing_ok=True)
 
     runtime, _ = runtime_router.detect()
@@ -876,6 +893,8 @@ no Markdown fences and no status summary. The parent process persists it.
         raise RuntimeError(f"isolated story critic failed rc={completed.returncode}; log={log}")
     if sha256_file(story) != before_story or sha256_file(storyboard) != before_board:
         raise RuntimeError("critic modified story/storyboard; isolated review is invalid")
+    if before_captions is not None and (not captions.is_file() or sha256_file(captions) != before_captions):
+        raise RuntimeError("critic input subtitles were modified; isolated review is invalid")
     if not candidate.is_file():
         raise RuntimeError(f"critic did not produce {candidate}")
 
@@ -895,6 +914,8 @@ no Markdown fences and no status summary. The parent process persists it.
         for key in ("previous_rubric_sha256", "previous_storyboard_sha256"):
             if key in continuation:
                 provenance[key] = continuation[key]
+    if before_captions:
+        provenance["subtitle_source_sha256"] = before_captions
     return _finalize_review(
         ep,
         data,

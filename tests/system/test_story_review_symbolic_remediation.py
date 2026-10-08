@@ -55,6 +55,15 @@ def test_attempt_five_needs_matched_policy_and_source():
     assert _validate(data)
 
 
+def test_caption_source_sha_must_be_bound_when_present():
+    data = _review()
+    data['critic_provenance']['subtitle_source_sha256'] = 'f'*64
+    data['subtitle_source_sha256'] = 'f'*64
+    assert _validate(data) == []
+    data['subtitle_source_sha256'] = 'e'*64
+    assert 'review subtitle source SHA binding mismatch' in _validate(data)
+
+
 def test_no_sixth_auto_review_or_missing_auth():
     assert _validate(_review(6))
     data=_review()
