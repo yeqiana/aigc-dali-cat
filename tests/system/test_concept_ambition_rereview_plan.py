@@ -10,6 +10,26 @@ sys.path.insert(0, str(ROOT / "episodes/_system"))
 import concept_ambition
 
 
+def test_concept_ambition_not_required_for_user_locked_story(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        concept_ambition.runtime_request,
+        "authority_for_episode",
+        lambda _ep: {"story_input": {"mode": "locked_story", "allow_structure_rewrite": False}},
+    )
+    monkeypatch.setattr(concept_ambition, "episode_contract_version", lambda _ep: "2.6.1")
+    assert concept_ambition.required(tmp_path) is False
+
+
+def test_concept_ambition_remains_required_for_authored_story(monkeypatch, tmp_path):
+    monkeypatch.setattr(
+        concept_ambition.runtime_request,
+        "authority_for_episode",
+        lambda _ep: {"story_input": {"mode": "auto_create", "allow_structure_rewrite": True}},
+    )
+    monkeypatch.setattr(concept_ambition, "episode_contract_version", lambda _ep: "2.6.1")
+    assert concept_ambition.required(tmp_path) is True
+
+
 def test_rereview_plan_preserves_old_review_and_requires_new_attempt_on_sha_drift():
     with tempfile.TemporaryDirectory() as td:
         ep = Path(td)

@@ -95,6 +95,27 @@ class ValidatorTests(unittest.TestCase):
             ep=self.setup_episode(repo,state,manifest,gates)
             self.assertIn("recent5_not_checked",{f.code for f in validator.validate_episode(ep,repo,True) if f.level=="FAIL"})
 
+    def test_locked_story_skips_only_authoring_novelty_gates(self):
+        gates = self.base_gates()
+        gates["story"].update({
+            "recent5_checked": False,
+            "four_locks_diff_count": 0,
+            "competing_explanations": 0,
+            "task_closed": True,
+        })
+        findings = []
+        validator.check_story_gate(gates, 20, findings, creative_gates_required=False)
+        codes = {f.code for f in findings if f.level == "FAIL"}
+        self.assertNotIn("recent5_not_checked", codes)
+        self.assertNotIn("four_locks_diff", codes)
+        self.assertNotIn("competing_explanations", codes)
+        self.assertNotIn("task_not_closed", codes)
+
+        gates["story"]["task_closed"] = False
+        findings = []
+        validator.check_story_gate(gates, 20, findings, creative_gates_required=False)
+        self.assertIn("task_not_closed", {f.code for f in findings if f.level == "FAIL"})
+
     def test_visual_gate_requires_real_anchors(self):
         with tempfile.TemporaryDirectory() as td:
             repo=Path(td); state=self.base_state("VISUAL_CALIBRATED"); manifest=self.base_manifest(); gates=self.base_gates()

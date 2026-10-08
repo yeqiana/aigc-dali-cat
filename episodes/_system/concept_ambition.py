@@ -13,6 +13,7 @@ import story_json
 import runtime_review_persistence
 import runtime_timeout_policy
 import episode_state_persistence
+import runtime_request
 
 ROOT = Path(__file__).resolve().parents[2]
 CANDIDATES_REL = Path("meta/concept-candidates.json")
@@ -61,7 +62,21 @@ def episode_contract_version(ep):
     return max(versions, key=lambda x:x[0])[1] if versions else story_os_version()
 
 def required(ep):
-    return version_tuple(episode_contract_version(ep)) >= MIN_VERSION
+    if version_tuple(episode_contract_version(ep)) < MIN_VERSION:
+        return False
+    try:
+        request = runtime_request.authority_for_episode(Path(ep).resolve())
+    except Exception:
+        request = None
+    story_input = (request or {}).get("story_input") if isinstance(request, dict) else None
+    # Concept-pool generation is an authoring gate. A user-locked story forbids
+    # structural invention, so demanding 8-12 alternative concepts would violate
+    # the request instead of improving it. Downstream Story Review still applies.
+    if (isinstance(story_input, dict)
+            and story_input.get("mode") == "locked_story"
+            and story_input.get("allow_structure_rewrite") is False):
+        return False
+    return True
 
 def resolve_ep(raw):
     ep = Path(raw).resolve()

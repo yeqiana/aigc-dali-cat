@@ -22,6 +22,7 @@ from fast_frame_scout import required as fast_scout_required, audit as audit_fas
 from final_candidate_snapshot import required as final_snapshot_required, verify as verify_final_snapshot
 from post_publish_review import REQUIRED_FOR_DATA_REVIEWED, required as post_publish_required, verify as verify_post_publish
 from final_acceptance import allows as acceptance_allows, visual_asset_for_frame
+import runtime_request
 
 STATE_MIN = {name: idx for idx, name in enumerate(STATES)}
 PRODUCTION_DECISIONS = {"pending", "pass", "fail"}
@@ -284,24 +285,47 @@ def check_gates_common(state: dict, manifest: dict, gates: dict, findings: list[
                 findings.append(Finding("FAIL", "review_status", f"story-gates.reviews.{key} invalid: {value!r}"))
 
 
-def check_story_gate(gates: dict, total: int, findings: list[Finding]) -> None:
+def locked_story_contract(episode_dir: Path) -> bool:
+    """Whether creative-authoring gates are inapplicable to a user-locked story.
+
+    Locked-story mode preserves the user's supplied story structure. It must not
+    require invention-only evidence such as competing explanations or four-lock
+    novelty, while ordinary closure, frame bounds and independent Story Review
+    remain mandatory.
+    """
+    try:
+        request = runtime_request.authority_for_episode(Path(episode_dir).resolve())
+    except Exception:
+        return False
+    if not isinstance(request, dict):
+        return False
+    story_input = request.get("story_input") or {}
+    return (
+        story_input.get("mode") == "locked_story"
+        and story_input.get("allow_structure_rewrite") is False
+    )
+
+
+def check_story_gate(gates: dict, total: int, findings: list[Finding], *, creative_gates_required: bool = True) -> None:
     story = gates.get("story")
     reviews = gates.get("reviews") if isinstance(gates.get("reviews"), dict) else {}
     if not isinstance(story, dict):
         findings.append(Finding("FAIL", "story_gate", "story-gates.story must be object"))
         return
-    if story.get("recent5_checked") is not True:
-        findings.append(Finding("FAIL", "recent5_not_checked", "最近5篇账号级同质化检查尚未通过"))
-    diff = story.get("four_locks_diff_count")
-    if isinstance(diff, bool) or not isinstance(diff, int) or diff < 2:
-        findings.append(Finding("FAIL", "four_locks_diff", "四把锁至少需要 2 把不同"))
-    if story.get("mechanism_skin_swap_veto") is True:
-        findings.append(Finding("FAIL", "mechanism_skin_swap_veto", "已触发机制换皮一票否决"))
+    if creative_gates_required:
+        if story.get("recent5_checked") is not True:
+            findings.append(Finding("FAIL", "recent5_not_checked", "最近5篇账号级同质化检查尚未通过"))
+        diff = story.get("four_locks_diff_count")
+        if isinstance(diff, bool) or not isinstance(diff, int) or diff < 2:
+            findings.append(Finding("FAIL", "four_locks_diff", "四把锁至少需要 2 把不同"))
+        if story.get("mechanism_skin_swap_veto") is True:
+            findings.append(Finding("FAIL", "mechanism_skin_swap_veto", "已触发机制换皮一票否决"))
     if story.get("task_closed") is not True:
         findings.append(Finding("FAIL", "task_not_closed", "任务/事件闭环尚未完成"))
-    ce = story.get("competing_explanations")
-    if isinstance(ce, bool) or not isinstance(ce, int) or ce < 2:
-        findings.append(Finding("FAIL", "competing_explanations", "至少需要 2 种竞争解释"))
+    if creative_gates_required:
+        ce = story.get("competing_explanations")
+        if isinstance(ce, bool) or not isinstance(ce, int) or ce < 2:
+            findings.append(Finding("FAIL", "competing_explanations", "至少需要 2 种竞争解释"))
     hooks = frame_list(story.get("hook_frames"), total, findings, "story.hook_frames")
     if not hooks:
         findings.append(Finding("FAIL", "hook_frames", "hook_frames 不能为空"))
@@ -556,14 +580,17 @@ def check_stage(repo_root: Path, episode_dir: Path, manifest: dict, current: str
             findings.append(Finding("WARN", "readme_state_drift", f"machine state is {current} but episode README says 已发布"))
 
 
-def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, gates: dict, effective: str, findings: list[Finding], *, metadata_only: bool, waive: bool = False, legacy_gates_pending: bool = False) -> None:
+def check_story_os_for_effective(repo_root: Path, state: dict, manifest: dict, gates: dict, effective: str, findings: list[Finding], *, metadata_only: bool, waive: bool = False, legacy_gates_pending: bool = False, creative_story_gates_required: bool = True) -> None:
     check_gates_common(state, manifest, gates, findings)
     total = (manifest.get("release") or {}).get("body_frame_count")
     if not isinstance(total, int) or total <= 0:
         return
     idx = STATE_MIN[effective]
     if idx >= STATE_MIN["STORYBOARD_LOCKED"]:
-        check_story_gate(gates, total, findings)
+        check_story_gate(
+            gates, total, findings,
+            creative_gates_required=creative_story_gates_required,
+        )
     if idx >= STATE_MIN["VISUAL_CALIBRATED"]:
         check_visual_gate(gates, total, findings)
     if idx >= STATE_MIN["PRODUCTION_PASSED"]:
@@ -627,7 +654,13 @@ def validate_episode(episode_dir: Path, repo_root: Path, metadata_only: bool, ta
         else:
             findings.append(Finding("WARN", "legacy_without_story_gates", "旧剧集尚未迁移 Story OS V1.2 门禁；保持兼容"))
     elif effective:
-        check_story_os_for_effective(repo_root, state, manifest, gates, effective, findings, metadata_only=metadata_only, waive=acceptance_allows(episode_dir, "production_gate"), legacy_gates_pending=legacy_gates_pending)
+        check_story_os_for_effective(
+            repo_root, state, manifest, gates, effective, findings,
+            metadata_only=metadata_only,
+            waive=acceptance_allows(episode_dir, "production_gate"),
+            legacy_gates_pending=legacy_gates_pending,
+            creative_story_gates_required=not locked_story_contract(episode_dir),
+        )
 
     # V2.1 Concept Ambition is pre-Story-Lock evidence, not a second episode stage.
     if effective and STATE_MIN[effective] >= STATE_MIN["STORYBOARD_LOCKED"] and concept_ambition_required(episode_dir):
