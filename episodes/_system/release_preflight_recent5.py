@@ -18,6 +18,7 @@ from fingerprint_semantics import (
 )
 from release_preflight_core import *
 import runtime_timeout_policy
+import runtime_request
 
 def recent5_history(current: dict, reg: dict) -> list[dict]:
     return [
@@ -120,7 +121,25 @@ def cmd_build_recent5(args: argparse.Namespace) -> int:
     print(f"RECENT5: {data['decision'].upper()} max={data['max_similarity_score']} count={data['comparison_count']}")
     return 0 if data["decision"] == "pass" else 3
 
+def _user_supplied_locked_story_recent5_inapplicable(ep: Path) -> bool:
+    """Novelty comparison is an authoring gate, not a user-supplied story veto."""
+    try:
+        request = runtime_request.authority_for_episode(Path(ep).resolve())
+    except Exception:
+        return False
+    story_input = (request or {}).get("story_input") if isinstance(request, dict) else None
+    return (
+        isinstance(story_input, dict)
+        and story_input.get("mode") == "locked_story"
+        and story_input.get("allow_structure_rewrite") is False
+    )
+
+
 def verify_recent5_evidence(ep: Path) -> list[str]:
+    if _user_supplied_locked_story_recent5_inapplicable(ep):
+        # This is a strict NOT_APPLICABLE decision derived from user-authored
+        # production authority, not a fabricated comparison or PASS artifact.
+        return []
     if not guard_required(ep):
         return []
     p = ep / RECENT5_REL
