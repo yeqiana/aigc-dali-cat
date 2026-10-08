@@ -299,14 +299,16 @@ def locked_story_contract(episode_dir: Path) -> bool:
         return False
     if not isinstance(request, dict):
         return False
-    story_input = request.get("story_input") or {}
+    story_input = request.get("story_input")
+    if not isinstance(story_input, dict):
+        return False
     return (
-        story_input.get("mode") == "locked_story"
+        story_input.get("mode") == "locked_story" (fix(story): scope creative-only gates to authored stories)
         and story_input.get("allow_structure_rewrite") is False
     )
 
 
-def check_story_gate(gates: dict, total: int, findings: list[Finding], *, creative_gates_required: bool = True) -> None:
+def check_story_gate(gates: dict, total: int, findings: list[Finding], *, creative_gates_required: bool = True) -> None: (fix(story): scope creative-only gates to authored stories)
     story = gates.get("story")
     reviews = gates.get("reviews") if isinstance(gates.get("reviews"), dict) else {}
     if not isinstance(story, dict):
