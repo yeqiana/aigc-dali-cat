@@ -107,6 +107,19 @@ RETRYABLE_TECH_CODES = {
     # real-generation slot. It does not receive a separate retry budget.
     "ASPECT_RATIO_MISMATCH",
 }
+# Failure at provider/tool capability preflight is not a generated-image
+# failure. The image_worker_pool returns image_attempt_reserve_called=False.
+# A later provider setup must explicitly restore this capability before any
+# new image request is queued; do not blindly retry and exhaust worker slots.
+PRE_DISPATCH_CAPABILITY_BLOCK_CODES = frozenset({
+    "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN",
+    "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE_FOR_VISIBLE_MODELS",
+    "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+    "LOGIN_AUTH_MODEL_CATALOG_INVALID",
+    "LOGIN_AUTH_MODEL_CATALOG_FAILED",
+    "LOGIN_AUTH_TRANSPORT_MODEL_UNAVAILABLE",
+})
+
 NON_REGENERATING_FAILURE_CODES = {
     "NORMALIZE_REVIEW", "NORMALIZE_TECHNICAL_FAILURE",
     "NORMALIZE_INPUT_MISSING", "NORMALIZE_OUTPUT_EXISTS", "NORMALIZE_OUTPUT_FORMAT",
@@ -120,6 +133,7 @@ NON_REGENERATING_FAILURE_CODES = {
     "PAYLOAD_QUALITY_UNSUPPORTED", "PAYLOAD_ROUTE_CONFIGURATION_INVALID",
     "PAYLOAD_CAPABILITY_REGISTRY_INVALID", "PAYLOAD_CAPABILITY_CONTRACT_MISMATCH",
     "IMAGE_CONTROLLER_OR_PAYLOAD_REQUEST_BLOCKED", "IMAGE_PAYLOAD_REQUEST_INVALID",
+    *PRE_DISPATCH_CAPABILITY_BLOCK_CODES,
 }
 
 READY_LEDGER_STATES = production_ledger.READY_LEDGER_STATES
@@ -432,8 +446,13 @@ def ledger_tech_fail(ep:Path,item:dict,code:str,message:str)->None:
 
 
 def classify_error(text:str)->str:
+    # Explicit pre-dispatch capability errors must retain their distinct code,
+    # instead of collapsing into IMAGE_BACKEND_ERROR and inviting retries.
+    upper=str(text or "").upper()
+    for code in sorted(PRE_DISPATCH_CAPABILITY_BLOCK_CODES):
+        if code in upper:return code
     for code in NON_REGENERATING_FAILURE_CODES:
-        if code in text:return code
+        if code in upper:return code
     if "ASPECT_RATIO_MISMATCH" in text:return "ASPECT_RATIO_MISMATCH"
     if "IMAGE_TOOL_NO_ARTIFACT" in text:return "IMAGE_TOOL_NO_ARTIFACT"
     if "IMAGE_BACKEND_NO_OUTPUT" in text:return "IMAGE_BACKEND_NO_OUTPUT"
