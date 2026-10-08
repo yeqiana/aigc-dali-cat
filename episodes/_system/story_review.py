@@ -225,11 +225,24 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
                 for key in ("previous_review_sha256", "previous_rubric_sha256", "current_rubric_sha256"))
         and provenance.get("previous_rubric_sha256") != provenance.get("current_rubric_sha256")
     )
-    if attempt not in {1, 2} and not continuation:
-        errors.append("critic attempt must be 1 or 2 unless explicitly authorized policy continuation attempt 3")
-    if data.get("revision_count") not in ({0, 1, 2} if continuation else {0, 1}):
+    source_revision = (
+        attempt == 4
+        and provenance.get("direct_user_continuation_review") is True
+        and provenance.get("review_scope") == "LOCKED_DOCUMENTARY_SOURCE_REVISION"
+        and provenance.get("review_epoch") == 3
+        and provenance.get("epoch_attempt") == 1
+        and all(isinstance(provenance.get(k), str)
+                and len(provenance[k]) == 64
+                and all(ch in "0123456789abcdef" for ch in provenance[k].lower())
+                for k in ("previous_review_sha256", "previous_storyboard_sha256", "current_rubric_sha256"))
+        and provenance.get("previous_storyboard_sha256") != storyboard_sha
+    )
+    if attempt not in {1, 2} and not (continuation or source_revision):
+        errors.append("critic attempt must be 1 or 2 unless explicitly authorized policy continuation attempt 3 or SHA-bound source revision attempt 4")
+    revisions = {0, 1, 2, 3} if source_revision else ({0, 1, 2} if continuation else {0, 1})
+    if data.get("revision_count") not in revisions:
         errors.append("revision_count invalid for critic review scope")
-    elif attempt in {1, 2, 3} and data.get("revision_count") != attempt - 1:
+    elif attempt in {1, 2, 3, 4} and data.get("revision_count") != attempt - 1:
         errors.append("revision_count must equal critic attempt - 1")
 
     contract = data.get("contract") or {}
@@ -312,16 +325,20 @@ def verify(ep: Path) -> list[str]:
     ):
         errors.remove("storyboard_sha256 mismatch")
     if (data.get("critic_provenance") or {}).get("direct_user_continuation_review") is True:
-        evidence_path = Path(ep) / "meta/runtime/story-review-policy-continuation-a3.json"
+        source_revision = data["critic_provenance"].get("review_scope") == "LOCKED_DOCUMENTARY_SOURCE_REVISION"
+        evidence_path = Path(ep) / ("meta/runtime/story-review-source-revision-a4.json" if source_revision else "meta/runtime/story-review-policy-continuation-a3.json")
         try:
             evidence = read_json(evidence_path)
             provenance = data["critic_provenance"]
-            if (evidence.get("global_review_attempt") != 3
+            if (evidence.get("global_review_attempt") != provenance.get("attempt")
                     or evidence.get("review_scope") != provenance.get("review_scope")
+                    or evidence.get("review_epoch") != provenance.get("review_epoch")
+                    or evidence.get("epoch_attempt") != provenance.get("epoch_attempt")
                     or evidence.get("previous_review_sha256") != provenance.get("previous_review_sha256")
                     or evidence.get("current_rubric_sha256") != provenance.get("current_rubric_sha256")
                     or evidence.get("story_sha256") != sha256_file(story)
                     or evidence.get("storyboard_sha256") != sha256_file(storyboard)
+                    or (source_revision and evidence.get("previous_storyboard_sha256") != provenance.get("previous_storyboard_sha256"))
                     or evidence.get("current_rubric_sha256") != _review_rubric_digest(Path(__file__).read_text(encoding="utf-8-sig"))):
                 errors.append("policy continuation authority or current rubric SHA mismatch")
         except (OSError, ValueError, KeyError, RuntimeError):
@@ -662,15 +679,67 @@ def _authorize_policy_continuation(ep: Path, *, attempt: int, prior_rubric_ref: 
     return binding
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None, direct_user_continuation: bool = False, prior_rubric_ref: str | None = None) -> int:
+def _authorize_source_revision(ep: Path, *, attempt: int) -> dict:
+    """One SHA-bound user-directed review of corrected documentary storyboard."""
+    if attempt != 4 or not _locked_documentary_rubric(ep):
+        raise RuntimeError("source revision requires locked documentary attempt=4")
+    target = ep / "meta/runtime/story-review-source-revision-a4.json"
+    if target.exists():
+        raise RuntimeError("source revision attempt 4 already authorized; no redispatch")
+    prior = load_review(ep)
+    if (not isinstance(prior, dict)
+            or (prior.get("critic_provenance") or {}).get("attempt") != 3
+            or (prior.get("summary") or {}).get("passed") is not False
+            or not prior.get("issue_codes")):
+        raise RuntimeError("must have a real previous failed attempt 3")
+    policy_path = ep / "meta/runtime/story-review-policy-continuation-a3.json"
+    if not policy_path.is_file():
+        raise RuntimeError("previous policy authority missing")
+    rubric_sha = _review_rubric_digest(Path(__file__).read_text(encoding="utf-8-sig"))
+    if read_json(policy_path).get("current_rubric_sha256") != rubric_sha:
+        raise RuntimeError("rubric must not silently change during source continuation")
+    story, storyboard = story_paths(ep)
+    story_sha, board_sha = sha256_file(story), sha256_file(storyboard)
+    previous_board_sha = str(prior.get("storyboard_sha256") or "")
+    if story_sha != prior.get("story_sha256") or board_sha == previous_board_sha:
+        raise RuntimeError("story must be unchanged; storyboard must actually be revised")
+    board_text = storyboard.read_text(encoding="utf-8-sig")
+    if not all(token in board_text for token in
+               ("左右两个时序画格", "不是同一人", "次子的生母")):
+        raise RuntimeError("real issues from attempt 3 are not yet repaired")
+    prior_sha = review_authority_sha256(ep)
+    if not prior_sha:
+        raise RuntimeError("prior review authority SHA missing")
+    evidence = {
+        "schema": "storyos.story_critic_source_revision.v1",
+        "authorization": "direct_user_continuation",
+        "review_scope": "LOCKED_DOCUMENTARY_SOURCE_REVISION",
+        "global_review_attempt": 4, "review_epoch": 3, "epoch_attempt": 1,
+        "previous_review_attempt": 3, "previous_review_passed": False,
+        "previous_review_sha256": prior_sha,
+        "previous_issue_codes": list(prior.get("issue_codes") or []),
+        "previous_storyboard_sha256": previous_board_sha,
+        "storyboard_sha256": board_sha, "story_sha256": story_sha,
+        "current_rubric_sha256": rubric_sha,
+        "reason": "User-directed repair of frame16 time panels and distinct spouse identities after FAIL #3",
+    }
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_json(target, evidence)
+    return evidence
+
+
+def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None, direct_user_continuation: bool = False, prior_rubric_ref: str | None = None, direct_user_source_revision: bool = False) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("review_critic")
-    if attempt not in {1, 2} and not (attempt == 3 and direct_user_continuation):
-        raise RuntimeError("attempt must be 1 or 2; attempt 3 requires explicit direct-user policy continuation")
-    if direct_user_continuation and attempt != 3:
-        raise RuntimeError("direct-user policy continuation is only valid for attempt 3")
+    if attempt not in {1, 2} and not (attempt == 3 and direct_user_continuation) and not (attempt == 4 and direct_user_source_revision):
+        raise RuntimeError("attempts above 2 require explicit direct-user, SHA-bound continuation")
+    if direct_user_continuation and (attempt != 3 or direct_user_source_revision):
+        raise RuntimeError("policy continuation is only attempt 3")
+    if direct_user_source_revision and (attempt != 4 or direct_user_continuation):
+        raise RuntimeError("source revision is only attempt 4")
     continuation = (_authorize_policy_continuation(ep, attempt=attempt, prior_rubric_ref=prior_rubric_ref)
-                    if direct_user_continuation else None)
+                    if direct_user_continuation else _authorize_source_revision(ep, attempt=attempt)
+                    if direct_user_source_revision else None)
     story, storyboard = story_paths(ep)
     before_story = sha256_file(story)
     before_board = sha256_file(storyboard)
@@ -748,9 +817,11 @@ no Markdown fences and no status summary. The parent process persists it.
             "review_epoch": continuation["review_epoch"],
             "epoch_attempt": continuation["epoch_attempt"],
             "previous_review_sha256": continuation["previous_review_sha256"],
-            "previous_rubric_sha256": continuation["previous_rubric_sha256"],
             "current_rubric_sha256": continuation["current_rubric_sha256"],
         })
+        for key in ("previous_rubric_sha256", "previous_storyboard_sha256"):
+            if key in continuation:
+                provenance[key] = continuation[key]
     return _finalize_review(
         ep,
         data,
@@ -801,6 +872,7 @@ def main() -> int:
     p.add_argument("--codex")
     p.add_argument("--timeout", type=int, default=None)
     p.add_argument("--direct-user-continuation", action="store_true")
+    p.add_argument("--direct-user-source-revision", action="store_true")
     p.add_argument("--prior-rubric-ref")
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
@@ -823,7 +895,8 @@ def main() -> int:
         try:
             return run_critic(ep, attempt=args.attempt, codex_raw=args.codex, timeout=args.timeout,
                               direct_user_continuation=args.direct_user_continuation,
-                              prior_rubric_ref=args.prior_rubric_ref)
+                              prior_rubric_ref=args.prior_rubric_ref,
+                              direct_user_source_revision=args.direct_user_source_revision)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("STORY SEMANTIC REVIEW ERROR:", exc)
             return 3
