@@ -265,7 +265,8 @@ def codex_exec_command(codex, binding, image_paths=(), sandbox="workspace-write"
 def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeout=None,
                        run_id=None, trace_id=None, logical_asset_key=None, image_paths=(),
                        call_id=None, output_handle=None, sandbox="workspace-write",
-                       receipt_fields=None, persist_output_stream=False):
+                       receipt_fields=None, persist_output_stream=False,
+                       runner_request_id=None):
     """Run one real scoped Codex model call and persist its policy-bound receipt."""
     ep=Path(ep).resolve()
     call_id=call_id or uuid.uuid4().hex
@@ -298,7 +299,7 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         execution_started=True
         cp=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
             stdout=sink,stderr=subprocess.STDOUT,timeout=timeout,check=False,
-            task_type="scoped_step")
+            task_type="scoped_step",request_id=runner_request_id)
         rc=int(cp.returncode)
         if capture_preflight_output:
             captured = getattr(cp, "stdout", None)
@@ -339,6 +340,7 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         "effective_model_source":"EXPLICIT_RUNTIME_BINDING",
         "codex_argv":cmd,
         "logical_asset_key":logical_asset_key,
+        "runner_request_id":runner_request_id,
     }
     if step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT":
         receipt["runner_diagnostics"]=runner_diagnostics
@@ -641,7 +643,7 @@ def run_step(ep,step,codex_raw=None,timeout=None,attach_poll_seconds=None,run_id
                 generation_key=request_id or worker_id
                 rc,_receipt=execute_model_call(ep,step,binding,text,codex_raw=codex_raw,
                     timeout=timeout,run_id=run_id,trace_id=trace_id,
-                    call_id=generation_key,output_handle=h)
+                    call_id=generation_key,runner_request_id=request_id,output_handle=h)
                 collected=True
             except subprocess.TimeoutExpired:
                 rc=124; collected=True
