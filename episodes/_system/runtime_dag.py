@@ -988,6 +988,30 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
             rc,note=_run_incremental_frame_verification(
                 ep,attempt=attempt,codex=codex,timeout=timeout,run_id=event_run_id,
                 trace_id=trace_id,command="review")
+        elif s.step_id=="PROMPT_AUTHORING":
+            import locked_story_prompt_authoring
+            if locked_story_prompt_authoring.applicable(ep):
+                # Already-locked user story: Frame Contract/Storyboard together
+                # contain the authoritative per-frame scene. Generate derived
+                # transport hints + SHA-bound packages without 3600s of redundant
+                # model rewriting, then keep the official DAG postcondition path.
+                try:
+                    output=locked_story_prompt_authoring.run(ep)
+                    note=json.dumps({
+                        "execution":"LOCKED_STORY_DETERMINISTIC_PROMPTS",
+                        "model_dispatched":False,
+                        "count":output["frame_count"],
+                        "audit":"meta/runtime/locked-story-prompt-authoring.json",
+                    },ensure_ascii=True)
+                    rc=0
+                except Exception as exc:
+                    rc=4
+                    note="LOCKED STORY PROMPT AUTHORING FAIL: "+str(exc)
+            else:
+                execution_capsule.compile_capsule(ep,s.step_id,write=True)
+                step_timeout=min(timeout,int(dag.get("scoped_worker_timeout_seconds") or runtime_timeout_policy.seconds("codex_scoped_step")))
+                rc,log=scoped_codex_worker.run_step(ep,s.step_id,codex_raw=codex,timeout=step_timeout)
+                note=(note+" "+f"log={log}").strip()
         elif s.executor in {"scoped_model","scoped_codex"}:
             execution_capsule.compile_capsule(ep,s.step_id,write=True)
             active_runtime,_=runtime_router.detect()

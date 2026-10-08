@@ -18,6 +18,35 @@ PROMPT_DIR = Path("prompts/production")
 MAX_CHARS = 250
 MAX_BYTES = 860
 
+# Locked user storyboards use a three-column Markdown table. Frame Contract's
+# text excerpt parser may intentionally use the full-storyboard SHA fallback
+# for this format; never turn that empty excerpt into a generic image prompt.
+TABLE_FRAME = re.compile(r"^\|\s*(\d{1,3})\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*$")
+
+
+def locked_table_beats(ep: Path, *, expected_count: int) -> dict[int, str]:
+    """Resolve each exact storyboard scene; reject missing/duplicate rows."""
+    _story, storyboard = frame_contract.artifact_paths(Path(ep).resolve())
+    beats: dict[int, str] = {}
+    for line in storyboard.read_text(encoding="utf-8-sig").splitlines():
+        match = TABLE_FRAME.match(line)
+        if match is None:
+            continue
+        frame = int(match.group(1))
+        if frame in beats:
+            raise ValueError(f"duplicate locked storyboard frame {frame:02d}")
+        scene = str(match.group(2) or "").strip()
+        if not scene:
+            raise ValueError(f"empty locked storyboard frame {frame:02d}")
+        beats[frame] = scene
+    if set(beats) != set(range(1, expected_count + 1)):
+        missing = sorted(set(range(1, expected_count + 1)) - set(beats))
+        extra = sorted(set(beats) - set(range(1, expected_count + 1)))
+        raise ValueError(f"locked storyboard frame mismatch missing={missing} extra={extra}")
+    return beats
+
+
+
 
 def _clean_storyboard_text(text: str) -> str:
     value = str(text or "").strip()
@@ -26,11 +55,12 @@ def _clean_storyboard_text(text: str) -> str:
     return value
 
 
-def prompt_for_contract(contract: dict) -> str:
+def prompt_for_contract(contract: dict, *, exact_scene: str | None = None) -> str:
     frame = str(contract.get("frame") or "").zfill(2)
-    beat = _clean_storyboard_text(((contract.get("storyboard_frame") or {}).get("text") or ""))
+    beat = _clean_storyboard_text(exact_scene if exact_scene is not None else
+                                  ((contract.get("storyboard_frame") or {}).get("text") or ""))
     if not beat:
-        beat = f"Frame{frame} 按锁定分镜事件自然发生"
+        raise ValueError(f"frame {frame} has no localized scene text; refuse generic fallback")
     suffix = "按当前Frame Contract生成；真实生活相册感、自然瞬间、普通摄影曝光，避免电影布光、海报摆拍和无依据的额外元素。"
     text = f"{beat} {suffix}".strip()
     while len(text) > MAX_CHARS or len(text.encode("utf-8")) > MAX_BYTES:
@@ -42,9 +72,10 @@ def prompt_for_contract(contract: dict) -> str:
     return text
 
 
-def ensure(ep: Path) -> dict:
+def ensure(ep: Path, *, require_locked_table: bool = False) -> dict:
     ep = Path(ep).resolve()
     total = frame_contract.frame_count(ep)
+    beats = locked_table_beats(ep, expected_count=total) if require_locked_table else {}
     out_dir = ep / PROMPT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
     created: list[int] = []
@@ -55,7 +86,7 @@ def ensure(ep: Path) -> dict:
             reused.append(frame)
             continue
         contract = frame_contract.compile_frame(ep, frame, write_cache=True)
-        text = prompt_for_contract(contract)
+        text = prompt_for_contract(contract, exact_scene=beats.get(frame))
         path.write_text(text + "\n", encoding="utf-8", newline="\n")
         created.append(frame)
     return {"created": created, "reused": reused, "prompt_dir": PROMPT_DIR.as_posix(), "total": total}
@@ -74,6 +105,12 @@ def self_test() -> None:
     text = prompt_for_contract(sample)
     assert "下楼" in text and "Frame Contract" in text
     assert len(text) <= 260 and len(text.encode("utf-8")) <= 900
+    try:
+        prompt_for_contract({"frame":"01","storyboard_frame":{"text":""}})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("must not generate generic placeholder prompts")
     print("PRODUCTION PROMPT MATERIALIZER SELF-TEST PASS")
 
 
