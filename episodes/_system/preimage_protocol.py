@@ -64,6 +64,53 @@ def execute_local(ep: Path, executor, *, max_workers: int = 4) -> dict:
     """
     source=preimage_authority_snapshot.build(ep,write=True,kind="PREIMAGE_INPUT_SNAPSHOT")
     rows=tasks.plan_tasks(ep,source,resume=True)
+    # Retry only if the original model failed before producing a valid,
+    # SHA-bound candidate. A bounded model can write the complete artifact and
+    # then hang waiting for its transport to exit; audited recovery must preserve
+    # the real TIMEOUT receipt rather than pay for that same content again.
+    state=story_json.read_json(Path(ep)/tasks.STATE_REL,default={}) or {}
+    has_timeout=any(
+        isinstance(row,dict) and row.get("status")=="FAILED"
+        and row.get("reason")=="worker rc=124"
+        for row in (state.get("tasks") or {}).values())
+    if has_timeout:
+        import preimage_timeout_candidate_recovery as recovery
+        proof=recovery.inspect(ep,source,rows)
+        if proof.get("status")=="ELIGIBLE":
+            if not recovery.recheck_unchanged(ep,proof):
+                return {"status":"FAILED","reason":"candidate/receipt drift during timeout recovery",
+                        "recovery":"REFUSED"}
+            audit=Path(ep)/recovery.MANIFEST_REL
+            audit.parent.mkdir(parents=True,exist_ok=True)
+            atomic.atomic_write_json(audit,{"schema_version":1,"status":"VERIFIED_NOT_COMMITTED",
+                "model_timeouts_preserved":True,"proof":proof})
+            committed=commit_candidates(ep,source,rows)
+            if committed.get("status") in {"PASS","REPLAYED"}:
+                for task in rows:
+                    entry=next(x for x in proof["tasks"] if x["task_type"]==task["task_type"])
+                    if entry["was_timeout"]:
+                        tasks.update_task_state(ep,task,"REUSED",
+                            reason="recovered verified candidate; original model execution TIMEOUT")
+                atomic.atomic_write_json(audit,{"schema_version":1,"status":"COMMITTED",
+                    "model_timeouts_preserved":True,"proof":proof,
+                    "commit_status":committed["status"]})
+                return {"status":"PASS","recovery":"VERIFIED_TIMEOUT_CANDIDATES",
+                        "observed_preimage_parallelism_peak":0,
+                        "measurement_method":"reused_durable_candidate_no_model_dispatch",
+                        "test_evidence":False,"production_observed":False,
+                        "tasks":[{"task_type":row["task_type"],
+                                  "status":"RECOVERED_CANDIDATE" if row["was_timeout"] else "REUSED",
+                                  "model_execution_status":row["model_execution_status"]}
+                                 for row in proof["tasks"]],
+                        **committed}
+            return {"status":"FAILED","reason":"candidate atomic commit failed",
+                    "recovery":"REFUSED","transaction":committed}
+        # If all candidates are already valid, another model dispatch is not
+        # allowed to hide a missing or contradictory execution receipt.
+        if all(not tasks.verify_candidate(tasks.read_candidate(ep,task) or {},task)
+               for task in rows):
+            return {"status":"FAILED","reason":"timeout candidate recovery refused: "+str(proof.get("reason")),
+                    "recovery":"REFUSED"}
     pending=[x for x in rows if x["status"] != "REUSED"]
     import threading
     peak=0; active=0; metrics_lock=threading.Lock(); results=[]
