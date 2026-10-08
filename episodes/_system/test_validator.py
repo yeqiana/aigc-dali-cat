@@ -95,6 +95,43 @@ class ValidatorTests(unittest.TestCase):
             ep=self.setup_episode(repo,state,manifest,gates)
             self.assertIn("recent5_not_checked",{f.code for f in validator.validate_episode(ep,repo,True) if f.level=="FAIL"})
 
+    def test_user_locked_story_exempts_only_creative_novelty_checks(self):
+        gates = self.base_gates()
+        gates["story"].update({
+            "recent5_checked": False,
+            "four_locks_diff_count": 0,
+            "competing_explanations": 0,
+        })
+        findings = []
+        validator.check_story_gate(
+            gates, 25, findings, creative_gates_required=False
+        )
+        codes = {x.code for x in findings if x.level == "FAIL"}
+        self.assertFalse(
+            codes & {"recent5_not_checked", "four_locks_diff", "competing_explanations"}
+        )
+        self.assertNotIn("task_not_closed", codes)
+
+        # Closure and independent critic cannot be bypassed by locked_story.
+        gates["story"]["task_closed"] = False
+        gates["reviews"]["story"] = "pending"
+        gates["story"]["climax_frame"] = None
+        findings = []
+        validator.check_story_gate(
+            gates, 25, findings, creative_gates_required=False
+        )
+        codes = {x.code for x in findings if x.level == "FAIL"}
+        self.assertTrue({"task_not_closed", "review_not_passed", "climax_frame"} & codes)
+        self.assertIn("task_not_closed", codes)
+        self.assertIn("climax_frame", codes)
+
+    def test_authored_story_still_requires_novelty_checks(self):
+        gates = self.base_gates()
+        gates["story"]["recent5_checked"] = False
+        findings = []
+        validator.check_story_gate(gates, 25, findings)
+        self.assertIn("recent5_not_checked", {x.code for x in findings})
+
     def test_visual_gate_requires_real_anchors(self):
         with tempfile.TemporaryDirectory() as td:
             repo=Path(td); state=self.base_state("VISUAL_CALIBRATED"); manifest=self.base_manifest(); gates=self.base_gates()
