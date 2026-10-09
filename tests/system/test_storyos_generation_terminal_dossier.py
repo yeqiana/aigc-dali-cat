@@ -118,7 +118,9 @@ def test_provider_receipt_with_matching_raw_is_observation_not_retry_authority(
     raw_sha = hashlib.sha256(b"not-an-image-receipt").hexdigest()
     monkeypatch.setattr(
         dossier.provider_receipt_persistence, "load_by_path",
-        lambda *_args: {"source": "mysql", "payload": {
+        lambda *_args: {"source": "mysql", "receipt_status": "RECORDED",
+                        "attempt_id": None, "request_id": None,
+                        "payload": {
             "frame": 24, "raw_sha256": raw_sha,
             "normalize_decision": "ASPECT_RATIO_MISMATCH",
         }})
@@ -128,6 +130,9 @@ def test_provider_receipt_with_matching_raw_is_observation_not_retry_authority(
         "located": True, "source": "mysql", "frame_matches": True,
         "raw_sha256_matches": True,
         "normalize_decision": "ASPECT_RATIO_MISMATCH",
+        "receipt_status": "RECORDED",
+        "attempt_id_present": False,
+        "request_id_present": False,
     }
     assert row["provider_terminal_receipt_verified"] is False
     assert row["generation_retry_permitted"] is False

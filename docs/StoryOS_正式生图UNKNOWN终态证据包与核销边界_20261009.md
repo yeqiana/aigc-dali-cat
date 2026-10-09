@@ -41,6 +41,14 @@ Frame 24 原始 RAW SHA：`2e1607ac5e637c196336bba95ca72c1879cd40cdda26298501bc6
 3. 两帧当前 **只可查证，不可自动重试**。若过去的 `OUTCOME_UNKNOWN` 最终被受审处置，必须有不可变终态证据、独立执行审计和共享 MySQL 次数维护；不能直接 UPDATE DB、删除旧 Attempt、伪造 `FAILED_AFTER_DISPATCH` 或退款。
 4. 旧 Provider `opencodex` 不能再次接入；StoryOS 是图文，不生成视频。所有未来实际图片生产仍须经原生 Codex capability 和 Canonical Production Gates。
 
+## 本轮真实 MySQL 回执身份核对（2026-10-09）
+
+读 `TB_PROVIDER_RECEIPT` 的正式 Episode 最近 80 条上限，实际命中本 Episode **4 条**。其中只有一条关联 Frame 06/24：**Frame 24**，其 `STATUS=RECORDED`、`ATTEMPT_ID=NULL`、`REQUEST_ID=NULL`、`LEGACY_PATH` 存在，Payload 的 `frame=24`、`normalize_decision=ASPECT_RATIO_MISMATCH` 与 RAW SHA 均匹配。Frame 06 无对应回执。查询 0 次写入。
+
+此前 `provider_receipt_persistence.load_by_path` 只返回 Payload/receipt_id/legacy_path，未传递存储状态与 Request/Attempt 绑定。现已扩展只读字段 `receipt_status`、`attempt_id`、`request_id`，通过底层 MySQL Repository 显式列检索保留这些历史事实，且检查器仅向用户报告 ID 是否存在。任何 `RECORDED` 均**不等于**终态核销，也不解除 `OUTCOME_UNKNOWN` 门禁。为了避免读 RAW 大文件导致高内存占用，SHA-256 改为 1 MiB 流式计算。
+
+TEST_ONLY Epoch 2 在 3306 正式原生登录 Payload 预检读到了 56 条模型目录记录：`session_start=PASS`，`status=READY_FOR_REAL_CAPABILITY_PROOF`，`tool_capability_state=UNKNOWN`，未消耗图片 Attempt。进一步的精确 Controller 文本探测受平台安全检查阻断，**没有执行**，不得包装重试或当作通过。正式 Episode 仍 2/25，Frame 06/24 不触发自动重派。
+
 ## 本轮测试与界限
 
 - 第一轮：Runner/Canary/Review/UNKNOWN 专项三组 55 passed；新增脚本最初导入路径失败，已修正。

@@ -98,6 +98,12 @@ def load_by_path(ep: Path, legacy_path: str | Path) -> dict | None:
                     "legacy_sha256": row.get("legacy_sha256"),
                     "payload": row["payload"],
                     "receipt_id": row.get("receipt_id"),
+                    "receipt_status": row.get("status"),
+                    "attempt_id": row.get("attempt_id"),
+                    "provider": row.get("provider"),
+                    "model": row.get("model"),
+                    "error_code": row.get("error_code"),
+                    "request_id": row.get("request_id"),
                 }
         except Exception:
             # dual remains recoverable from compatibility JSON; mysql does not.

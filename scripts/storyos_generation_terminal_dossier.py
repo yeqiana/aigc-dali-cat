@@ -31,9 +31,13 @@ import storyos_generation_evidence_audit as audit
 
 def _fingerprint(path: Path) -> dict:
     """Metadata + SHA only. Never leak a log or Provider payload in the report."""
+    sha256 = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            sha256.update(chunk)
     return {
         "name": path.name,
-        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "sha256": sha256.hexdigest(),
         "bytes": path.stat().st_size,
     }
 
@@ -117,7 +121,8 @@ def inspect(ep: Path) -> dict:
         )
         receipt_info = {"located": False, "source": None,
                         "frame_matches": False, "raw_sha256_matches": False,
-                        "normalize_decision": None}
+                        "normalize_decision": None, "receipt_status": None,
+                        "attempt_id_present": False, "request_id_present": False}
         if receipt_path is not None:
             loaded = provider_receipt_persistence.load_by_path(ep, receipt_path)
             payload = (loaded or {}).get("payload")
@@ -134,6 +139,12 @@ def inspect(ep: Path) -> dict:
                             for proof in raw_proofs)),
                     "normalize_decision": str(
                         payload.get("normalize_decision") or "") or None,
+                    "receipt_status": loaded.get("receipt_status"),
+                    "attempt_id_present": bool(loaded.get("attempt_id")),
+                    "request_id_present": bool(loaded.get("request_id")),
+                    # These fields are diagnostic only, not terminal proof.
+                    # RECORDED plus a matching RAW is still not an official
+                    # Generation Attempt completion or retry admission.
                 }
         row_result = {
             **row,
