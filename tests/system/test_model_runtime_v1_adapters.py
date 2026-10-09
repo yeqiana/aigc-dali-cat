@@ -40,7 +40,9 @@ def test_codex_native_explicit_pinning_and_env_clearing():
         result = adapters.dispatch_codex_text(plan, prompt="hello", authorized=True, runner=stub)
     argv, kw = called[0]
     assert any(adapters.NATIVE_CODEX_BASE in part for part in argv)
+    assert 'model_provider="openai"' in argv
     assert "OPENAI_BASE_URL" not in kw["env"]
+    assert kw["env"]["STORY_OS_MODEL_TRANSPORT_POLICY"] == "DUAL_ONLY"
     assert kw["task_type"] == "generic_codex"
     assert result["status"] == "REQUIRES_VALIDATION"
     assert result["actual_model"] is None
@@ -58,7 +60,7 @@ def test_direct_api_fixed_official_url_and_no_key_in_result():
     captured = []
     def sender(req, timeout):
         captured.append((req, timeout))
-        return json.dumps({"id": "resp-123", "model": "provider-reported"}).encode()
+        return json.dumps({"id": "resp-123", "status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "ok"}]}], "model": "provider-reported"}).encode()
     with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}):
         result = adapters.dispatch_openai_text(plan, prompt="test", authorized=True,
                                                api_key="unit-test-secret", sender=sender)
@@ -134,3 +136,45 @@ def test_api_incomplete_response_cannot_claim_success():
     with pytest.raises(adapters.TransportDispatchBlocked, match="RESPONSE_NOT_COMPLETE"):
         adapters.dispatch_openai_text(plan, prompt="test", authorized=True, sender=sender,
                                      api_key="secret")
+
+def test_api_completed_response_requires_output_text():
+    plan = _plan({**B,"transport":"API_KEY_DIRECT"})
+    def sender(req, timeout):
+        return json.dumps({"id":"resp-123","status":"completed","output":[]}).encode()
+    with pytest.raises(adapters.TransportDispatchBlocked,match="OUTPUT_NOT_VERIFIED"):
+        adapters.dispatch_openai_text(plan,prompt="hi",authorized=True,api_key="fake",sender=sender)
+
+def test_api_pending_is_not_success_and_preserves_reconciliation_id():
+    plan = _plan({**B,"transport":"API_KEY_DIRECT"})
+    def sender(req, timeout):
+        return json.dumps({"id":"resp-123","status":"in_progress"}).encode()
+    row=adapters.dispatch_openai_text(plan,prompt="hi",authorized=True,api_key="fake",sender=sender)
+    assert row["status"]=="PENDING_RECONCILIATION"
+    assert row["provider_response_id"]=="resp-123"
+    assert row["actual_model"] is None
+
+def test_api_missing_status_never_claims_completion():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    with pytest.raises(adapters.TransportDispatchBlocked,match="RESPONSE_NOT_COMPLETE"):
+        adapters.dispatch_openai_text(plan,prompt="hi",authorized=True,api_key="fake",
+            sender=lambda req,timeout:json.dumps({"id":"resp-123"}).encode())
+
+def test_codex_native_rejects_proven_wrong_upstream_route():
+    plan = _plan(B)
+    def stub(argv, **kw):
+        result=subprocess.CompletedProcess(argv, 0, stdout=b'{"type":"turn.completed"}\n', stderr=b'')
+        result.remote={"transport_route":"opencodex", "transport_base_url":"http://127.0.0.1:10100/v1", "timed_out":False}
+        return result
+    with pytest.raises(adapters.TransportDispatchBlocked,match="NATIVE_ROUTE_UNVERIFIED"):
+        adapters.dispatch_codex_text(plan,prompt="hello",authorized=True,runner=stub)
+
+def test_codex_remote_completion_is_only_observed_not_model_attested():
+    plan = _plan(B)
+    def stub(argv, **kw):
+        result=subprocess.CompletedProcess(argv, 0, stdout=b'{"type":"turn.completed"}\n', stderr=b'')
+        result.remote={"transport_route":"native_codex", "transport_base_url":adapters.NATIVE_CODEX_BASE, "timed_out":False}
+        return result
+    row=adapters.dispatch_codex_text(plan,prompt="hello",authorized=True,runner=stub)
+    assert row["native_runtime_evidence"]["status"]=="OBSERVED"
+    assert row["actual_model"] is None
+    assert row["native_runtime_evidence"]["tool_session_attested"] is False

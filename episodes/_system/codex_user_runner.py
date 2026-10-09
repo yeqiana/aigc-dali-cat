@@ -416,6 +416,34 @@ def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task
     explicit, explicit_base = _provider_override(command)
     source = env if env is not None else os.environ
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
+    strict_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
+    if strict_policy == "DUAL_ONLY":
+        # The API_KEY_DIRECT path belongs to the official API adapter, never to
+        # Codex CLI. Fail closed before probing local OpenCodex/other proxies.
+        if explicit:
+            if str(explicit_base or "").rstrip("/") != NATIVE_CODEX_BASE_URL:
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "Codex provider override is not native"
+                )
+            return {
+                "transport_route": "native_codex",
+                "transport_route_reason": "dual_only_explicit_native",
+                "transport_base_url": NATIVE_CODEX_BASE_URL,
+                "provider_args": [],
+            }
+        if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
+            raise CodexUserRunnerRejected(
+                "MODEL_TRANSPORT_FORBIDDEN", "non-native Codex base URL forbidden"
+            )
+        return {
+            "transport_route": "native_codex",
+            "transport_route_reason": "dual_only_native",
+            "transport_base_url": NATIVE_CODEX_BASE_URL,
+            "provider_args": [
+                "-c", 'model_provider="openai"',
+                "-c", f'openai_base_url="{NATIVE_CODEX_BASE_URL}"',
+            ],
+        }
     if explicit:
         return {
             "transport_route": _route_from_explicit_base_url(explicit_base),

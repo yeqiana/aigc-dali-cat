@@ -81,11 +81,13 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
     if runner is None:
         import codex_user_runner
         runner = codex_user_runner.run_codex
-    argv = [codex_command, "-c", 'openai_base_url="' + NATIVE_CODEX_BASE + '"',
+    argv = [codex_command, "-c", 'model_provider="openai"',
+            "-c", 'openai_base_url="' + NATIVE_CODEX_BASE + '"',
             "exec", "--json", "--skip-git-repo-check", "-m", plan["requested_model"], "-"]
     clean_env = dict(os.environ)
     clean_env.pop("OPENAI_BASE_URL", None)
     clean_env.pop("STORY_OS_IMAGE_PROVIDER_ROUTE", None)
+    clean_env["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
     try:
         result = runner(argv, input=prompt, text=True, encoding="utf-8",
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -100,7 +102,12 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
         output = output.encode("utf-8")
     if not output.strip():
         raise TransportDispatchBlocked("CODEX_NATIVE_EMPTY_OUTPUT")
+    from . import native_result_evidence
+    observed = native_result_evidence.inspect(result)
+    if observed["reason"] == "NATIVE_ROUTE_NOT_ATTESTED":
+        raise TransportDispatchBlocked("CODEX_NATIVE_ROUTE_UNVERIFIED")
     return {"status": "REQUIRES_VALIDATION", "transport": "CODEX_NATIVE",
+            "native_runtime_evidence": observed,
             "requested_model": plan["requested_model"], "actual_model": None,
             "output_sha256": hashlib.sha256(output).hexdigest(),
             "output_bytes": len(output)}
@@ -138,8 +145,20 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
     except Exception:
         # Unknown network outcome may have reached provider. No automatic retry.
         raise TransportDispatchBlocked("API_DIRECT_OUTCOME_UNKNOWN") from None
-    if result.get("error") or result.get("status") in {"failed", "incomplete", "cancelled"}:
+    status = result.get("status")
+    if status in {"in_progress", "queued"}:
+        return {"status": "PENDING_RECONCILIATION", "transport": "API_KEY_DIRECT",
+                "provider_response_id": result["id"], "actual_model": None}
+    if result.get("error") or status != "completed":
         raise TransportDispatchBlocked("API_DIRECT_RESPONSE_NOT_COMPLETE")
+    outputs = result.get("output")
+    if (not isinstance(outputs, list) or not any(
+        isinstance(item, dict) and item.get("type") == "message"
+        and isinstance(item.get("content"), list)
+        and any(isinstance(part, dict) and part.get("type") == "output_text"
+                and isinstance(part.get("text"), str) and part["text"].strip()
+                for part in item["content"]) for item in outputs)):
+        raise TransportDispatchBlocked("API_DIRECT_OUTPUT_NOT_VERIFIED")
     return {"status": "REQUIRES_VALIDATION", "transport": "API_KEY_DIRECT",
             "requested_model": plan["requested_model"], "reported_model": result.get("model"),
             "actual_model": None, "provider_response_id": result["id"],
