@@ -393,8 +393,14 @@ def launch(
             # Final Semantic success is not authoritative until the caller has
             # validated turn completion, durable output and the candidate's
             # review-item/generation bindings. Its receipt is finalized later.
-            "status": ("PENDING_VALIDATION" if role == "vision.final"
-                       else "SUCCESS" if int(done.returncode) == 0 else "FAILED"),
+            # A nonzero runner exit is a terminal *execution-call* failure;
+            # it cannot remain pending independent semantic validation.
+            # This does NOT attest Provider image Attempt failure or authorize
+            # a retry. Successful Final Semantic calls still need full Review
+            # Authority validation before recording SUCCESS.
+            "status": ("FAILED" if int(done.returncode) != 0
+                       else "PENDING_VALIDATION" if role == "vision.final"
+                       else "SUCCESS"),
             "returncode": int(done.returncode),
             "runner_request_id": str(remote.get("request_id") or ""),
             "thread_id": str(remote.get("thread_id") or ""),

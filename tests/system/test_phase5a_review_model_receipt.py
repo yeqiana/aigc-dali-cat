@@ -44,6 +44,10 @@ def test_critic_runner_records_bound_model_receipt_without_provider_attestation(
 
     receipt_path = tmp_path / result.model_execution_receipt
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    # Zero-exit is not yet authoritative Final Semantic PASS.
+    assert receipt["returncode"] == 0
+    assert receipt["status"] == "PENDING_VALIDATION"
+    assert receipt.get("durable_result_status") != "FAILED"
     assert receipt["model_role"] == "vision.final"
     assert receipt["profile"] == "vision_final"
     assert receipt["effective_model"] == "gpt-6-luna"
@@ -55,3 +59,38 @@ def test_critic_runner_records_bound_model_receipt_without_provider_attestation(
     assert receipt["trace_id"] == "canary-trace"
     assert receipt["effective_model_source"] == "EXPLICIT_RUNTIME_BINDING"
     assert receipt["model_binding_source"] == "EPISODE_BOUND_POLICY"
+
+
+def test_failed_final_semantic_call_is_terminal_failed_not_pending(tmp_path, monkeypatch):
+    episode = tmp_path / "episodes" / "_canary" / "phase5a-test"
+    episode.mkdir(parents=True)
+    monkeypatch.setattr(codex_critic_runner, "prefix", lambda _codex: ["codex"])
+    monkeypatch.setattr(codex_critic_runner, "resolve_sandbox", lambda _sandbox: "workspace-write")
+    monkeypatch.setattr("runtime_trace.current", lambda _ep: {"run_id": "canary-run", "trace_id": "canary-trace"})
+
+    def fake_run(_cmd, **kwargs):
+        kwargs["stdout"].write('{"type":"error","message":"transport failed"}\n')
+        return SimpleNamespace(returncode=1, remote={})
+
+    monkeypatch.setattr("codex_user_runner.run_codex", fake_run)
+    result = codex_critic_runner.launch(
+        "TEST_ONLY review", codex="codex", root=tmp_path, timeout=10,
+        model="gpt-6-luna", reasoning_effort="high",
+        log_path=episode / "meta" / "critic-failed.jsonl",
+        model_execution_context={
+            "episode": episode,
+            "model_role": "vision.final",
+            "profile": "vision_final",
+            "model_policy_version": "test-frozen-policy",
+            "model_policy_sha256": "a" * 64,
+            "logical_asset_key": "canary/frame-01",
+            "generation_key": "canary/frame-01/attempt-1",
+            "attempt_index": 1,
+            "artifact_sha256": "b" * 64,
+        },
+    )
+    receipt_path = tmp_path / result.model_execution_receipt
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert receipt["returncode"] == 1
+    assert receipt["status"] == "FAILED"
+    assert receipt.get("durable_result_status") != "VALIDATED"
