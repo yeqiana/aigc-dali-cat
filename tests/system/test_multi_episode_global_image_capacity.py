@@ -17,6 +17,7 @@ if str(SYSTEM) not in sys.path:
 import global_image_capacity as capacity
 import image_worker_pool
 import batch_image_worker
+import codex_subscription_image as direct_image_cli
 
 
 CHILD = r"""
@@ -106,6 +107,7 @@ def test_count_must_be_positive_and_at_most_shared_machine_capacity(tmp_path):
 
 
 def test_single_frame_must_claim_before_any_worker_side_effect(tmp_path):
+
     holder = _child(tmp_path, "other_episode", capacity.CAPACITY)
     try:
         _ready(tmp_path, "other_episode", holder)
@@ -124,6 +126,24 @@ def test_single_frame_must_claim_before_any_worker_side_effect(tmp_path):
         if holder.stderr:
             holder.stderr.close()
 
+
+
+def test_direct_frame_cli_capacity_busy_never_reserves_attempt(tmp_path, monkeypatch, capsys):
+    argv = ["codex_subscription_image.py", "generate-for-frame", str(tmp_path),
+            "--frame", "01", "--prompt-file", str(tmp_path/"01.txt"),
+            "--output", str(tmp_path/"01.png"), "--log", str(tmp_path/"01.jsonl")]
+    monkeypatch.setattr(sys, "argv", argv)
+    with (
+        patch.object(direct_image_cli.runtime_timeout_policy, "resolve", return_value=120),
+        patch.object(capacity, "image_permits",
+                     side_effect=capacity.GlobalImageCapacityError("GLOBAL_IMAGE_CAPACITY_BUSY")),
+        patch.object(direct_image_cli.raw_candidate_budget, "claim") as claim,
+        patch.object(direct_image_cli, "generate_for_frame") as backend,
+    ):
+        assert direct_image_cli.main() == 2
+        claim.assert_not_called()
+        backend.assert_not_called()
+    assert "GLOBAL_IMAGE_CAPACITY_BUSY" in capsys.readouterr().out
 
 
 def test_native_batch_uses_weighted_shared_capacity_before_provider(tmp_path):
