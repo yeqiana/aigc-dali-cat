@@ -23,9 +23,11 @@ def now() -> str:
 
 
 def item_key(*, episode_id: str, logical_asset_key: str, generation_key: str,
-             artifact_sha256: str, review_kind: str) -> str:
+             artifact_sha256: str, review_kind: str,
+             production_revision_id: str | None = None) -> str:
     raw = "|".join((episode_id, logical_asset_key, generation_key,
-                    artifact_sha256.lower(), review_kind))
+                    artifact_sha256.lower(), review_kind,
+                    str(production_revision_id or "")))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
@@ -46,7 +48,8 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
     asset_key = logical_asset_identity.frame_asset_key(episode, frame)
     key = item_key(episode_id=episode_key, logical_asset_key=asset_key,
                    generation_key=generation_key, artifact_sha256=artifact_sha256,
-                   review_kind=review_kind)
+                   review_kind=review_kind,
+                   production_revision_id=source_item.get("production_revision_id"))
     rows = q.setdefault(QUEUE_KEY, [])
     existing = next((row for row in rows if row.get("review_key") == key), None)
     if existing:
@@ -56,6 +59,7 @@ def enqueue(q: dict, *, episode: Path, source_item: dict, artifact_path: str,
         "episode_id": episode_key,
         "logical_asset_key": asset_key,
         "generation_key": generation_key,
+        "production_revision_id": str(source_item.get("production_revision_id") or "") or None,
         "frame": frame,
         "attempt_index": int(source_item.get("attempt_index") or source_item.get("attempts") or 1),
         "artifact_path": str(artifact_path).replace("\\", "/"),
@@ -177,6 +181,7 @@ def _receipt_matches_item(item: dict, receipt: dict | None) -> bool:
         return False
     if item.get("review_kind", FAST_SCOUT) == FAST_SCOUT:
         return (receipt.get("generation_key") == item.get("generation_key")
+                and receipt.get("production_revision_id") == item.get("production_revision_id")
                 and str(receipt.get("asset_sha256") or "").lower()
                 == str(item.get("artifact_sha256") or "").lower()
                 and receipt.get("model_policy_sha256") == item.get("model_policy_sha256"))
@@ -189,6 +194,7 @@ def _receipt_matches_item(item: dict, receipt: dict | None) -> bool:
         and receipt.get("episode_id") == item.get("episode_id")
         and receipt.get("logical_asset_key") == item.get("logical_asset_key")
         and receipt.get("generation_key") == item.get("generation_key")
+        and receipt.get("production_revision_id") == item.get("production_revision_id")
         and attempt_matches
         and str(receipt.get("artifact_sha256") or "").lower() == str(item.get("artifact_sha256") or "").lower()
         and receipt.get("model_role") == item.get("model_role")
@@ -222,6 +228,7 @@ def _current_final_candidate_matches(ep: Path, item: dict) -> bool:
     return (
         frame.get("logical_asset_key") == item.get("logical_asset_key")
         and frame.get("generation_key") == item.get("generation_key")
+        and frame.get("production_revision_id") == item.get("production_revision_id")
         and str(frame.get("sha256") or "").lower() == str(item.get("artifact_sha256") or "").lower()
     )
 
@@ -348,6 +355,7 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
                 "review_item_id": str(item.get("review_key") or ""),
                 "logical_asset_key": item.get("logical_asset_key"),
                 "generation_key": item.get("generation_key"),
+                "production_revision_id": item.get("production_revision_id"),
                 "attempt_index": review_attempt,
                 "candidate_sha256": item.get("artifact_sha256"),
                 "frame_contract_sha256": item.get("frame_contract_sha256"),
@@ -372,6 +380,7 @@ def _final_semantic_receipt(ep: Path, item: dict, *, codex: str | None, timeout:
         "episode_id": item.get("episode_id"),
         "logical_asset_key": item.get("logical_asset_key"),
         "generation_key": item.get("generation_key"),
+        "production_revision_id": item.get("production_revision_id"),
         "attempt_index": review_attempt,
         "artifact_sha256": item.get("artifact_sha256"),
         "model_role": "vision.final",

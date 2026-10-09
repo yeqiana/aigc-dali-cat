@@ -183,6 +183,11 @@ def _reserve_impl(ep: str | Path, logical_asset_key: str, generation_context: di
             state = _row(connection, episode_id, key)
             if not state:
                 raise RuntimeError("GENERATION_ATTEMPT_STATE_UNAVAILABLE")
+            try:
+                import production_revision_authority
+                production_revision_authority.validate_dispatch_binding(connection, episode_id, context, key)
+            except production_revision_authority.ProductionRevisionDenied as exc:
+                raise AttemptDenied(str(exc)) from exc
             state = _expire_active(connection, episode_id, key, state, ep)
             consumed = int(state.get("ATTEMPTS_CONSUMED") or 0)
             if consumed >= MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET:
@@ -268,6 +273,12 @@ def reserve(ep: str | Path, logical_asset_key: str, generation_context: dict | N
 def _locked_lease(connection, lease: dict, fencing_token: int) -> tuple[dict, dict]:
     episode_id, key, index = str(lease["episode_id"]), str(lease["logical_asset_key"]), int(lease["attempt_index"])
     state = _row(connection, episode_id, key)
+    try:
+        import production_revision_authority
+        production_revision_authority.validate_dispatch_binding(
+            connection, episode_id, dict(lease.get("generation_context") or {}), key)
+    except production_revision_authority.ProductionRevisionDenied as exc:
+        raise AttemptDenied(str(exc)) from exc
     row = connection.query_one(
         "SELECT * FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s FOR UPDATE",
         (episode_id, key, index),
