@@ -38,14 +38,13 @@ def test_explicit_native_cli_override_is_allowed():
     row=_resolve(["codex","-c",f'openai_base_url="{runner.NATIVE_CODEX_BASE_URL}"',
                   "exec","-"],{})
     assert row["transport_route"]=="native_codex"
-    assert row["provider_args"]==[]
+    assert any("model_provider" in x for x in row["provider_args"])
 
 def test_non_model_codex_commands_not_routed():
     assert _resolve(["codex","login","status"],{"OPENAI_BASE_URL":"http://127.0.0.1:10100/v1"}) is None
 
 def test_legacy_routing_default_not_changed_yet():
-    with mock.patch.object(runner,"_opencodex_health",return_value=(False,"offline")):
-        row=runner.resolve_provider_transport(["codex","exec","-"],env={})
+    row=runner.resolve_provider_transport(["codex","exec","-"],env={})
     assert row["transport_route"]=="native_codex"
 
 def test_strict_forbidden_proxy_prevents_subprocess_launch():
@@ -200,3 +199,16 @@ def test_canonical_producer_rejects_proxy_without_external_opt_in():
         with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
             runner.execute_model_task(task)
         resolver.assert_not_called()
+
+def test_subscription_image_controller_rejects_api_http_cli_provider(monkeypatch):
+    import codex_subscription_image as image
+    monkeypatch.setenv("STORY_OS_IMAGE_PROVIDER_ROUTE", "api_http")
+    with pytest.raises(image.BackendError, match="API_KEY_DIRECT_IMAGE_EXECUTOR_REQUIRED"):
+        image.controller_args()
+
+def test_subscription_image_native_controller_no_longer_injects_custom_provider(monkeypatch):
+    import codex_subscription_image as image
+    monkeypatch.delenv("STORY_OS_IMAGE_PROVIDER_ROUTE", raising=False)
+    monkeypatch.setenv("OPENAI_BASE_URL", "http://127.0.0.1:10100/v1")
+    argv = image.controller_args()
+    assert not any("model_providers." in x or "storyos_http" in x for x in argv)

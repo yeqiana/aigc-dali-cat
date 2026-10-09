@@ -14,6 +14,9 @@ import image_provider_router
 import openai_images_provider
 
 class ProviderRuntimeTests(unittest.TestCase):
+    def test_no_automatic_api_to_other_provider_fallback(self):
+        assert image_provider_runtime.load()["openai_images_api"]["fallback_on_transport_failure"] is False
+
     def test_native_n_contract(self):
         cfg=image_provider_runtime.load()
         self.assertEqual(cfg["openai_images_api"]["native_n_max"],10)
@@ -71,6 +74,32 @@ class ProviderRuntimeTests(unittest.TestCase):
             log=root/"worker.jsonl"
             log.write_text("no explicit path needed for safe workdir fallback",encoding="utf-8")
             self.assertEqual(image_artifact_collector.recover_codex_generated(log,root),generated.resolve())
+
+
+    def test_official_api_image_endpoint_rejects_third_party_base_url(self):
+        with patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}):
+            with self.assertRaisesRegex(RuntimeError, "IMAGE_API_BASE_URL_FORBIDDEN"):
+                image_provider_runtime.base_url()
+        with patch.dict(os.environ, {"OPENAI_BASE_URL": "https://api.openai.com/v1"}):
+            self.assertEqual(image_provider_runtime.base_url(), "https://api.openai.com/v1")
+
+    def test_image_provider_redirect_and_http_error_do_not_expose_body(self):
+        from urllib.error import HTTPError
+        req = openai_images_provider.request.Request(
+            "https://api.openai.com/v1/images/generations", data=b"{}", method="POST")
+        with patch.object(openai_images_provider.request, "build_opener") as opener:
+            opener.return_value.open.side_effect = HTTPError(
+                req.full_url, 307, "secret backend details", {},
+                __import__("io").BytesIO(b"secret-model-response"))
+            with self.assertRaisesRegex(openai_images_provider.OpenAIImagesProviderError,
+                                       "OPENAI_IMAGE_HTTP_307") as caught:
+                openai_images_provider._request(req, 2)
+            self.assertNotIn("secret-model-response", str(caught.exception))
+            args = opener.call_args.args
+            self.assertTrue(any(isinstance(x, openai_images_provider.request.ProxyHandler)
+                                and x.proxies == {} for x in args))
+            self.assertTrue(any(isinstance(x, openai_images_provider._RejectRedirect)
+                                for x in args))
 
 class RouterTests(unittest.TestCase):
     def test_router_is_not_stage_authority(self):

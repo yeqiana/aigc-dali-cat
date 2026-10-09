@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 SOURCES = {
-    "episodes/_system/codex_user_runner.py": ("opencodex", "OPENAI_BASE_URL"),
-    "episodes/_system/codex_subscription_image.py": ("opencodex", "OPENAI_BASE_URL"),
+    "episodes/_system/codex_user_runner.py": ("_opencodex_health", "_opencodex_image_capability", "_opencodex_base_url", "\"transport_route\": \"opencodex\""),
+    "episodes/_system/codex_subscription_image.py": ("_codex_http_only_provider_args", "model_providers.storyos_http"),
     "episodes/_system/image_payload_transport.py": ("product_runtime_image", "openai_images_api"),
     "config/providers/image-provider-runtime.json": ("product_runtime_image", "fallback_on_transport_failure"),
     "config/storyos.yaml": ("webcodex", "PRODUCT_RUNTIME"),

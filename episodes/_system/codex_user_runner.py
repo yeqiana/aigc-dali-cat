@@ -49,7 +49,6 @@ import tempfile
 import threading
 import time
 import urllib.error
-import urllib.parse
 import urllib.request
 import uuid
 from contextlib import contextmanager
@@ -125,13 +124,8 @@ RUNNER_TOKEN_ENV = "STORY_OS_CODEX_RUNNER_TOKEN"
 EXPECTED_USER_ENV = "STORY_OS_CODEX_RUNNER_USER"
 MAX_TIMEOUT_ENV = "STORY_OS_CODEX_BRIDGE_MAX_TIMEOUT"
 
-# Provider transport is independent from the user-mode bridge transport above.
-# Auto mode prefers the local OpenCodex proxy only while its listener is healthy;
-# otherwise the same Codex CLI invocation is pinned back to the native ChatGPT
-# backend. Explicit provider/base-url config on the command line is never rewritten.
-DEFAULT_OPENCODEX_BASE_URL = "http://127.0.0.1:10100/v1"
+# Native Codex is the only permitted CLI model transport. API keys use a separate adapter.
 NATIVE_CODEX_BASE_URL = "https://chatgpt.com/backend-api/codex"
-PROVIDER_PROBE_TIMEOUT_SECONDS = 0.75
 PROVIDER_EVIDENCE_KEYS = (
     "transport_route", "transport_route_reason", "transport_base_url",
 )
@@ -310,213 +304,59 @@ def _config_overrides(argv: list[str]) -> list[str]:
     return values
 
 
-def _provider_override(argv: list[str]) -> tuple[bool, str | None]:
-    """Return whether the caller explicitly selected a provider and its base URL."""
-    explicit = False
-    base_url = None
-    for raw in _config_overrides(argv):
-        value = str(raw).strip()
-        key, sep, payload = value.partition("=")
-        if not sep:
-            continue
-        key = key.strip()
-        payload = payload.strip().strip("\"'")
-        if key == "model_provider" or (key.startswith("model_providers.") and key.endswith(".base_url")):
-            explicit = True
-        if key == "openai_base_url" or (key.startswith("model_providers.") and key.endswith(".base_url")):
-            base_url = payload or None
-            explicit = True
-    return explicit, base_url
+def resolve_provider_transport(
+    argv: list[str], *, env: dict | None = None, task_type: str = "generic_codex",
+    health_probe=None, image_capability_probe=None,
+) -> dict | None:
+    """Pin every Codex model execution to the native backend.
 
-
-def _is_opencodex_url(value: str | None) -> bool:
-    if not value:
-        return False
-    try:
-        parsed = urllib.parse.urlparse(str(value))
-        return (parsed.hostname or "").lower() in {"127.0.0.1", "localhost", "::1"} and int(parsed.port or 80) == 10100
-    except (TypeError, ValueError):
-        return False
-
-
-def _opencodex_base_url(env: dict | None = None) -> str:
-    source = env if env is not None else os.environ
-    configured = str(source.get("OPENAI_BASE_URL") or "").strip()
-    return configured.rstrip("/") if _is_opencodex_url(configured) else DEFAULT_OPENCODEX_BASE_URL
-
-
-def _opencodex_health(base_url: str, timeout: float = PROVIDER_PROBE_TIMEOUT_SECONDS) -> tuple[bool, str]:
-    """Probe only local reachability; never dispatch a model request or consume quota."""
-    try:
-        parsed = urllib.parse.urlparse(base_url)
-        host = parsed.hostname or "127.0.0.1"
-        port = int(parsed.port or (443 if parsed.scheme == "https" else 80))
-        with socket.create_connection((host, port), timeout=float(timeout)):
-            return True, "tcp_connected"
-    except Exception as exc:
-        return False, type(exc).__name__
-
-
-def _opencodex_image_capability(base_url: str, timeout: float = PROVIDER_PROBE_TIMEOUT_SECONDS) -> tuple[bool, str]:
-    """Prove the local proxy accepts the Responses WebSocket upgrade used by image_generation.
-
-    This sends only an HTTP Upgrade handshake and closes immediately after the
-    response. It never sends a model request, prompt, tool call, or generation
-    payload, so the probe cannot consume an image-generation attempt or model quota.
-    """
-    try:
-        parsed = urllib.parse.urlparse(base_url)
-        if parsed.scheme not in {"http", "ws", ""}:
-            return False, "unsupported_probe_scheme"
-        host = parsed.hostname or "127.0.0.1"
-        port = int(parsed.port or 80)
-        prefix = (parsed.path or "").rstrip("/")
-        path = f"{prefix}/responses" if prefix else "/v1/responses"
-        key = base64.b64encode(secrets.token_bytes(16)).decode("ascii")
-        request = (
-            f"GET {path} HTTP/1.1\r\n"
-            f"Host: {host}:{port}\r\n"
-            "Upgrade: websocket\r\n"
-            "Connection: Upgrade\r\n"
-            f"Sec-WebSocket-Key: {key}\r\n"
-            "Sec-WebSocket-Version: 13\r\n\r\n"
-        ).encode("ascii")
-        with socket.create_connection((host, port), timeout=float(timeout)) as sock:
-            sock.settimeout(float(timeout))
-            sock.sendall(request)
-            response = sock.recv(4096).decode("latin-1", "replace")
-        status_line = response.split("\r\n", 1)[0].strip()
-        if " 101 " in f" {status_line} ":
-            return True, "websocket_upgrade_101"
-        if " 426 " in f" {status_line} ":
-            return False, "websocket_upgrade_required_426"
-        return False, status_line or "empty_handshake_response"
-    except Exception as exc:
-        return False, type(exc).__name__
-
-
-def _route_from_explicit_base_url(base_url: str | None) -> str:
-    if _is_opencodex_url(base_url):
-        return "opencodex"
-    if str(base_url or "").rstrip("/") == NATIVE_CODEX_BASE_URL:
-        return "native_codex"
-    return "explicit_provider"
-
-
-def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task_type: str = "generic_codex", health_probe=None, image_capability_probe=None) -> dict | None:
-    """Resolve the Codex provider route for one model execution.
-
-    This is deliberately per-dispatch: an OpenCodex outage does not poison an
-    Episode, and a later dispatch can select it again after recovery. Commands
-    that do not execute a model (for example ``codex login status``) are left
-    alone. Caller-supplied provider config always wins.
+    Never auto-discover OpenCodex, never accept arbitrary provider endpoints.
+    Login and model-catalog diagnostics do not execute a model and are left
+    untouched. Probe arguments remain solely for call-site compatibility;
+    they are never invoked. API_KEY_DIRECT has its own adapter.
     """
     command = [str(x) for x in argv]
     if "exec" not in command:
         return None
-    explicit, explicit_base = _provider_override(command)
     source = dict(env) if env is not None else dict(os.environ)
-    if str(os.environ.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper() == "DUAL_ONLY":
-        source["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
-    strict_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
-    if strict_policy == "DUAL_ONLY":
-        if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
+    if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
+        raise CodexUserRunnerRejected(
+            "MODEL_TRANSPORT_FORBIDDEN", "non-native inherited Codex endpoint"
+        )
+    overrides = _config_overrides(command)
+    for token in command:
+        if token.startswith("--config="):
+            overrides.append(token[len("--config="):])
+        elif token.startswith("-c") and token != "-c" and "=" in token[2:]:
+            overrides.append(token[2:])
+    explicit_native = False
+    for item in overrides:
+        key, sep, raw_value = str(item).strip().partition("=")
+        if not sep:
+            continue
+        key = key.strip()
+        value = raw_value.strip().strip("\"'")
+        if key == "model_provider":
+            if value != "openai":
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "custom Codex model_provider"
+                )
+        elif key == "openai_base_url":
+            if value.rstrip("/") != NATIVE_CODEX_BASE_URL:
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "custom Codex base_url"
+                )
+            explicit_native = True
+        elif key.startswith("model_providers."):
             raise CodexUserRunnerRejected(
-                "MODEL_TRANSPORT_FORBIDDEN", "unapproved inherited Codex endpoint"
+                "MODEL_TRANSPORT_FORBIDDEN", "custom Codex provider configuration"
             )
-        # Codex -c has independent provider selectors. A native-looking base
-        # URL is not enough when model_provider points at another adapter.
-        strict_overrides = _config_overrides(command)
-        for item in command:
-            if item.startswith("--config="):
-                strict_overrides.append(item[len("--config="):])
-            elif item.startswith("-c") and item != "-c" and "=" in item[2:]:
-                strict_overrides.append(item[2:])
-        for raw_override in strict_overrides:
-            key, sep, raw_value = str(raw_override).partition("=")
-            if not sep:
-                continue
-            key = key.strip()
-            value = raw_value.strip().strip("\"'")
-            if key == "model_provider" and value != "openai":
-                raise CodexUserRunnerRejected(
-                    "MODEL_TRANSPORT_FORBIDDEN", "unapproved Codex model_provider"
-                )
-            if key == "openai_base_url" and value.rstrip("/") != NATIVE_CODEX_BASE_URL:
-                raise CodexUserRunnerRejected(
-                    "MODEL_TRANSPORT_FORBIDDEN", "unapproved Codex base URL"
-                )
-            if key.startswith("model_providers.") and (
-                key.endswith(".base_url") or key.endswith(".wire_api")
-                or key.endswith(".env_key") or key.endswith(".experimental_bearer_token")
-            ):
-                raise CodexUserRunnerRejected(
-                    "MODEL_TRANSPORT_FORBIDDEN", "custom Codex model provider override"
-                )
-        # The API_KEY_DIRECT path belongs to the official API adapter, never to
-        # Codex CLI. Fail closed before probing local OpenCodex/other proxies.
-        if explicit:
-            if str(explicit_base or "").rstrip("/") != NATIVE_CODEX_BASE_URL:
-                raise CodexUserRunnerRejected(
-                    "MODEL_TRANSPORT_FORBIDDEN", "Codex provider override is not native"
-                )
-            return {
-                "transport_route": "native_codex",
-                "transport_route_reason": "dual_only_explicit_native",
-                "transport_base_url": NATIVE_CODEX_BASE_URL,
-                "provider_args": [],
-            }
-        if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
-            raise CodexUserRunnerRejected(
-                "MODEL_TRANSPORT_FORBIDDEN", "non-native Codex base URL forbidden"
-            )
-        return {
-            "transport_route": "native_codex",
-            "transport_route_reason": "dual_only_native",
-            "transport_base_url": NATIVE_CODEX_BASE_URL,
-            "provider_args": [
-                "-c", 'model_provider="openai"',
-                "-c", f'openai_base_url="{NATIVE_CODEX_BASE_URL}"',
-            ],
-        }
-    if explicit:
-        return {
-            "transport_route": _route_from_explicit_base_url(explicit_base),
-            "transport_route_reason": "command_explicit_provider",
-            "transport_base_url": explicit_base,
-            "provider_args": [],
-        }
-    if env_base and not _is_opencodex_url(env_base):
-        return {
-            "transport_route": _route_from_explicit_base_url(env_base),
-            "transport_route_reason": "environment_explicit_provider",
-            "transport_base_url": env_base,
-            "provider_args": [],
-        }
-    opencodex_url = _opencodex_base_url(source)
-    probe = health_probe or _opencodex_health
-    healthy, _detail = probe(opencodex_url)
-    route_reason = "opencodex_unreachable"
-    if healthy and str(task_type) == "image":
-        capability_probe = image_capability_probe or _opencodex_image_capability
-        image_capable, _capability_detail = capability_probe(opencodex_url)
-        if not image_capable:
-            healthy = False
-            route_reason = "opencodex_image_capability_unavailable"
-    if healthy:
-        return {
-            "transport_route": "opencodex",
-            "transport_route_reason": "opencodex_image_capability_ok" if str(task_type) == "image" else "opencodex_health_ok",
-            "transport_base_url": opencodex_url,
-            "provider_args": [
-                "-c", 'model_provider="openai"',
-                "-c", f'openai_base_url="{opencodex_url}"',
-            ],
-        }
     return {
         "transport_route": "native_codex",
-        "transport_route_reason": route_reason,
+        "transport_route_reason": (
+            "native_only_explicit_native" if explicit_native else "native_only_policy"
+        ),
         "transport_base_url": NATIVE_CODEX_BASE_URL,
         "provider_args": [
             "-c", 'model_provider="openai"',

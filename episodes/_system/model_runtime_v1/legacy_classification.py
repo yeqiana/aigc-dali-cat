@@ -10,8 +10,8 @@ class LegacyRoute:
     production_route_retired: bool
 
 ROUTES={
-    "codex_user_runner": LegacyRoute("codex_user_runner.py", "DYNAMIC_OPENCODEX_FALLBACK",
-                                    "DISABLE_PRODUCTION_ROUTE_AFTER_CONTRACT_TESTS", False),
+    "codex_user_runner": LegacyRoute("codex_user_runner.py", "NATIVE_ONLY_CODEX_CLI",
+                                    "VALIDATE_ISOLATED_BRANCH_BEFORE_PRODUCTION_CUTOVER", False),
     "image_payload_transport": LegacyRoute("image_payload_transport.py", "IMAGE_PROVIDER_FANOUT",
                                            "MIGRATE_TO_APPROVED_TWO_TRANSPORTS", False),
     "image_provider_runtime": LegacyRoute("image_provider_runtime.py", "LEGACY_IMAGE_PROVIDER_POLICY",

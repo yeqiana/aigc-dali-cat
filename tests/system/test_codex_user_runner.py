@@ -544,64 +544,54 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         self.assertFalse((staged / "thread-sibling" / "other.png").exists())
 
     # ------------------------------------------------------------------
-    # Provider transport auto-routing is independent from bridge transport
+    # Native-only provider routing is independent from user-runner bridge.
     # ------------------------------------------------------------------
-    def test_provider_route_prefers_healthy_opencodex(self):
-        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}, clear=False), \
-                mock.patch.object(bridge, "_opencodex_health", return_value=(True, "tcp_connected")):
+    def test_default_model_route_native_without_probe(self):
+        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": ""}, clear=False), \
+                mock.patch.object(bridge.socket, "create_connection") as probe:
             route = bridge.resolve_provider_transport(["codex", "exec", "--json", "-"])
-        self.assertEqual(route["transport_route"], "opencodex")
-        self.assertEqual(route["transport_route_reason"], "opencodex_health_ok")
-        self.assertEqual(route["transport_base_url"], "http://127.0.0.1:10100/v1")
-        self.assertTrue(any("10100" in x for x in route["provider_args"]))
-
-    def test_image_route_requires_opencodex_websocket_capability(self):
-        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}, clear=False), \
-                mock.patch.object(bridge, "_opencodex_health", return_value=(True, "tcp_connected")), \
-                mock.patch.object(bridge, "_opencodex_image_capability", return_value=(False, "websocket_upgrade_required_426")):
-            route = bridge.resolve_provider_transport(["codex", "exec", "--json", "-"], task_type="image")
+        probe.assert_not_called()
         self.assertEqual(route["transport_route"], "native_codex")
-        self.assertEqual(route["transport_route_reason"], "opencodex_image_capability_unavailable")
-
-    def test_image_route_uses_opencodex_only_after_websocket_capability_passes(self):
-        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}, clear=False), \
-                mock.patch.object(bridge, "_opencodex_health", return_value=(True, "tcp_connected")), \
-                mock.patch.object(bridge, "_opencodex_image_capability", return_value=(True, "websocket_upgrade_101")):
-            route = bridge.resolve_provider_transport(["codex", "exec", "--json", "-"], task_type="image")
-        self.assertEqual(route["transport_route"], "opencodex")
-        self.assertEqual(route["transport_route_reason"], "opencodex_image_capability_ok")
-
-    def test_provider_route_falls_back_to_native_when_opencodex_is_down(self):
-        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}, clear=False), \
-                mock.patch.object(bridge, "_opencodex_health", return_value=(False, "ConnectionRefusedError")):
-            route = bridge.resolve_provider_transport(["codex", "exec", "--json", "-"])
-        self.assertEqual(route["transport_route"], "native_codex")
-        self.assertEqual(route["transport_route_reason"], "opencodex_unreachable")
+        self.assertEqual(route["transport_route_reason"], "native_only_policy")
         self.assertEqual(route["transport_base_url"], bridge.NATIVE_CODEX_BASE_URL)
-        self.assertTrue(any(bridge.NATIVE_CODEX_BASE_URL in x for x in route["provider_args"]))
 
-    def test_explicit_provider_command_is_not_rewritten(self):
+    def test_image_route_native_without_proxy_probe(self):
+        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": ""}, clear=False), \
+                mock.patch.object(bridge.socket, "create_connection") as probe:
+            route = bridge.resolve_provider_transport(
+                ["codex", "exec", "--json", "-"], task_type="image")
+        probe.assert_not_called()
+        self.assertEqual(route["transport_route"], "native_codex")
+
+    def test_legacy_opencodex_env_forbidden_in_default_mode(self):
+        with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}):
+            with self.assertRaisesRegex(bridge.CodexUserRunnerRejected, "MODEL_TRANSPORT_FORBIDDEN"):
+                bridge.resolve_provider_transport(["codex", "exec", "--json", "-"])
+
+    def test_custom_provider_config_forbidden_without_opt_in(self):
         command = [
             "codex", "-c", 'model_provider="custom"',
             "-c", 'model_providers.custom.base_url="http://provider.invalid/v1"',
             "exec", "--json", "-",
         ]
-        with mock.patch.object(bridge, "_opencodex_health") as probe:
-            route = bridge.resolve_provider_transport(command)
-        probe.assert_not_called()
-        self.assertEqual(route["transport_route"], "explicit_provider")
-        self.assertEqual(route["transport_route_reason"], "command_explicit_provider")
-        self.assertEqual(route["transport_base_url"], "http://provider.invalid/v1")
-        self.assertEqual(route["provider_args"], [])
+        with self.assertRaisesRegex(bridge.CodexUserRunnerRejected, "MODEL_TRANSPORT_FORBIDDEN"):
+            bridge.resolve_provider_transport(command, env={})
 
-    def test_run_codex_persists_provider_route_evidence(self):
+    def test_explicit_native_pins_official_provider(self):
+        route = bridge.resolve_provider_transport([
+            "codex", "-c", f'openai_base_url="{bridge.NATIVE_CODEX_BASE_URL}"',
+            "exec", "--json", "-"], env={})
+        self.assertEqual(route["transport_route"], "native_codex")
+        self.assertEqual(route["transport_route_reason"], "native_only_explicit_native")
+        self.assertTrue(any("model_provider" in x for x in route["provider_args"]))
+
+    def test_run_codex_persists_native_route_evidence(self):
         with self.transport("direct"), \
-                mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}, clear=False), \
-                mock.patch.object(bridge, "_opencodex_health", return_value=(False, "ConnectionRefusedError")), \
+                mock.patch.dict(os.environ, {"OPENAI_BASE_URL": ""}, clear=False), \
                 mock.patch.object(bridge.subprocess, "run", return_value=FakeCompleted(0, b"ok")) as run:
             completed = bridge.run_codex(["codex", "exec", "--json", "-"], input=b"x")
         self.assertEqual(completed.remote["transport_route"], "native_codex")
-        self.assertEqual(completed.remote["transport_route_reason"], "opencodex_unreachable")
+        self.assertEqual(completed.remote["transport_route_reason"], "native_only_policy")
         self.assertEqual(completed.remote["transport_base_url"], bridge.NATIVE_CODEX_BASE_URL)
         self.assertTrue(any(bridge.NATIVE_CODEX_BASE_URL in x for x in run.call_args.args[0]))
 

@@ -25,7 +25,10 @@ def base_url() -> str:
     cfg = load().get("selection") or {}
     env = str(cfg.get("base_url_env") or "OPENAI_BASE_URL")
     raw = os.environ.get(env) or cfg.get("default_base_url") or "https://api.openai.com/v1"
-    return str(raw).rstrip("/")
+    endpoint = str(raw).rstrip("/")
+    if endpoint != "https://api.openai.com/v1":
+        raise RuntimeError("IMAGE_API_BASE_URL_FORBIDDEN")
+    return endpoint
 
 def select_batch_provider(requested_count: int) -> dict:
     cfg = load()

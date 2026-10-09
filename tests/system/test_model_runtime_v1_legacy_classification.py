@@ -7,7 +7,7 @@ from model_runtime_v1 import legacy_classification as lc
 
 def test_proxy_must_be_retired_but_not_blindly_deleted():
     row=lc.classify("codex_user_runner")
-    assert row["route_kind"]=="DYNAMIC_OPENCODEX_FALLBACK"
+    assert row["route_kind"]=="NATIVE_ONLY_CODEX_CLI"
     assert row["can_delete"] is False
     assert row["production_route_retired"] is False
 
