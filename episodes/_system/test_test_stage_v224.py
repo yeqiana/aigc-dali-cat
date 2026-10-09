@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import subprocess,sys
+import os,subprocess,sys
 ROOT=Path(__file__).resolve().parents[2]
 SYSTEM=ROOT/"episodes"/"_system"
 def main():
@@ -10,6 +10,8 @@ def main():
         [sys.executable,str(SYSTEM/"codex_subscription_image.py"),"self-test"],
     ]
     for cmd in cmds:
+        if os.environ.get('STORYOS_CI_PYTHON_BOOTSTRAP') == '1':
+            cmd.insert(1, str(ROOT / 'scripts/ci_storyos_python.py'))
         r=subprocess.run(cmd,cwd=ROOT,text=True,capture_output=True,encoding="utf-8",errors="replace")
         print((r.stdout or "").strip())
         if r.returncode!=0:
