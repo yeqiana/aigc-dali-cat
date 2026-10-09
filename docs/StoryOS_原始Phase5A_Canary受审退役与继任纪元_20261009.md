@@ -24,6 +24,16 @@
 
 测试分组：15 + 17 + 17 + 17 = **66 passed**。前一轮新增根纪元合同测试等合计 68 项也通过。
 
+## 真实 TEST_ONLY 执行记录（2026-10-09）
+
+- 通过正式 `frame_semantic_review.reconcile_review_projection(write_report=True)` 生成根 Canary 的 `meta/review-projection-reconciliation.json`，分类为 `UNVERIFIED_REVIEW_PROJECTION`。证据明确包括 `Final Semantic Model Execution Receipt missing`、`Review Queue terminal SUCCESS receipt missing` 与 `frame review record missing`，**绝不当作 PASS**。
+- 独立测试容器 `127.0.0.1:3306/STORY_OS_RUNTIME` 官方 `_retirement_evidence` 实测 `ELIGIBLE`，原始 Attempt 消耗 1、剩余 1、Review UNKNOWN 一条，执行 0 个模型调用；临时 DB 账号已清理。
+- 官方 `retire_validation_epoch` **真实执行成功**：原始 `native-image-proof-20261008` 为 `validation_epoch=1`、`retired=true`、`retirement_reason=REVIEW_EXECUTION_RECEIPT_UNRECOVERABLE`，`generation_dispatch_eligible=false`，`review_dispatch_eligible=false`。旧 Attempt 状态、文件、模型执行证据和正式 Episode 均不改动。
+- 从唯一预留身份 `phase5a-validation-e2-b675f7bc66b6` 创建新 TEST_ONLY 工作区，调用官方 `claim_global_canary(...,allow_validation_epoch=True)`，返回 `validation_epoch=2`、`resumed=false`。新身份与原始根 Claim、退休文件及 append-only 纪元声明形成唯一继任链。
+- 官方 `phase5a_validation_input.prepare()` **真实执行返回 `READY`**；Frame01 状态 `queued`、新资产 `attempts_consumed=0`、`remaining_attempts=2`，`provider_calls=0`、`model_calls=0`、`stage_authority=false`。准备包括测试 Fixture、Frame Contract、Prompt Package 和 Production Queue，不代表实际 image tool capability 已证明。
+- 主工作区根纪元变更通过精确 Git patch 同步，原文件已校验备份；新增测试文件使用不覆盖模式复制，主工作区 22 条相关新测试通过。随后额外一个 Canary dry-run 测试调用遭平台安全检查阻止，**未执行且不计入通过**；不得绕过安全检查，也不得借此触发图片生成。
+- 正式《五十亩山地之后》的 `next_action` 仍为 `VERIFY_TECHNICAL_GENERATION_EVIDENCE`，Frame06/24 的两个旧 `OUTCOME_UNKNOWN` 保留，不进行自动重试。Runtime `HEALTHY`，OpenCodex 计划任务 `Disabled`。
+
 ## 运行边界
 
 这是 TEST_ONLY 的独立验证纪元替代途径，不是正式 Episode 的 Frame06/24 旧 `OUTCOME_UNKNOWN` 重试许可。不得直接修改 MySQL Attempt 终态，不得以废弃验证纪元冒充 Capability PASS；若真实退休条件不全，不能推进继任。
