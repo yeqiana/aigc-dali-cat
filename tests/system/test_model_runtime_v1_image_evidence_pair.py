@@ -13,7 +13,7 @@ def inspect(status="SUCCEEDED", source="mysql", receipt_sha=None,
         return {"logical_asset_key":"episode/frame/1","attempt_index":1,
                 "generation_key":attempt_generation_key,"status":status}
     def receipt(ep,path):
-        return {"source":source,"receipt_id":"receipt-1",
+        return {"source":source,"status":"FINALIZED","receipt_id":"receipt-1",
                 "payload":{"attempt_id":"attempt-1",
                            "raw_sha256":receipt_sha if receipt_sha is not None else digest}}
     return pair.correlate_image_evidence("/episode", logical_asset_key="episode/frame/1",
@@ -39,3 +39,15 @@ def test_compatibility_json_and_wrong_hash_not_sufficient():
 
 def test_wrong_generation_key_prevents_join():
     assert inspect(attempt_generation_key="other")["status"]=="ATTEMPT_NOT_VERIFIED"
+
+def test_recorded_receipt_does_not_join_as_finalized():
+    digest="a"*64
+    row=pair.correlate_image_evidence("/ep",logical_asset_key="ep/frame/1",attempt_index=1,
+        generation_key="g1",attempt_id="a1",artifact_sha256=digest,
+        legacy_receipt_path="receipt.json",
+        load_attempt=lambda *args:{"logical_asset_key":"ep/frame/1",
+          "attempt_index":1,"generation_key":"g1","status":"SUCCEEDED"},
+        load_receipt=lambda *args:{"source":"mysql","status":"RECORDED",
+          "receipt_id":"pr1","payload":{"attempt_id":"a1","raw_sha256":digest}})
+    assert row["status"]=="RECEIPT_NOT_VERIFIED"
+    assert row["may_publish"] is False

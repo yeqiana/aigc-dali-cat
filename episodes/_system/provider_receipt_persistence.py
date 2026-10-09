@@ -94,6 +94,7 @@ def load_by_path(ep: Path, legacy_path: str | Path) -> dict | None:
             if row:
                 return {
                     "source": "mysql",
+                    "status": row.get("status"),
                     "legacy_path": row.get("legacy_path") or rel,
                     "legacy_sha256": row.get("legacy_sha256"),
                     "payload": row["payload"],

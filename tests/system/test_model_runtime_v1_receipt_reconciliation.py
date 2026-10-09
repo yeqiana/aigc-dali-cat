@@ -17,7 +17,7 @@ def test_missing_or_compatibility_json_cannot_finalize():
     assert inspect({"source":"json","payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})["status"]=="PROVISIONAL_ONLY"
 
 def test_mysql_matching_receipt_is_evidence_not_review_pass():
-    r=inspect({"source":"mysql","receipt_id":"pr-1",
+    r=inspect({"source":"mysql","status":"FINALIZED","receipt_id":"pr-1",
                "payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})
     assert r["status"]=="RECEIPT_PRESENT"
     assert r["review_authority_granted"] is False
@@ -26,16 +26,23 @@ def test_mysql_matching_receipt_is_evidence_not_review_pass():
 def test_sha_or_attempt_mismatch_fails_closed():
     for value in ({"attempt_id":"att-2","raw_sha256":EXPECTED},
                   {"attempt_id":"att-1","raw_sha256":"b"*64}):
-        r=inspect({"source":"mysql","receipt_id":"pr-1","payload":value})
+        r=inspect({"source":"mysql","status":"FINALIZED","receipt_id":"pr-1","payload":value})
         assert r["status"]=="MISMATCH"
 
 def test_untrusted_receipt_payload_fails_closed():
-    assert inspect({"source":"mysql","payload":"PASS"})["status"]=="INVALID"
+    assert inspect({"source":"mysql","status":"FINALIZED","payload":"PASS"})["status"]=="INVALID"
     with pytest.raises(ValueError,match="EXPECTED_IDENTITY_INVALID"):
         rr.inspect_existing("/dummy","unused",expected_artifact_sha256="bad",
                             expected_attempt_id="att-1",load_receipt=lambda *_:None)
 
 def test_mysql_payload_without_receipt_id_is_not_evidence():
-    row=inspect({"source":"mysql","payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})
+    row=inspect({"source":"mysql","status":"FINALIZED","payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})
     assert row["status"]=="INVALID"
     assert row["can_finalize"] is False
+
+def test_only_finalized_mysql_receipt_may_join_attempt_evidence():
+    for state in ("RECORDED", "FAILED", None):
+        r=inspect({"source":"mysql","status":state,"receipt_id":"pr-1",
+                   "payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})
+        assert r["status"]=="NOT_FINALIZED"
+        assert r["review_authority_granted"] is False

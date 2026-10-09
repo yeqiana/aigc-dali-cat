@@ -185,3 +185,60 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
             "requested_model": plan["requested_model"], "reported_model": result.get("model"),
             "actual_model": None, "provider_response_id": result["id"],
             "output_sha256": hashlib.sha256(raw).hexdigest(), "output_bytes": len(raw)}
+
+def reconcile_openai_text(plan, *, response_id: str, authorized: bool = False,
+                          api_key: str | None = None, sender=None,
+                          timeout: int = 30) -> dict:
+    """Read-only GET for a known response ID; never repeats the original POST."""
+    import re
+    _require_minted(plan)
+    if plan.get("transport") != "API_KEY_DIRECT" or plan.get("modality") != "text_generation":
+        raise TransportDispatchBlocked("MODEL_TRANSPORT_MISMATCH")
+    if not authorized:
+        raise TransportDispatchBlocked("MODEL_RECONCILIATION_NOT_AUTHORIZED")
+    if not isinstance(response_id, str) or not re.fullmatch(r"resp_[A-Za-z0-9_-]{1,128}", response_id):
+        raise TransportDispatchBlocked("API_DIRECT_RESPONSE_ID_INVALID")
+    key = api_key if api_key is not None else os.environ.get("OPENAI_API_KEY")
+    if not isinstance(key, str) or not key.strip():
+        raise TransportDispatchBlocked("OPENAI_API_KEY_MISSING")
+    req = request.Request(
+        OPENAI_RESPONSES_URL + "/" + response_id, method="GET",
+        headers={"Authorization": "Bearer " + key},
+    )
+    try:
+        if sender is None:
+            raw = _post_official(req, timeout=timeout)
+        else:
+            raw = sender(req, timeout)
+        if not isinstance(raw, bytes) or len(raw) > MAX_API_RESPONSE_BYTES:
+            raise ValueError("oversized or invalid response")
+        result = json.loads(raw.decode("utf-8"))
+        if not isinstance(result, dict) or result.get("id") != response_id:
+            raise ValueError("response id mismatch")
+    except HTTPError as exc:
+        if exc.code in {301,302,303,307,308}:
+            raise TransportDispatchBlocked("API_DIRECT_REDIRECT_FORBIDDEN") from None
+        if exc.code in {400,401,403,404,429}:
+            raise TransportDispatchBlocked("API_DIRECT_LOOKUP_REJECTED") from None
+        raise TransportDispatchBlocked("API_DIRECT_LOOKUP_OUTCOME_UNKNOWN") from None
+    except Exception:
+        raise TransportDispatchBlocked("API_DIRECT_LOOKUP_OUTCOME_UNKNOWN") from None
+    if result.get("status") in {"queued","in_progress"}:
+        return {"status":"PENDING_RECONCILIATION","provider_response_id":response_id,
+                "actual_model":None}
+    if result.get("error") or result.get("status") != "completed":
+        return {"status":"RECONCILED_NON_SUCCESS","provider_response_id":response_id,
+                "actual_model":None}
+    outputs=result.get("output")
+    if not isinstance(outputs,list) or not any(
+        isinstance(item,dict) and item.get("type")=="message"
+        and isinstance(item.get("content"),list)
+        and any(isinstance(part,dict) and part.get("type")=="output_text"
+                and isinstance(part.get("text"),str) and part["text"].strip()
+                for part in item["content"])
+        for item in outputs
+    ):
+        raise TransportDispatchBlocked("API_DIRECT_OUTPUT_NOT_VERIFIED")
+    return {"status":"REQUIRES_VALIDATION","provider_response_id":response_id,
+            "actual_model":None,"reported_model":result.get("model"),
+            "output_sha256":hashlib.sha256(raw).hexdigest(),"output_bytes":len(raw)}

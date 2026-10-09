@@ -29,6 +29,9 @@ def inspect_existing(ep: str | Path, legacy_receipt_path: str | Path, *,
     if not isinstance(row, dict):
         return {"status":"INVALID","reason":"RECEIPT_PAYLOAD_INVALID",
                 "can_finalize":False,"review_authority_granted":False}
+    if observed.get("status") != "FINALIZED":
+        return {"status":"NOT_FINALIZED","reason":"MYSQL_RECEIPT_NOT_FINALIZED",
+                "can_finalize":False,"review_authority_granted":False}
     if not isinstance(observed.get("receipt_id"), str) or not observed["receipt_id"].strip():
         return {"status":"INVALID","reason":"MYSQL_RECEIPT_ID_MISSING",
                 "can_finalize":False,"review_authority_granted":False}

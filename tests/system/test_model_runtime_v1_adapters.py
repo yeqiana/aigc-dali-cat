@@ -236,3 +236,39 @@ def test_native_missing_runner_provenance_fails_closed():
     with pytest.raises(adapters.TransportDispatchBlocked, match="CODEX_NATIVE_PROVENANCE_UNVERIFIED"):
         adapters.dispatch_codex_text(plan, prompt="hello", authorized=True,
                                      runner=missing_provenance)
+
+def test_api_response_reconciliation_get_does_not_repeat_post():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    observed=[]
+    def sender(req,timeout):
+        observed.append((req.get_method(),req.full_url))
+        return json.dumps({"id":"resp_ABC-1","status":"completed",
+            "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode()
+    row=adapters.reconcile_openai_text(plan,response_id="resp_ABC-1",
+                                     authorized=True,api_key="fake",sender=sender)
+    assert observed==[("GET","https://api.openai.com/v1/responses/resp_ABC-1")]
+    assert row["status"]=="REQUIRES_VALIDATION"
+    assert row["actual_model"] is None
+
+def test_api_reconciliation_pending_is_safe_and_never_dispatches_new_model():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    row=adapters.reconcile_openai_text(plan,response_id="resp_ABC",
+        authorized=True,api_key="fake",
+        sender=lambda req,timeout:json.dumps({"id":"resp_ABC","status":"in_progress"}).encode())
+    assert row["status"]=="PENDING_RECONCILIATION"
+
+def test_api_reconciliation_cannot_use_injected_url_or_wrong_id():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    for bad in ("../../secret","https://evil.invalid","resp_ABC/../other"):
+        with pytest.raises(adapters.TransportDispatchBlocked,match="ID_INVALID"):
+            adapters.reconcile_openai_text(plan,response_id=bad,authorized=True,
+                api_key="fake",sender=lambda *args:pytest.fail("network"))
+    with pytest.raises(adapters.TransportDispatchBlocked,match="LOOKUP_OUTCOME_UNKNOWN"):
+        adapters.reconcile_openai_text(plan,response_id="resp_ABC",authorized=True,api_key="fake",
+            sender=lambda *args:json.dumps({"id":"resp_WRONG","status":"completed"}).encode())
+
+def test_api_reconciliation_requires_authorization():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    with pytest.raises(adapters.TransportDispatchBlocked,match="NOT_AUTHORIZED"):
+        adapters.reconcile_openai_text(plan,response_id="resp_ABC",api_key="fake",
+            sender=lambda *args:pytest.fail("network"))

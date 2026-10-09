@@ -53,6 +53,7 @@ import urllib.parse
 import urllib.request
 import uuid
 from contextlib import contextmanager
+import dataclasses
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -418,6 +419,10 @@ def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
     strict_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
     if strict_policy == "DUAL_ONLY":
+        if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
+            raise CodexUserRunnerRejected(
+                "MODEL_TRANSPORT_FORBIDDEN", "unapproved inherited Codex endpoint"
+            )
         # Codex -c has independent provider selectors. A native-looking base
         # URL is not enough when model_provider points at another adapter.
         strict_overrides = _config_overrides(command)
@@ -1104,8 +1109,28 @@ class ExecResult:
         return self.output.decode("utf-8", "replace")
 
 
+def _prepare_strict_codex_task(task: CodexTask) -> tuple[CodexTask, dict | None]:
+    """Enforce dual-only transport for low-level task callers as well.
+
+    Existing agents also invoke execute_task / execute_codex directly,
+    bypassing run_codex. Never mutate their task or issue an automatic fallback.
+    """
+    source = {**os.environ, **dict(task.env or {})}
+    if str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper() != "DUAL_ONLY":
+        return task, None
+    route = resolve_provider_transport(task.argv, env=source, task_type=task.task_type)
+    if route is None:
+        return task, None
+    if route.get("transport_route") != "native_codex":
+        raise CodexUserRunnerRejected("MODEL_TRANSPORT_FORBIDDEN", "strict task must use native Codex")
+    return dataclasses.replace(
+        task, argv=_insert_codex_args(list(task.argv), route.get("provider_args") or [])
+    ), route
+
+
 def execute_task(task: CodexTask) -> ExecResult:
     """Run one declarative Codex task in this (runner) process."""
+    task, strict_route = _prepare_strict_codex_task(task)
     if is_non_interactive():
         raise CodexUserRunnerWrongIdentity(
             "CODEX_USER_RUNNER_WRONG_IDENTITY",
@@ -1202,6 +1227,9 @@ def execute_task(task: CodexTask) -> ExecResult:
         "client": task.client,
         "input_images": input_images,
     }
+    if strict_route:
+        evidence.update({key: strict_route[key] for key in PROVIDER_EVIDENCE_KEYS
+                         if key in strict_route})
     if isolated_home is not None:
         evidence["generated_artifacts"] = _export_generated_artifacts(isolated_home, workdir)
         try:
@@ -1599,6 +1627,7 @@ def runner_health(*, timeout: float = HEALTH_TIMEOUT_SECONDS) -> dict:
 
 def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResult:
     """Send one task to the interactive-user runner."""
+    task, strict_route = _prepare_strict_codex_task(task)
     creds = client_credentials()
     endpoint = creds.get("endpoint") or read_endpoint(required=False)
     endpoint_user = endpoint.get("user")
@@ -1630,7 +1659,11 @@ def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResul
         exc.remote = {**exc.remote, **dict(body.get("evidence") or {}), "timed_out": True, "returncode": 124}
         raise exc
     output = base64.b64decode(body.get("output_base64") or "")
-    return ExecResult(returncode=int(body.get("returncode") or 0), output=output, remote=body.get("evidence") or {})
+    evidence = dict(body.get("evidence") or {})
+    if strict_route:
+        evidence.update({key: strict_route[key] for key in PROVIDER_EVIDENCE_KEYS
+                         if key in strict_route})
+    return ExecResult(returncode=int(body.get("returncode") or 0), output=output, remote=evidence)
 
 
 # ---------------------------------------------------------------------------

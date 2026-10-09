@@ -77,3 +77,50 @@ def test_inline_config_proxy_rejected_before_launch(value):
     argv=["codex",value,"-c",f'openai_base_url="{runner.NATIVE_CODEX_BASE_URL}"',"exec","-"]
     with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
         _resolve(argv,{})
+
+def test_lower_level_execute_codex_rejects_proxy_before_http():
+    task=runner.build_task(
+        ["codex","-c",'openai_base_url="http://127.0.0.1:10100/v1"',
+         "exec","-"], stdin_bytes=b"prompt",
+        env={"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY"})
+    with mock.patch.object(runner,"client_credentials") as creds:
+        with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+            runner.execute_codex(task)
+        creds.assert_not_called()
+
+def test_lower_level_execute_task_rejects_proxy_before_codex_resolution():
+    task=runner.build_task(["codex","-c",'model_provider="proxy"',"exec","-"],
+                           stdin_bytes=b"prompt",env={"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY"})
+    with mock.patch.object(runner,"resolve_codex") as resolution:
+        with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+            runner.execute_task(task)
+        resolution.assert_not_called()
+
+def test_lower_level_strict_task_pins_native_without_mutating_request():
+    task=runner.build_task(["codex","exec","--json","-"],
+                           stdin_bytes=b"prompt",env={"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY"})
+    original=list(task.argv)
+    prepared,route=runner._prepare_strict_codex_task(task)
+    assert prepared is not task
+    assert route["transport_route"]=="native_codex"
+    assert 'model_provider="openai"' in prepared.argv
+    assert any(runner.NATIVE_CODEX_BASE_URL in x for x in prepared.argv)
+    assert task.argv==original
+
+def test_lower_level_legacy_task_unchanged_when_not_opted_in():
+    task=runner.build_task(["codex","exec","-"],stdin_bytes=b"prompt",env={})
+    with mock.patch.dict(runner.os.environ,{"STORY_OS_MODEL_TRANSPORT_POLICY":""}):
+        prepared,route=runner._prepare_strict_codex_task(task)
+    assert prepared is task and route is None
+
+def test_low_level_strict_overrides_command_proxy_in_both_paths():
+    for suffix in ('model_provider="evil"','model_providers.evil.base_url="https://evil.invalid"'):
+        task=runner.build_task(["codex","-c",suffix,"exec","-"],
+                              env={"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY"})
+        with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+            runner._prepare_strict_codex_task(task)
+
+def test_explicit_native_cannot_mask_inherited_proxy_endpoint():
+    with pytest.raises(runner.CodexUserRunnerRejected, match="MODEL_TRANSPORT_FORBIDDEN"):
+        _resolve(["codex", "-c", f'openai_base_url="{runner.NATIVE_CODEX_BASE_URL}"',
+                  "exec", "-"], {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"})
