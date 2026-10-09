@@ -58,6 +58,9 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
         self.revision_connection_patch.start()
         self.temp = tempfile.TemporaryDirectory(prefix="storyos-generation-authority-")
         self.ep = Path(self.temp.name)
+        (self.ep / "meta").mkdir(parents=True, exist_ok=True)
+        (self.ep / "meta" / "release-manifest.json").write_text(
+            json.dumps({"release": {"body_frame_count": 25}}), encoding="utf-8")
         self.key = authority.frame_key(self.ep, 3)
 
     def tearDown(self):
@@ -99,11 +102,40 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
             review_payload["calibration"].append({**asset,
                 "checks":{check:True for check in visual_lock_v21.checks_for_version(visual_lock_v21.episode_version(self.ep))},
                 "issues":[]})
-        review_id=f"test-review-{row['revision_no']}"
+        review_id=(
+            f"test-review-{row['revision_no']}-"
+            f"{hashlib.sha256(row['episode_id'].encode('utf-8')).hexdigest()[:24]}"
+        )
         review_repo=MySqlReviewRecordRepository(self.connection_factory())
-        review_repo.upsert({"review_id":review_id,"episode_id":row["episode_id"],"review_type":"VISUAL_PROFILE",
-            "attempt_no":int(row["revision_no"]),"decision":"PASS","payload":review_payload,"reviewer_type":"TEST_ONLY"})
+        with review_repo.connection.transaction():
+            review_repo.upsert({"review_id":review_id,"episode_id":row["episode_id"],"review_type":"VISUAL_PROFILE",
+                "attempt_no":int(row["revision_no"]),"decision":"PASS","payload":review_payload,"reviewer_type":"TEST_ONLY"})
         review_repo.connection.close()
+        check = self.connection_factory()
+        stored = check.query_one(
+            "SELECT REVIEW_TYPE, DECISION, PAYLOAD FROM TB_REVIEW_RECORD "
+            "WHERE REVIEW_ID=%s AND EPISODE_ID=%s",
+            (review_id, row["episode_id"]))
+        if stored is None:
+            rows = check.query_all(
+                "SELECT REVIEW_ID, EPISODE_ID, REVIEW_TYPE, DECISION "
+                "FROM TB_REVIEW_RECORD ORDER BY CREATE_TIME DESC LIMIT 5")
+            raise AssertionError(
+                "LIVE_REVIEW_ROW_MISSING: "
+                + repr({"rows": rows, "expected_id": review_id,
+                        "expected_episode_id": row["episode_id"],
+                        "database": check.query_one("SELECT DATABASE() AS db")}))
+        check.close()
+        raw_payload = stored["PAYLOAD"]
+        if isinstance(raw_payload, str):
+            raw_payload = json.loads(raw_payload)
+        actual_sha = revision_authority._stored_payload_sha(raw_payload)
+        expected_sha = revision_authority._payload_sha(review_payload)
+        assert stored["REVIEW_TYPE"] == "VISUAL_PROFILE", (stored["REVIEW_TYPE"], stored["DECISION"])
+        assert stored["DECISION"] == "PASS"
+        assert actual_sha == expected_sha, (
+            "LIVE_REVIEW_STORED_PAYLOAD_SHA_MISMATCH",
+            actual_sha, expected_sha, str(raw_payload.get("projection_type") or "inline"))
         revision_authority.record_visual_lock_review(self.ep,revision_id=row["production_revision_id"],review_id=review_id,
             review_sha256=revision_authority._payload_sha(review_payload),payload=review_payload,assets=assets)
         if activate:

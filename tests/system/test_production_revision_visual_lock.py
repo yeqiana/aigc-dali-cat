@@ -123,3 +123,24 @@ def test_visual_lock_revision_freeze_rejects_drift_on_any_bound_frame(tmp_path):
                 "frame_contract_sha256": f"{f:064x}", "package_sha256": f"{(f + 100):064x}"}):
         with pytest.raises(ValueError, match="Prompt/Frame Contract SHA mismatch at frame 25"):
             visual_lock_v21.verify_revision_inputs(tmp_path, "revision-1")
+
+
+@pytest.mark.parametrize("count", [12, 32])
+def test_revision_visual_lock_freeze_accepts_other_frozen_episode_lengths(tmp_path, count):
+    prompt_root = tmp_path / "prompts" / "production"
+    prompt_root.mkdir(parents=True)
+    for frame in range(1, count + 1):
+        (prompt_root / f"{frame:02d}.txt").write_text(f"prompt {frame}", encoding="utf-8")
+    bindings = [{"frame": frame, "input_sha256": "a" * 64,
+                 "frame_contract_sha256": f"{frame:064x}",
+                 "prompt_sha256": f"{frame + 100:064x}"}
+                for frame in range(1, count + 1)]
+    with patch("production_revision_authority.load_frame_bindings", return_value=bindings), \
+            patch.object(visual_lock_v21.frame_contract, "frame_count", return_value=count), \
+            patch.object(visual_lock_v21.frame_contract, "compile_frame",
+                         side_effect=lambda _ep, frame, **_: {"contract_sha256": f"{frame:064x}"}), \
+            patch("prompt_package.compile_frame",
+                  side_effect=lambda _ep, frame, _path, **_: {
+                      "frame_contract_sha256": f"{frame:064x}",
+                      "package_sha256": f"{frame + 100:064x}"}):
+        assert len(visual_lock_v21.verify_revision_inputs(tmp_path, "revision-1")) == count

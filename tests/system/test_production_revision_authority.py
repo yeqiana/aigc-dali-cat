@@ -1,6 +1,12 @@
 from __future__ import annotations
 
 import pytest
+import sys
+from pathlib import Path
+
+SYSTEM = Path(__file__).resolve().parents[2] / 'episodes' / '_system'
+if str(SYSTEM) not in sys.path:
+    sys.path.insert(0, str(SYSTEM))
 
 import generation_attempt_authority
 import production_revision_authority as revision
@@ -35,8 +41,10 @@ def test_revision_snapshot_requires_exactly_25_ordered_unique_frame_bindings():
     assert len(snapshot["payload"]["frames"]) == 25
     assert snapshot["payload"]["frames"][0]["frame"] == 1
     assert snapshot["payload"]["frames"][-1]["frame"] == 25
-    with pytest.raises(ValueError, match="exactly 25"):
-        revision.canonical_snapshot(input_sha256="a" * 64, frames=_frames()[:-1])
+    with pytest.raises(ValueError, match="differs from frozen Episode contract"):
+        revision.canonical_snapshot(input_sha256="a" * 64, frames=_frames()[:-1], expected_frame_count=25)
+    with pytest.raises(ValueError, match="consecutively"):
+        revision.canonical_snapshot(input_sha256="a" * 64, frames=_frames()[1:])
 
 
 def test_revision_snapshot_is_canonical_and_hash_bound():
@@ -114,3 +122,47 @@ def test_revision_identity_does_not_partition_global_generation_attempt_key():
     second = generation_attempt_authority.stable_generation_key("episode-1", key, 1)
     assert first == second
     assert "revision" not in first
+
+
+@pytest.mark.parametrize("count", [1, 12, 20, 32, 64, 99])
+def test_revision_snapshot_supports_authoritative_episode_lengths(count):
+    bindings = _frames()[:count] if count <= 25 else [
+        {"frame": frame, "frame_contract_sha256": f"{frame:064x}",
+         "prompt_sha256": f"{frame + 100:064x}"} for frame in range(1, count + 1)]
+    snapshot = revision.canonical_snapshot(
+        input_sha256="a" * 64, frames=bindings, expected_frame_count=count)
+    assert len(snapshot["payload"]["frames"]) == count
+    assert snapshot["payload"]["frames"][-1]["frame"] == count
+    revision._require_complete_frame_rows(
+        [{"FRAME_NO": frame} for frame in range(1, count + 1)], list(range(1, count + 1)))
+    with pytest.raises(revision.ProductionRevisionDenied, match="INCOMPLETE"):
+        revision._require_complete_frame_rows(
+            [{"FRAME_NO": frame} for frame in range(1, count)], list(range(1, count + 1)))
+
+
+@pytest.mark.parametrize("error", [
+    ConnectionError("MySQL unavailable"),
+    PermissionError("MySQL denied"),
+    RuntimeError("lost connection to the Revision table"),
+    ValueError("malformed database response"),
+])
+@pytest.mark.parametrize("with_revision", [False, True])
+def test_revision_authority_query_failure_always_refuses_dispatch(error, with_revision):
+    class BrokenConnection:
+        def query_one(self, sql, params):
+            raise error
+
+    request = {"production_revision_id": "revision-2"} if with_revision else {}
+    with pytest.raises(revision.ProductionRevisionDenied, match="AUTHORITY_UNAVAILABLE"):
+        revision.validate_dispatch_binding(BrokenConnection(), "episode-1", request,
+                                           "episode-1/frame-01")
+
+
+def test_revision_frame_count_comes_from_episode_authority(monkeypatch, tmp_path):
+    import frame_contract
+
+    monkeypatch.setattr(frame_contract, "frame_count", lambda _ep: 12)
+    assert revision._expected_frame_numbers(tmp_path) == list(range(1, 13))
+    with pytest.raises(ValueError, match="frozen Episode contract"):
+        revision.canonical_snapshot(input_sha256="a" * 64, frames=_frames(),
+                                    expected_frame_count=12)
