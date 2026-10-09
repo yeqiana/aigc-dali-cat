@@ -201,6 +201,8 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
         # Unknown network outcome may have reached provider. No automatic retry.
         raise TransportDispatchBlocked("API_DIRECT_OUTCOME_UNKNOWN") from None
     status = result.get("status")
+    if result.get("error"):
+        raise TransportDispatchBlocked("API_DIRECT_RESPONSE_NOT_COMPLETE")
     if status in {"in_progress", "queued"}:
         return {"status": "PENDING_RECONCILIATION", "transport": "API_KEY_DIRECT",
                 "provider_response_id": result["id"], "actual_model": None}
@@ -210,6 +212,7 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
     return {"status": "REQUIRES_VALIDATION", "transport": "API_KEY_DIRECT",
             "output_text": output_text,
             "requested_model": plan["requested_model"], "reported_model": result.get("model"),
+            "reported_model_matches_request": (result["model"] == plan["requested_model"] if isinstance(result.get("model"),str) else None),
             "actual_model": None, "provider_response_id": result["id"],
             "output_sha256": hashlib.sha256(raw).hexdigest(), "output_bytes": len(raw)}
 
@@ -250,6 +253,9 @@ def reconcile_openai_text(plan, *, response_id: str, authorized: bool = False,
         raise TransportDispatchBlocked("API_DIRECT_LOOKUP_OUTCOME_UNKNOWN") from None
     except Exception:
         raise TransportDispatchBlocked("API_DIRECT_LOOKUP_OUTCOME_UNKNOWN") from None
+    if result.get("error"):
+        return {"status":"RECONCILED_NON_SUCCESS","provider_response_id":response_id,
+                "actual_model":None}
     if result.get("status") in {"queued","in_progress"}:
         return {"status":"PENDING_RECONCILIATION","provider_response_id":response_id,
                 "actual_model":None}

@@ -319,3 +319,28 @@ def test_real_model_transports_remain_disabled_until_explicit_cutover():
         with pytest.raises(adapters.TransportDispatchBlocked,match="REAL_DISPATCH_DISABLED"):
             adapters.reconcile_openai_text(api,response_id="resp_demo",authorized=True,
                                             api_key="not-a-real-key",sender=None)
+
+def test_post_error_is_not_pending_even_if_status_queued():
+    plan = _plan({**B,"transport":"API_KEY_DIRECT"})
+    with pytest.raises(adapters.TransportDispatchBlocked, match="RESPONSE_NOT_COMPLETE"):
+        adapters.dispatch_openai_text(plan, prompt="hello", authorized=True, api_key="fake",
+            sender=lambda req,timeout:json.dumps({"id":"resp_abc","status":"queued",
+                "error":{"code":"provider_rejected"}}).encode())
+
+def test_get_error_is_non_success_even_if_status_pending():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    result=adapters.reconcile_openai_text(plan,response_id="resp_abc",authorized=True,
+        api_key="fake",sender=lambda req,timeout:json.dumps({"id":"resp_abc",
+            "status":"in_progress","error":{"code":"provider_failed"}}).encode())
+    assert result["status"]=="RECONCILED_NON_SUCCESS"
+    assert result["actual_model"] is None
+
+def test_api_provider_model_identity_mismatch_is_not_marked_attested():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    result=adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,api_key="fake",
+        sender=lambda req,timeout:json.dumps({"id":"resp_abc","status":"completed",
+            "model":"unexpected-model",
+            "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode())
+    assert result["actual_model"] is None
+    assert result["reported_model_matches_request"] is False
+    assert result["status"]=="REQUIRES_VALIDATION"

@@ -51,3 +51,55 @@ def test_recorded_receipt_does_not_join_as_finalized():
           "receipt_id":"pr1","payload":{"attempt_id":"a1","raw_sha256":digest}})
     assert row["status"]=="RECEIPT_NOT_VERIFIED"
     assert row["may_publish"] is False
+
+def test_matching_disk_artifact_is_observed_not_review_approved(tmp_path):
+    import hashlib
+    root=tmp_path/"episode"
+    root.mkdir()
+    path=root/"publish.png"
+    path.write_bytes(b"real-artifact")
+    digest=hashlib.sha256(b"real-artifact").hexdigest()
+    row=pair.correlate_image_evidence(root,
+        logical_asset_key="episode/frame/1",attempt_index=1,generation_key="gen",
+        attempt_id="att",artifact_sha256=digest,legacy_receipt_path="receipt.json",
+        artifact_path="publish.png",load_attempt=lambda *args:{"logical_asset_key":"episode/frame/1",
+            "attempt_index":1,"generation_key":"gen","status":"SUCCEEDED"},
+        load_receipt=lambda *args:{"source":"mysql","status":"FINALIZED","receipt_id":"pr-1",
+            "payload":{"attempt_id":"att","raw_sha256":digest}})
+    assert row["status"]=="ATTEMPT_AND_RECEIPT_RECONCILED"
+    assert row["artifact_observed_sha256"]==digest
+    assert row["may_publish"] is False
+
+def test_tampered_disk_artifact_blocks_receipt_join(tmp_path):
+    import hashlib
+    root=tmp_path/"episode"
+    root.mkdir()
+    path=root/"publish.png"
+    path.write_bytes(b"tampered")
+    expected=hashlib.sha256(b"original").hexdigest()
+    row=pair.correlate_image_evidence(root,
+        logical_asset_key="episode/frame/1",attempt_index=1,generation_key="gen",
+        attempt_id="att",artifact_sha256=expected,legacy_receipt_path="receipt.json",
+        artifact_path=path,load_attempt=lambda *args:{"logical_asset_key":"episode/frame/1",
+            "attempt_index":1,"generation_key":"gen","status":"SUCCEEDED"},
+        load_receipt=lambda *args:{"source":"mysql","status":"FINALIZED","receipt_id":"pr-1",
+            "payload":{"attempt_id":"att","raw_sha256":expected}})
+    assert row["status"]=="ARTIFACT_NOT_VERIFIED"
+    assert row["may_retry"] is False
+
+def test_artifact_path_outside_episode_never_read(tmp_path):
+    import hashlib
+    root=tmp_path/"episode"
+    root.mkdir()
+    outside=tmp_path/"outside.png"
+    outside.write_bytes(b"outside")
+    expected=hashlib.sha256(b"outside").hexdigest()
+    row=pair.correlate_image_evidence(root,
+        logical_asset_key="episode/frame/1",attempt_index=1,generation_key="gen",
+        attempt_id="att",artifact_sha256=expected,legacy_receipt_path="receipt.json",
+        artifact_path=outside,load_attempt=lambda *args:{"logical_asset_key":"episode/frame/1",
+            "attempt_index":1,"generation_key":"gen","status":"SUCCEEDED"},
+        load_receipt=lambda *args:{"source":"mysql","status":"FINALIZED","receipt_id":"pr-1",
+            "payload":{"attempt_id":"att","raw_sha256":expected}})
+    assert row["status"]=="ARTIFACT_NOT_VERIFIED"
+    assert row["may_publish"] is False

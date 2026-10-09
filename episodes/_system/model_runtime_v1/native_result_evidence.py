@@ -43,6 +43,14 @@ def inspect(result) -> dict:
         return {"status":"UNVERIFIED","reason":"CODEX_EXECUTION_FAILED_EVENT","actual_model":None}
     if not any(kind in COMPLETED for kind in kinds):
         return {"status":"UNVERIFIED","reason":"CODEX_TERMINAL_EVENT_MISSING","actual_model":None}
+    if kinds.count("turn.completed") != 1:
+        return {"status":"UNVERIFIED","reason":"CODEX_TERMINAL_EVENT_AMBIGUOUS","actual_model":None}
+    if kinds[-1] != "turn.completed":
+        return {"status":"UNVERIFIED","reason":"CODEX_TERMINAL_EVENT_OUT_OF_ORDER","actual_model":None}
+    thread_ids={r.get("thread_id") for r in events if r.get("type")=="thread.started"
+                and isinstance(r.get("thread_id"),str) and r["thread_id"].strip()}
+    if len(thread_ids)>1:
+        return {"status":"UNVERIFIED","reason":"CODEX_THREAD_ID_AMBIGUOUS","actual_model":None}
     messages=[row["item"]["text"] for row in events
               if row.get("type")=="item.completed"
               and isinstance(row.get("item"),dict)
@@ -52,5 +60,6 @@ def inspect(result) -> dict:
     return {"status":"OBSERVED","reason":"NATIVE_CLI_COMPLETED",
             "transport":"CODEX_NATIVE","actual_model":None,
             "output_text":messages[-1] if messages else None,
+            "thread_id":next(iter(thread_ids),None),
             "capability_status":"UNKNOWN","tool_session_attested":False,
             "review_authority_granted":False}

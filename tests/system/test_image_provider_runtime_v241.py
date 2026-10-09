@@ -101,6 +101,41 @@ class ProviderRuntimeTests(unittest.TestCase):
             self.assertTrue(any(isinstance(x, openai_images_provider._RejectRedirect)
                                 for x in args))
 
+
+    def test_dual_only_auto_on_work_skips_product_image_host(self):
+        with patch.dict(os.environ, {"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY",
+                    "STORY_OS_IMAGE_RUNTIME":"AUTO","OPENAI_API_KEY":""},clear=False), \
+             patch.object(image_provider_runtime.runtime_router,"detect",return_value=("WORK",{})), \
+             patch.object(image_provider_runtime.runtime_router,"image_execution_runtime",
+                          return_value=("AUTO",{})):
+            row=image_provider_runtime.select_batch_provider(2)
+        self.assertEqual(row["provider"],"codex_subscription")
+        self.assertFalse(row["api_key_required"])
+
+    def test_dual_only_explicit_product_runtime_is_blocked(self):
+        with patch.dict(os.environ, {"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY"},clear=False), \
+             patch.object(image_provider_runtime.runtime_router,"detect",return_value=("WORK",{})), \
+             patch.object(image_provider_runtime.runtime_router,"image_execution_runtime",
+                          return_value=("PRODUCT_RUNTIME",{})):
+            with self.assertRaisesRegex(RuntimeError,"DUAL_ONLY_PRODUCT_IMAGE_FORBIDDEN"):
+                image_provider_runtime.select_batch_provider(1)
+
+    def test_dual_only_does_not_auto_dispatch_api_for_secret_alone(self):
+        with patch.dict(os.environ, {"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY",
+                    "OPENAI_API_KEY":"fake-test-secret"},clear=False), \
+             patch.object(image_provider_runtime.runtime_router,"detect",return_value=("WORK",{})), \
+             patch.object(image_provider_runtime.runtime_router,"image_execution_runtime",
+                          return_value=("AUTO",{})):
+            row=image_provider_runtime.select_batch_provider(1)
+        # Official API is disabled in config: key presence is never capability proof.
+        self.assertEqual(row["provider"],"codex_subscription")
+
+    def test_dual_only_unrecognized_image_runtime_blocks(self):
+        with patch.dict(os.environ,{"STORY_OS_MODEL_TRANSPORT_POLICY":"DUAL_ONLY"},clear=False), \
+             patch.object(image_provider_runtime.runtime_router,"image_execution_runtime",return_value=("UNKNOWN",{})):
+            with self.assertRaisesRegex(RuntimeError,"DUAL_ONLY_PRODUCT_IMAGE_FORBIDDEN"):
+                image_provider_runtime.select_batch_provider(1)
+
 class RouterTests(unittest.TestCase):
     def test_router_is_not_stage_authority(self):
         with patch.dict(os.environ,{"OPENAI_API_KEY":"test-not-a-real-key"},clear=False):

@@ -43,3 +43,31 @@ def test_native_jsonl_extracts_only_final_agent_message_without_model_attestatio
     row=ev.inspect(result(log))
     assert row["output_text"]=="final"
     assert row["tool_session_attested"] is False
+
+def test_completed_turn_must_be_final_event():
+    events=('{"type":"item.completed","item":{"type":"agent_message","text":"ok"}}\n'
+            '{"type":"turn.completed"}\n'
+            '{"type":"item.completed","item":{"type":"agent_message","text":"later"}}\n')
+    row=ev.inspect(result(events))
+    assert row["status"]=="UNVERIFIED"
+    assert row["reason"]=="CODEX_TERMINAL_EVENT_OUT_OF_ORDER"
+
+def test_duplicate_completion_event_is_not_single_execution_proof():
+    row=ev.inspect(result('{"type":"turn.completed"}\n{"type":"turn.completed"}\n'))
+    assert row["reason"]=="CODEX_TERMINAL_EVENT_AMBIGUOUS"
+
+def test_thread_id_can_be_observed_but_not_claimed_as_model_attestation():
+    log=('{"type":"thread.started","thread_id":"thread-1"}\n'
+         '{"type":"item.completed","item":{"type":"agent_message","text":"hello"}}\n'
+         '{"type":"turn.completed"}\n')
+    row=ev.inspect(result(log))
+    assert row["status"]=="OBSERVED"
+    assert row["thread_id"]=="thread-1"
+    assert row["actual_model"] is None
+    assert row["tool_session_attested"] is False
+
+def test_duplicate_thread_ids_fails_closed():
+    log=('{"type":"thread.started","thread_id":"a"}\n'
+         '{"type":"thread.started","thread_id":"b"}\n'
+         '{"type":"turn.completed"}\n')
+    assert ev.inspect(result(log))["reason"]=="CODEX_THREAD_ID_AMBIGUOUS"
