@@ -3494,6 +3494,7 @@ def _run_critic_uninstrumented(
             "attempt_index": attempt,
             "artifact_sha256": critic_asset.get("sha256"),
             "review_item_id": str((review_item or {}).get("review_key") or "") if isinstance(review_item, dict) else "",
+            "runner_request_id": str((review_item or {}).get("runner_request_id") or "") if isinstance(review_item, dict) else "",
             "defer_final_semantic_success": isinstance(review_item, dict),
         },
     )

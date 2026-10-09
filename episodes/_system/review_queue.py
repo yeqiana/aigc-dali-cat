@@ -465,6 +465,17 @@ def claim(q: dict, *, lease_seconds: int = 300, at: str | None = None) -> dict |
             status = "queued"
         if status != "queued":
             continue
+        if row.get("review_kind") == FINAL_SEMANTIC:
+            # The model call's request ID must exist in durable Queue Authority
+            # *before* the Runner may see a dispatch. An earlier claimed ID
+            # with no valid terminal receipt is never permission to redispatch.
+            existing_request = str(row.get("runner_request_id") or "")
+            if existing_request and not _receipt_matches_item(row, row.get("receipt")):
+                _quarantine_unverified_final_review(row)
+                continue
+            if not existing_request:
+                row["runner_request_id"] = uuid.uuid4().hex
+                row["review_dispatch_intent_at"] = current.isoformat()
         token = uuid.uuid4().hex
         row.update(status="running", claim_token=token,
                    lease_expires_at=(current + timedelta(seconds=lease_seconds)).isoformat())
@@ -670,9 +681,20 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                                         "model_policy_sha256": item["model_policy_sha256"]})
             except Exception as exc:
                 if item.get("review_kind") == FINAL_SEMANTIC:
-                    result = {"review_kind": FINAL_SEMANTIC, "status": "TECH_FAILED",
-                              "review_outcome": "TECH_FAILED", "issue_codes": [],
-                              "notes": f"Final semantic review technical failure: {exc}"}
+                    # The model may have completed before the local exception;
+                    # never create a synthetic terminal receipt or retry it.
+                    with scheduler_core.queue_transaction(ep):
+                        current_queue = scheduler_core.load_queue(ep)
+                        live_row = next((value for value in current_queue.get(QUEUE_KEY) or []
+                                         if value.get("review_key") == item["review_key"]), None)
+                        if (live_row is not None
+                                and live_row.get("claim_token") == item.get("claim_token")):
+                            _quarantine_unverified_final_review(live_row)
+                            live_row["interruption_error_class"] = type(exc).__name__
+                            scheduler_core.save_queue(ep, current_queue)
+                    changed.set()
+                    progress.set()
+                    return
                 else:
                     result = {"decision": "DEFER_TO_FINAL", "issue_codes": [],
                               "notes": f"Review technical failure: {exc}",
