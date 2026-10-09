@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+import generation_attempt_authority
 import raw_candidate_budget
 import runtime_atomic_store
 import runtime_command
@@ -35,15 +36,23 @@ class RuntimePerformanceV260Test(unittest.TestCase):
             self.assertGreaterEqual(calls["n"], 2)
 
     def test_candidate_commit_is_irreversible_by_review_failure(self):
+        # A provider-success lease is already terminal before any independent review.
+        # Use a simulated lease: CI must never reserve a real Generation Attempt.
         with tempfile.TemporaryDirectory(prefix="Story OS v260 ") as td:
             ep = Path(td)
-            ok, _ = raw_candidate_budget.claim(ep, 1, "repair", token="x")
-            self.assertTrue(ok)
-            ok, row = raw_candidate_budget.commit(ep, "x")
-            self.assertTrue(ok)
-            ok, row = raw_candidate_budget.release(ep, "x", "scout failure")
-            self.assertFalse(ok)
-            self.assertEqual(row["decision"], "COMMITTED_NOT_RELEASED")
+            lease = {"_phase": "DISPATCH_COMMITTED", "attempt_index": 1,
+                     "fencing_token": "fixture-only", "generation_key": "fixture-only"}
+            with (patch("episode_lifecycle.assert_writable"),
+                  patch.dict(raw_candidate_budget._ATTEMPT_LEASES, {"x": lease}, clear=True),
+                  patch.object(generation_attempt_authority, "succeed", return_value={"status": "SUCCEEDED"}) as succeed):
+                ok, row = raw_candidate_budget.commit(ep, "x")
+                self.assertTrue(ok)
+                self.assertEqual(row["decision"], "COMMITTED")
+                ok, row = raw_candidate_budget.release(ep, "x", "later review failure")
+                self.assertFalse(ok)
+                self.assertEqual(row["decision"], "LEASE_NOT_FOUND")
+                succeed.assert_called_once()
+            self.assertEqual(list(ep.iterdir()), [])
 
     def test_cross_shell_policy(self):
         with self.assertRaises(ValueError):
@@ -55,10 +64,12 @@ class RuntimePerformanceV260Test(unittest.TestCase):
         src = (ROOT / "episodes/_system/incremental_frame_review.py").read_text(encoding="utf-8-sig")
         self.assertNotIn('reasons.append("caption_changed_or_unbound")', src)
 
-    def test_generation_commit_precedes_scout(self):
+    def test_generation_commit_precedes_separate_review_lane(self):
         src = (ROOT / "episodes/_system/image_worker_pool.py").read_text(encoding="utf-8-sig")
         self.assertIn("raw_candidate_budget.commit", src)
-        self.assertLess(src.index("raw_candidate_budget.commit"), src.index("frame_scout.evaluate_candidate"))
+        self.assertIn("scout=None", src)
+        self.assertLess(src.index("raw_candidate_budget.commit"), src.index("scout=None"))
+        self.assertNotIn("frame_scout.evaluate_candidate", src)
 
     def test_release_uses_visual_freeze_and_caption_audit(self):
         src = (ROOT / "episodes/_system/release_preflight.py").read_text(encoding="utf-8-sig")
