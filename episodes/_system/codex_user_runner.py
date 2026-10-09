@@ -526,6 +526,44 @@ def read_task_result(request_id: str) -> dict:
     return _read_json(path) if path.is_file() else {}
 
 
+def _direct_result_output(stdout, completed) -> bytes:
+    """Read the exact merged Codex log bytes for a durable direct-mode receipt.
+
+    A task with an Authority-owned request ID may not dispatch if its output
+    would be invisible to recovery. The caller validated the sink first.
+    """
+    if stdout is subprocess.PIPE:
+        data = completed.stdout
+        return data.encode("utf-8") if isinstance(data, str) else bytes(data or b"")
+    stdout.flush()
+    return Path(stdout.name).read_bytes()
+
+
+def _persist_direct_result(request_id: str, completed, stdout, evidence: dict) -> None:
+    """Persist direct Codex output using the user-runner's exact result schema.
+
+    This is after the real process exit, never a declaration of semantic PASS.
+    The exclusive file creation prevents overwriting an earlier attempt's proof.
+    """
+    path = task_result_path(request_id)
+    output = _direct_result_output(stdout, completed)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {
+        "schema_version": 1,
+        "request_id": request_id,
+        "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "returncode": int(completed.returncode),
+        "output_sha256": hashlib.sha256(output).hexdigest(),
+        "output_bytes": len(output),
+        "output_base64": base64.b64encode(output).decode("ascii"),
+        "evidence": evidence,
+    }
+    with path.open("x", encoding="utf-8") as handle:
+        json.dump(data, handle, ensure_ascii=False)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
 def _pid_alive(pid) -> bool:
     try:
         pid = int(pid)
@@ -1681,6 +1719,22 @@ def run_codex(
         if provider_route and provider_route.get(key) is not None
     }
     if not bridge_required():
+        if request_id:
+            # Never blindly replay a direct Codex task with an existing ID.
+            # Exact stdout is needed for post-crash Review Authority checks.
+            result_path = task_result_path(str(request_id))
+            if result_path.exists():
+                raise CodexUserRunnerRejected(
+                    "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                    "a durable direct-mode result already exists for this request",
+                )
+            if stdout is not subprocess.PIPE and not (
+                    hasattr(stdout, "flush")
+                    and isinstance(getattr(stdout, "name", None), (str, os.PathLike))):
+                raise CodexUserRunnerRejected(
+                    "CODEX_USER_RUNNER_DURABLE_OUTPUT_REQUIRED",
+                    "direct Codex task with durable identity needs a log file or PIPE",
+                )
         started = time.monotonic()
         kwargs = {
             "input": input,
@@ -1723,8 +1777,11 @@ def run_codex(
             "returncode": int(completed.returncode),
             "task_type": str(task_type),
             "transport": "direct_codex_user_runner",
+            **({"request_id": str(request_id)} if request_id else {}),
             **route_evidence,
         }
+        if request_id:
+            _persist_direct_result(str(request_id), completed, stdout, completed.remote)
         return completed
     payload = input if input is not None else stdin_text
     # Normalize cmd.exe/python wrappers on the caller side before crossing the

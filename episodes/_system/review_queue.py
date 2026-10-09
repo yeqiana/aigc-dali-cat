@@ -470,7 +470,12 @@ def claim(q: dict, *, lease_seconds: int = 300, at: str | None = None) -> dict |
             # *before* the Runner may see a dispatch. An earlier claimed ID
             # with no valid terminal receipt is never permission to redispatch.
             existing_request = str(row.get("runner_request_id") or "")
-            if existing_request and not _receipt_matches_item(row, row.get("receipt")):
+            # A nonmatching receipt also proves there was a prior review
+            # outcome candidate; it cannot grant another paid model call,
+            # including rows created by older versions without a Runner ID.
+            has_prior_receipt = isinstance(row.get("receipt"), dict)
+            if (existing_request or has_prior_receipt) and not _receipt_matches_item(
+                    row, row.get("receipt")):
                 _quarantine_unverified_final_review(row)
                 continue
             if not existing_request:
@@ -757,10 +762,18 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                 await task
             changed.set()
             continue
-        if stop.is_set() and depth(scheduler_core.load_queue(ep)) == 0:
+        # An external worker may still own an unexpired review lease. Once
+        # this scheduler has no local tasks and no queued work to claim, stop
+        # without waiting indefinitely for that independent worker.
+        def has_queued_review() -> bool:
+            queue = scheduler_core.load_queue(ep)
+            return any(row.get("status") == "queued"
+                       for row in queue.get(QUEUE_KEY) or [])
+
+        if stop.is_set() and not has_queued_review():
             return
         changed.clear()
-        if stop.is_set() and depth(scheduler_core.load_queue(ep)) == 0:
+        if stop.is_set() and not has_queued_review():
             return
         await changed.wait()
 
