@@ -471,7 +471,31 @@ def runtime_dir() -> Path:
 
 
 def endpoint_path() -> Path:
-    return runtime_dir() / ENDPOINT_NAME
+    local = runtime_dir() / ENDPOINT_NAME
+    if local.is_file() or runtime_dir().resolve() != (ROOT / RUNTIME_REL).resolve():
+        return local
+    # Git worktrees must reuse the one interactive user's existing native
+    # Codex runner. Never copy its token into a worktree or discover an
+    # arbitrary endpoint outside the same canonical StoryOS repository.
+    git_pointer = ROOT / ".git"
+    if not git_pointer.is_file():
+        return local
+    try:
+        pointer = git_pointer.read_text(encoding="utf-8-sig").strip()
+        if not pointer.startswith("gitdir: "):
+            return local
+        gitdir = Path(pointer[len("gitdir: "):].strip())
+        if not gitdir.is_absolute():
+            gitdir = (ROOT / gitdir).resolve()
+        gitdir = gitdir.resolve()
+        if gitdir.parent.name != "worktrees" or gitdir.parent.parent.name != ".git":
+            return local
+        main_root = gitdir.parents[2].resolve()
+        ROOT.resolve().relative_to((main_root / ".worktrees").resolve())
+        shared = main_root / RUNTIME_REL / ENDPOINT_NAME
+        return shared if shared.is_file() else local
+    except (OSError, UnicodeError, ValueError):
+        return local
 
 
 def token_path() -> Path:
