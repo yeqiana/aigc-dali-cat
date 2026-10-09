@@ -5,10 +5,21 @@ from __future__ import annotations
 from typing import Callable, Any
 
 import generation_attempt_authority as authority
+import global_image_capacity
 
 
 def provider_generate(ep, lease: dict | None, fencing_token: int | None,
                       provider: str, call: Callable[[], Any]) -> Any:
+    # Enforce the machine cap at the only allowed real Provider dispatch edge,
+    # even for callers that bypass the normal image worker pool.
+    if not isinstance(lease, dict) or fencing_token is None:
+        raise authority.AttemptDenied("GENERATION_ATTEMPT_LEASE_REQUIRED")
+    with global_image_capacity.image_permits(1):
+        return _provider_generate_with_capacity(ep, lease, fencing_token, provider, call)
+
+
+def _provider_generate_with_capacity(ep, lease: dict | None, fencing_token: int | None,
+                                     provider: str, call: Callable[[], Any]) -> Any:
     """Commit a valid durable Lease before invoking the Provider exactly once."""
     if not isinstance(lease, dict) or fencing_token is None:
         raise authority.AttemptDenied("GENERATION_ATTEMPT_LEASE_REQUIRED")
@@ -31,6 +42,17 @@ def provider_generate(ep, lease: dict | None, fencing_token: int | None,
 
 def provider_generate_many(ep, leases: list[dict] | None, provider: str,
                            call: Callable[[], Any]) -> Any:
+    if not isinstance(leases, list) or not leases or any(not isinstance(x, dict) for x in leases):
+        raise authority.AttemptDenied("GENERATION_ATTEMPT_LEASE_REQUIRED")
+    keys = {(x.get("episode_id"), x.get("logical_asset_key")) for x in leases}
+    if len(keys) != len(leases):
+        raise authority.AttemptDenied("GENERATION_ATTEMPT_DUPLICATE_ASSET_IN_BATCH")
+    with global_image_capacity.image_permits(len(leases)):
+        return _provider_generate_many_with_capacity(ep, leases, provider, call)
+
+
+def _provider_generate_many_with_capacity(ep, leases: list[dict] | None, provider: str,
+                                          call: Callable[[], Any]) -> Any:
     """Guard one native batch dispatch with one valid lease per Logical Asset."""
     if not isinstance(leases, list) or not leases or any(not isinstance(x, dict) for x in leases):
         raise authority.AttemptDenied("GENERATION_ATTEMPT_LEASE_REQUIRED")

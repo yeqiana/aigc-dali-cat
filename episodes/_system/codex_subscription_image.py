@@ -3,7 +3,7 @@
 """Generate exactly one image via the current Codex ChatGPT sign-in, then normalize it to the Story OS canvas."""
 from __future__ import annotations
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 import base64
 import hashlib
@@ -31,6 +31,7 @@ import model_policy
 import provider_capability
 import image_artifact_collector
 import image_generation_gateway
+import global_image_capacity
 import image_payload_request
 import openai_images_provider
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
@@ -2030,6 +2031,20 @@ def main() -> int:
     low, high = runtime_timeout_policy.VALID_RANGE["image_worker_request"]
     if not low <= args.timeout <= high:
         raise SystemExit(f'timeout must be {low}..{high} seconds')
+    # The direct CLI is also a formal image entrypoint. Hold a permit before
+    # reserving ANY durable Generation Attempt, not just at Provider Gateway.
+    # The nested Gateway call reuses this slot in the same process/thread.
+    try:
+        guard = (global_image_capacity.image_permits(1)
+                 if args.cmd == 'generate-for-frame' else nullcontext())
+        with guard:
+            return _execute_cli_generation(args)
+    except global_image_capacity.GlobalImageCapacityError as exc:
+        print(json.dumps({'ok': False, 'error': str(exc)}, ensure_ascii=False))
+        return 2
+
+
+def _execute_cli_generation(args: argparse.Namespace) -> int:
     budget_token=None
     budget_reserved=False
     try:
@@ -2045,7 +2060,7 @@ def main() -> int:
             commit_ok,commit_row=raw_candidate_budget.commit(args.episode_dir,budget_token,reason="direct_cli_normalized_candidate_exists")
             if not commit_ok:
                 print(json.dumps({'ok':False,'error':'CANDIDATE_COMMIT_FAILED','budget':commit_row},ensure_ascii=False));return 4
-    except (BackendError, OSError, UnicodeError, SystemExit) as exc:
+    except (BackendError, OSError, UnicodeError, SystemExit, global_image_capacity.GlobalImageCapacityError) as exc:
         if budget_reserved:raw_candidate_budget.release(args.episode_dir,budget_token,reason="direct_generate_for_frame_exception")
         print(json.dumps({'ok': False, 'error': str(exc)}, ensure_ascii=False))
         return 2

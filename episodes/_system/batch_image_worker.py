@@ -21,6 +21,7 @@ import runtime_log_policy
 import runtime_trace
 import raw_candidate_budget  # STORY_OS_V2_5_1_1_FORCED_CANDIDATE_GATE
 import production_recovery
+import global_image_capacity
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -105,6 +106,20 @@ def _invoke_openai_native_n(ep:Path,contract:dict,prompt_text:str,refs:list[Path
     return persisted,round(time.monotonic()-started,2),evidence
 
 def execute_batch(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|None)->dict:
+    # Logical Codex batch fans out through image_worker_pool.execute, where
+    # each single-frame call independently acquires exactly one global permit.
+    # Native-n/API batch bypasses that path: reserve its entire image count
+    # atomically before the first Generation Attempt claim.
+    if not items:
+        raise BatchBackendError("empty batch")
+    route=image_provider_router.select_for_batch(len(items),has_references=bool(_shared_refs(items)))
+    if route["provider"]=="codex_subscription" and route.get("logical_batch"):
+        return _execute_batch_with_image_capacity(ep,contract,items,timeout,codex)
+    with global_image_capacity.image_permits(len(items)):
+        return _execute_batch_with_image_capacity(ep,contract,items,timeout,codex)
+
+
+def _execute_batch_with_image_capacity(ep:Path,contract:dict,items:list[dict],timeout:int,codex:str|None)->dict:
     if not items: raise BatchBackendError("empty batch")
     if __import__("image_payload_controller").separate_execution_required(ep):
         raise BatchBackendError("CANONICAL_CONTROLLER_PAYLOAD_SPLIT_REQUIRED")
