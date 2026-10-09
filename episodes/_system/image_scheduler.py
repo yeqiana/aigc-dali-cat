@@ -1073,6 +1073,17 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
 
 def _scheduler_terminal_rc(q:dict,*,has_block:bool,has_failure:bool,ep:Path|None=None)->int:
     final_statuses={str(x.get("status") or "") for x in q.get("items") or []}
+    review_rows=q.get(review_queue.QUEUE_KEY) or []
+    # Image generation can finish while Final Semantic is quarantined or
+    # another worker owns its review lease. A successful image run must not
+    # report the whole scheduler as successful until the Review lane closes.
+    if any(row.get("review_kind")==review_queue.FINAL_SEMANTIC
+           and row.get("status")=="blocked" for row in review_rows):
+        return 22
+    if any(row.get("status")=="running" for row in review_rows):
+        return 24
+    if any(row.get("status")=="queued" for row in review_rows):
+        return 20
     if has_block and ep is not None and not ready_items(ep,q)[0]:
         return 22
     if "tech_failed" in final_statuses:

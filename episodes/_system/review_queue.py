@@ -598,6 +598,23 @@ def telemetry(ep: Path, event: str, item: dict, *, queue_depth: int) -> None:
         pass
 
 
+def _claim_and_persist_under_lock(ep: Path, scheduler_core) -> dict | None:
+    """Persist claim-side quarantine even when claim() returns no runnable task."""
+    q = scheduler_core.load_queue(ep)
+    def fingerprint() -> tuple:
+        return tuple(
+            (r.get("review_key"), r.get("status"), r.get("claim_token"),
+             r.get("lease_expires_at"), r.get("runner_request_id"),
+             r.get("technical_failure_code"), r.get("recovery_action"))
+            for r in q.get(QUEUE_KEY) or []
+        )
+    before = fingerprint()
+    row = claim(q)
+    if row is not None or before != fingerprint():
+        scheduler_core.save_queue(ep, q)
+    return row
+
+
 def _claim_next_lane_item(ep: Path, scheduler_core) -> dict | None:
     """Claim work while serialized with Phase5A epoch retirement.
 
@@ -616,17 +633,11 @@ def _claim_next_lane_item(ep: Path, scheduler_core) -> dict | None:
         ):
             phase5a_collaborative_canary.assert_validation_epoch_review_dispatch_eligible(ep)
             with scheduler_core.queue_transaction(ep):
-                queue = scheduler_core.load_queue(ep)
-                row = claim(queue)
-                if row:
-                    scheduler_core.save_queue(ep, queue)
+                row = _claim_and_persist_under_lock(ep, scheduler_core)
             return row
 
     with scheduler_core.queue_transaction(ep):
-        queue = scheduler_core.load_queue(ep)
-        row = claim(queue)
-        if row:
-            scheduler_core.save_queue(ep, queue)
+        row = _claim_and_persist_under_lock(ep, scheduler_core)
     return row
 
 

@@ -558,10 +558,19 @@ def _persist_direct_result(request_id: str, completed, stdout, evidence: dict) -
         "output_base64": base64.b64encode(output).decode("ascii"),
         "evidence": evidence,
     }
-    with path.open("x", encoding="utf-8") as handle:
-        json.dump(data, handle, ensure_ascii=False)
-        handle.flush()
-        os.fsync(handle.fileno())
+    # Create+fsync a complete temp file, then publish the immutable result
+    # by hard-linking it without replacing any existing request ID. Writing
+    # directly with open("x") could expose truncated JSON after a crash.
+    fd, temporary = tempfile.mkstemp(
+        prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(data, handle, ensure_ascii=False)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(temporary, path)  # atomic NO-REPLACE; errors fail closed
+    finally:
+        Path(temporary).unlink(missing_ok=True)
 
 
 def _pid_alive(pid) -> bool:
