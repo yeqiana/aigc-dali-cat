@@ -29,3 +29,19 @@
 - 所有新增守卫代码与复制脚本位于独立集成工作树 `storyos-main-integration-20261009`，不覆盖仍有大量未提交并发修改的主工作区。
 - 按风险边界后续工作：核对 Frame06/24 各自的 Provider Model Receipt、日志、历史 RAW；优先判断 Frame24 是否允许有凭证的非再生技术恢复。随后证明原生 Codex 图片能力、检查 Visual Lock / Reviewer 绑定，再针对经 Authorize 的缺失帧继续生成。
 - 保留用户已调校的正式图片和发布素材；无视频生成功能，不引入 OpenCodex 代理。
+
+## 4. 2026-10-09 本地 Runtime 数据库正式切换与复核
+
+- 再次进行 27 张表、4,380 行的主键排序摘要核验时，只发现 `TB_RUNTIME_REVIEW_REQUEST` 存在变化：113 行不增不减，仅 2 条 `story-semantic-critic-shadow` 在目标库已经由 `AWAITING_PRODUCT_REVIEW` 合法推进到 `SUPERSEDED`。这是之前完成的产品审核过期清理，**不是数据复制缺失或 Runtime Worker 写入分叉**。
+- 兼容审计脚本新增只读 `verify --allow-shadow-advance`：必须保证其他 26 张 V2 表完全一致，Shadow 的 2 行只允许 `STATUS/PAYLOAD/UPDATE_TIME` 及受限的派生投影字段变化、身份不变、`AWAITING_PRODUCT_REVIEW -> SUPERSEDED`；更多、更少或无关差异均 fail closed。实际结果：`SOURCE_TARGET_VERIFIED_WITH_AUTHORIZED_SHADOW_ADVANCES`，27 表、4,380 行、2 条已授权 Shadow 变更，其他表哈希一致。
+- Windows 计划任务 `StoryOSRuntime` 由 SYSTEM 管理。操作前核查无在途正式图片派发任务，完整备份 `.storyos/runtime-launcher/runtime.env` 并校验备份 SHA-256。先停止计划任务并确认 Launcher/Worker/监控子进程都退出，再原子切换唯一 `STORYOS_MYSQL_DB` 值为 `STORY_OS_RUNTIME`，随后重新启动原计划任务。
+- 首次尝试因 `File.Replace` 备份路径参数无效而在写入前安全中止，并从原配置重新启动；随后通过无敏感数据的临时文件测试原子替换，清理临时配置文件，重新完成停机切换。
+- **切换后实测**：`StoryOSRuntime=Running`，新 Worker PID 为 `2996`，实时 Worker 心跳 `HEALTHY` 且错误数 0；默认 MySQL 连接精确指向 `127.0.0.1:3307/STORY_OS_RUNTIME`，数据库健康检查成功。
+- 完整保留源小写数据库。正式新库中依旧有 5 条 Generation Attempt、2 条 `OUTCOME_UNKNOWN` 与 2 条 `SUPERSEDED` Shadow 审核，没有新增图片 Attempt，也没有自动恢复旧未知调用。
+- **隔离 TEST_ONLY**：Phase5A Capability Canary 的守卫严格要求 `127.0.0.1:3306/story_os_runtime`；不得把正式 Runtime 的 3307 大写库改回 3306 或将正式 Episode 作为 Canary。
+
+## 5. 原生 Codex Capability 诊断进展
+
+- 真实原生 Runner 在 Windows 用户 Session 1 中健康、签入、可见模型目录。普通登录探测保持 `codex_auth_probe=30` 秒，仅图片工具可见性纯文本探测使用独立 `image_tool_visibility_probe=120` 秒超时。
+- 受限实测返回 `transport_probe_status=PASS`，`session_start=PASS`，`image_generation_visible_secondary=true`，`status=READY_FOR_REAL_CAPABILITY_PROOF`，`tool_visibility_evidence_level=SECONDARY_ATTESTATION`；**不是图片生成成功的 Authority**。
+- `tool_registry_attestation=UNAVAILABLE`，`tool_capability_state=UNKNOWN`；没有生成正式图片，也没有预占或消耗 Attempt。下一阶段只有符合固定身份和数据库隔离的 TEST_ONLY Canary 可尝试真实 Provider 工具能力证明，不得从 Secondary 直接跳过门禁。
