@@ -24,7 +24,7 @@ def _plan(binding):
     return adapters.plan_text(binding, proof=_proof(binding), trusted_verify=lambda _: True)
 
 
-def _native_success(argv, *, output=b'{"type":"turn.completed"}\n'):
+def _native_success(argv, *, output=b'{"type":"item.completed","item":{"type":"agent_message","text":"ok"}}\n{"type":"turn.completed"}\n'):
     result = subprocess.CompletedProcess(argv, 0, stdout=output, stderr=b'')
     result.remote = {"transport_route": "native_codex",
                      "transport_base_url": adapters.NATIVE_CODEX_BASE,
@@ -54,6 +54,7 @@ def test_codex_native_explicit_pinning_and_env_clearing():
     assert kw["task_type"] == "generic_codex"
     assert result["status"] == "REQUIRES_VALIDATION"
     assert result["actual_model"] is None
+    assert result["output_text"] == "ok"
 
 def test_no_calls_before_authorization():
     plan = _plan(B)
@@ -114,7 +115,7 @@ def test_native_uses_input_for_both_direct_and_bridge_modes():
     seen = []
     def stub(argv, **kw):
         seen.append(kw)
-        return _native_success(argv, output='{"type":"turn.completed"}\n')
+        return _native_success(argv)
     adapters.dispatch_codex_text(plan, prompt="你好，世界", authorized=True, runner=stub)
     assert seen[0]["input"] == "你好，世界"
     assert seen[0]["text"] is True
@@ -179,8 +180,7 @@ def test_codex_native_rejects_proven_wrong_upstream_route():
 def test_codex_remote_completion_is_only_observed_not_model_attested():
     plan = _plan(B)
     def stub(argv, **kw):
-        result=subprocess.CompletedProcess(argv, 0, stdout=b'{"type":"turn.completed"}\n', stderr=b'')
-        result.remote={"transport_route":"native_codex", "transport_base_url":adapters.NATIVE_CODEX_BASE, "timed_out":False}
+        result=_native_success(argv)
         return result
     row=adapters.dispatch_codex_text(plan,prompt="hello",authorized=True,runner=stub)
     assert row["native_runtime_evidence"]["status"]=="OBSERVED"
@@ -272,3 +272,27 @@ def test_api_reconciliation_requires_authorization():
     with pytest.raises(adapters.TransportDispatchBlocked,match="NOT_AUTHORIZED"):
         adapters.reconcile_openai_text(plan,response_id="resp_ABC",api_key="fake",
             sender=lambda *args:pytest.fail("network"))
+
+def test_native_terminal_event_without_text_cannot_complete_text_contract():
+    plan=_plan(B)
+    with pytest.raises(adapters.TransportDispatchBlocked,match="CODEX_NATIVE_TEXT_OUTPUT_MISSING"):
+        adapters.dispatch_codex_text(plan,prompt="hello",authorized=True,
+            runner=lambda argv,**kw:_native_success(argv,output=b'{"type":"turn.completed"}\n'))
+
+def test_api_text_output_is_returned_for_downstream_validation():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    payload={"id":"resp-test","status":"completed","output":[
+       {"type":"message","content":[{"type":"output_text","text":"第一段"},
+                                    {"type":"output_text","text":"第二段"}]}]}
+    row=adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,api_key="fake",
+        sender=lambda req,timeout:json.dumps(payload,ensure_ascii=False).encode())
+    assert row["output_text"]=="第一段\n第二段"
+    assert row["status"]=="REQUIRES_VALIDATION"
+
+def test_api_get_reconciliation_returns_original_text_not_new_inference():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    row=adapters.reconcile_openai_text(plan,response_id="resp_abc",
+        authorized=True,api_key="fake",
+        sender=lambda req,timeout:json.dumps({"id":"resp_abc","status":"completed",
+           "output":[{"type":"message","content":[{"type":"output_text","text":"already done"}]}]}).encode())
+    assert row["output_text"]=="already done"

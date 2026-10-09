@@ -124,3 +124,35 @@ def test_explicit_native_cannot_mask_inherited_proxy_endpoint():
     with pytest.raises(runner.CodexUserRunnerRejected, match="MODEL_TRANSPORT_FORBIDDEN"):
         _resolve(["codex", "-c", f'openai_base_url="{runner.NATIVE_CODEX_BASE_URL}"',
                   "exec", "-"], {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"})
+
+def test_global_dual_only_policy_cannot_be_disabled_by_run_codex_env():
+    with mock.patch.dict(runner.os.environ, {"STORY_OS_MODEL_TRANSPORT_POLICY": "DUAL_ONLY"}):
+        with mock.patch.object(runner.subprocess,"run") as child:
+            with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+                runner.run_codex(["codex", "exec", "-"],
+                    env={"STORY_OS_MODEL_TRANSPORT_POLICY": "",
+                         "OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"},
+                    input="hello",timeout=1)
+            child.assert_not_called()
+
+def test_global_dual_only_policy_cannot_be_disabled_by_task_env():
+    task=runner.build_task(["codex","-c",'model_provider="proxy"',"exec","-"],
+        env={"STORY_OS_MODEL_TRANSPORT_POLICY": ""})
+    with mock.patch.dict(runner.os.environ, {"STORY_OS_MODEL_TRANSPORT_POLICY": "DUAL_ONLY"}):
+        with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+            runner._prepare_strict_codex_task(task)
+
+def test_canonical_model_task_preserves_direct_and_bridge_routing():
+    task=runner.build_task(["codex","exec","-"],stdin_bytes=b"test",env={})
+    with mock.patch.object(runner,"bridge_required",return_value=False), mock.patch.object(
+            runner,"execute_task",return_value="direct") as direct, mock.patch.object(
+            runner,"execute_codex") as bridge:
+        assert runner.execute_model_task(task)=="direct"
+        direct.assert_called_once_with(task)
+        bridge.assert_not_called()
+    with mock.patch.object(runner,"bridge_required",return_value=True), mock.patch.object(
+            runner,"execute_task") as direct, mock.patch.object(
+            runner,"execute_codex",return_value="bridge") as bridge:
+        assert runner.execute_model_task(task)=="bridge"
+        bridge.assert_called_once_with(task)
+        direct.assert_not_called()

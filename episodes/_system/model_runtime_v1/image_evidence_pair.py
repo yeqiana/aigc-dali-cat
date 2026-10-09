@@ -10,6 +10,7 @@ from .receipt_reconciliation import inspect_existing
 def correlate_image_evidence(ep, *, logical_asset_key: str, attempt_index: int,
                              generation_key: str, attempt_id: str,
                              artifact_sha256: str, legacy_receipt_path,
+                             expected_transport_route: str | None = None,
                              load_attempt=None, load_receipt=None) -> dict:
     attempt = inspect_attempt(
         ep, logical_asset_key, attempt_index,
@@ -20,7 +21,8 @@ def correlate_image_evidence(ep, *, logical_asset_key: str, attempt_index: int,
                 "may_retry": False, "may_publish": False, "review_authority_granted": False}
     receipt = inspect_existing(
         ep, legacy_receipt_path, expected_artifact_sha256=artifact_sha256,
-        expected_attempt_id=attempt_id, load_receipt=load_receipt
+        expected_attempt_id=attempt_id, expected_transport_route=expected_transport_route,
+        load_receipt=load_receipt
     )
     if receipt["status"] != "RECEIPT_PRESENT":
         return {"status": "RECEIPT_NOT_VERIFIED", "receipt_state": receipt["status"],

@@ -35,3 +35,11 @@ def test_failed_or_unfinished_event_cannot_be_observed_as_completion():
 def test_timeout_or_nonzero_not_trusted():
     assert ev.inspect(result('{"type":"turn.completed"}',timeout=True))["status"]=="UNVERIFIED"
     assert ev.inspect(result('{"type":"turn.completed"}',rc=1))["status"]=="UNVERIFIED"
+
+def test_native_jsonl_extracts_only_final_agent_message_without_model_attestation():
+    log=('{"type":"item.completed","item":{"type":"agent_message","text":"draft"}}\n'
+         '{"type":"item.completed","item":{"type":"agent_message","text":"final"}}\n'
+         '{"type":"turn.completed"}\n')
+    row=ev.inspect(result(log))
+    assert row["output_text"]=="final"
+    assert row["tool_session_attested"] is False

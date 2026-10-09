@@ -124,11 +124,28 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
         raise TransportDispatchBlocked("CODEX_NATIVE_ROUTE_UNVERIFIED")
     if observed["status"] != "OBSERVED":
         raise TransportDispatchBlocked("CODEX_NATIVE_PROVENANCE_UNVERIFIED")
+    if not observed.get("output_text"):
+        raise TransportDispatchBlocked("CODEX_NATIVE_TEXT_OUTPUT_MISSING")
     return {"status": "REQUIRES_VALIDATION", "transport": "CODEX_NATIVE",
+            "output_text": observed["output_text"],
             "native_runtime_evidence": observed,
             "requested_model": plan["requested_model"], "actual_model": None,
             "output_sha256": hashlib.sha256(output).hexdigest(),
             "output_bytes": len(output)}
+
+def _extract_response_text(result: dict) -> str:
+    outputs=result.get("output")
+    parts=[]
+    if isinstance(outputs,list):
+        for item in outputs:
+            if isinstance(item,dict) and item.get("type")=="message" and isinstance(item.get("content"),list):
+                parts.extend(content["text"] for content in item["content"]
+                             if isinstance(content,dict) and content.get("type")=="output_text"
+                             and isinstance(content.get("text"),str) and content["text"].strip())
+    text="\n".join(parts)
+    if not text.strip():
+        raise TransportDispatchBlocked("API_DIRECT_OUTPUT_NOT_VERIFIED")
+    return text
 
 def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
                          api_key: str | None = None, sender=None, timeout: int = 120) -> dict:
@@ -173,15 +190,9 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
                 "provider_response_id": result["id"], "actual_model": None}
     if result.get("error") or status != "completed":
         raise TransportDispatchBlocked("API_DIRECT_RESPONSE_NOT_COMPLETE")
-    outputs = result.get("output")
-    if (not isinstance(outputs, list) or not any(
-        isinstance(item, dict) and item.get("type") == "message"
-        and isinstance(item.get("content"), list)
-        and any(isinstance(part, dict) and part.get("type") == "output_text"
-                and isinstance(part.get("text"), str) and part["text"].strip()
-                for part in item["content"]) for item in outputs)):
-        raise TransportDispatchBlocked("API_DIRECT_OUTPUT_NOT_VERIFIED")
+    output_text = _extract_response_text(result)
     return {"status": "REQUIRES_VALIDATION", "transport": "API_KEY_DIRECT",
+            "output_text": output_text,
             "requested_model": plan["requested_model"], "reported_model": result.get("model"),
             "actual_model": None, "provider_response_id": result["id"],
             "output_sha256": hashlib.sha256(raw).hexdigest(), "output_bytes": len(raw)}
@@ -229,16 +240,8 @@ def reconcile_openai_text(plan, *, response_id: str, authorized: bool = False,
     if result.get("error") or result.get("status") != "completed":
         return {"status":"RECONCILED_NON_SUCCESS","provider_response_id":response_id,
                 "actual_model":None}
-    outputs=result.get("output")
-    if not isinstance(outputs,list) or not any(
-        isinstance(item,dict) and item.get("type")=="message"
-        and isinstance(item.get("content"),list)
-        and any(isinstance(part,dict) and part.get("type")=="output_text"
-                and isinstance(part.get("text"),str) and part["text"].strip()
-                for part in item["content"])
-        for item in outputs
-    ):
-        raise TransportDispatchBlocked("API_DIRECT_OUTPUT_NOT_VERIFIED")
+    output_text = _extract_response_text(result)
     return {"status":"REQUIRES_VALIDATION","provider_response_id":response_id,
+            "output_text": output_text,
             "actual_model":None,"reported_model":result.get("model"),
             "output_sha256":hashlib.sha256(raw).hexdigest(),"output_bytes":len(raw)}

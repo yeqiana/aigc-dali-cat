@@ -21,10 +21,20 @@ def test_inventory_covers_existing_direct_task_consumers_read_only():
     root=Path(__file__).resolve().parents[2]
     rows=inv.scan(root)
     assert any(x["entrypoint"]=="run_codex" for x in rows)
-    assert any(x["entrypoint"]=="execute_task" for x in rows)
-    assert any(x["entrypoint"]=="execute_codex" for x in rows)
+    assert not any(x["entrypoint"] in {"execute_task", "execute_codex"} for x in rows)
+    assert len([x for x in rows if x["entrypoint"]=="execute_model_task"])==3
     assert any(x["file"].endswith("world_prepare_model_producer.py") for x in rows)
 
 def test_legacy_runner_implementation_is_not_mistaken_for_a_consumer():
     root=Path(__file__).resolve().parents[2]
     assert not any(x["file"].endswith("/codex_user_runner.py") for x in inv.scan(root))
+
+def test_preimage_agents_have_no_direct_task_bypass():
+    root=Path(__file__).resolve().parents[2]
+    rows=inv.scan(root)
+    migrated={x["file"] for x in rows if x["entrypoint"]=="execute_model_task"}
+    assert len(migrated)==3
+    assert any(x.endswith("world_prepare_model_producer.py") for x in migrated)
+    assert any(x.endswith("character_finalize_model_producer.py") for x in migrated)
+    assert any(x.endswith("visual_narrative_prepare_model_producer.py") for x in migrated)
+    assert not [x for x in rows if x["migration_priority"]=="DIRECT_TASK_BYPASS"]

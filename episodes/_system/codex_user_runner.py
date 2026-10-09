@@ -415,7 +415,9 @@ def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task
     if "exec" not in command:
         return None
     explicit, explicit_base = _provider_override(command)
-    source = env if env is not None else os.environ
+    source = dict(env) if env is not None else dict(os.environ)
+    if str(os.environ.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper() == "DUAL_ONLY":
+        source["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
     strict_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
     if strict_policy == "DUAL_ONLY":
@@ -1116,8 +1118,12 @@ def _prepare_strict_codex_task(task: CodexTask) -> tuple[CodexTask, dict | None]
     bypassing run_codex. Never mutate their task or issue an automatic fallback.
     """
     source = {**os.environ, **dict(task.env or {})}
-    if str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper() != "DUAL_ONLY":
+    # A task payload cannot opt out when the host mandates strict transport.
+    host_policy = str(os.environ.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
+    task_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
+    if host_policy != "DUAL_ONLY" and task_policy != "DUAL_ONLY":
         return task, None
+    source["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
     route = resolve_provider_transport(task.argv, env=source, task_type=task.task_type)
     if route is None:
         return task, None
@@ -1623,6 +1629,15 @@ def runner_health(*, timeout: float = HEALTH_TIMEOUT_SECONDS) -> dict:
             "CODEX_USER_RUNNER_WRONG_IDENTITY", f"runner is running as {body.get('user')}"
         )
     return body
+
+
+def execute_model_task(task: CodexTask) -> ExecResult:
+    """Canonical producer entrypoint, preserving the existing direct/bridge behavior.
+
+    Strict transport remains enforced inside execute_task/execute_codex. The
+    caller never chooses a provider fallback or weakens the host policy.
+    """
+    return execute_codex(task) if bridge_required() else execute_task(task)
 
 
 def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResult:

@@ -46,3 +46,23 @@ def test_only_finalized_mysql_receipt_may_join_attempt_evidence():
                    "payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})
         assert r["status"]=="NOT_FINALIZED"
         assert r["review_authority_granted"] is False
+
+def test_expected_transport_must_not_accept_legacy_opencodex_receipt():
+    row=inspect({"source":"mysql","status":"FINALIZED","receipt_id":"pr-1",
+                 "payload":{"attempt_id":"att-1","raw_sha256":EXPECTED,
+                            "transport_route":"opencodex"}})
+    assert row["status"]=="RECEIPT_PRESENT"  # Legacy unscoped queries remain observational.
+    strict=rr.inspect_existing("/dummy","meta/receipt.json",
+        expected_artifact_sha256=EXPECTED,expected_attempt_id="att-1",
+        expected_transport_route="native_codex",
+        load_receipt=lambda *_:{"source":"mysql","status":"FINALIZED","receipt_id":"pr-1",
+           "payload":{"attempt_id":"att-1","raw_sha256":EXPECTED,"transport_route":"opencodex"}})
+    assert strict["status"]=="TRANSPORT_MISMATCH"
+    assert strict["review_authority_granted"] is False
+
+def test_scoped_receipt_requires_explicit_approved_transport():
+    for requested in ("opencodex","webcodex",""):
+        with pytest.raises(ValueError, match="RECEIPT_TRANSPORT_FORBIDDEN"):
+            rr.inspect_existing("/dummy","meta/receipt.json",
+                expected_artifact_sha256=EXPECTED,expected_attempt_id="att-1",
+                expected_transport_route=requested,load_receipt=lambda *_:None)

@@ -43,7 +43,14 @@ def inspect(result) -> dict:
         return {"status":"UNVERIFIED","reason":"CODEX_EXECUTION_FAILED_EVENT","actual_model":None}
     if not any(kind in COMPLETED for kind in kinds):
         return {"status":"UNVERIFIED","reason":"CODEX_TERMINAL_EVENT_MISSING","actual_model":None}
+    messages=[row["item"]["text"] for row in events
+              if row.get("type")=="item.completed"
+              and isinstance(row.get("item"),dict)
+              and row["item"].get("type")=="agent_message"
+              and isinstance(row["item"].get("text"),str)
+              and row["item"]["text"].strip()]
     return {"status":"OBSERVED","reason":"NATIVE_CLI_COMPLETED",
             "transport":"CODEX_NATIVE","actual_model":None,
+            "output_text":messages[-1] if messages else None,
             "capability_status":"UNKNOWN","tool_session_attested":False,
             "review_authority_granted":False}

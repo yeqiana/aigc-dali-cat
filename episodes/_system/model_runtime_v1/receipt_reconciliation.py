@@ -12,9 +12,12 @@ _SHA=re.compile(r"^[0-9a-f]{64}$")
 def inspect_existing(ep: str | Path, legacy_receipt_path: str | Path, *,
                      expected_artifact_sha256: str,
                      expected_attempt_id: str,
+                     expected_transport_route: str | None = None,
                      load_receipt=None) -> dict:
     if not _SHA.fullmatch(str(expected_artifact_sha256 or "").lower()) or not expected_attempt_id:
         raise ValueError("RECEIPT_EXPECTED_IDENTITY_INVALID")
+    if expected_transport_route is not None and expected_transport_route not in {"native_codex", "api_key_direct"}:
+        raise ValueError("RECEIPT_TRANSPORT_FORBIDDEN")
     if load_receipt is None:
         from provider_receipt_persistence import load_by_path
         load_receipt=load_by_path
@@ -39,6 +42,9 @@ def inspect_existing(ep: str | Path, legacy_receipt_path: str | Path, *,
     if (actual_sha != expected_artifact_sha256.lower()
         or str(row.get("attempt_id") or "") != str(expected_attempt_id)):
         return {"status":"MISMATCH","reason":"RECEIPT_ATTEMPT_OR_ARTIFACT_MISMATCH",
+                "can_finalize":False,"review_authority_granted":False}
+    if expected_transport_route is not None and row.get("transport_route") != expected_transport_route:
+        return {"status":"TRANSPORT_MISMATCH","reason":"RECEIPT_PROVIDER_ROUTE_MISMATCH",
                 "can_finalize":False,"review_authority_granted":False}
     return {"status":"RECEIPT_PRESENT","source":"mysql",
             "receipt_id":observed.get("receipt_id"),

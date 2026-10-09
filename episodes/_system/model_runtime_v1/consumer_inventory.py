@@ -6,7 +6,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-METHODS={"run_codex", "execute_codex", "execute_task"}
+METHODS={"run_codex", "execute_codex", "execute_task", "execute_model_task"}
 
 def scan(root: str | Path) -> list[dict]:
     root=Path(root)
@@ -43,5 +43,7 @@ def scan(root: str | Path) -> list[dict]:
             if method is not None:
                 rel=file.relative_to(root).as_posix()
                 found.append({"file":rel,"line":node.lineno,"entrypoint":method,
-                              "migration_priority":"DIRECT_TASK_BYPASS" if method!="run_codex" else "FACADE_CALLER"})
+                              "migration_priority":("DIRECT_TASK_BYPASS" if method in {"execute_codex","execute_task"}
+                              else "MIGRATED_ENTRYPOINT" if method=="execute_model_task"
+                              else "FACADE_CALLER")})
     return sorted(found,key=lambda x:(x["file"],x["line"],x["entrypoint"]))
