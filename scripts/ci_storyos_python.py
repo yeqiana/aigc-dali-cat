@@ -14,6 +14,7 @@ Usage: python scripts/ci_storyos_python.py [-m module | script.py] [args...]
 """
 from __future__ import annotations
 
+import os
 import platform as stdlib_platform
 import runpy
 import sys
@@ -28,6 +29,8 @@ if not PACKAGE.is_dir() or not (PACKAGE / "repository").is_dir():
 # Keep stdlib platform.system/platform.python_version available to libraries.
 # Extending __path__ only gives Python a way to resolve platform.repository.*.
 stdlib_platform.__path__ = [str(PACKAGE)]
+# Propagate CI-only startup intent to known child-script launchers.
+os.environ['STORYOS_CI_PYTHON_BOOTSTRAP'] = '1'
 sys.path.insert(0, str(ROOT))
 
 
