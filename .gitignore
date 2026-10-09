@@ -210,3 +210,11 @@ codex-generated-images/
 # Local probe scripts generated during debugging
 .preimage_author_tmp.py
 .probe-tmp.py
+
+# Locally generated Codex/Phase5a experiments and operator-only evidence.
+# Do not ignore canonical Episode evidence or formal docs/archive trees.
+/.codex_tmp/
+/.storyos/opencodex-maintenance/
+/.storyos/pre-ff-backup/
+/.storyos/p4-capability-router/*-shadow-a1-*.json
+/.storyos/archive/worktree-retirement-*/
