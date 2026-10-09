@@ -1857,6 +1857,18 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
         elapsed, transport_evidence = _invoke_result(invoke_codex(prompt_path, refs, raw_output, log, size, args.timeout, args.codex, visual['text'], frame_contract_text, payload_model_policy['model'], payload_model_policy['quality'], payload_model_policy['strict_model'], scene_text=scene_text, runner_request_id=str(getattr(args, '_runner_request_id', '') or '') or None, episode_dir=ep, generation_attempt_lease=getattr(args, '_generation_attempt_lease', None)))
         backend_name = 'codex_subscription'
     receipt_data = provider_capability.inspect(raw_output, width, height, model=payload_model_policy["model"], route=backend_name, frame=int(args.frame))
+    attempt_lease = getattr(args, "_generation_attempt_lease", None)
+    if isinstance(attempt_lease, dict):
+        attempt_context = attempt_lease.get("generation_context") or {}
+        receipt_data.update({
+            "generation_key": attempt_lease.get("generation_key"),
+            "attempt_index": attempt_lease.get("attempt_index"),
+            "fencing_token": attempt_lease.get("fencing_token"),
+            "production_revision_id": attempt_context.get("production_revision_id"),
+            "frame_contract_sha256": attempt_context.get("frame_contract_sha256"),
+            "prompt_package_sha256": attempt_context.get("prompt_package_sha256"),
+            "request_id": getattr(args, "_runner_request_id", None),
+        })
     receipt_data.update(provider_receipt_model_bindings(
         ep, payload_model_policy["model"], payload_model_policy["quality"]))
     if canonical_payload_request is not None:

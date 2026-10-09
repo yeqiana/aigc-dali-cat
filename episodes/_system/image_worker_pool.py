@@ -56,6 +56,10 @@ def generation_attempt_context(ep, item, payload_policy):
     runner_candidate = str(item.get("runner_candidate") or item.get("runner") or "codex_user_runner")
     return {
         "scope": item.get("scope"),
+        "queue_item_id": item.get("id"),
+        "production_revision_id": item.get("production_revision_id"),
+        "frame_contract_sha256": (item.get("prompt_package") or {}).get("frame_contract_sha256"),
+        "prompt_package_sha256": (item.get("prompt_package") or {}).get("package_sha256"),
         "generation_attempt_reason": item.get("generation_attempt_reason") or "PRIMARY_GENERATION",
         "technical_retry_source_code": item.get("technical_retry_source_code"),
         "model_role": "image.controller",

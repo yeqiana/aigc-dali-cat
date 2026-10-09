@@ -193,6 +193,7 @@ def cmd_begin(args: argparse.Namespace) -> None:
         "frame_contract": frame_contract_provenance,
         "frame_contract_sha256": (frame_contract_provenance or {}).get("contract_sha256"),
         "batch_id": getattr(args, "batch_id", None),
+        "production_revision_id": str(getattr(args, "production_revision_id", "") or "").strip() or None,
     }
     attempt = {
         "attempt_id": uuid.uuid4().hex[:12],
@@ -211,6 +212,8 @@ def cmd_begin(args: argparse.Namespace) -> None:
     }
     if getattr(args, "runtime_transaction_id", None):
         attempt["runtime_transaction_id"] = str(args.runtime_transaction_id)
+    if payload["production_revision_id"]:
+        attempt["production_revision_id"] = payload["production_revision_id"]
     reference_execution = build_reference_execution(ep, refs, started_at=attempt["started_at"])
     if reference_execution is not None:
         attempt["reference_execution"] = reference_execution
@@ -268,6 +271,10 @@ def cmd_success(args: argparse.Namespace) -> None:
     if dims != expected:
         raise SystemExit(f"candidate size {dims[0]}x{dims[1]} != expected {expected[0]}x{expected[1]}")
     generation_key = str(getattr(args, "generation_key", "") or "").strip()
+    production_revision_id = str(getattr(args, "production_revision_id", "") or "").strip() or None
+    requested_revision_id = str((attempt.get("request") or {}).get("production_revision_id") or "").strip() or None
+    if production_revision_id != requested_revision_id:
+        raise SystemExit("production revision binding differs between ledger request and result")
     generation_attempt_index_raw = getattr(args, "generation_attempt_index", None)
     generation_attempt_index = (
         int(generation_attempt_index_raw) if generation_attempt_index_raw is not None else None
@@ -290,6 +297,9 @@ def cmd_success(args: argparse.Namespace) -> None:
         attempt["generation_attempt_index"] = generation_attempt_index
         candidate_info["generation_key"] = generation_key
         candidate_info["generation_attempt_index"] = generation_attempt_index
+    if production_revision_id:
+        attempt["production_revision_id"] = production_revision_id
+        candidate_info["production_revision_id"] = production_revision_id
     provider_receipt = None
     if getattr(args, "provider_receipt", None):
         provider_receipt, receipt_data = _load_provider_receipt_evidence(

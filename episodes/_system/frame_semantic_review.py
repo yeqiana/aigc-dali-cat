@@ -344,11 +344,13 @@ def current_generation_binding(ep: Path, frame: str | int, asset: dict | None = 
         if selected is None:
             selected = row.get("current_candidate") if isinstance(row.get("current_candidate"), dict) else None
     generation_key = str((selected or {}).get("generation_key") or "")
+    production_revision_id = str((selected or {}).get("production_revision_id") or "")
     if not generation_key:
         attempt_id = str((selected or {}).get("attempt_id") or "")
         for attempt in reversed([x for x in (row.get("attempts") or []) if isinstance(x, dict)]):
             if attempt_id and str(attempt.get("attempt_id") or "") == attempt_id:
                 generation_key = str(attempt.get("generation_key") or "")
+                production_revision_id = str(attempt.get("production_revision_id") or "")
                 break
     if not generation_key:
         # Promotion copies the exact pixels into approved_asset but older ledger
@@ -372,7 +374,17 @@ def current_generation_binding(ep: Path, frame: str | int, asset: dict | None = 
         if len(matching_keys) == 1:
             generation_key = next(iter(matching_keys))
     logical_key = generation_attempt_authority.frame_key(ep, key)
-    return {"logical_asset_key": logical_key, "generation_key": generation_key or None}
+    if not production_revision_id:
+        selected_attempt_id = str((selected or {}).get("attempt_id") or "")
+        selected_sha = str((selected or {}).get("sha256") or "").lower()
+        for attempt in reversed([x for x in (row.get("attempts") or []) if isinstance(x, dict)]):
+            candidate = attempt.get("candidate") if isinstance(attempt.get("candidate"), dict) else {}
+            if ((selected_attempt_id and str(attempt.get("attempt_id") or "") == selected_attempt_id)
+                    or (selected_sha and str(candidate.get("sha256") or "").lower() == selected_sha)):
+                production_revision_id = str(attempt.get("production_revision_id") or candidate.get("production_revision_id") or "")
+                break
+    return {"logical_asset_key": logical_key, "generation_key": generation_key or None,
+            "production_revision_id": production_revision_id or None}
 
 
 def bound_review_policy_sha256(ep: Path) -> str | None:
@@ -402,6 +414,7 @@ def frame_evidence_fingerprint(frame: dict, *, contexts: dict, phase3_contexts: 
         "evidence_type": "FRAME_SEMANTIC_REVIEW",
         "logical_asset_key": logical_key,
         "generation_key": generation_key,
+        "production_revision_id": str(frame.get("production_revision_id") or "") or None,
         "artifact_sha256": artifact_sha,
         "source_binding": frame.get("source_binding") or {},
         "context": contexts,
@@ -472,7 +485,7 @@ def validate_final_semantic_execution_receipt(receipt: dict, expected: dict) -> 
         if receipt.get(field) != value:
             errors.append(f"receipt {field} mismatch")
     for field in (
-        "review_item_id", "logical_asset_key", "generation_key", "attempt_index",
+        "review_item_id", "logical_asset_key", "generation_key", "production_revision_id", "attempt_index",
         "candidate_sha256", "frame_contract_sha256", "prompt_package_sha256",
         "model_policy_sha256", "evidence_fingerprint", "runner_request_id",
         "result_sha256", "result_ref", "created_at",
@@ -531,6 +544,7 @@ def _find_pending_final_semantic_receipt(
         "model_policy_sha256": bound_review_policy_sha256(ep),
         "logical_asset_key": frame.get("logical_asset_key"),
         "generation_key": frame.get("generation_key"),
+        "production_revision_id": frame.get("production_revision_id"),
         "attempt_index": int(attempt),
         "artifact_sha256": str(frame.get("sha256") or "").lower(),
         "review_item_id": str(review_item.get("review_key") or review_item.get("id") or ""),
@@ -697,6 +711,7 @@ def _finalize_final_semantic_receipt(
         "review_item_id": item_id,
         "logical_asset_key": frame.get("logical_asset_key"),
         "generation_key": frame.get("generation_key"),
+        "production_revision_id": item.get("production_revision_id"),
         "attempt_index": int(item.get("attempt_index") or 0),
         "candidate_sha256": str(frame.get("sha256") or "").lower(),
         "frame_contract_sha256": phase3.get("frame_contract_sha256"),
@@ -1165,6 +1180,7 @@ def prepare_review_commit(
             "review_item_id": review_item_id,
             "logical_asset_key": review_item.get("logical_asset_key"),
             "generation_key": review_item.get("generation_key"),
+            "production_revision_id": review_item.get("production_revision_id"),
             "attempt_index": review_item.get("attempt_index"),
             "candidate_sha256": review_item.get("artifact_sha256"),
             "frame_contract_sha256": phase3.get("frame_contract_sha256"),
@@ -1176,6 +1192,7 @@ def prepare_review_commit(
         errors.extend(validate_final_semantic_execution_receipt(receipt, expected))
         if frame and (frame.get("logical_asset_key") != expected["logical_asset_key"]
                       or frame.get("generation_key") != expected["generation_key"]
+                      or frame.get("production_revision_id") != expected["production_revision_id"]
                       or str(frame.get("sha256") or "").lower() != str(expected["candidate_sha256"] or "").lower()):
             errors.append("review item does not bind the candidate generation identity")
         if not expected["prompt_package_sha256"] or not expected["frame_contract_sha256"]:

@@ -68,6 +68,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--notes", default="")
     s.add_argument("--batch-id", help="V2.4 Batch Runtime derived execution id")
     s.add_argument("--runtime-transaction-id", help="queue/ledger crash-recovery correlation id")
+    s.add_argument("--production-revision-id", help="formal Episode production revision binding")
     s.add_argument("--allow-long-prompt", action="store_true")
     s.set_defaults(func=cmd_begin)
 
@@ -78,6 +79,7 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--provider-receipt", help="provider RAW dimension receipt JSON")
     s.add_argument("--generation-key", help="immutable Generation Attempt key")
     s.add_argument("--generation-attempt-index", type=int, choices=[1, 2])
+    s.add_argument("--production-revision-id", help="formal Episode production revision binding")
     s.set_defaults(func=cmd_success)
 
     s = sub.add_parser("recover-success", help="correct an exact technical-failure transaction after durable runner success is recovered")

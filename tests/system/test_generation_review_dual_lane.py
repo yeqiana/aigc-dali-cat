@@ -41,6 +41,22 @@ def test_review_enqueue_is_generation_and_sha_scoped(tmp_path):
     assert first["item"]["review_key"] != other_attempt["item"]["review_key"]
 
 
+def test_review_enqueue_is_production_revision_scoped(tmp_path):
+    q = {"items": []}
+    policy = {"model": "gpt-6-luna", "model_policy_sha256": "a" * 64}
+    base = {**source(1), "production_revision_id": "PR-1"}
+    next_revision = {**source(1), "production_revision_id": "PR-2"}
+    first = review_queue.enqueue(q, episode=tmp_path, source_item=base,
+                                 artifact_path="episodes/e/media/a.png",
+                                 artifact_sha256="b" * 64, policy=policy)
+    second = review_queue.enqueue(q, episode=tmp_path, source_item=next_revision,
+                                  artifact_path="episodes/e/media/a.png",
+                                  artifact_sha256="b" * 64, policy=policy)
+    assert first["item"]["review_key"] != second["item"]["review_key"]
+    assert first["item"]["production_revision_id"] == "PR-1"
+    assert second["item"]["production_revision_id"] == "PR-2"
+
+
 def test_review_claim_is_single_and_recoverable():
     q = {"review_work_items": [{"review_key": "R1", "queued_at": review_queue.now(),
                                 "status": "queued"}]}

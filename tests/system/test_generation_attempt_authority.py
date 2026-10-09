@@ -19,6 +19,7 @@ if str(ROOT) not in sys.path:
 import generation_attempt_authority as authority
 import image_generation_gateway
 import raw_candidate_budget
+import production_revision_authority as revision_authority
 from platform.repository.mysql.mysql_connection import MySqlConnection
 from platform.repository.mysql.schema_v2 import DDL_STEPS, DATABASE_NAME
 
@@ -36,7 +37,9 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
             conn = cls.connection_factory()
             conn.health_check()
             for name, sql in DDL_STEPS:
-                if name in {"create_generation_asset_state", "create_generation_attempt"}:
+                if name in {"create_generation_asset_state", "create_generation_attempt",
+                            "create_production_revision", "create_production_revision_head",
+                            "create_production_revision_frame"}:
                     conn.execute(sql)
             conn.close()
         except Exception as exc:
@@ -45,16 +48,55 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
     def setUp(self):
         self.connection_patch = patch.object(authority, "_connect", self.connection_factory)
         self.connection_patch.start()
+        self.revision_connection_patch = patch.object(revision_authority, "_connect", self.connection_factory)
+        self.revision_connection_patch.start()
         self.temp = tempfile.TemporaryDirectory(prefix="storyos-generation-authority-")
         self.ep = Path(self.temp.name)
         self.key = authority.frame_key(self.ep, 3)
 
     def tearDown(self):
         self.connection_patch.stop()
+        self.revision_connection_patch.stop()
         self.temp.cleanup()
 
     def _reserve(self, key=None, **kwargs):
         return authority.reserve(self.ep, key or self.key, {"model_role": "image.payload", "payload_model": "gpt-image-2"}, **kwargs)
+
+    def _revision_context(self, revision_id):
+        return {"model_role": "image.payload", "payload_model": "gpt-image-2",
+                "production_revision_id": revision_id,
+                "frame_contract_sha256": "a" * 64, "prompt_package_sha256": "b" * 64}
+
+    def _prepare_and_activate_revision(self, previous=None):
+        row = revision_authority.create_preparing(
+            self.ep, input_sha256="c" * 64,
+            frames=[{"frame": frame, "frame_contract_sha256": "a" * 64,
+                     "prompt_sha256": "b" * 64} for frame in range(1, 26)])
+        connection = self.connection_factory()
+        try:
+            if previous:
+                connection.execute("UPDATE TB_PRODUCTION_REVISION SET STATUS='RETIRED',RETIRED_AT=UTC_TIMESTAMP(6) WHERE PRODUCTION_REVISION_ID=%s", (previous,))
+            connection.execute("UPDATE TB_PRODUCTION_REVISION SET STATUS='ACTIVE',ACTIVATED_AT=UTC_TIMESTAMP(6) WHERE PRODUCTION_REVISION_ID=%s", (row["production_revision_id"],))
+            connection.execute("UPDATE TB_PRODUCTION_REVISION_HEAD SET ACTIVE_REVISION_ID=%s WHERE EPISODE_ID=%s", (row["production_revision_id"], row["episode_id"]))
+        finally:
+            connection.close()
+        return row
+
+    def test_revision_dispatch_binding_keeps_attempt_budget_shared_across_revisions(self):
+        first = self._prepare_and_activate_revision()
+        first_lease = authority.reserve(self.ep, self.key, self._revision_context(first["production_revision_id"]))
+        self._consume(first_lease)
+        with self.assertRaisesRegex(authority.AttemptDenied, "PRODUCTION_REVISION_BINDING_REQUIRED"):
+            self._reserve()
+
+        second = self._prepare_and_activate_revision(previous=first["production_revision_id"])
+        second_lease = authority.reserve(self.ep, self.key, self._revision_context(second["production_revision_id"]))
+        self.assertEqual(second_lease["attempt_index"], 2)
+        self._consume(second_lease)
+        with self.assertRaisesRegex(authority.AttemptDenied, "GENERATION_ATTEMPT_BUDGET_EXHAUSTED"):
+            authority.reserve(self.ep, self.key, self._revision_context(second["production_revision_id"]))
+        state = authority.load_asset_state(self.ep, self.key)
+        self.assertEqual(state["attempts_consumed"], 2)
 
     def _consume(self, lease):
         authority.commit_dispatch(self.ep, lease, lease["fencing_token"], provider="fake")

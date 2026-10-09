@@ -273,15 +273,15 @@ def init_queue(ep:Path,force:bool=False)->dict:
         save_queue(ep,q);return q
 
 
-def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,strict_model:bool=False,replace:bool=False)->dict:
+def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,strict_model:bool=False,replace:bool=False,production_revision_id:str|None=None)->dict:
     with queue_transaction(ep):
         q=load_queue(ep)
         key=f"{frame:02d}"
-        active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed"}]
+        active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and str(x.get("production_revision_id") or "")==str(production_revision_id or "") and x.get("status") in {"queued","running","generated","tech_failed"}]
         if active and not replace:
             return active[-1]
         if replace:
-            replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
+            replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and str(x.get("production_revision_id") or "")==str(production_revision_id or "") and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
             for x in replaceable:x["status"]="superseded"
         contract=frame_contract.provenance(ep,frame)
         if frame_contract.required(ep):
@@ -299,6 +299,7 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
             "frame":frame,
             "kind":kind,
             "scope":scope,
+            "production_revision_id":str(production_revision_id) if production_revision_id else None,
             "status":"queued",
             "prompt_file":repo_rel(prompt_file),
             "references":references,
