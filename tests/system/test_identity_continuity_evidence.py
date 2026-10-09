@@ -48,7 +48,7 @@ class IdentityContinuityGateTest(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory(prefix="identity-gate-")
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.original_root = identity_continuity.ROOT
         identity_continuity.ROOT = self.root
         self.addCleanup(self.restore_root)
@@ -296,7 +296,7 @@ class IdentityContinuityWriterTest(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory(prefix="identity-writer-")
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.original_root = identity_continuity.ROOT
         identity_continuity.ROOT = self.root
         self.addCleanup(self.restore_root)
@@ -430,7 +430,7 @@ class IdentityContractRequirementTest(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory(prefix="identity-contract-")
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         self.original_root = identity_continuity.ROOT
         identity_continuity.ROOT = self.root
         self.addCleanup(self.restore_root)

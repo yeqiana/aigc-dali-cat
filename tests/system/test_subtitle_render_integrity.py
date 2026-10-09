@@ -15,6 +15,8 @@ import subtitle_layout
 import subtitle_render_integrity
 
 
+@unittest.skipUnless(Path("C:/Windows/Fonts/msyhbd.ttc").is_file(),
+                     "canonical Microsoft YaHei Bold font unavailable on this host")
 class SubtitleRenderIntegrityTests(unittest.TestCase):
     def test_normalized_publish_canvas_is_compared_before_subtitle_delta(self):
         with tempfile.TemporaryDirectory(dir=ROOT) as raw_tmp:
