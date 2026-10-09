@@ -360,8 +360,8 @@ def verify_revision_inputs(ep: Path, revision_id: str) -> list[dict]:
     bindings = production_revision_authority.load_frame_bindings(ep, revision_id)
     by_frame = {int(row.get("frame") or 0): row for row in bindings}
     expected_frames = list(range(1, frame_contract.frame_count(ep) + 1))
-    if sorted(by_frame) != expected_frames or expected_frames != list(range(1, 26)):
-        raise ValueError("Production Revision must bind exactly the current 25 frames")
+    if sorted(by_frame) != expected_frames:
+        raise ValueError("Production Revision must match the current frozen Episode frames")
     prompt_root = Path(ep) / "prompts" / "production"
     input_shas = set()
     verified = []

@@ -84,6 +84,20 @@ def test_running_episode_is_not_double_started_other_episode_resumes(tmp_path):
     start.assert_called_once_with(b, resume=True)
 
 
+@pytest.mark.parametrize("executor", ["PRODUCT_RUNTIME", "AUTO"])
+def test_multi_episode_start_refuses_unbounded_async_host_image_route(tmp_path, executor):
+    a, b = _eps(tmp_path)
+    start = Mock()
+    status = Mock()
+    with (patch.object(multi, "ROOT", tmp_path),
+          patch.object(multi.runtime_router, "image_execution_runtime",
+                       return_value=(executor, "test override"))):
+        with pytest.raises(ValueError, match="MULTI_EPISODE_NATIVE_CODEX_IMAGE_EXECUTOR_REQUIRED"):
+            multi.start_episodes([a, b], status_fn=status, start_fn=start)
+    status.assert_not_called()
+    start.assert_not_called()
+
+
 def test_real_production_requires_explicit_ack_before_any_launch(tmp_path, capsys):
     a, b = _eps(tmp_path)
     with (patch.object(multi, "ROOT", tmp_path),

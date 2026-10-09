@@ -44,15 +44,34 @@ def _sha(value: Any, field: str) -> str:
     return value
 
 
-def canonical_snapshot(*, input_sha256: str, frames: list[dict], visual_lock_sha256: str | None = None) -> dict:
-    """Validate and canonicalize all frame and frozen input bindings."""
+def _expected_frame_numbers(ep: str | Path) -> list[int]:
+    """Read the authoritative Episode frame length, not caller-submitted rows."""
+    import frame_contract
+
+    count = frame_contract.frame_count(Path(ep))
+    if count < 1 or count > 99:
+        raise ProductionRevisionDenied("PRODUCTION_REVISION_FRAME_COUNT_UNSUPPORTED")
+    return list(range(1, count + 1))
+
+
+def _require_complete_frame_rows(rows: list[dict], expected: list[int]) -> None:
+    if [int(row.get("FRAME_NO") or 0) for row in rows] != expected:
+        raise ProductionRevisionDenied("PRODUCTION_REVISION_FRAME_BINDING_INCOMPLETE")
+
+
+def canonical_snapshot(*, input_sha256: str, frames: list[dict],
+                       visual_lock_sha256: str | None = None,
+                       expected_frame_count: int | None = None) -> dict:
+    """Validate consecutive bindings; creation also checks frozen Episode authority."""
     source_sha = _sha(input_sha256, "input_sha256")
-    if not isinstance(frames, list) or len(frames) != 25:
-        raise ValueError("production revision requires exactly 25 frame bindings")
+    if not isinstance(frames, list) or not 1 <= len(frames) <= 99:
+        raise ValueError("production revision requires 1..99 frame bindings")
+    if expected_frame_count is not None and len(frames) != int(expected_frame_count):
+        raise ValueError("production revision frame count differs from frozen Episode contract")
     normalized = []
     for expected, row in enumerate(sorted(frames, key=lambda item: int(item.get("frame") or 0)), 1):
         if not isinstance(row, dict) or int(row.get("frame") or 0) != expected:
-            raise ValueError("production revision frames must be numbered 1..25")
+            raise ValueError("production revision frames must be consecutively numbered 1..N")
         normalized.append({
             "frame": expected,
             "frame_contract_sha256": _sha(row.get("frame_contract_sha256"), f"frame {expected} contract SHA"),
@@ -92,12 +111,9 @@ def validate_dispatch_binding(connection, episode_id: str, context: dict,
         active = str((head or {}).get("ACTIVE_REVISION_ID") or "") or None
         head_fence = int((head or {}).get("FENCING_COUNTER") or 0)
     except Exception as exc:
-        # V2 schema rollout is opt-in. Preserve legacy Episodes before the new
-        # tables are migrated, but never accept a claimed Revision without its
-        # durable authority.
-        if supplied:
-            raise ProductionRevisionDenied("PRODUCTION_REVISION_AUTHORITY_UNAVAILABLE") from exc
-        return None
+        # Fail closed: connectivity/permission/schema errors are not evidence
+        # that this Episode may use a legacy unbound production path.
+        raise ProductionRevisionDenied("PRODUCTION_REVISION_AUTHORITY_UNAVAILABLE") from exc
     selected_revision = active
     if supplied and supplied != active:
         pending = connection.query_one(
@@ -150,7 +166,9 @@ def validate_dispatch_binding(connection, episode_id: str, context: dict,
 def create_preparing(ep: str | Path, *, input_sha256: str, frames: list[dict], visual_lock_sha256: str | None = None) -> dict:
     """Append a CREATED revision. This never activates or dispatches it."""
     episode_id = _episode_id(ep)
-    snapshot = canonical_snapshot(input_sha256=input_sha256, frames=frames, visual_lock_sha256=visual_lock_sha256)
+    snapshot = canonical_snapshot(input_sha256=input_sha256, frames=frames,
+                                  visual_lock_sha256=visual_lock_sha256,
+                                  expected_frame_count=len(_expected_frame_numbers(ep)))
     connection = _connect()
     try:
         connection.execute("INSERT IGNORE INTO TB_PRODUCTION_REVISION_HEAD (EPISODE_ID) VALUES (%s)", (episode_id,))
@@ -207,8 +225,7 @@ def load_frame_bindings(ep: str | Path, revision_id: str) -> list[dict]:
             "WHERE PRODUCTION_REVISION_ID=%s AND EPISODE_ID=%s ORDER BY FRAME_NO",
             (str(revision_id), episode_id),
         ) or []
-        if len(rows) != 25:
-            raise ProductionRevisionDenied("PRODUCTION_REVISION_FRAME_BINDING_INCOMPLETE")
+        _require_complete_frame_rows(rows, _expected_frame_numbers(ep))
         return [{"frame": int(row.get("FRAME_NO") or 0),
                  "frame_contract_sha256": str(row.get("FRAME_CONTRACT_SHA256") or "").lower(),
                  "prompt_sha256": str(row.get("PROMPT_SHA256") or "").lower(),
@@ -256,8 +273,7 @@ def prepare_revision(ep: str | Path, revision_id: str) -> dict:
                 "WHERE PRODUCTION_REVISION_ID=%s AND EPISODE_ID=%s ORDER BY FRAME_NO",
                 (str(revision_id), episode_id),
             ) or []
-            if len(rows) != 25 or [int(row.get("FRAME_NO") or 0) for row in rows] != list(range(1, 26)):
-                raise ProductionRevisionDenied("PRODUCTION_REVISION_FRAME_BINDING_INCOMPLETE")
+            _require_complete_frame_rows(rows, _expected_frame_numbers(ep))
             for row in rows:
                 _sha(row.get("FRAME_CONTRACT_SHA256"), "frame contract sha")
                 _sha(row.get("PROMPT_SHA256"), "prompt sha")
@@ -433,8 +449,7 @@ def activate_revision(ep: str | Path, revision_id: str, *, expected_fencing_coun
                 "WHERE PRODUCTION_REVISION_ID=%s AND EPISODE_ID=%s ORDER BY FRAME_NO",
                 (str(revision_id), episode_id),
             ) or []
-            if len(frame_rows) != 25 or [int(row.get("FRAME_NO") or 0) for row in frame_rows] != list(range(1, 26)):
-                raise ProductionRevisionDenied("PRODUCTION_REVISION_FRAME_BINDING_INCOMPLETE")
+            _require_complete_frame_rows(frame_rows, _expected_frame_numbers(ep))
             admissions = connection.query_all(
                 "SELECT a.ADMISSION_ROLE, a.FRAME_NO, a.INPUT_SHA256, a.FRAME_CONTRACT_SHA256, a.PROMPT_SHA256, "
                 "a.ASSET_SHA256, a.REVIEW_ID, a.REVIEW_SHA256, a.DECISION "
