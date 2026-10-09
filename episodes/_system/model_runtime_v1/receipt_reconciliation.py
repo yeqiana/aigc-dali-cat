@@ -29,6 +29,9 @@ def inspect_existing(ep: str | Path, legacy_receipt_path: str | Path, *,
     if not isinstance(row, dict):
         return {"status":"INVALID","reason":"RECEIPT_PAYLOAD_INVALID",
                 "can_finalize":False,"review_authority_granted":False}
+    if not isinstance(observed.get("receipt_id"), str) or not observed["receipt_id"].strip():
+        return {"status":"INVALID","reason":"MYSQL_RECEIPT_ID_MISSING",
+                "can_finalize":False,"review_authority_granted":False}
     actual_sha=str(row.get("raw_sha256") or row.get("artifact_sha256") or "").lower()
     if (actual_sha != expected_artifact_sha256.lower()
         or str(row.get("attempt_id") or "") != str(expected_attempt_id)):

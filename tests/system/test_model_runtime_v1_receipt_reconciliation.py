@@ -26,7 +26,7 @@ def test_mysql_matching_receipt_is_evidence_not_review_pass():
 def test_sha_or_attempt_mismatch_fails_closed():
     for value in ({"attempt_id":"att-2","raw_sha256":EXPECTED},
                   {"attempt_id":"att-1","raw_sha256":"b"*64}):
-        r=inspect({"source":"mysql","payload":value})
+        r=inspect({"source":"mysql","receipt_id":"pr-1","payload":value})
         assert r["status"]=="MISMATCH"
 
 def test_untrusted_receipt_payload_fails_closed():
@@ -34,3 +34,8 @@ def test_untrusted_receipt_payload_fails_closed():
     with pytest.raises(ValueError,match="EXPECTED_IDENTITY_INVALID"):
         rr.inspect_existing("/dummy","unused",expected_artifact_sha256="bad",
                             expected_attempt_id="att-1",load_receipt=lambda *_:None)
+
+def test_mysql_payload_without_receipt_id_is_not_evidence():
+    row=inspect({"source":"mysql","payload":{"attempt_id":"att-1","raw_sha256":EXPECTED}})
+    assert row["status"]=="INVALID"
+    assert row["can_finalize"] is False

@@ -39,3 +39,9 @@ def test_requires_external_verifier_even_if_self_pass():
 
 def test_undeclared_capability_blocked():
     assert capability.resolve(B, required={"tool_calling"}, proof=proof(), trusted_verify=lambda _: True)["reason"] == "MODEL_CAPABILITY_UNDECLARED"
+
+def test_historical_execution_receipt_cannot_authorize_current_tool():
+    old=proof()
+    old["attestation_kind"]="EXECUTION_RECEIPT"
+    r=capability.resolve(B,proof=old,trusted_verify=lambda _:True)
+    assert r["status"]=="BLOCKED" and not r["available"]

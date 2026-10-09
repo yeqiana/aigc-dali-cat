@@ -418,6 +418,35 @@ def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
     strict_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
     if strict_policy == "DUAL_ONLY":
+        # Codex -c has independent provider selectors. A native-looking base
+        # URL is not enough when model_provider points at another adapter.
+        strict_overrides = _config_overrides(command)
+        for item in command:
+            if item.startswith("--config="):
+                strict_overrides.append(item[len("--config="):])
+            elif item.startswith("-c") and item != "-c" and "=" in item[2:]:
+                strict_overrides.append(item[2:])
+        for raw_override in strict_overrides:
+            key, sep, raw_value = str(raw_override).partition("=")
+            if not sep:
+                continue
+            key = key.strip()
+            value = raw_value.strip().strip("\"'")
+            if key == "model_provider" and value != "openai":
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "unapproved Codex model_provider"
+                )
+            if key == "openai_base_url" and value.rstrip("/") != NATIVE_CODEX_BASE_URL:
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "unapproved Codex base URL"
+                )
+            if key.startswith("model_providers.") and (
+                key.endswith(".base_url") or key.endswith(".wire_api")
+                or key.endswith(".env_key") or key.endswith(".experimental_bearer_token")
+            ):
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "custom Codex model provider override"
+                )
         # The API_KEY_DIRECT path belongs to the official API adapter, never to
         # Codex CLI. Fail closed before probing local OpenCodex/other proxies.
         if explicit:

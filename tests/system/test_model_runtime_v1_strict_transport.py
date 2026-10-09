@@ -55,3 +55,25 @@ def test_strict_forbidden_proxy_prevents_subprocess_launch():
         with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
             runner.run_codex(["codex","exec","-"], env=env, input="hello", timeout=1)
         launch.assert_not_called()
+
+@pytest.mark.parametrize("bad", [
+    'model_provider="custom_gateway"',
+    'model_provider="opencodex"',
+    'model_providers.custom.base_url="http://127.0.0.1:10100/v1"',
+    'openai_base_url="http://127.0.0.1:10100/v1"',
+])
+def test_dual_only_rejects_poisoned_provider_even_if_native_url_also_present(bad):
+    argv=["codex","-c",f'openai_base_url="{runner.NATIVE_CODEX_BASE_URL}"',
+          "-c",bad,"exec","-"]
+    with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+        _resolve(argv,{})
+
+@pytest.mark.parametrize("value",[
+    '--config=model_provider="untrusted"',
+    '--config=model_providers.alt.base_url="https://thirdparty.invalid/v1"',
+    '-cmodel_provider="proxy"',
+])
+def test_inline_config_proxy_rejected_before_launch(value):
+    argv=["codex",value,"-c",f'openai_base_url="{runner.NATIVE_CODEX_BASE_URL}"',"exec","-"]
+    with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+        _resolve(argv,{})

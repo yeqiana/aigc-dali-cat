@@ -23,6 +23,14 @@ def _proof(binding):
 def _plan(binding):
     return adapters.plan_text(binding, proof=_proof(binding), trusted_verify=lambda _: True)
 
+
+def _native_success(argv, *, output=b'{"type":"turn.completed"}\n'):
+    result = subprocess.CompletedProcess(argv, 0, stdout=output, stderr=b'')
+    result.remote = {"transport_route": "native_codex",
+                     "transport_base_url": adapters.NATIVE_CODEX_BASE,
+                     "timed_out": False}
+    return result
+
 def test_text_plan_requires_proven_capability_and_two_allowed_transports():
     with pytest.raises(adapters.TransportDispatchBlocked, match="NOT_ATTESTED"):
         adapters.plan_text(B)
@@ -35,7 +43,7 @@ def test_codex_native_explicit_pinning_and_env_clearing():
     called = []
     def stub(argv, **kw):
         called.append((argv, kw))
-        return subprocess.CompletedProcess(argv, 0, stdout=b'{"type":"turn.completed"}\n', stderr=b'')
+        return _native_success(argv)
     with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}):
         result = adapters.dispatch_codex_text(plan, prompt="hello", authorized=True, runner=stub)
     argv, kw = called[0]
@@ -106,7 +114,7 @@ def test_native_uses_input_for_both_direct_and_bridge_modes():
     seen = []
     def stub(argv, **kw):
         seen.append(kw)
-        return subprocess.CompletedProcess(argv, 0, stdout='{"type":"turn.completed"}\n', stderr='')
+        return _native_success(argv, output='{"type":"turn.completed"}\n')
     adapters.dispatch_codex_text(plan, prompt="你好，世界", authorized=True, runner=stub)
     assert seen[0]["input"] == "你好，世界"
     assert seen[0]["text"] is True
@@ -178,3 +186,53 @@ def test_codex_remote_completion_is_only_observed_not_model_attested():
     assert row["native_runtime_evidence"]["status"]=="OBSERVED"
     assert row["actual_model"] is None
     assert row["native_runtime_evidence"]["tool_session_attested"] is False
+
+def test_direct_api_redirect_is_blocked_without_leaking_credentials():
+    from urllib.error import HTTPError
+    plan = _plan({**B, "transport": "API_KEY_DIRECT"})
+    def redirect(req, timeout):
+        raise HTTPError(req.full_url, 307, "temporary redirect", {"Location": "https://evil.example"}, None)
+    with pytest.raises(adapters.TransportDispatchBlocked, match="API_DIRECT_REDIRECT_FORBIDDEN"):
+        adapters.dispatch_openai_text(plan, prompt="hello", authorized=True,
+                                     api_key="private-credential", sender=redirect)
+
+def test_direct_api_rejects_oversized_and_empty_identity_responses():
+    plan = _plan({**B, "transport": "API_KEY_DIRECT"})
+    with pytest.raises(adapters.TransportDispatchBlocked, match="API_DIRECT_OUTCOME_UNKNOWN"):
+        adapters.dispatch_openai_text(plan, prompt="hello", authorized=True, api_key="private",
+                                     sender=lambda req, timeout: b"X"*(adapters.MAX_API_RESPONSE_BYTES+1))
+    with pytest.raises(adapters.TransportDispatchBlocked, match="API_DIRECT_OUTCOME_UNKNOWN"):
+        adapters.dispatch_openai_text(plan, prompt="hello", authorized=True, api_key="private",
+                                     sender=lambda req, timeout: b'{"id":"","status":"completed"}')
+
+def test_default_sender_does_not_inherit_environment_proxy_or_follow_redirect():
+    from contextlib import contextmanager
+    plan = _plan({**B, "transport": "API_KEY_DIRECT"})
+    created = []
+    class Opener:
+        @contextmanager
+        def open(self, req, timeout=None):
+            created.append(("request", req.full_url))
+            class Reply:
+                def read(self, size):
+                    return json.dumps({"id":"resp-xyz","status":"completed",
+                        "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode()
+            yield Reply()
+    def build(*handlers):
+        created.extend(handlers)
+        return Opener()
+    with mock.patch.object(adapters.request, "build_opener", side_effect=build):
+        result = adapters.dispatch_openai_text(plan,prompt="ok",authorized=True,api_key="fake")
+    assert result["provider_response_id"] == "resp-xyz"
+    assert any(isinstance(x, adapters.request.ProxyHandler) and x.proxies == {} for x in created)
+    assert any(isinstance(x, adapters._RejectRedirect) for x in created)
+    assert ("request", adapters.OPENAI_RESPONSES_URL) in created
+
+def test_native_missing_runner_provenance_fails_closed():
+    plan = _plan(B)
+    def missing_provenance(argv, **kw):
+        return subprocess.CompletedProcess(argv, 0,
+                                          stdout=b'{"type":"turn.completed"}\n', stderr=b'')
+    with pytest.raises(adapters.TransportDispatchBlocked, match="CODEX_NATIVE_PROVENANCE_UNVERIFIED"):
+        adapters.dispatch_codex_text(plan, prompt="hello", authorized=True,
+                                     runner=missing_provenance)

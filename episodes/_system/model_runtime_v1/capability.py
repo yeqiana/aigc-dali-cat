@@ -10,13 +10,14 @@ def resolve(binding: dict, *, required=None, proof=None, trusted_verify=None,
         return {"status": "BLOCKED", "reason": "MODEL_CAPABILITY_UNDECLARED", "available": False}
     if proof is None or trusted_verify is None:
         return {"status": "DECLARED", "reason": "MODEL_CAPABILITY_NOT_ATTESTED", "available": False}
+    # A previous execution receipt is NOT fresh tool availability proof.
     if (not isinstance(proof, dict)
         or proof.get("policy_sha256") != binding.get("policy_sha256")
         or proof.get("requested_model") != binding.get("requested_model")
         or proof.get("transport") != binding.get("transport")
         or proof.get("role") != binding.get("role")
         or not required.issubset(frozenset(proof.get("capabilities") or ()))
-        or proof.get("attestation_kind") not in {"SESSION_TOOL_REGISTRY", "EXECUTION_RECEIPT"}):
+        or proof.get("attestation_kind") != "SESSION_TOOL_REGISTRY"):
         return {"status": "BLOCKED", "reason": "MODEL_CAPABILITY_PROOF_SCOPE_MISMATCH", "available": False}
     expiry = proof.get("expires_at")
     if not isinstance(expiry, str) or not expiry:

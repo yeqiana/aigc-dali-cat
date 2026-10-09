@@ -19,6 +19,22 @@ from urllib import request
 NATIVE_CODEX_BASE = "https://chatgpt.com/backend-api/codex"
 OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"
 MAX_PROMPT_BYTES = 131072
+MAX_API_RESPONSE_BYTES = 8 * 1024 * 1024
+
+class _RejectRedirect(request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+def _post_official(req, *, timeout: int) -> bytes:
+    # No environment HTTP_PROXY override and no redirect to a third party
+    # carrying a credential. A regular enterprise proxy isn't an API provider.
+    opener = request.build_opener(request.ProxyHandler({}), _RejectRedirect())
+    with opener.open(req, timeout=timeout) as response:
+        raw = response.read(MAX_API_RESPONSE_BYTES + 1)
+    if len(raw) > MAX_API_RESPONSE_BYTES:
+        raise ValueError("response exceeded size limit")
+    return raw
+
 
 class TransportDispatchBlocked(RuntimeError):
     pass
@@ -106,6 +122,8 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
     observed = native_result_evidence.inspect(result)
     if observed["reason"] == "NATIVE_ROUTE_NOT_ATTESTED":
         raise TransportDispatchBlocked("CODEX_NATIVE_ROUTE_UNVERIFIED")
+    if observed["status"] != "OBSERVED":
+        raise TransportDispatchBlocked("CODEX_NATIVE_PROVENANCE_UNVERIFIED")
     return {"status": "REQUIRES_VALIDATION", "transport": "CODEX_NATIVE",
             "native_runtime_evidence": observed,
             "requested_model": plan["requested_model"], "actual_model": None,
@@ -130,14 +148,18 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
                                    "Content-Type": "application/json"})
     try:
         if sender is None:
-            with request.urlopen(req, timeout=timeout) as response:
-                raw = response.read()
+            raw = _post_official(req, timeout=timeout)
         else:
             raw = sender(req, timeout)
+        if not isinstance(raw, bytes) or len(raw) > MAX_API_RESPONSE_BYTES:
+            raise ValueError("api response too large or invalid")
         result = json.loads(raw.decode("utf-8"))
-        if not isinstance(result, dict) or not isinstance(result.get("id"), str):
+        if (not isinstance(result, dict) or not isinstance(result.get("id"), str)
+            or not result["id"].strip()):
             raise ValueError("invalid response")
     except HTTPError as exc:
+        if exc.code in {301, 302, 303, 307, 308}:
+            raise TransportDispatchBlocked("API_DIRECT_REDIRECT_FORBIDDEN") from None
         # A definite 4xx API refusal is not a successful generation. Never leak body.
         if exc.code in {400, 401, 403, 404, 413, 422, 429}:
             raise TransportDispatchBlocked("API_DIRECT_REQUEST_REJECTED") from None

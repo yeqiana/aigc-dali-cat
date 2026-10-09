@@ -1,0 +1,41 @@
+from __future__ import annotations
+import sys
+from pathlib import Path
+import pytest
+SYSTEM=Path(__file__).resolve().parents[2]/"episodes"/"_system"
+if str(SYSTEM) not in sys.path:sys.path.insert(0,str(SYSTEM))
+from model_runtime_v1 import image_evidence_pair as pair
+
+def inspect(status="SUCCEEDED", source="mysql", receipt_sha=None,
+            attempt_generation_key="gen-1"):
+    digest="a"*64
+    def attempt(ep,key,index):
+        return {"logical_asset_key":"episode/frame/1","attempt_index":1,
+                "generation_key":attempt_generation_key,"status":status}
+    def receipt(ep,path):
+        return {"source":source,"receipt_id":"receipt-1",
+                "payload":{"attempt_id":"attempt-1",
+                           "raw_sha256":receipt_sha if receipt_sha is not None else digest}}
+    return pair.correlate_image_evidence("/episode", logical_asset_key="episode/frame/1",
+        attempt_index=1, generation_key="gen-1", attempt_id="attempt-1",
+        artifact_sha256=digest, legacy_receipt_path="meta/receipt.json",
+        load_attempt=attempt, load_receipt=receipt)
+
+def test_complete_evidence_never_approves_review_or_publish():
+    row=inspect()
+    assert row["status"]=="ATTEMPT_AND_RECEIPT_RECONCILED"
+    assert row["review_authority_granted"] is False
+    assert row["may_publish"] is False
+
+@pytest.mark.parametrize("state",["RESERVED","DISPATCH_COMMITTED","OUTCOME_UNKNOWN","FAILED_AFTER_DISPATCH"])
+def test_non_success_attempt_never_triggers_republish_or_retry(state):
+    row=inspect(status=state)
+    assert row["status"]=="ATTEMPT_NOT_VERIFIED"
+    assert row["may_retry"] is False
+
+def test_compatibility_json_and_wrong_hash_not_sufficient():
+    assert inspect(source="json")["status"]=="RECEIPT_NOT_VERIFIED"
+    assert inspect(receipt_sha="b"*64)["status"]=="RECEIPT_NOT_VERIFIED"
+
+def test_wrong_generation_key_prevents_join():
+    assert inspect(attempt_generation_key="other")["status"]=="ATTEMPT_NOT_VERIFIED"
