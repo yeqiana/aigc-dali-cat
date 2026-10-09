@@ -15,13 +15,14 @@ def _frames():
 
 
 class FakeConnection:
-    def __init__(self, active="revision-2", status="ACTIVE"):
+    def __init__(self, active="revision-2", status="ACTIVE", fencing=0):
         self.active = active
         self.status = status
+        self.fencing = fencing
 
     def query_one(self, sql, params):
         if "TB_PRODUCTION_REVISION_HEAD" in sql:
-            return {"ACTIVE_REVISION_ID": self.active} if self.active else None
+            return {"ACTIVE_REVISION_ID": self.active, "FENCING_COUNTER": self.fencing} if self.active else {"ACTIVE_REVISION_ID": None, "FENCING_COUNTER": self.fencing}
         if "TB_PRODUCTION_REVISION WHERE" in sql:
             return {"STATUS": self.status, "EPISODE_ID": "episode-1"}
         if "TB_PRODUCTION_REVISION_FRAME" in sql:
@@ -79,9 +80,32 @@ def test_preparing_revision_cannot_dispatch_and_legacy_episode_remains_compatibl
         revision.validate_dispatch_binding(
             FakeConnection(status="PREPARING"), "episode-1", {"production_revision_id": "revision-2"})
     assert revision.validate_dispatch_binding(FakeConnection(active=None), "episode-1", {}) is None
-    with pytest.raises(revision.ProductionRevisionDenied, match="NOT_ACTIVE"):
+    with pytest.raises(revision.ProductionRevisionDenied, match="BINDING_REQUIRED"):
         revision.validate_dispatch_binding(
             FakeConnection(active=None), "episode-1", {"production_revision_id": "revision-2"})
+
+
+def test_visual_lock_can_calibrate_pending_revision_without_making_it_production_active():
+    context = {
+        "production_revision_id": "revision-2", "scope": "visual_lock",
+        "frame_contract_sha256": "a" * 64, "prompt_package_sha256": "b" * 64,
+    }
+    selected = revision.validate_dispatch_binding(
+        FakeConnection(active="revision-1", status="VISUAL_LOCK_PENDING", fencing=4),
+        "episode-1", context, "episode-1/frame-01")
+    assert selected == "revision-2"
+    assert context["production_revision_fencing_token"] == 4
+
+
+def test_visual_lock_pending_revision_rejects_stale_fencing_token():
+    with pytest.raises(revision.ProductionRevisionDenied, match="STALE_FENCE"):
+        revision.validate_dispatch_binding(
+            FakeConnection(active="revision-1", status="VISUAL_LOCK_PENDING", fencing=4),
+            "episode-1", {"production_revision_id": "revision-2", "scope": "visual_lock",
+                          "production_revision_fencing_token": 3,
+                          "frame_contract_sha256": "a" * 64,
+                          "prompt_package_sha256": "b" * 64},
+            "episode-1/frame-01")
 
 
 def test_revision_identity_does_not_partition_global_generation_attempt_key():

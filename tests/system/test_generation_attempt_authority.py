@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import concurrent.futures
+import hashlib
 import json
 import subprocess
 import sys
@@ -20,7 +21,9 @@ import generation_attempt_authority as authority
 import image_generation_gateway
 import raw_candidate_budget
 import production_revision_authority as revision_authority
+import visual_lock_v21
 from platform.repository.mysql.mysql_connection import MySqlConnection
+from platform.repository.mysql.mysql_review_record_repository import MySqlReviewRecordRepository
 from platform.repository.mysql.schema_v2 import DDL_STEPS, DATABASE_NAME
 
 
@@ -36,11 +39,14 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
             cls.connection_factory = staticmethod(_test_connection_factory())
             conn = cls.connection_factory()
             conn.health_check()
-            for name, sql in DDL_STEPS:
-                if name in {"create_generation_asset_state", "create_generation_attempt",
-                            "create_production_revision", "create_production_revision_head",
-                            "create_production_revision_frame"}:
-                    conn.execute(sql)
+            steps={"create_generation_asset_state", "create_generation_attempt",
+                   "create_production_revision", "create_production_revision_head",
+                   "create_production_revision_frame", "create_production_revision_visual_admission",
+                   "create_review_record"}
+            for _ in range(2):
+                for name, sql in DDL_STEPS:
+                    if name in steps:
+                        conn.execute(sql)
             conn.close()
         except Exception as exc:
             raise RuntimeError("ISOLATED_MYSQL_AUTHORITY_TEST_FAILED") from exc
@@ -67,19 +73,42 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
                 "production_revision_id": revision_id,
                 "frame_contract_sha256": "a" * 64, "prompt_package_sha256": "b" * 64}
 
-    def _prepare_and_activate_revision(self, previous=None):
+    def _prepare_and_activate_revision(self, previous=None, *, activate=True):
         row = revision_authority.create_preparing(
             self.ep, input_sha256="c" * 64,
             frames=[{"frame": frame, "frame_contract_sha256": "a" * 64,
                      "prompt_sha256": "b" * 64} for frame in range(1, 26)])
         connection = self.connection_factory()
         try:
-            if previous:
-                connection.execute("UPDATE TB_PRODUCTION_REVISION SET STATUS='RETIRED',RETIRED_AT=UTC_TIMESTAMP(6) WHERE PRODUCTION_REVISION_ID=%s", (previous,))
-            connection.execute("UPDATE TB_PRODUCTION_REVISION SET STATUS='ACTIVE',ACTIVATED_AT=UTC_TIMESTAMP(6) WHERE PRODUCTION_REVISION_ID=%s", (row["production_revision_id"],))
-            connection.execute("UPDATE TB_PRODUCTION_REVISION_HEAD SET ACTIVE_REVISION_ID=%s WHERE EPISODE_ID=%s", (row["production_revision_id"], row["episode_id"]))
+            head=connection.query_one("SELECT ACTIVE_REVISION_ID,FENCING_COUNTER FROM TB_PRODUCTION_REVISION_HEAD WHERE EPISODE_ID=%s",(row["episode_id"],))
         finally:
             connection.close()
+        revision_authority.prepare_revision(self.ep,row["production_revision_id"])
+        revision_authority.begin_visual_lock(self.ep,row["production_revision_id"])
+        review_payload={"production_revision_id":row["production_revision_id"],"summary":{"passed":True},"issue_codes":[],"calibration":[]}
+        assets=[]
+        role_frames=(1,2,3,4)
+        bindings=revision_authority.load_frame_bindings(self.ep,row["production_revision_id"])
+        for role,frame in zip(revision_authority.VISUAL_LOCK_ROLES,role_frames):
+            binding=next(value for value in bindings if value["frame"]==frame)
+            asset_sha=f"{frame+200:064x}"
+            asset={"id":f"admission-{role}","role":role,"frame":frame,"sha256":asset_sha,
+                "frame_contract_sha256":binding["frame_contract_sha256"],"production_revision_id":row["production_revision_id"],
+                "input_sha256":binding["input_sha256"],"prompt_sha256":binding["prompt_sha256"]}
+            assets.append(asset)
+            review_payload["calibration"].append({**asset,
+                "checks":{check:True for check in visual_lock_v21.checks_for_version(visual_lock_v21.episode_version(self.ep))},
+                "issues":[]})
+        review_id=f"test-review-{row['revision_no']}"
+        review_repo=MySqlReviewRecordRepository(self.connection_factory())
+        review_repo.upsert({"review_id":review_id,"episode_id":row["episode_id"],"review_type":"VISUAL_PROFILE",
+            "attempt_no":int(row["revision_no"]),"decision":"PASS","payload":review_payload,"reviewer_type":"TEST_ONLY"})
+        review_repo.connection.close()
+        revision_authority.record_visual_lock_review(self.ep,revision_id=row["production_revision_id"],review_id=review_id,
+            review_sha256=revision_authority._payload_sha(review_payload),payload=review_payload,assets=assets)
+        if activate:
+            revision_authority.activate_revision(self.ep,row["production_revision_id"],
+                expected_fencing_counter=int(head["FENCING_COUNTER"]),expected_active_revision_id=previous)
         return row
 
     def test_revision_dispatch_binding_keeps_attempt_budget_shared_across_revisions(self):
@@ -106,6 +135,57 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
         keys = [f"episode/frame-{index:02d}" for index in range(1, 21)] + ["episode/cover/main"]
         self.assertEqual(authority.episode_hard_generation_cap(keys), 42)
         self.assertEqual(authority.MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET, 2)
+
+    def test_revision_activation_is_formal_idempotent_and_fenced(self):
+        first=self._prepare_and_activate_revision()
+        connection=self.connection_factory()
+        try:
+            head=connection.query_one("SELECT ACTIVE_REVISION_ID,FENCING_COUNTER FROM TB_PRODUCTION_REVISION_HEAD WHERE EPISODE_ID=%s",(first["episode_id"],))
+            self.assertEqual(head["ACTIVE_REVISION_ID"],first["production_revision_id"])
+            result=revision_authority.activate_revision(self.ep,first["production_revision_id"],
+                expected_fencing_counter=0,expected_active_revision_id=None)
+            self.assertTrue(result["idempotent"])
+            self.assertEqual(result["fencing_counter"],1)
+        finally:
+            connection.close()
+
+    def test_incomplete_revision_cannot_activate_and_does_not_mutate_head(self):
+        row=revision_authority.create_preparing(self.ep,input_sha256="c"*64,frames=[
+            {"frame":frame,"frame_contract_sha256":"a"*64,"prompt_sha256":"b"*64} for frame in range(1,26)])
+        with self.assertRaisesRegex(revision_authority.ProductionRevisionDenied,"NOT_READY"):
+            revision_authority.activate_revision(self.ep,row["production_revision_id"],
+                expected_fencing_counter=0,expected_active_revision_id=None)
+        connection=self.connection_factory()
+        try:
+            head=connection.query_one("SELECT ACTIVE_REVISION_ID,FENCING_COUNTER FROM TB_PRODUCTION_REVISION_HEAD WHERE EPISODE_ID=%s",(row["episode_id"],))
+            current=connection.query_one("SELECT STATUS FROM TB_PRODUCTION_REVISION WHERE PRODUCTION_REVISION_ID=%s",(row["production_revision_id"],))
+            self.assertIsNone(head["ACTIVE_REVISION_ID"])
+            self.assertEqual(int(head["FENCING_COUNTER"]),0)
+            self.assertEqual(current["STATUS"],"CREATED")
+        finally:
+            connection.close()
+
+    def test_concurrent_revision_activation_has_one_fenced_winner(self):
+        first=self._prepare_and_activate_revision(activate=False)
+        second=self._prepare_and_activate_revision(activate=False)
+        def activate(row):
+            return revision_authority.activate_revision(self.ep,row["production_revision_id"],
+                expected_fencing_counter=0,expected_active_revision_id=None)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            futures=[pool.submit(activate,row) for row in (first,second)]
+            results=[]
+            for future in futures:
+                try: results.append(future.result())
+                except revision_authority.ProductionRevisionDenied as exc: results.append(str(exc))
+        self.assertEqual(sum(isinstance(result,dict) for result in results),1)
+        self.assertEqual(sum(isinstance(result,str) and "ACTIVATION_CAS_FAILED" in result for result in results),1)
+        connection=self.connection_factory()
+        try:
+            head=connection.query_one("SELECT ACTIVE_REVISION_ID,FENCING_COUNTER FROM TB_PRODUCTION_REVISION_HEAD WHERE EPISODE_ID=%s",(first["episode_id"],))
+            self.assertIn(head["ACTIVE_REVISION_ID"],{first["production_revision_id"],second["production_revision_id"]})
+            self.assertEqual(int(head["FENCING_COUNTER"]),1)
+        finally:
+            connection.close()
 
     def test_atomic_reserve_single_inflight_and_last_slot_race(self):
         first = self._reserve()

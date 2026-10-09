@@ -347,14 +347,78 @@ def choose_plan(ep: Path) -> dict:
     }
 
 
-def prepare(ep: Path) -> dict:
+def verify_revision_inputs(ep: Path, revision_id: str) -> list[dict]:
+    """Verify every frozen Revision prompt and contract against current authorities.
+
+    Production Revision input bindings are immutable authority. Prompt packages
+    and frame contracts are derived at read time here so stale local caches can
+    never make a Revision appear ready for Visual Lock.
+    """
+    import production_revision_authority
+    import prompt_package
+
+    bindings = production_revision_authority.load_frame_bindings(ep, revision_id)
+    by_frame = {int(row.get("frame") or 0): row for row in bindings}
+    expected_frames = list(range(1, frame_contract.frame_count(ep) + 1))
+    if sorted(by_frame) != expected_frames or expected_frames != list(range(1, 26)):
+        raise ValueError("Production Revision must bind exactly the current 25 frames")
+    prompt_root = Path(ep) / "prompts" / "production"
+    input_shas = set()
+    verified = []
+    for frame in expected_frames:
+        binding = by_frame[frame]
+        input_sha = str(binding.get("input_sha256") or "").lower()
+        if len(input_sha) != 64:
+            raise ValueError(f"Revision input SHA missing at frame {frame:02d}")
+        input_shas.add(input_sha)
+        contract = frame_contract.compile_frame(ep, frame, write_cache=False)
+        contract_sha = str(contract.get("contract_sha256") or "").lower()
+        if contract_sha != str(binding.get("frame_contract_sha256") or "").lower():
+            raise ValueError(f"Revision Frame Contract SHA mismatch at frame {frame:02d}")
+        prompt_path = prompt_root / f"{frame:02d}.txt"
+        if not prompt_path.is_file():
+            raise ValueError(f"Revision production prompt missing at frame {frame:02d}")
+        package = prompt_package.compile_frame(ep, frame, prompt_path, write=False)
+        if (str(package.get("frame_contract_sha256") or "").lower() != contract_sha
+                or str(package.get("package_sha256") or "").lower()
+                != str(binding.get("prompt_sha256") or "").lower()):
+            raise ValueError(f"Revision Prompt/Frame Contract SHA mismatch at frame {frame:02d}")
+        verified.append({**binding, "frame_contract_sha256": contract_sha,
+                         "prompt_sha256": str(package["package_sha256"]).lower()})
+    if len(input_shas) != 1:
+        raise ValueError("Production Revision frames do not share one frozen input SHA")
+    return verified
+
+
+def prepare(ep: Path, *, production_revision_id: str | None = None) -> dict:
     plan = choose_plan(ep)
+    revision_id = str(production_revision_id or "").strip() or None
+    revision_bindings = {}
+    if revision_id:
+        import production_revision_authority
+        verified_bindings = verify_revision_inputs(ep, revision_id)
+        revision_bindings = {int(row["frame"]): row for row in verified_bindings}
+        for row in plan["items"]:
+            binding = revision_bindings.get(int(row["frame"]))
+            if (not binding or str(binding.get("frame_contract_sha256") or "").lower()
+                    != str(row.get("contract_sha256") or "").lower()):
+                raise ValueError(f"Revision Frame Contract mismatch at frame {int(row['frame']):02d}")
+            row.update({
+                "production_revision_id": revision_id,
+                "input_sha256": binding["input_sha256"],
+                "prompt_sha256": binding["prompt_sha256"],
+            })
+        import production_revision_authority
+        state = production_revision_authority.begin_visual_lock(ep, revision_id)
+        if state.get("status") != "VISUAL_LOCK_PENDING":
+            raise ValueError("Revision is not ready for Visual Lock calibration")
+        plan["production_revision_id"] = revision_id
     write_json(ep / PLAN_REL, plan)
     gates_path = ep / GATES_REL
     g = read_json(gates_path)
     visual = g.setdefault("visual", {})
     calibration = visual.setdefault("calibration", {})
-    previous = {
+    previous = {} if revision_id else {
         (str(item.get("role") or ""), int(item.get("frame") or 0)): item
         for item in (calibration.get("items") or []) if isinstance(item, dict)
     }
@@ -370,12 +434,18 @@ def prepare(ep: Path) -> dict:
                 "asset_path": old.get("asset_path"), "sha256": old.get("sha256"),
                 "decision": old.get("decision") or "pending",
                 "frame_contract_sha256": row["contract_sha256"], "note": old.get("note") or "",
+                **({"production_revision_id": revision_id,
+                    "input_sha256": row["input_sha256"],
+                    "prompt_sha256": row["prompt_sha256"]} if revision_id else {}),
             })
         else:
             refreshed.append({
                 "id": row["id"], "role": row["role"], "frame": row["frame"],
                 "asset_path": None, "sha256": None, "decision": "pending",
                 "frame_contract_sha256": row["contract_sha256"], "note": "",
+                **({"production_revision_id": revision_id,
+                    "input_sha256": row["input_sha256"],
+                    "prompt_sha256": row["prompt_sha256"]} if revision_id else {}),
             })
     calibration["items"] = refreshed
     write_json(gates_path, g)
@@ -435,6 +505,9 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
                 "asset_path": str(item.get("asset_path") or ""),
                 "sha256": str(item.get("sha256") or ""),
                 "frame_contract_sha256": str(item.get("frame_contract_sha256") or ""),
+                "production_revision_id": str(item.get("production_revision_id") or "") or None,
+                "input_sha256": str(item.get("input_sha256") or "").lower(),
+                "prompt_sha256": str(item.get("prompt_sha256") or "").lower(),
                 "metadata_only": True,
             }
         else:
@@ -459,6 +532,9 @@ def calibration_assets(ep: Path, *, metadata_only: bool = False) -> list[dict]:
                 # migration may prove that old contract equivalent to current;
                 # never rewrite historical critic evidence to the new SHA.
                 "frame_contract_sha256": recorded_fc or current["contract_sha256"],
+                "production_revision_id": str(item.get("production_revision_id") or "") or None,
+                "input_sha256": str(item.get("input_sha256") or "").lower(),
+                "prompt_sha256": str(item.get("prompt_sha256") or "").lower(),
                 "impact_level": current["hash_material"]["frame_directive"].get("impact_level"),
                 "frame_mode": current["hash_material"]["frame_directive"].get("frame_mode"),
                 "scale_reference": current["hash_material"]["frame_directive"].get("scale_reference"),
@@ -556,10 +632,14 @@ def dirty_admission_frames(ep: Path) -> list[int]:
 
 
 def bind_from_queue(ep: Path) -> dict:
+    plan = read_json(ep / PLAN_REL) if (ep / PLAN_REL).is_file() else {}
+    revision_id = str(plan.get("production_revision_id") or "") or None
     q = scheduler_core.load_queue(ep)
     ledger = production_ledger.load_authority(ep, default={"frames": {}}) or {"frames": {}}
     generated = {}
     for item in q.get("items") or []:
+        if str(item.get("production_revision_id") or "") != str(revision_id or ""):
+            continue
         if item.get("scope") not in {"visual_lock", "repair", "baseline_candidate"}:
             continue
         key = f"{int(item['frame']):02d}"
@@ -627,6 +707,11 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
     errors.extend(runtime_provenance.validate_critic_provenance(prov))
 
     expected = {row["id"]: row for row in assets}
+    revision_id = str(data.get("production_revision_id") or "").strip()
+    bound_revisions = {str(row.get("production_revision_id") or "").strip() for row in assets}
+    bound_revisions.discard("")
+    if bound_revisions and (len(bound_revisions) != 1 or revision_id not in bound_revisions):
+        errors.append("production_revision_id does not match all four Visual Lock assets")
     rows = data.get("calibration")
     if not isinstance(rows, list) or len(rows) != visual_review_schema.CALIBRATION_ROWS_V2:
         errors.append(
@@ -651,6 +736,10 @@ def validate_payload(data: dict, *, contract: dict, assets: list[dict], version:
         exp_fc = str(exp.get("frame_contract_sha256") or "")
         if exp_fc and str(row.get("frame_contract_sha256") or "").lower() != exp_fc.lower():
             errors.append(f"{rid} frame_contract_sha mismatch")
+        if exp and exp.get("production_revision_id"):
+            for field in ("production_revision_id", "input_sha256", "prompt_sha256"):
+                if str(row.get(field) or "").lower() != str(exp.get(field) or "").lower():
+                    errors.append(f"{rid} {field} mismatch")
         checks = row.get("checks") or {}
         for key in checks_for_version(version):
             if checks.get(key) is not True:
@@ -680,6 +769,11 @@ def verify(ep: Path, *, metadata_only: bool = False) -> list[str]:
     if not isinstance(data, dict):
         return ["meta/visual-profile-review.json missing"]
     try:
+        plan_path = ep / PLAN_REL
+        plan = read_json(plan_path) if plan_path.is_file() else {}
+        revision_id = str(plan.get("production_revision_id") or "").strip()
+        if revision_id:
+            verify_revision_inputs(ep, revision_id)
         contract = compile_prompt_contract(ep)
         assets = calibration_assets(ep, metadata_only=metadata_only)
         errors = validate_payload(data, contract=contract, assets=assets, version=episode_version(ep))
@@ -905,6 +999,19 @@ def _finalize_review_payload(
     data["profile_path"] = contract["profile_path"]
     data["profile_sha256"] = contract["profile_sha256"]
     data["critic_provenance"] = provenance
+    revision_id = str(data.get("production_revision_id") or "").strip() or None
+    revision_ids = {str(row.get("production_revision_id") or "").strip()
+                    for row in current}
+    revision_ids.discard("")
+    if len(revision_ids) > 1:
+        raise RuntimeError("Visual Lock assets mix Production Revisions")
+    if revision_id and revision_ids != {revision_id}:
+        raise RuntimeError("Visual Lock review and asset Revision bindings differ")
+    if not revision_id and revision_ids:
+        revision_id = next(iter(revision_ids))
+    if revision_id:
+        verify_revision_inputs(ep, revision_id)
+        data["production_revision_id"] = revision_id
     reviewed_ids = {
         str(row.get("id") or "")
         for row in (data.get("calibration") or [])
@@ -919,6 +1026,9 @@ def _finalize_review_payload(
             row["frame_contract_sha256"] = by_id[rid]["frame_contract_sha256"]
             row["frame"] = by_id[rid]["frame"]
             row["role"] = by_id[rid]["role"]
+            row["production_revision_id"] = by_id[rid].get("production_revision_id")
+            row["input_sha256"] = by_id[rid].get("input_sha256")
+            row["prompt_sha256"] = by_id[rid].get("prompt_sha256")
 
     technical_codes = critic_runtime_v211.classify_issue_codes(data.get("issue_codes") or [])
     evidence_ref = provenance.get("log") or provenance.get("request_path") or "product_runtime_review"
@@ -956,12 +1066,25 @@ def _finalize_review_payload(
         provenance=provenance,
         attempt=attempt,
     )
-    visual_profile_review_persistence.save(
+    persisted = visual_profile_review_persistence.save(
         ep,
         data,
         decision="PASS" if not errors else "FAIL",
         source_sha256=contract["profile_sha256"],
     )
+    if revision_id:
+        import production_revision_authority
+        official_payload = visual_profile_review_persistence.load(ep)
+        if not isinstance(official_payload, dict):
+            raise RuntimeError("Revision Visual Lock Review Authority could not be reloaded")
+        production_revision_authority.record_visual_lock_review(
+            ep,
+            revision_id=revision_id,
+            review_id=str(persisted.get("review_id") or ""),
+            review_sha256=production_revision_authority._payload_sha(official_payload),
+            payload=official_payload,
+            assets=current,
+        )
     (ep / CANDIDATE_REL).unlink(missing_ok=True)
     critic_runtime_v211.record_content_result(
         ep,
@@ -1280,7 +1403,7 @@ def self_test() -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    p = sub.add_parser("prepare"); p.add_argument("episode_dir")
+    p = sub.add_parser("prepare"); p.add_argument("episode_dir"); p.add_argument("--production-revision")
     p = sub.add_parser("bind-from-queue"); p.add_argument("episode_dir")
     p = sub.add_parser("run-critic"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--codex"); p.add_argument("--timeout", type=int, default=None)
     p = sub.add_parser("finalize-review"); p.add_argument("episode_dir"); p.add_argument("--attempt", type=int, default=1); p.add_argument("--runtime", choices=["WORK", "WEB"], default="WORK")
@@ -1295,7 +1418,7 @@ def main() -> int:
     ep = resolve_ep(args.episode_dir)
     try:
         if args.cmd == "prepare":
-            print(json.dumps(prepare(ep), ensure_ascii=False, indent=2)); return 0
+            print(json.dumps(prepare(ep, production_revision_id=args.production_revision), ensure_ascii=False, indent=2)); return 0
         if args.cmd == "bind-from-queue":
             print(json.dumps(bind_from_queue(ep), ensure_ascii=False, indent=2)); return 0
         if args.cmd == "show-plan":

@@ -383,8 +383,10 @@ def current_generation_binding(ep: Path, frame: str | int, asset: dict | None = 
                     or (selected_sha and str(candidate.get("sha256") or "").lower() == selected_sha)):
                 production_revision_id = str(attempt.get("production_revision_id") or candidate.get("production_revision_id") or "")
                 break
-    return {"logical_asset_key": logical_key, "generation_key": generation_key or None,
-            "production_revision_id": production_revision_id or None}
+    binding = {"logical_asset_key": logical_key, "generation_key": generation_key or None}
+    if production_revision_id:
+        binding["production_revision_id"] = production_revision_id
+    return binding
 
 
 def bound_review_policy_sha256(ep: Path) -> str | None:
@@ -492,6 +494,11 @@ def validate_final_semantic_execution_receipt(receipt: dict, expected: dict) -> 
     ):
         actual = receipt.get(field)
         wanted = expected.get(field)
+        # Revision binding is mandatory when the work item belongs to an
+        # activated Revision. Legacy production records predate this field and
+        # remain valid only when the expected binding is absent.
+        if field == "production_revision_id" and wanted in (None, ""):
+            continue
         if field == "attempt_index":
             try:
                 matches = int(actual or 0) == int(wanted or 0)
