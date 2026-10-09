@@ -303,12 +303,12 @@ def locked_story_contract(episode_dir: Path) -> bool:
     if not isinstance(story_input, dict):
         return False
     return (
-        story_input.get("mode") == "locked_story" (fix(story): scope creative-only gates to authored stories)
+        story_input.get("mode") == "locked_story"
         and story_input.get("allow_structure_rewrite") is False
     )
 
 
-def check_story_gate(gates: dict, total: int, findings: list[Finding], *, creative_gates_required: bool = True) -> None: (fix(story): scope creative-only gates to authored stories)
+def check_story_gate(gates: dict, total: int, findings: list[Finding], *, creative_gates_required: bool = True) -> None:
     story = gates.get("story")
     reviews = gates.get("reviews") if isinstance(gates.get("reviews"), dict) else {}
     if not isinstance(story, dict):
