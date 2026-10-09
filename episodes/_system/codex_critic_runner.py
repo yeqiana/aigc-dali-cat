@@ -315,7 +315,7 @@ def launch(
         # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: one execution contract for every
         # critic lane. Direct when Story OS already runs as the interactive user,
         # otherwise the same declarative task is forwarded to the user-mode runner.
-        done = codex_user_runner.run_codex(
+        done = codex_user_runner.run_model_codex(
             cmd,
             input=prompt.encode("utf-8"),
             stdout=handle,

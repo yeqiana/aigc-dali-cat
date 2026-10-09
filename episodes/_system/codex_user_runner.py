@@ -1632,12 +1632,15 @@ def runner_health(*, timeout: float = HEALTH_TIMEOUT_SECONDS) -> dict:
 
 
 def execute_model_task(task: CodexTask) -> ExecResult:
-    """Canonical producer entrypoint, preserving the existing direct/bridge behavior.
+    """Canonical native-only producer task through direct/interactive bridge.
 
-    Strict transport remains enforced inside execute_task/execute_codex. The
-    caller never chooses a provider fallback or weakens the host policy.
+    This is a feature-branch cutover: producer tasks cannot opt into legacy
+    provider fallback. No modification to caller-owned task identity or stdin.
     """
-    return execute_codex(task) if bridge_required() else execute_task(task)
+    native_env = dict(task.env or {})
+    native_env["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
+    native_task = dataclasses.replace(task, env=native_env)
+    return execute_codex(native_task) if bridge_required() else execute_task(native_task)
 
 
 def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResult:
@@ -1738,6 +1741,21 @@ def pin_windows_sandbox(command: list[str]) -> list[str]:
             override = ["-c", f"windows.sandbox='{mode}'"]
             return command[: index + 1] + override + command[index + 1 :]
     return command
+
+
+def run_model_codex(*args, **kwargs):
+    """Canonical native-only CLI facade for model-producing tasks.
+
+    Fail closed on inherited provider overrides: never silently choose
+    OpenCodex. Keep caller output/timeout/request_id and Attempt semantics.
+    Diagnostic login/catalog commands must continue to use run_codex.
+    """
+    params = dict(kwargs)
+    raw_env = params.get("env")
+    strict_env = dict(os.environ if raw_env is None else raw_env)
+    strict_env["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
+    params["env"] = strict_env
+    return run_codex(*args, **params)
 
 
 def run_codex(

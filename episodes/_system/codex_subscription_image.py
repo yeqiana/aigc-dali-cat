@@ -872,7 +872,7 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
         "Return exactly STORYOS_TRANSPORT_OK and do not call any tool."
     )
     try:
-        completed = codex_user_runner.run_codex(
+        completed = codex_user_runner.run_model_codex(
             cmd,
             input=prompt,
             stdout=subprocess.PIPE,
@@ -1653,7 +1653,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             try:
                 completed = image_generation_gateway.provider_generate(
                     episode_dir, generation_attempt_lease, generation_attempt_lease.get("fencing_token"),
-                    'codex_subscription', lambda: codex_user_runner.run_codex(
+                    'codex_subscription', lambda: codex_user_runner.run_model_codex(
                         cmd,
                         env=worker_env,
                         input=request_prompt,

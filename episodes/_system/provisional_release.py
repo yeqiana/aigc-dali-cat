@@ -65,7 +65,7 @@ Do not claim final approval. Stop after this file exists.
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-s","workspace-write","-C",str(ROOT),"--json","-"]
     log=ep/"meta/scoped-workers/provisional-release.jsonl"; log.parent.mkdir(parents=True,exist_ok=True)
     with log.open("a",encoding="utf-8",newline="\n") as h:
-        try: cp=codex_user_runner.run_codex(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
+        try: cp=codex_user_runner.run_model_codex(cmd,input=prompt,text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
         except subprocess.TimeoutExpired: return {"ok":False,"returncode":124,"log":str(log)}
     ok=cp.returncode==0 and out.is_file()
     if ok:

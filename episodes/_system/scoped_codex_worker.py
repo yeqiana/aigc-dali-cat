@@ -297,7 +297,7 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         capture_preflight_output = step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT"
         sink = subprocess.PIPE if capture_preflight_output else (output_handle or subprocess.DEVNULL)
         execution_started=True
-        cp=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
+        cp=codex_user_runner.run_model_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
             stdout=sink,stderr=subprocess.STDOUT,timeout=timeout,check=False,
             task_type="scoped_step",request_id=runner_request_id)
         rc=int(cp.returncode)

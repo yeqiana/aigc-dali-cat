@@ -71,7 +71,7 @@ REPAIR_NOW only for clear visible defects. UNCERTAIN if evidence is ambiguous.
             try:
                 # On Windows, text=True encodes stdin through the active console code page.
                 # Codex expects UTF-8, and frame contracts routinely contain Chinese text.
-                cp=codex_user_runner.run_codex(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
+                cp=codex_user_runner.run_model_codex(cmd,input=prompt.encode("utf-8"),stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="review")
             except subprocess.TimeoutExpired: return {"decision":"UNCERTAIN","reason":"timeout","returncode":124}
     finally:
         shutil.rmtree(staging,ignore_errors=True)

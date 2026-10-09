@@ -38,3 +38,15 @@ def test_preimage_agents_have_no_direct_task_bypass():
     assert any(x.endswith("character_finalize_model_producer.py") for x in migrated)
     assert any(x.endswith("visual_narrative_prepare_model_producer.py") for x in migrated)
     assert not [x for x in rows if x["migration_priority"]=="DIRECT_TASK_BYPASS"]
+
+def test_operational_run_codex_callers_migrated_but_cli_diagnostics_remain():
+    root=Path(__file__).resolve().parents[2]
+    rows=inv.scan(root)
+    by_method={}
+    for row in rows:
+        by_method.setdefault(row["entrypoint"],[]).append(row)
+    assert len(by_method.get("execute_model_task",[]))==3
+    assert len(by_method.get("run_model_codex",[]))==10
+    assert len(by_method.get("run_codex",[]))==2
+    assert all(x["file"].endswith("codex_subscription_image.py") for x in by_method["run_codex"])
+    assert not [r for r in rows if r["migration_priority"]=="DIRECT_TASK_BYPASS"]

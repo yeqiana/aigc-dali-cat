@@ -148,11 +148,55 @@ def test_canonical_model_task_preserves_direct_and_bridge_routing():
             runner,"execute_task",return_value="direct") as direct, mock.patch.object(
             runner,"execute_codex") as bridge:
         assert runner.execute_model_task(task)=="direct"
-        direct.assert_called_once_with(task)
+        direct.assert_called_once()
+        called = direct.call_args.args[0]
+        assert called is not task
+        assert called.env["STORY_OS_MODEL_TRANSPORT_POLICY"] == "DUAL_ONLY"
+        assert called.stdin_bytes() == task.stdin_bytes()
+        assert called.request_id == task.request_id
         bridge.assert_not_called()
     with mock.patch.object(runner,"bridge_required",return_value=True), mock.patch.object(
             runner,"execute_task") as direct, mock.patch.object(
             runner,"execute_codex",return_value="bridge") as bridge:
         assert runner.execute_model_task(task)=="bridge"
-        bridge.assert_called_once_with(task)
+        bridge.assert_called_once()
+        assert bridge.call_args.args[0].env["STORY_OS_MODEL_TRANSPORT_POLICY"] == "DUAL_ONLY"
         direct.assert_not_called()
+
+def test_model_facade_preserves_runner_execution_semantics():
+    sentinel=object()
+    with mock.patch.object(runner,"run_codex",return_value=sentinel) as impl:
+        result=runner.run_model_codex(["codex","exec","-"],input=b"binary",check=False,
+                                      task_type="image",request_id="durable-123")
+    assert result is sentinel
+    invoked=impl.call_args
+    assert invoked.args == (["codex","exec","-"],)
+    assert invoked.kwargs["input"] == b"binary"
+    assert invoked.kwargs["check"] is False
+    assert invoked.kwargs["task_type"] == "image"
+    assert invoked.kwargs["request_id"] == "durable-123"
+    assert invoked.kwargs["env"]["STORY_OS_MODEL_TRANSPORT_POLICY"] == "DUAL_ONLY"
+
+
+def test_model_facade_never_accepts_caller_downgrade():
+    with mock.patch.object(runner, "run_codex") as dispatched:
+        runner.run_model_codex(["codex","exec","-"],env={"STORY_OS_MODEL_TRANSPORT_POLICY":"",
+                          "PATH":"c:/fake"},input="text")
+    assert dispatched.call_args.kwargs["env"]["STORY_OS_MODEL_TRANSPORT_POLICY"]=="DUAL_ONLY"
+    assert dispatched.call_args.kwargs["env"]["PATH"]=="c:/fake"
+
+def test_model_facade_disallowed_proxy_fails_before_subprocess():
+    with mock.patch.dict(runner.os.environ, {"OPENAI_BASE_URL":"http://127.0.0.1:10100/v1"}):
+        with mock.patch.object(runner.subprocess,"run") as launch:
+            with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+                runner.run_model_codex(["codex","exec","-"],input="prompt",timeout=1)
+            launch.assert_not_called()
+
+def test_canonical_producer_rejects_proxy_without_external_opt_in():
+    task=runner.build_task(["codex","-c",'model_provider="opencodex"',"exec","-"],
+         stdin_bytes=b"prompt",env={"STORY_OS_MODEL_TRANSPORT_POLICY":""})
+    with mock.patch.object(runner,"bridge_required",return_value=False), mock.patch.object(
+            runner,"resolve_codex") as resolver:
+        with pytest.raises(runner.CodexUserRunnerRejected,match="MODEL_TRANSPORT_FORBIDDEN"):
+            runner.execute_model_task(task)
+        resolver.assert_not_called()

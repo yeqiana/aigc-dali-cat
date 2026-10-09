@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import os
 import subprocess
 from urllib.error import HTTPError
@@ -34,6 +35,20 @@ def _post_official(req, *, timeout: int) -> bytes:
     if len(raw) > MAX_API_RESPONSE_BYTES:
         raise ValueError("response exceeded size limit")
     return raw
+
+
+def _guard_real_dispatch(injected_transport) -> None:
+    """No real network or paid CLI before explicit isolated cutover approval.
+
+    This opt-in is an extra launch safeguard, not a model capability proof.
+    """
+    if injected_transport is None and os.environ.get("STORY_OS_MODEL_RUNTIME_V1_REAL_DISPATCH") != "1":
+        raise TransportDispatchBlocked("MODEL_RUNTIME_V1_REAL_DISPATCH_DISABLED")
+
+
+def _valid_response_id(value) -> bool:
+    """Only reconcilable official Responses IDs, never URLs or paths."""
+    return isinstance(value, str) and re.fullmatch(r"resp_[A-Za-z0-9_-]{1,128}", value) is not None
 
 
 class TransportDispatchBlocked(RuntimeError):
@@ -94,6 +109,7 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
         raise TransportDispatchBlocked("MODEL_TRANSPORT_MISMATCH")
     if not authorized:
         raise TransportDispatchBlocked("MODEL_DISPATCH_NOT_AUTHORIZED")
+    _guard_real_dispatch(runner)
     if runner is None:
         import codex_user_runner
         runner = codex_user_runner.run_codex
@@ -155,6 +171,7 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
         raise TransportDispatchBlocked("MODEL_TRANSPORT_MISMATCH")
     if not authorized:
         raise TransportDispatchBlocked("MODEL_DISPATCH_NOT_AUTHORIZED")
+    _guard_real_dispatch(sender)
     key = api_key if api_key is not None else os.environ.get("OPENAI_API_KEY")
     if not isinstance(key, str) or not key.strip():
         raise TransportDispatchBlocked("OPENAI_API_KEY_MISSING")
@@ -171,9 +188,8 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
         if not isinstance(raw, bytes) or len(raw) > MAX_API_RESPONSE_BYTES:
             raise ValueError("api response too large or invalid")
         result = json.loads(raw.decode("utf-8"))
-        if (not isinstance(result, dict) or not isinstance(result.get("id"), str)
-            or not result["id"].strip()):
-            raise ValueError("invalid response")
+        if not isinstance(result, dict) or not _valid_response_id(result.get("id")):
+            raise ValueError("invalid official response id")
     except HTTPError as exc:
         if exc.code in {301, 302, 303, 307, 308}:
             raise TransportDispatchBlocked("API_DIRECT_REDIRECT_FORBIDDEN") from None
@@ -201,14 +217,14 @@ def reconcile_openai_text(plan, *, response_id: str, authorized: bool = False,
                           api_key: str | None = None, sender=None,
                           timeout: int = 30) -> dict:
     """Read-only GET for a known response ID; never repeats the original POST."""
-    import re
     _require_minted(plan)
     if plan.get("transport") != "API_KEY_DIRECT" or plan.get("modality") != "text_generation":
         raise TransportDispatchBlocked("MODEL_TRANSPORT_MISMATCH")
     if not authorized:
         raise TransportDispatchBlocked("MODEL_RECONCILIATION_NOT_AUTHORIZED")
-    if not isinstance(response_id, str) or not re.fullmatch(r"resp_[A-Za-z0-9_-]{1,128}", response_id):
+    if not _valid_response_id(response_id):
         raise TransportDispatchBlocked("API_DIRECT_RESPONSE_ID_INVALID")
+    _guard_real_dispatch(sender)
     key = api_key if api_key is not None else os.environ.get("OPENAI_API_KEY")
     if not isinstance(key, str) or not key.strip():
         raise TransportDispatchBlocked("OPENAI_API_KEY_MISSING")

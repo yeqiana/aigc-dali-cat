@@ -69,7 +69,7 @@ def test_direct_api_fixed_official_url_and_no_key_in_result():
     captured = []
     def sender(req, timeout):
         captured.append((req, timeout))
-        return json.dumps({"id": "resp-123", "status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "ok"}]}], "model": "provider-reported"}).encode()
+        return json.dumps({"id": "resp_123", "status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "ok"}]}], "model": "provider-reported"}).encode()
     with mock.patch.dict(os.environ, {"OPENAI_BASE_URL": "http://127.0.0.1:10100/v1"}):
         result = adapters.dispatch_openai_text(plan, prompt="test", authorized=True,
                                                api_key="unit-test-secret", sender=sender)
@@ -141,7 +141,7 @@ def test_api_http_unauthorized_is_sanitized_definite_refusal():
 def test_api_incomplete_response_cannot_claim_success():
     plan = _plan({**B, "transport": "API_KEY_DIRECT"})
     def sender(req, timeout):
-        return json.dumps({"id": "resp-123", "status": "incomplete", "model": "requested"}).encode()
+        return json.dumps({"id": "resp_123", "status": "incomplete", "model": "requested"}).encode()
     with pytest.raises(adapters.TransportDispatchBlocked, match="RESPONSE_NOT_COMPLETE"):
         adapters.dispatch_openai_text(plan, prompt="test", authorized=True, sender=sender,
                                      api_key="secret")
@@ -149,24 +149,24 @@ def test_api_incomplete_response_cannot_claim_success():
 def test_api_completed_response_requires_output_text():
     plan = _plan({**B,"transport":"API_KEY_DIRECT"})
     def sender(req, timeout):
-        return json.dumps({"id":"resp-123","status":"completed","output":[]}).encode()
+        return json.dumps({"id":"resp_123","status":"completed","output":[]}).encode()
     with pytest.raises(adapters.TransportDispatchBlocked,match="OUTPUT_NOT_VERIFIED"):
         adapters.dispatch_openai_text(plan,prompt="hi",authorized=True,api_key="fake",sender=sender)
 
 def test_api_pending_is_not_success_and_preserves_reconciliation_id():
     plan = _plan({**B,"transport":"API_KEY_DIRECT"})
     def sender(req, timeout):
-        return json.dumps({"id":"resp-123","status":"in_progress"}).encode()
+        return json.dumps({"id":"resp_123","status":"in_progress"}).encode()
     row=adapters.dispatch_openai_text(plan,prompt="hi",authorized=True,api_key="fake",sender=sender)
     assert row["status"]=="PENDING_RECONCILIATION"
-    assert row["provider_response_id"]=="resp-123"
+    assert row["provider_response_id"]=="resp_123"
     assert row["actual_model"] is None
 
 def test_api_missing_status_never_claims_completion():
     plan=_plan({**B,"transport":"API_KEY_DIRECT"})
     with pytest.raises(adapters.TransportDispatchBlocked,match="RESPONSE_NOT_COMPLETE"):
         adapters.dispatch_openai_text(plan,prompt="hi",authorized=True,api_key="fake",
-            sender=lambda req,timeout:json.dumps({"id":"resp-123"}).encode())
+            sender=lambda req,timeout:json.dumps({"id":"resp_123"}).encode())
 
 def test_codex_native_rejects_proven_wrong_upstream_route():
     plan = _plan(B)
@@ -215,15 +215,16 @@ def test_default_sender_does_not_inherit_environment_proxy_or_follow_redirect():
             created.append(("request", req.full_url))
             class Reply:
                 def read(self, size):
-                    return json.dumps({"id":"resp-xyz","status":"completed",
+                    return json.dumps({"id":"resp_xyz","status":"completed",
                         "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode()
             yield Reply()
     def build(*handlers):
         created.extend(handlers)
         return Opener()
-    with mock.patch.object(adapters.request, "build_opener", side_effect=build):
+    with (mock.patch.dict(os.environ, {"STORY_OS_MODEL_RUNTIME_V1_REAL_DISPATCH": "1"}),
+          mock.patch.object(adapters.request, "build_opener", side_effect=build)):
         result = adapters.dispatch_openai_text(plan,prompt="ok",authorized=True,api_key="fake")
-    assert result["provider_response_id"] == "resp-xyz"
+    assert result["provider_response_id"] == "resp_xyz"
     assert any(isinstance(x, adapters.request.ProxyHandler) and x.proxies == {} for x in created)
     assert any(isinstance(x, adapters._RejectRedirect) for x in created)
     assert ("request", adapters.OPENAI_RESPONSES_URL) in created
@@ -281,7 +282,7 @@ def test_native_terminal_event_without_text_cannot_complete_text_contract():
 
 def test_api_text_output_is_returned_for_downstream_validation():
     plan=_plan({**B,"transport":"API_KEY_DIRECT"})
-    payload={"id":"resp-test","status":"completed","output":[
+    payload={"id":"resp_test","status":"completed","output":[
        {"type":"message","content":[{"type":"output_text","text":"第一段"},
                                     {"type":"output_text","text":"第二段"}]}]}
     row=adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,api_key="fake",
@@ -296,3 +297,25 @@ def test_api_get_reconciliation_returns_original_text_not_new_inference():
         sender=lambda req,timeout:json.dumps({"id":"resp_abc","status":"completed",
            "output":[{"type":"message","content":[{"type":"output_text","text":"already done"}]}]}).encode())
     assert row["output_text"]=="already done"
+
+def test_api_post_rejects_ids_that_cannot_be_reconciled():
+    plan = _plan({**B, "transport": "API_KEY_DIRECT"})
+    for bad in ("resp-other", "http://example.test/x", "resp_x/../y", "  "):
+        with pytest.raises(adapters.TransportDispatchBlocked, match="API_DIRECT_OUTCOME_UNKNOWN"):
+            adapters.dispatch_openai_text(plan, prompt="hi", authorized=True, api_key="fake",
+                sender=lambda req, timeout: json.dumps({"id":bad,"status":"completed",
+                    "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode())
+
+
+def test_real_model_transports_remain_disabled_until_explicit_cutover():
+    native = _plan(B)
+    api = _plan({**B, "transport": "API_KEY_DIRECT"})
+    with mock.patch.dict(os.environ, {"STORY_OS_MODEL_RUNTIME_V1_REAL_DISPATCH":""}):
+        with pytest.raises(adapters.TransportDispatchBlocked,match="REAL_DISPATCH_DISABLED"):
+            adapters.dispatch_codex_text(native,prompt="hello",authorized=True,runner=None)
+        with pytest.raises(adapters.TransportDispatchBlocked,match="REAL_DISPATCH_DISABLED"):
+            adapters.dispatch_openai_text(api,prompt="hello",authorized=True,
+                                          api_key="not-a-real-key",sender=None)
+        with pytest.raises(adapters.TransportDispatchBlocked,match="REAL_DISPATCH_DISABLED"):
+            adapters.reconcile_openai_text(api,response_id="resp_demo",authorized=True,
+                                            api_key="not-a-real-key",sender=None)
