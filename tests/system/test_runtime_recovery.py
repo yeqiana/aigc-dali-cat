@@ -29,6 +29,19 @@ class RecoveryTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="storyos-recovery-")
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        # Test-only ownership record: the runner lifecycle contract assumes V3
+        # is authorized. Never change the checkout's live Runtime owner.
+        owner_record = self.ep / "meta/runtime/runtime-primary.json"
+        owner_record.parent.mkdir(parents=True, exist_ok=True)
+        owner_record.write_text(json.dumps({
+            "primary_runtime": "V3_RUNTIME",
+            "previous_runtime": "V2_RUNTIME",
+            "reason": "TEST_ONLY episode recovery fixture",
+            "updated_at": "2026-10-09T00:00:00Z",
+        }), encoding="utf-8")
+        owner_patch = patch.object(runner.runtime_ownership, "ROOT", self.ep)
+        owner_patch.start()
+        self.addCleanup(owner_patch.stop)
         validator=patch.object(runner.runtime_dag,"validate_target",return_value=(True,"mocked external gates"))
         validator.start(); self.addCleanup(validator.stop)
         root=patch.object(production_recovery,"ROOT",self.ep)

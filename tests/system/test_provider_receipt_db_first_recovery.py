@@ -53,3 +53,28 @@ def test_dual_mode_falls_back_to_json_when_mysql_unavailable(monkeypatch, tmp_pa
     loaded = persistence.load_by_path(ep, path)
     assert loaded is not None
     assert loaded["source"] == "json"
+
+def test_mysql_load_by_path_exposes_authoritative_status(monkeypatch, tmp_path):
+    ep=tmp_path/"ep"
+    ep.mkdir()
+    monkeypatch.setattr(persistence.storage_config,"episode_meta_store_config",
+                        lambda:{"mode":"mysql"})
+    monkeypatch.setattr(persistence.storage_config,"mysql_connection_kwargs",
+                        lambda *_args,**_kw:{})
+    class FakeConnection:
+        def __init__(self, **kwargs): pass
+        def close(self): pass
+    import platform.repository.mysql.mysql_connection as conn_module
+    import platform.repository.mysql.mysql_provider_receipt_repository as repo_module
+    monkeypatch.setattr(conn_module,"MySqlConnection",FakeConnection)
+    class FakeRepo:
+        def __init__(self,conn): pass
+        def get_by_legacy_path(self,*args):
+            return {"status":"RECORDED","receipt_id":"receipt-1",
+                    "payload":{"attempt_id":"a1"}}
+    monkeypatch.setattr(repo_module,"MySqlProviderReceiptRepository",FakeRepo)
+    monkeypatch.setattr(persistence,"_episode_id",lambda _: "episode-test")
+    got=persistence.load_by_path(ep, ep/"receipt.json")
+    assert got["source"]=="mysql"
+    assert got["status"]=="RECORDED"
+    assert got["receipt_id"]=="receipt-1"

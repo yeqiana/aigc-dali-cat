@@ -169,6 +169,41 @@ def exists_path(path: Path) -> bool:
     return isinstance(load_path(path), dict)
 
 
+
+def _resolved_row_payload(ep: Path, row: dict) -> dict:
+    """Restore an externally stored review document before list consumers route it.
+
+    A MySQL compact projection retains status and identity but not the frozen
+    review lifecycle, source bindings or candidate path. Routing a projection
+    as a full request makes expired shadow reviews appear permanently pending.
+    """
+    payload = row.get("payload")
+    if not isinstance(payload, dict):
+        raise ValueError("RUNTIME_REVIEW_REQUEST_PAYLOAD_INVALID")
+    if payload.get("projection_type") != "RUNTIME_REVIEW_REQUEST_REF":
+        return payload
+    document = payload.get("document")
+    if not isinstance(document, dict):
+        raise ValueError("RUNTIME_REVIEW_REQUEST_DOCUMENT_REF_INVALID")
+    rel = document.get("rel")
+    expected_sha = str(document.get("sha256") or "").lower()
+    if not isinstance(rel, str) or not rel or len(expected_sha) != 64:
+        raise ValueError("RUNTIME_REVIEW_REQUEST_DOCUMENT_REF_INVALID")
+    full = runtime_workspace.read_json(ep, rel, default=None)
+    if (not isinstance(full, dict)
+            or payload_sha256(full) != expected_sha):
+        raise ValueError("RUNTIME_REVIEW_REQUEST_DOCUMENT_SHA_MISMATCH")
+    # Never route a valid-but-wrong document as another review's authority.
+    for key in ("review_kind", "request_id", "status"):
+        expected = str(row.get(key) or "")
+        if expected and str(full.get(key) or "") != expected:
+            raise ValueError("RUNTIME_REVIEW_REQUEST_DOCUMENT_IDENTITY_MISMATCH")
+    attempt = row.get("attempt_no")
+    if attempt is not None and int(full.get("attempt") or 0) != int(attempt):
+        raise ValueError("RUNTIME_REVIEW_REQUEST_DOCUMENT_IDENTITY_MISMATCH")
+    return full
+
+
 def list_current(ep: Path) -> list[dict]:
     ep = Path(ep).resolve()
     mode = _mode()
@@ -179,7 +214,8 @@ def list_current(ep: Path) -> list[dict]:
             rows = repository.list_current(episode_identity.storage_episode_id(ep))
             if rows:
                 return [
-                    {"path": request_path(ep, row["review_kind"]), "payload": row["payload"]}
+                    {"path": request_path(ep, row["review_kind"]),
+                     "payload": _resolved_row_payload(ep, row)}
                     for row in rows
                 ]
         except Exception:
@@ -213,7 +249,8 @@ def list_attempts(ep: Path, kind: str) -> list[dict]:
             rows = repository.list_attempts(episode_identity.storage_episode_id(ep), kind)
             if rows:
                 return [
-                    {"path": request_path(ep, kind, attempt=int(row["attempt_no"])), "payload": row["payload"]}
+                    {"path": request_path(ep, kind, attempt=int(row["attempt_no"])),
+                     "payload": _resolved_row_payload(ep, row)}
                     for row in rows
                 ]
         except Exception:

@@ -31,14 +31,8 @@ def _write(path: Path, data: dict) -> None:
 class AuthorityRefreshBudgetTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        inspected = subprocess.run(["docker", "inspect", "storyos-phase0a-mysql"], check=True,
-                                   capture_output=True, text=True)
-        data = json.loads(inspected.stdout)[0]
-        env = dict(item.split("=", 1) for item in data["Config"].get("Env", []) if "=" in item)
-        cfg = {"host": "127.0.0.1", "port": 3306, "database": DATABASE_NAME,
-               "user": env.get("MYSQL_USER") or "root",
-               "password": env.get("MYSQL_PASSWORD") or env.get("MYSQL_ROOT_PASSWORD") or ""}
-        cls.connection_factory = staticmethod(lambda: MySqlConnection(**cfg))
+        from _isolated_mysql_authority import connection_factory
+        cls.connection_factory = staticmethod(connection_factory())
         conn = cls.connection_factory()
         conn.health_check()
         for name, sql in DDL_STEPS:

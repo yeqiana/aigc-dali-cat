@@ -24,18 +24,8 @@ from platform.repository.mysql.schema_v2 import DDL_STEPS, DATABASE_NAME
 
 
 def _test_connection_factory():
-    inspected = subprocess.run(["docker", "inspect", "storyos-phase0a-mysql"], check=True,
-                               capture_output=True, text=True)
-    data = json.loads(inspected.stdout)[0]
-    env = {}
-    for item in data["Config"].get("Env", []):
-        if "=" in item:
-            key, value = item.split("=", 1)
-            env[key] = value
-    cfg = {"host": "127.0.0.1", "port": 3306, "database": DATABASE_NAME,
-           "user": env.get("MYSQL_USER") or "root",
-           "password": env.get("MYSQL_PASSWORD") or env.get("MYSQL_ROOT_PASSWORD") or ""}
-    return lambda: MySqlConnection(**cfg)
+    from _isolated_mysql_authority import connection_factory
+    return connection_factory()
 
 
 class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
@@ -50,7 +40,7 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
                     conn.execute(sql)
             conn.close()
         except Exception as exc:
-            raise unittest.SkipTest(f"TEST_ONLY MySQL container unavailable: {exc}")
+            raise RuntimeError("ISOLATED_MYSQL_AUTHORITY_TEST_FAILED") from exc
 
     def setUp(self):
         self.connection_patch = patch.object(authority, "_connect", self.connection_factory)

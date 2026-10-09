@@ -121,11 +121,7 @@ def run(
         codex_home_mode="inherit",
         request_id=request_id,
     )
-    result = (
-        codex_user_runner.execute_codex(task_request)
-        if codex_user_runner.bridge_required()
-        else codex_user_runner.execute_task(task_request)
-    )
+    result = codex_user_runner.execute_model_task(task_request)
     telemetry = codex_execution_telemetry.model_execution(
         result,
         provider=DEFAULT_PROVIDER,

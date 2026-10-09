@@ -21,8 +21,7 @@ def test_opencodex_explicit_route_blocked_before_any_provider_or_proxy_probe():
         patch.dict(os.environ, {"STORY_OS_IMAGE_PROVIDER_ROUTE": "opencodex"}),
         patch.object(image_payload_transport, "selected_route", return_value={"provider": "codex_subscription"}),
         patch.object(image_payload_transport.codex_subscription_image, "payload_capability_preflight") as provider,
-        patch.object(codex_user_runner, "_opencodex_health") as health,
-        patch.object(codex_user_runner, "_opencodex_image_capability") as cap,
+        patch.object(codex_user_runner.socket, "create_connection") as health,
     ):
         row = image_payload_transport.payload_capability_preflight(model="gpt-image-2.5-flare", quality="high")
         assert row["status"] == "BLOCKED"
@@ -37,7 +36,8 @@ def test_opencodex_explicit_route_blocked_before_any_provider_or_proxy_probe():
             raise AssertionError("proxy route must reject")
     provider.assert_not_called()
     health.assert_not_called()
-    cap.assert_not_called()
+    assert not hasattr(codex_user_runner, "_opencodex_health")
+    assert not hasattr(codex_user_runner, "_opencodex_image_capability")
 
 
 def test_explicit_proxy_denial_is_non_regenerating_and_actionable(tmp_path):

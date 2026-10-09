@@ -188,35 +188,9 @@ def provider_size(width: int, height: int) -> str:
     return f'{width}x{height}'
 
 
-def _codex_http_only_provider_args() -> list[str]:
-    """Return optional API-provider overrides only for explicit API image routes.
-
-    Subscription Codex image workers must keep the native ChatGPT/Codex image
-    capability. Injecting a custom HTTP provider here can replace the native
-    image tool path and make a healthy Codex session appear to have no
-    image_generation capability.
-    """
-    route = str(os.environ.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
-    if route != "api_http":
-        # Native Codex transport selection is centralized in
-        # codex_user_runner.run_codex(). Never auto-route images to OpenCodex,
-        # and do not let this adapter create a second provider authority.
-        return []
-    base_url = os.environ.get("OPENAI_BASE_URL")
-    if not base_url:
-        return []
-    provider = "storyos_http"
-    return [
-        '-c', f'model_provider="{provider}"',
-        '-c', f'model_providers.{provider}.name="Story OS HTTP"',
-        '-c', f'model_providers.{provider}.base_url={json.dumps(str(base_url))}',
-        '-c', f'model_providers.{provider}.wire_api="responses"',
-        '-c', f'model_providers.{provider}.requires_openai_auth=true',
-        '-c', f'model_providers.{provider}.supports_websockets=false',
-    ]
-
-
 def controller_args(episode: Path | str | None = None) -> list[str]:
+    if str(os.environ.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower() == "api_http":
+        raise BackendError("API_KEY_DIRECT_IMAGE_EXECUTOR_REQUIRED")
     if episode is None:
         controller = _IMAGE_CONTROLLER_POLICY
     else:
@@ -230,7 +204,6 @@ def controller_args(episode: Path | str | None = None) -> list[str]:
     return [
         '-m', str(controller["model"]),
         '-c', f'model_reasoning_effort="{controller["reasoning_effort"]}"',
-        *_codex_http_only_provider_args(),
     ]
 
 
@@ -872,12 +845,13 @@ def _probe_transport_model_diagnostic(codex: Path, model: str, effort: str,
         "Return exactly STORYOS_TRANSPORT_OK and do not call any tool."
     )
     try:
-        completed = codex_user_runner.run_codex(
+        completed = codex_user_runner.run_model_codex(
             cmd,
             input=prompt,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            timeout=runtime_timeout_policy.seconds("codex_auth_probe"),
+            timeout=runtime_timeout_policy.seconds(
+                "image_tool_visibility_probe" if tool_visibility_probe else "codex_auth_probe"),
             check=False,
             text=True,
             encoding="utf-8",
@@ -1657,7 +1631,7 @@ def invoke_codex(prompt_path: Path, refs: list[Path], raw_output: Path, log: Pat
             try:
                 completed = image_generation_gateway.provider_generate(
                     episode_dir, generation_attempt_lease, generation_attempt_lease.get("fencing_token"),
-                    'codex_subscription', lambda: codex_user_runner.run_codex(
+                    'codex_subscription', lambda: codex_user_runner.run_model_codex(
                         cmd,
                         env=worker_env,
                         input=request_prompt,

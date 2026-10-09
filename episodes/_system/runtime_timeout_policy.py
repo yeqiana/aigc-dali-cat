@@ -31,6 +31,7 @@ DEFAULT_SECONDS: dict[str, int] = {
     "fast_scout": 240,              # fast frame scout
     "review_critic": 900,           # story/visual/caption review critics
     "codex_auth_probe": 30,         # read-only `codex login status` through the user bridge
+    "image_tool_visibility_probe": 120,  # bounded native tool visibility text-only probe
     "driver_carrier_control": 60,   # register/query the Windows Driver carrier task
     "image_probe": 900,             # image provider capability probe
     "deep_semantic_review": 1800,   # frame semantic / incremental review

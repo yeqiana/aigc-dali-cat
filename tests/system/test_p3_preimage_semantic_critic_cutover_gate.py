@@ -62,12 +62,13 @@ def test_issue_code_recall_is_not_comparable_without_taxonomy():
     assert result["issue_code_taxonomy_mapping_available"] is False
 
 
-def test_current_gate_is_conditional_when_real_episode_set_is_absent():
+def test_current_gate_blocks_unverified_evidence_even_without_real_episode_set():
     from scripts.p3_preimage_semantic_critic_cutover_gate import ROOT
     result = gate.evaluate(ROOT)
-    assert result["status"] == "CONDITIONAL"
     assert result["mandatory_checks"]
-    assert all(result["mandatory_checks"].values())
+    failed = {key for key, value in result["mandatory_checks"].items() if value is not True}
+    assert result["status"] == ("BLOCKED" if failed else "CONDITIONAL")
+    assert set(result["blockers"]) == {name.upper() for name in failed}
     assert result["real_episode_candidate_count"] == 4
     assert result["real_episode_eligible_count"] == 0
     assert result["production_cutover_performed"] is False

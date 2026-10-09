@@ -19,8 +19,7 @@ def test_image_preflight_forbidden_proxy_never_hits_health_or_payload():
     with (
         patch.dict(os.environ, {"STORY_OS_IMAGE_PROVIDER_ROUTE": "opencodex"}),
         patch.object(image_payload_transport, "selected_route", return_value={"provider": "codex_subscription"}),
-        patch.object(codex_user_runner, "_opencodex_health", side_effect=AssertionError("proxied")) as health,
-        patch.object(codex_user_runner, "_opencodex_image_capability", side_effect=AssertionError("proxied")) as cap,
+        patch.object(codex_user_runner.socket, "create_connection", side_effect=AssertionError("proxied")) as health,
         patch.object(image_payload_transport.codex_subscription_image, "payload_capability_preflight",
                      side_effect=AssertionError("sent to provider")) as provider,
     ):
@@ -31,21 +30,21 @@ def test_image_preflight_forbidden_proxy_never_hits_health_or_payload():
     assert result["image_attempt_authority_called"] is False
     assert result["image_generation_called"] is False
     health.assert_not_called()
-    cap.assert_not_called()
+    assert not hasattr(codex_user_runner, "_opencodex_health")
+    assert not hasattr(codex_user_runner, "_opencodex_image_capability")
     provider.assert_not_called()
 
 
 def test_codex_runner_rejects_explicit_proxy_without_socket_call():
     with (
-        patch.object(codex_user_runner, "_opencodex_health", side_effect=AssertionError("probed")) as health,
-        patch.object(codex_user_runner, "_opencodex_image_capability", side_effect=AssertionError("probed")) as cap,
+        patch.object(codex_user_runner.socket, "create_connection", side_effect=AssertionError("probed")) as health,
     ):
         with pytest.raises(codex_user_runner.CodexUserRunnerRejected, match="CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED"):
             codex_user_runner.resolve_provider_transport(
                 ["codex", "exec", "--json", "-"], env={"STORY_OS_IMAGE_PROVIDER_ROUTE": "opencodex"},
                 task_type="image")
     health.assert_not_called()
-    cap.assert_not_called()
+    assert not hasattr(codex_user_runner, "_opencodex_health")
 
 
 def test_forbidden_proxy_code_stays_nonregenerating(monkeypatch):

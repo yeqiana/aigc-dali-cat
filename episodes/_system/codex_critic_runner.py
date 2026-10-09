@@ -309,13 +309,26 @@ def launch(
         output_schema=output_schema,
         extra=extra,
     )
+    planned_request_id = (
+        str(model_execution_context.get("runner_request_id") or "").strip()
+        if isinstance(model_execution_context, dict) else ""
+    )
+    if planned_request_id:
+        # Fail before truncating review logs; the existing result belongs to
+        # the previous dispatch and must be reconciled, never overwritten.
+        prior = codex_user_runner.task_result_path(planned_request_id)
+        if prior.is_file():
+            raise codex_user_runner.CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                "existing Final Semantic result requires authoritative reconciliation",
+            )
     started_at = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
     started_clock = time.perf_counter()
     with resolved_log.open("w", encoding="utf-8", newline="\n") as handle:
         # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE: one execution contract for every
         # critic lane. Direct when Story OS already runs as the interactive user,
         # otherwise the same declarative task is forwarded to the user-mode runner.
-        done = codex_user_runner.run_codex(
+        done = codex_user_runner.run_model_codex(
             cmd,
             input=prompt.encode("utf-8"),
             stdout=handle,
@@ -323,6 +336,7 @@ def launch(
             timeout=timeout,
             check=False,
             task_type="critic",
+            request_id=planned_request_id or None,
         )
     finished_at = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
     duration_ms = max(0, int((time.perf_counter() - started_clock) * 1000))
@@ -331,12 +345,13 @@ def launch(
     receipt_path = None
     if isinstance(model_execution_context, dict):
         context = dict(model_execution_context)
+        context.pop("runner_request_id", None)
         episode = Path(context.pop("episode")).resolve()
         import logical_asset_identity
         import runtime_observability
         import runtime_trace
 
-        call_id = uuid.uuid4().hex
+        call_id = planned_request_id or uuid.uuid4().hex
         trace_context = runtime_trace.current(episode) or {}
         selected_model = str(model or "").strip()
         effort = str(reasoning_effort or "").strip()

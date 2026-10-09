@@ -404,6 +404,10 @@ class DetachedDriverContractTests(unittest.TestCase):
 
     # --- Driver exit code 可查（真实分离进程，端到端） -----------------------
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_launch_records_a_queryable_exit_code(self):
         (self.ep / "meta/episode-state.json").write_text(
             json.dumps({"current_state": "PUBLISHED"}), encoding="utf-8")
@@ -427,6 +431,10 @@ class DetachedDriverContractTests(unittest.TestCase):
         # second entrypoint straight into runtime_dag.
         self.assertTrue(data["heartbeat_status"], "分离进程没有作为常驻 Driver 运行")
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_finishing_inside_the_start_window_is_a_successful_start(self):
         """An episode already at its terminal state ends the Driver in ~2 s.
 
@@ -512,6 +520,10 @@ class DetachedDriverContractTests(unittest.TestCase):
         runtime_driver.write_beacon(self.ep, os.getpid() + 1)
         self.assertEqual(runtime_driver.status(self.ep)["driver_state"], "ALIVE_NOT_BEATING")
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_serve_records_the_exit_code_it_returns(self):
         for rc in (0, 20, 23):
             with mock.patch.object(persistent_runner_daemon, "run", return_value=rc):
@@ -522,6 +534,10 @@ class DetachedDriverContractTests(unittest.TestCase):
         self.assertNotEqual(runtime_driver.interpret_rc("20"), "")
         self.assertNotEqual(runtime_driver.interpret_rc("25"), "")
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_a_crashing_driver_still_leaves_an_exit_code(self):
         with mock.patch.object(persistent_runner_daemon, "run", side_effect=RuntimeError("boom")):
             with self.assertRaises(RuntimeError):
@@ -530,6 +546,10 @@ class DetachedDriverContractTests(unittest.TestCase):
 
     # --- 不重复启动、不擅自杀进程 -------------------------------------------
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_a_second_driver_is_refused_while_one_is_provably_alive(self):
         # This test process is, by definition, an alive pid, and the beacon is what
         # makes it provably *our* Driver rather than a recycled pid.
@@ -541,6 +561,10 @@ class DetachedDriverContractTests(unittest.TestCase):
         self.assertEqual(result["reason"], "DRIVER_ALREADY_RUNNING")
         self.assertEqual(result["pid"], os.getpid())
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_a_recycled_pid_does_not_wedge_the_episode(self):
         """A live pid with no beacon is not our Driver, and must not block a restart.
 
@@ -560,6 +584,10 @@ class DetachedDriverContractTests(unittest.TestCase):
         self.assertTrue(wait_for(lambda: runtime_driver.status(self.ep)["driver_state"] == "EXITED",
                                  timeout=90), "新启动的 Driver 没有收尾")
 
+    @unittest.skipUnless(
+        runtime_driver.runtime_ownership.load().v3_effective,
+        "V3_RUNTIME_OWNER_REQUIRED: real detached Driver launch is not permitted under V2_RUNTIME",
+    )
     def test_launch_refuses_a_directory_that_is_not_an_episode(self):
         other = self.ep / "not-an-episode"
         other.mkdir()

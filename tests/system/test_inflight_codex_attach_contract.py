@@ -94,6 +94,22 @@ class InflightCodexAttachContractTests(unittest.TestCase):
         patcher = mock.patch.object(codex_user_runner, "runtime_dir", return_value=self.runtime)
         patcher.start()
         self.addCleanup(patcher.stop)
+        # The native Runner now keeps Direct receipts under its checkout ROOT,
+        # and bridged receipts under the verified endpoint directory. This
+        # TEST_ONLY fixture isolates both stores without touching the actual
+        # interactive user's persistent Runner or credentials.
+        original_result_path = codex_user_runner.task_result_path
+        def isolated_result_path(request_id):
+            return self.runtime / codex_user_runner.RESULT_DIR_NAME / original_result_path(request_id).name
+        for name, value in (
+            ("task_result_path", isolated_result_path),
+            ("endpoint_path", lambda: self.runtime / "endpoint.json"),
+            ("bridge_required", lambda: False),
+        ):
+            patcher = mock.patch.object(codex_user_runner, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        (self.runtime / "endpoint.json").write_text("{}", encoding="utf-8")
 
     def tearDown(self) -> None:
         self._td.cleanup()
@@ -242,7 +258,13 @@ class InflightCodexAttachContractTests(unittest.TestCase):
     def test_another_step_or_another_task_type_is_not_adopted(self):
         self.record_task(RID(6))
         self.store_result(RID(6), result_payload(RID(7)))
-        self.assertEqual(self.classify()["validation"], "REQUEST_ID_MISMATCH")
+        # Native Runner now validates request identity at the read boundary,
+        # returning no durable receipt rather than exposing a mismatched one.
+        # Either way a different task's output must never be adopted.
+        mismatch = self.classify()
+        self.assertEqual(mismatch["decision"], inflight_codex_task.RESUBMIT)
+        self.assertEqual(mismatch["validation"], "NO_DURABLE_RESULT")
+        self.assertNotIn("output", mismatch)
 
         self.store_result(RID(6), result_payload(RID(6), task_type="image"))
         self.assertEqual(self.classify()["validation"], "TASK_TYPE_NOT_SCOPED_STEP")

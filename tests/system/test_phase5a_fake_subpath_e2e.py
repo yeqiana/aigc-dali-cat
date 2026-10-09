@@ -34,14 +34,8 @@ from platform.repository.mysql.schema_v2 import DATABASE_NAME, DDL_STEPS
 
 
 def _test_mysql_connection_factory():
-    # Pin the destination to the TEST_ONLY local container. User/password still
-    # come only from storage_config's approved environment-backed source.
-    config = storage_config.mysql_connection_kwargs({
-        "host": "127.0.0.1", "port": 3306, "database": DATABASE_NAME,
-    })
-    if str(config.get("database")).casefold() != "story_os_runtime":
-        raise RuntimeError("TEST_ONLY MySQL must use story_os_runtime")
-    return lambda: MySqlConnection(**config)
+    from _isolated_mysql_authority import connection_factory
+    return connection_factory()
 
 
 def _test_only_episode(tmp_root: Path) -> Path:
@@ -78,7 +72,7 @@ def test_scheduler_worker_attempt_gateway_artifact_and_review_queue_fake_provide
                 conn.execute(sql)
         conn.close()
     except Exception as exc:
-        pytest.skip(f"TEST_ONLY MySQL 8.0 required for real Attempt Authority: {exc}")
+        pytest.fail("ISOLATED_MYSQL_AUTHORITY_TEST_FAILED: dedicated DB unavailable", pytrace=True)
 
     temp_root = ROOT / ".codex_tmp" / "phase5a"
     temp_root.mkdir(parents=True, exist_ok=True)
