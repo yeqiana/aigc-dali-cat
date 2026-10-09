@@ -32,6 +32,11 @@ class ValidatorTests(unittest.TestCase):
             side_effect=lambda episode_dir: story_json.read_json(Path(episode_dir) / "meta/episode-state.json"))
         fixture.start()
         self.addCleanup(fixture.stop)
+        # No real FINAL_ACCEPTANCE in ephemeral fixtures: deny waivers.
+        acceptance = patch.object(validator, "acceptance_allows", return_value=False)
+        acceptance.start()
+        self.addCleanup(acceptance.stop)
+
     def base_state(self, current="IDEA_LOCKED", version="1.4"):
         return {
             "schema_version":1,"tool_version":version,"episode_id":"09-02","series":"09_旧物怪谈",
