@@ -41,7 +41,7 @@ def test_collection_marks_db_writers_skipped_without_running_them():
 
     blocked = [Dummy(n) for n in hook.LIVE_MYSQL_LEGACY_TESTS]
     safe = Dummy("test_model_runtime_v1_merge_gate.py")
-    hook.pytest_collection_modifyitems([*blocked, safe])
+    hook.pytest_collection_modifyitems([*blocked, safe], None)
     assert safe.marks == []
     for item in blocked:
         assert len(item.marks) == 1
@@ -60,6 +60,6 @@ def test_live_mysql_writer_not_misreported_as_a_pass():
             self.marks.append(mark)
 
     dummy = Dummy()
-    hook.pytest_collection_modifyitems([dummy])
+    hook.pytest_collection_modifyitems([dummy], None)
     assert dummy.marks[0].name == "skip"
-    assert "obsolete container" in dummy.marks[0].kwargs["reason"]
+    assert "dedicated TEST_ONLY MySQL admission" in dummy.marks[0].kwargs["reason"]

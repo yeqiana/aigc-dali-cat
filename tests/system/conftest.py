@@ -33,11 +33,29 @@ LIVE_MYSQL_LEGACY_TESTS = frozenset({
 })
 
 
-def pytest_collection_modifyitems(items):
+def pytest_addoption(parser):
+    parser.addoption(
+        "--storyos-isolated-mysql", action="store_true", default=False,
+        help="Run live MySQL Authority regression only with explicitly admitted "
+             "dedicated, labeled TEST_ONLY Docker container and credentials.",
+    )
+
+
+def pytest_collection_modifyitems(items, config):
+    admitted = bool(config and config.getoption("--storyos-isolated-mysql"))
+    if admitted:
+        # Mandatory before any test fixture may run or reach a database.
+        from _isolated_mysql_authority import (
+            IsolatedMySqlNotAdmitted, inspect_isolated_mysql,
+        )
+        try:
+            inspect_isolated_mysql()
+        except IsolatedMySqlNotAdmitted as exc:
+            raise pytest.UsageError(str(exc)) from exc
     for item in items:
-        if item.path.name in LIVE_MYSQL_LEGACY_TESTS:
+        if item.path.name in LIVE_MYSQL_LEGACY_TESTS and not admitted:
             item.add_marker(pytest.mark.skip(
-                reason="ISOLATED_MYSQL_AUTHORITY_REQUIRED: legacy test performs "
-                       "real DB schema/Attempt writes using an obsolete container "
-                       "binding; no implicit Docker/MySQL access is permitted."
+                reason="ISOLATED_MYSQL_AUTHORITY_REQUIRED: DB/Attempt writes "
+                       "are gated by --storyos-isolated-mysql and dedicated "
+                       "TEST_ONLY MySQL admission; not a PASS."
             ))

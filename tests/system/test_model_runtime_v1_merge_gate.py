@@ -103,3 +103,44 @@ def test_conflict_free_clean_main_is_rehearsal_only_not_release(tmp_path):
     assert state["production_cutover_verified"] is False
     assert state["model_capability_attested"] is False
     assert state["mysql_authority_e2e_verified"] is False
+
+
+
+def test_merged_companions_do_not_report_phantom_conflicts(tmp_path):
+    root, _ = _fixture_repo(tmp_path)
+    # A true merged candidate contains each companion as an ancestor. Merely
+    # comparing both branches to their old merge-base falsely reports conflict.
+    _git(root, "checkout", "-q", gate.FEATURE)
+    for companion in gate.COMPANIONS:
+        _git(root, "merge", "--no-ff", "-X", "ours", "-m", "integrate "+companion, companion)
+    _git(root, "checkout", "-q", gate.MAIN)
+    result = gate.inspect(root)
+    for companion in gate.COMPANIONS:
+        entry = result["companions"][companion]
+        assert entry["already_merged"] is True
+        assert entry["merge_status"] == "ALREADY_INTEGRATED"
+        assert entry["content_conflicts"] == []
+    assert "COMPANION_SEMANTIC_MERGE_REQUIRED" not in result["blockers"]
+
+
+def test_default_feature_uses_latest_integrated_candidate_when_present(tmp_path):
+    root, _ = _fixture_repo(tmp_path)
+    _git(root, "branch", gate.INTEGRATION, gate.FEATURE)
+    result = gate.inspect(root)
+    assert result["feature"] == gate.INTEGRATION
+    assert result["feature_head"] == _git(root, "rev-parse", "--short", gate.INTEGRATION)
+    explicit = gate.inspect(root, feature=gate.FEATURE)
+    assert explicit["feature"] == gate.FEATURE
+
+
+def test_untracked_collision_is_reported_without_overwriting_main(tmp_path):
+    root, _ = _fixture_repo(tmp_path)
+    _git(root, "checkout", "-q", gate.FEATURE)
+    (root / "collision.json").write_text("feature", encoding="utf-8")
+    _commit(root, "new feature file")
+    _git(root, "checkout", "-q", gate.MAIN)
+    (root / "collision.json").write_text("operator-data", encoding="utf-8")
+    state = gate.inspect(root)
+    assert state["main_untracked_colliding_files"] == ["collision.json"]
+    assert "MAIN_UNTRACKED_FEATURE_OVERLAP" in state["blockers"]
+    assert (root / "collision.json").read_text(encoding="utf-8") == "operator-data"
