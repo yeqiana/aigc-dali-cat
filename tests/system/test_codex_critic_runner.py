@@ -35,8 +35,8 @@ class CodexCriticRunnerTests(unittest.TestCase):
         plain = self.root / "codex"
         plain.write_text("", encoding="utf-8")
         self.assertEqual(
-            [os.path.normcase(value) for value in runner.prefix(plain)],
-            [os.path.normcase(str(plain))],
+            [os.path.samefile(value, plain) for value in runner.prefix(plain)],
+            [True],
         )
 
     @unittest.skipUnless(os.name == "nt", "cmd wrapper is Windows-only")
@@ -48,8 +48,8 @@ class CodexCriticRunnerTests(unittest.TestCase):
                              ["cmd.exe", "/d", "/c"])
         with mock.patch.object(runner.codex_user_runner, "bridge_required", return_value=True):
             self.assertEqual(
-                [os.path.normcase(value) for value in runner.prefix(cmd)],
-                [os.path.normcase(str(cmd))],
+                [os.path.samefile(value, cmd) for value in runner.prefix(cmd)],
+                [True],
             )
 
     def test_build_command_shape(self):

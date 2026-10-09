@@ -483,7 +483,8 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
             seen["home"] = kwargs["env"].get("CODEX_HOME")
             return FakeCompleted(0, b"ok")
 
-        with mock.patch.dict(os.environ, {"LOCALAPPDATA": str(user_app_data)}, clear=False), \
+        with self.stub_codex(), \
+                mock.patch.dict(os.environ, {"LOCALAPPDATA": str(user_app_data)}, clear=False), \
                 mock.patch.object(bridge, "current_identity", return_value=RUNNER_USER), \
                 mock.patch.object(bridge, "codex_home",
                                   return_value=(user_home, "USERPROFILE")), \
