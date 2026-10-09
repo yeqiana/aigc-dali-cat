@@ -359,10 +359,11 @@ def run() -> dict:
         release_counts: dict[str, int] = {}
         release_subseconds: dict[str, float] = {}
         snapshot_verify_errors: list[str] = []
+        release_guard_error = ""
         release_verify_rc = None
 
         def release_stage():
-            nonlocal release_verify_rc, snapshot_verify_errors
+            nonlocal release_verify_rc, snapshot_verify_errors, release_guard_error
             sub_t0 = time.perf_counter()
             subtitle_source = ep / "docs/subtitles.yaml"
             audit = text_audit.audit(text_audit.parse_simple_subtitles_yaml(subtitle_source), subtitle_source)
@@ -444,23 +445,28 @@ def run() -> dict:
             release_subseconds["release_verify"] = time.perf_counter() - sub_t0
 
             sub_t0 = time.perf_counter()
+            # Synthetic frames have no Provider/Model Review receipts. The real
+            # Verified Review Authority MUST block final snapshot promotion.
+            # Never mock the gate or count these fixture pixels as production PASS.
             with mock.patch.object(final_candidate_snapshot.frame_semantic_review, "verify_episode", return_value=[]), \
                  mock.patch.object(final_candidate_snapshot.visual_final_freeze, "verify", return_value=[]), \
                  mock.patch.object(final_candidate_snapshot.fast_frame_scout, "audit", return_value=[]), \
                  mock.patch.object(final_candidate_snapshot.character_visual_contract, "pixel_master_required", return_value=False):
-                snap = final_candidate_snapshot.build(ep)
-                snapshot_verify_errors = final_candidate_snapshot.verify(ep)
-                if snapshot_verify_errors:
-                    raise AssertionError("final snapshot verify failed: " + "; ".join(snapshot_verify_errors))
-                if not snap.get("snapshot_sha256"):
-                    raise AssertionError("final snapshot SHA missing")
-            release_subseconds["final_snapshot_build_verify"] = time.perf_counter() - sub_t0
+                try:
+                    final_candidate_snapshot.build(ep)
+                except ValueError as exc:
+                    release_guard_error = str(exc)
+                    if "unverified Review projection" not in release_guard_error:
+                        raise
+                    if "lacks generation identity" not in release_guard_error:
+                        raise AssertionError("missing generation identity not identified")
+                else:
+                    raise AssertionError("mock pixels without verified Review were accepted")
+            release_subseconds["final_snapshot_guard"] = time.perf_counter() - sub_t0
 
         timings["RELEASE"], _ = run_stage(ep, "RELEASE", release_stage)
-        # Keep this integration benchmark isolated: PUBLISH_READY finalization normally
-        # rebuilds the repository-wide performance report, which is not part of the mock fixture.
-        with mock.patch.object(episode_performance, "rebuild_report", return_value={}):
-            set_state(ep, "PRODUCTION_PASSED", "PUBLISH_READY")
+        # This benchmark stops at PRODUCTION_PASSED. Fake Reviewer PASS is not
+        # sufficient for the canonical PUBLISH_READY transition.
 
         t0 = time.perf_counter()
         dirty2, *_ = caption_image_audit.dirty_frames(ep)
@@ -499,18 +505,23 @@ def run() -> dict:
                 "reuse_seconds": round(reuse_caption_seconds, 6),
             },
             "release": {
+                "review_authority_hard_stop": release_guard_error,
                 **release_counts,
                 "substep_seconds": {k: round(v, 6) for k, v in release_subseconds.items()},
                 "verify_rc": release_verify_rc,
                 "snapshot_verify_errors": snapshot_verify_errors,
             },
             "assertions": {
-                "publish_ready": True,
+                "publish_blocked_by_unverified_review": (
+                    json.loads((ep / "meta/episode-state.json").read_text(encoding="utf-8"))
+                    .get("current_state") == "PRODUCTION_PASSED"
+                    and bool(release_guard_error)
+                ),
                 "all_20_mock_images_generated": len(ledger["frames"]) == 20,
                 "caption_chunks_are_5x4": [len(x) for x in chunk_calls] == [5, 5, 5, 5],
                 "caption_reuse_is_noop": len(dirty2) == 0 and not reuse_chunk_calls,
                 "release_final_critic_uses_6_key_images": release_counts.get("release_review_image_roles") == 6,
-                "final_snapshot_verified": not snapshot_verify_errors,
+                "final_snapshot_guard_rejects_unverified_mock": bool(release_guard_error),
             },
         }
         if not all(result["assertions"].values()):
@@ -520,7 +531,7 @@ def run() -> dict:
 
 def main() -> int:
     result = run()
-    print("V2.6.1 FULL MOCK PIPELINE PASS")
+    print("V2.6.1 MOCK PIPELINE UP TO VERIFIED REVIEW GUARD PASS")
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
