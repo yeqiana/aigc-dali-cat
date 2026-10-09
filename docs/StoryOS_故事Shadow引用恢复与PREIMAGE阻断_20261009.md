@@ -32,3 +32,12 @@
 - 正式环境只读运行该模块输出：`status=V2_SCHEMA_MISSING`、`case_only_schema_present=true`、`schema_check_passed=false`、`production_authority_granted=false`。
 - `tests/system/test_preimage_storage_preflight.py` 验证大小写别名不能放行、表不齐不能放行、元数据存在不产生 Authority、连接失败 fail-closed；4 passed。
 - 生产阻断边界：在明确 V2 Schema 容器/迁移归属、对账计划和备份之前，不执行任何 `CREATE DATABASE`、DDL、数据库连接强制改写或 PREIMAGE 物化。
+
+## 5. WORK PREIMAGE 执行门禁接入
+
+- `runtime_dag.py` 的 WORK PREIMAGE 分支在 `PREIMAGE_FRAME_CONTRACT_COMPILE` 与 `PREIMAGE_VERIFY` 的第一个派生物化动作之前调用 `_assert_preimage_storage_schema()`。
+- 只有配置 `episode_meta_store.mode=mysql/dual` 时才调用只读 V2 Schema Probe；`json` 模式不添加 MySQL 依赖。阻断码为 `PREIMAGE_V2_SCHEMA_BLOCKED:<probe status>`，只拒绝派生物化，不推进 Stage、不启动审核模型、不消耗图片 Attempt。
+- 即使结构检查通过，也不代表 Review Authority 或生产写入批准；`production_authority_granted` 始终为 false。
+- 新增 5 个 WORK PREIMAGE 门禁回归：MySQL/dual 缺库阻断、JSON-only 兼容、仅结构就绪不发放 Review Authority、两个 Host 分支均先校验再物化。
+- 最新四槽位回归 A 51 passed + 6 subtests，B 21 passed + 3 subtests，C 39 passed，D 18 passed，共 **129 passed + 9 subtests**；未执行正式 PREIMAGE 物化。
+- **权威核验限制**：之前对 Shadow 的 `SUPERSEDED` 持久化读回曾成功，但本轮 3307 的 V2 Schema 不可用，当前无法再次从同一运行时环境独立核验该记录。不得据此将 Story Review 标记 PASS；恢复 Schema/Authority 连接后应先重新对账。
