@@ -118,6 +118,10 @@ class EntryBehavior(unittest.TestCase):
                 'model': 'gpt-6-luna', 'profile': 'vision_fast', 'model_policy_sha256': 'a' * 64}))
             if lane is image_scheduler:
                 stack.enter_context(patch.object(lane.raw_candidate_budget, 'summary', lambda *_a, **_k: {'available': 20}))
+                # A synthetic worker has no Provider Attempt; fixture explicitly models
+                # verified retry clearance without touching production MySQL.
+                stack.enter_context(patch.object(lane, '_technical_retry_budget',
+                    return_value=(True, {'attempts_consumed': 1, 'remaining_attempts': 1}, 'fixture-verified')))
                 # This case isolates refill/barrier behavior and replaces the
                 # real worker that owns Generation Attempt Authority. Keep the
                 # authority contract out of scope instead of fabricating a DB
@@ -196,6 +200,8 @@ class EntryBehavior(unittest.TestCase):
             stack.enter_context(patch.object(image_scheduler.runtime_router, 'detect', return_value=('CODEX', 'test')))
             stack.enter_context(patch.object(image_scheduler.runtime_router, 'image_execution_runtime', return_value=('CODEX', 'test')))
             stack.enter_context(patch.object(image_scheduler.raw_candidate_budget, 'summary', return_value={'available': 1}))
+            stack.enter_context(patch.object(image_scheduler, '_technical_retry_budget',
+                return_value=(True, {'attempts_consumed': 1, 'remaining_attempts': 1}, 'fixture-verified')))
             stack.enter_context(patch.object(image_scheduler, 'async_backend_worker', no_output))
             rc = image_scheduler.run_scheduler_async(ep, 1, 30, None)
 
