@@ -42,6 +42,10 @@ def main() -> int:
     if arguments[0] == "-m":
         if len(arguments) < 2 or arguments[1].startswith("-"):
             raise SystemExit("STORYOS_CI_INVALID_MODULE")
+        # pytest --import-mode=importlib does not prepend tests/system; expose
+        # only its fixture helper directory in this CI-only Python interpreter.
+        if arguments[1] == "pytest":
+            sys.path.insert(0, str(ROOT / "tests" / "system"))
         sys.argv = [arguments[1], *arguments[2:]]
         runpy.run_module(arguments[1], run_name="__main__", alter_sys=True)
         return 0
