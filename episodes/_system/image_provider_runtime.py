@@ -25,7 +25,10 @@ def base_url() -> str:
     cfg = load().get("selection") or {}
     env = str(cfg.get("base_url_env") or "OPENAI_BASE_URL")
     raw = os.environ.get(env) or cfg.get("default_base_url") or "https://api.openai.com/v1"
-    return str(raw).rstrip("/")
+    endpoint = str(raw).rstrip("/")
+    if endpoint != "https://api.openai.com/v1":
+        raise RuntimeError("IMAGE_API_BASE_URL_FORBIDDEN")
+    return endpoint
 
 def select_batch_provider(requested_count: int) -> dict:
     cfg = load()
@@ -34,6 +37,24 @@ def select_batch_provider(requested_count: int) -> dict:
     codex = cfg.get("codex_subscription") or {}
     product = cfg.get("product_runtime_image") or {}
     api = cfg.get("openai_images_api") or {}
+    strict = str(os.environ.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper() == "DUAL_ONLY"
+    if strict and image_runtime not in {"AUTO","CODEX"}:
+        raise RuntimeError("DUAL_ONLY_PRODUCT_IMAGE_FORBIDDEN")
+    # WORK/Web host actions are not a model provider when strict dual transport is active.
+    # In AUTO mode select only official API (explicitly configured and keyed) or
+    # native Codex; never silently fall back to Product/WORK image execution.
+    if strict and image_runtime == "AUTO":
+        if api.get("enabled") is True and api_key_present() and 1 <= int(requested_count) <= int(api.get("native_n_max") or 10):
+            return {"provider":"openai_images_api","execution_mode":str(api.get("story_batch_mode") or "native_n_first"),
+                    "native_multi_image":True,"max_images":int(api.get("native_n_max") or 10),
+                    "reason":"DUAL_ONLY_EXPLICIT_OFFICIAL_API"}
+        if codex.get("enabled") is not True:
+            raise RuntimeError("DUAL_ONLY_NO_APPROVED_IMAGE_PROVIDER")
+        return {"provider":"codex_subscription",
+                "execution_mode":"logical_parallel_fanout" if int(requested_count)>1 else "legacy_bridge",
+                "native_multi_image":False,"logical_batch":int(requested_count)>1,
+                "max_images":1,"requested_logical_batch_size":int(requested_count),
+                "api_key_required":False,"reason":"DUAL_ONLY_NATIVE_CODEX"}
 
     if image_runtime == "CODEX":
         if codex.get("enabled") is not True:

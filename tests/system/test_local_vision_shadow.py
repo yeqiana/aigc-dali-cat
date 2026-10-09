@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from types import ModuleType
 import sys
 import tempfile
 from pathlib import Path
@@ -101,7 +102,8 @@ def test_visual_face_success_is_visible_to_gate_hint():
         ep = Path(raw)
         model = ep / "face.onnx"
         model.write_bytes(b"model")
-        with patch.object(local_vision_shadow, "resolve_yunet_model", return_value=model), \
+        with patch.dict(sys.modules, {"cv2": ModuleType("cv2")}), \
+                patch.object(local_vision_shadow, "resolve_yunet_model", return_value=model), \
                 patch.object(visual_face_diagnostic, "diagnose", return_value={
                     "summary": {"detected_face_count": 2, "expected_primary_count": 2}}), \
                 patch.object(local_vision_shadow, "gate_hint_enabled", return_value=True):

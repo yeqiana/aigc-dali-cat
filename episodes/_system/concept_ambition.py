@@ -305,7 +305,7 @@ def run_critic(ep, attempt, codex_raw, timeout=None):
     cmd=prefix(codex)+["exec","--skip-git-repo-check","--ephemeral","-c",'model_reasoning_effort="medium"'," -s".strip(),"workspace-write","-C",str(ROOT),"--json","-"]
     log=ep/"meta"/f"concept-ambition-critic-attempt-{attempt}.jsonl"
     with log.open("w",encoding="utf-8",newline="\n") as h:
-        done=codex_user_runner.run_codex(cmd,input=critic_prompt(ep,cp,candidate,attempt),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="critic")
+        done=codex_user_runner.run_model_codex(cmd,input=critic_prompt(ep,cp,candidate,attempt),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=timeout,check=False,task_type="critic")
     if done.returncode != 0: raise RuntimeError(f"concept critic failed rc={done.returncode}; log={log}")
     if sha256_file(cp) != before: raise RuntimeError("concept critic modified candidate pool")
     if not candidate.is_file(): raise RuntimeError("concept critic did not produce candidate JSON")

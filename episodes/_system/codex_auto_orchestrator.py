@@ -261,7 +261,7 @@ def run_worker(args,resume):
     update_checkpoint(ep,'ORCHESTRATOR_STARTED','CODEX_WORKER_RUNNING')
     cmd=prefix(codex)+['exec','--skip-git-repo-check','--ephemeral','-s','workspace-write','-C',str(ROOT),'--json','-']
     with log.open('a',encoding='utf-8',newline='\n') as h:
-        try: completed=codex_user_runner.run_codex(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
+        try: completed=codex_user_runner.run_model_codex(cmd,input=worker_instruction(ep,resume,args.runtime_request),text=True,encoding="utf-8",stdout=h,stderr=subprocess.STDOUT,timeout=args.timeout,check=False)
         except subprocess.TimeoutExpired:
             update_checkpoint(ep,'ORCHESTRATOR_BLOCKED','RESUME_FULL_AUTO','worker timeout'); print('FULL-AUTO BLOCKED: worker timeout'); return 3
     if completed.returncode!=0:

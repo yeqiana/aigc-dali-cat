@@ -59,7 +59,7 @@ Visual Lock 固定为四层准入：
 
 `ordinary baseline → worst condition → first anomaly → high-impact admission`
 
-baseline 先生成，后三张允许有界并发。统一 Visual Lock Critic PASS 后，Batch 统一使用 `image_scheduler.py`，默认最多 3 个 image worker；技术失败只阻塞依赖帧，无关帧继续。
+baseline 先生成，后三张允许有界并发。统一 Visual Lock Critic PASS 后，Batch 统一使用 `image_scheduler.py`，并发上限从 `config/storyos.yaml:production.max_inflight_images` 读取（当前为 5；修复任务的 4 槽位不等于图片 Worker 数）；技术失败只阻塞依赖帧，无关帧继续。
 <!-- STORY_OS_V2_1_PHASE56_END -->
 
 <!-- STORY_OS_V2_1_PHASE78_BEGIN -->

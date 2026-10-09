@@ -399,13 +399,44 @@ def depth(q: dict) -> int:
     return sum(str(row.get("status") or "") in ACTIVE for row in q.get(QUEUE_KEY) or [])
 
 
-def recover_claims(q: dict) -> int:
-    """Release claims left by a stopped scheduler; caller owns the queue lock."""
+def _quarantine_unverified_final_review(row: dict) -> None:
+    """Preserve identity when a Final Semantic model call lost its lease.
+
+    A missing terminal receipt is not evidence that the model never ran. Never
+    requeue this work until a durable completion / worker-death check happens.
+    """
+    row.update(status="blocked", claim_token=None, lease_expires_at=None,
+               recovery_action="VERIFY_FINAL_SEMANTIC_EXECUTION_BEFORE_RETRY",
+               technical_failure_code="FINAL_SEMANTIC_UNVERIFIED_INTERRUPTED_CALL")
+
+
+def recover_claims(q: dict, *, at: str | None = None) -> int:
+    """Recover expired leases only; never steal an active worker's claim.
+
+    Unknown lease expiry does not prove Final Semantic model execution finished:
+    quarantine unreceipted work rather than dispatching it again.
+    """
+    current = datetime.fromisoformat(at or now())
     count = 0
     for row in q.get(QUEUE_KEY) or []:
-        if row.get("status") == "running":
+        if row.get("status") != "running":
+            continue
+        raw_expiry = row.get("lease_expires_at")
+        expiry = None
+        if raw_expiry:
+            try:
+                candidate = datetime.fromisoformat(str(raw_expiry))
+                if candidate.tzinfo is not None and current.tzinfo is not None:
+                    expiry = candidate
+            except (TypeError, ValueError, OverflowError):
+                pass
+        if expiry is not None and expiry > current:
+            continue
+        if row.get("review_kind") == FINAL_SEMANTIC and not isinstance(row.get("receipt"), dict):
+            _quarantine_unverified_final_review(row)
+        else:
             row.update(status="queued", claim_token=None, lease_expires_at=None)
-            count += 1
+        count += 1
     return count
 
 
@@ -423,6 +454,10 @@ def claim(q: dict, *, lease_seconds: int = 300, at: str | None = None) -> dict |
     for row in sorted(q.get(QUEUE_KEY) or [], key=lambda value: str(value.get("queued_at") or "")):
         status = str(row.get("status") or "")
         if status == "running":
+            # A potentially still-running Final Semantic model must not be
+            # restarted by expiry alone; explicit recovery owns that decision.
+            if row.get("review_kind") == FINAL_SEMANTIC and not isinstance(row.get("receipt"), dict):
+                continue
             expiry = row.get("lease_expires_at")
             if expiry and datetime.fromisoformat(str(expiry)) > current:
                 continue
@@ -430,6 +465,22 @@ def claim(q: dict, *, lease_seconds: int = 300, at: str | None = None) -> dict |
             status = "queued"
         if status != "queued":
             continue
+        if row.get("review_kind") == FINAL_SEMANTIC:
+            # The model call's request ID must exist in durable Queue Authority
+            # *before* the Runner may see a dispatch. An earlier claimed ID
+            # with no valid terminal receipt is never permission to redispatch.
+            existing_request = str(row.get("runner_request_id") or "")
+            # A nonmatching receipt also proves there was a prior review
+            # outcome candidate; it cannot grant another paid model call,
+            # including rows created by older versions without a Runner ID.
+            has_prior_receipt = isinstance(row.get("receipt"), dict)
+            if (existing_request or has_prior_receipt) and not _receipt_matches_item(
+                    row, row.get("receipt")):
+                _quarantine_unverified_final_review(row)
+                continue
+            if not existing_request:
+                row["runner_request_id"] = uuid.uuid4().hex
+                row["review_dispatch_intent_at"] = current.isoformat()
         token = uuid.uuid4().hex
         row.update(status="running", claim_token=token,
                    lease_expires_at=(current + timedelta(seconds=lease_seconds)).isoformat())
@@ -547,6 +598,23 @@ def telemetry(ep: Path, event: str, item: dict, *, queue_depth: int) -> None:
         pass
 
 
+def _claim_and_persist_under_lock(ep: Path, scheduler_core) -> dict | None:
+    """Persist claim-side quarantine even when claim() returns no runnable task."""
+    q = scheduler_core.load_queue(ep)
+    def fingerprint() -> tuple:
+        return tuple(
+            (r.get("review_key"), r.get("status"), r.get("claim_token"),
+             r.get("lease_expires_at"), r.get("runner_request_id"),
+             r.get("technical_failure_code"), r.get("recovery_action"))
+            for r in q.get(QUEUE_KEY) or []
+        )
+    before = fingerprint()
+    row = claim(q)
+    if row is not None or before != fingerprint():
+        scheduler_core.save_queue(ep, q)
+    return row
+
+
 def _claim_next_lane_item(ep: Path, scheduler_core) -> dict | None:
     """Claim work while serialized with Phase5A epoch retirement.
 
@@ -565,17 +633,11 @@ def _claim_next_lane_item(ep: Path, scheduler_core) -> dict | None:
         ):
             phase5a_collaborative_canary.assert_validation_epoch_review_dispatch_eligible(ep)
             with scheduler_core.queue_transaction(ep):
-                queue = scheduler_core.load_queue(ep)
-                row = claim(queue)
-                if row:
-                    scheduler_core.save_queue(ep, queue)
+                row = _claim_and_persist_under_lock(ep, scheduler_core)
             return row
 
     with scheduler_core.queue_transaction(ep):
-        queue = scheduler_core.load_queue(ep)
-        row = claim(queue)
-        if row:
-            scheduler_core.save_queue(ep, queue)
+        row = _claim_and_persist_under_lock(ep, scheduler_core)
     return row
 
 
@@ -635,9 +697,20 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                                         "model_policy_sha256": item["model_policy_sha256"]})
             except Exception as exc:
                 if item.get("review_kind") == FINAL_SEMANTIC:
-                    result = {"review_kind": FINAL_SEMANTIC, "status": "TECH_FAILED",
-                              "review_outcome": "TECH_FAILED", "issue_codes": [],
-                              "notes": f"Final semantic review technical failure: {exc}"}
+                    # The model may have completed before the local exception;
+                    # never create a synthetic terminal receipt or retry it.
+                    with scheduler_core.queue_transaction(ep):
+                        current_queue = scheduler_core.load_queue(ep)
+                        live_row = next((value for value in current_queue.get(QUEUE_KEY) or []
+                                         if value.get("review_key") == item["review_key"]), None)
+                        if (live_row is not None
+                                and live_row.get("claim_token") == item.get("claim_token")):
+                            _quarantine_unverified_final_review(live_row)
+                            live_row["interruption_error_class"] = type(exc).__name__
+                            scheduler_core.save_queue(ep, current_queue)
+                    changed.set()
+                    progress.set()
+                    return
                 else:
                     result = {"decision": "DEFER_TO_FINAL", "issue_codes": [],
                               "notes": f"Review technical failure: {exc}",
@@ -700,10 +773,18 @@ async def run_lane(episode: Path, *, changed, progress, stop, codex: str | None,
                 await task
             changed.set()
             continue
-        if stop.is_set() and depth(scheduler_core.load_queue(ep)) == 0:
+        # An external worker may still own an unexpired review lease. Once
+        # this scheduler has no local tasks and no queued work to claim, stop
+        # without waiting indefinitely for that independent worker.
+        def has_queued_review() -> bool:
+            queue = scheduler_core.load_queue(ep)
+            return any(row.get("status") == "queued"
+                       for row in queue.get(QUEUE_KEY) or [])
+
+        if stop.is_set() and not has_queued_review():
             return
         changed.clear()
-        if stop.is_set() and depth(scheduler_core.load_queue(ep)) == 0:
+        if stop.is_set() and not has_queued_review():
             return
         await changed.wait()
 

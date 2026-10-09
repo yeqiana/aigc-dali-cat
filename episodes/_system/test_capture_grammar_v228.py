@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import os
 import subprocess, sys, json
 
 ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes" / "_system"
 
 def main():
+    cmd = [sys.executable]
+    if os.environ.get('STORYOS_CI_PYTHON_BOOTSTRAP') == '1':
+        cmd.append(str(ROOT / 'scripts/ci_storyos_python.py'))
     r = subprocess.run(
-        [sys.executable, str(SYSTEM / "capture_grammar_v228.py")],
+        [*cmd, str(SYSTEM / "capture_grammar_v228.py")],
         cwd=ROOT, text=True, capture_output=True, encoding="utf-8", errors="replace"
     )
     if r.stdout.strip():

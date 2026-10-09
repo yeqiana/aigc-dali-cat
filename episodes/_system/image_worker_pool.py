@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import uuid
 from pathlib import Path
 
@@ -211,6 +212,8 @@ def execute(ep,item,timeout,codex):
             model=str(payload_policy.get("model") or ""),
             quality=str(payload_policy.get("quality") or ""),
             codex_raw=codex,
+            proof_transport_model=str(controller_policy.get("model") or ""),
+            proof_transport_effort=str(controller_policy.get("reasoning_effort") or ""),
         )
     payload_preflight_status = str(payload_preflight.get("status") or "")
     payload_gate_pass = (

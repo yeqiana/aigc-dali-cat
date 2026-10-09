@@ -199,7 +199,11 @@ def main() -> int:
     sub.add_parser('self-test')
     args = ap.parse_args()
     if args.cmd == 'self-test':
-        assert read_canvas(Path('__missing__')) == (1080, 1350, '4:5')
+        from unittest.mock import patch
+        # Simulate absent authority in an ephemeral fixture; never query MySQL.
+        with patch.object(production_ledger, 'load_authority', return_value=None) as load:
+            assert read_canvas(Path('__missing__')) == (1080, 1350, '4:5')
+            load.assert_called_once()
         print('CANVAS NORMALIZE SELF-TEST PASS')
         return 0
     if args.cmd == 'episode':

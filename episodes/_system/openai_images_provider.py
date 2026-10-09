@@ -123,17 +123,26 @@ def _decode_response(raw: bytes, expected: int) -> list[bytes]:
         )
     return images
 
+class _RejectRedirect(request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def _request(req: request.Request, timeout: int) -> tuple[bytes, dict]:
+    # Direct official API transport: do not follow redirects with a bearer
+    # token or silently inherit machine HTTP(S)_PROXY configuration.
+    opener = request.build_opener(request.ProxyHandler({}), _RejectRedirect())
     try:
-        with request.urlopen(req, timeout=timeout) as rsp:
+        with opener.open(req, timeout=timeout) as rsp:
             body = rsp.read()
             headers = {str(k).lower(): str(v) for k, v in rsp.headers.items()}
             return body, headers
     except error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")[-4000:]
-        raise OpenAIImagesProviderError(f"OPENAI_IMAGE_HTTP_{exc.code}: {body}") from exc
-    except error.URLError as exc:
-        raise OpenAIImagesProviderError(f"OPENAI_IMAGE_NETWORK_ERROR: {exc.reason}") from exc
+        # Provider errors may echo prompts/identifiers: never log response body.
+        raise OpenAIImagesProviderError(f"OPENAI_IMAGE_HTTP_{exc.code}") from None
+    except error.URLError:
+        raise OpenAIImagesProviderError("OPENAI_IMAGE_NETWORK_ERROR") from None
+
 
 def _multipart(fields: dict[str, str], images: list[Path]) -> tuple[bytes, str]:
     boundary = "----StoryOS" + uuid.uuid4().hex

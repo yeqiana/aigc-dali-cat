@@ -74,6 +74,22 @@ INCREMENTAL_PLAN_INPUTS=[
 ]
 
 
+
+def _assert_preimage_storage_schema() -> None:
+    """Gate hosted PREIMAGE derivation on exact V2 schema, never on a legacy alias.
+
+    This is structure admission only, not Episode stage or review authority.
+    """
+    import storage_config
+    if storage_config.episode_meta_store_config()["mode"] not in {"mysql", "dual"}:
+        return
+    import preimage_storage_preflight
+    result = preimage_storage_preflight.inspect()
+    if not result.get("schema_check_passed"):
+        raise RuntimeError(
+            f"PREIMAGE_V2_SCHEMA_BLOCKED:{result.get('status') or 'UNKNOWN'}")
+
+
 def dispatch_critic_runnable(task_type, *, adapter, episode_dir, attempt,
                              legacy_target, route_decision=None,
                              production_enabled=None, adapter_kwargs=None):
@@ -1023,6 +1039,7 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
                         import frame_contract
                         import preimage_directing_materializer
                         try:
+                            _assert_preimage_storage_schema()
                             materialized=preimage_directing_materializer.ensure(ep)
                             index=frame_contract.compile_all(ep)
                             deterministic_preimage_step=host_step
@@ -1034,6 +1051,7 @@ def _execute(ep,codex=None,timeout=None,run_id=None,trace_id=None,until=None,tel
                         import frame_contract
                         import preimage_directing_materializer
                         try:
+                            _assert_preimage_storage_schema()
                             materialized=preimage_directing_materializer.ensure(ep)
                             # A hosted authority commit can make the strict directing
                             # contracts appear after an earlier Frame Contract compile.

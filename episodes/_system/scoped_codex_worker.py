@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, datetime, hashlib, json, os, shutil, subprocess, sys, time, uuid
+import argparse, base64, binascii, datetime, hashlib, json, os, re, shutil, subprocess, sys, time, uuid
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import execution_capsule
 import character_contract
@@ -295,19 +295,23 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         # stream for sentinel validation. Other scoped work keeps its existing
         # streaming/discard behavior.
         capture_preflight_output = step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT"
-        sink = subprocess.PIPE if capture_preflight_output else (output_handle or subprocess.DEVNULL)
+        capture_output_stream = capture_preflight_output or bool(runner_request_id) or (
+            persist_output_stream and output_handle is not None
+        )
+        sink = subprocess.PIPE if capture_output_stream else (output_handle or subprocess.DEVNULL)
         execution_started=True
-        cp=codex_user_runner.run_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
+        cp=codex_user_runner.run_model_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
             stdout=sink,stderr=subprocess.STDOUT,timeout=timeout,check=False,
             task_type="scoped_step",request_id=runner_request_id)
         rc=int(cp.returncode)
-        if capture_preflight_output:
+        if capture_output_stream:
             captured = getattr(cp, "stdout", None)
             if isinstance(captured, bytes):
                 captured = captured.decode("utf-8", "replace")
             if output_handle is not None and captured:
                 output_handle.write(str(captured))
                 output_handle.flush()
+        if capture_preflight_output:
             runner_diagnostics=_safe_runner_diagnostics(getattr(cp,"remote",None))
         status="SUCCESS" if rc==0 else "FAILED"
     except subprocess.TimeoutExpired as exc:
@@ -368,8 +372,25 @@ def _safe_runner_diagnostics(remote):
     durable_result_present=False
     if request_id:
         try:
-            durable_result_present=isinstance(codex_user_runner.read_task_result(request_id),dict)
-        except Exception:
+            durable = codex_user_runner.read_task_result(request_id)
+            # read_task_result may return {} for a missing or untrusted file.
+            # An empty dict must NEVER count as durable controller evidence.
+            if (isinstance(durable, dict)
+                    and durable.get("schema_version") == 1
+                    and durable.get("request_id") == request_id
+                    and type(durable.get("returncode")) is int
+                    and type(durable.get("output_bytes")) is int
+                    and 0 <= durable["output_bytes"] <= 32 * 1024 * 1024
+                    and isinstance(durable.get("output_base64"), str)
+                    and isinstance(durable.get("output_sha256"), str)
+                    and re.fullmatch(r"[0-9a-f]{64}", durable["output_sha256"])):
+                output = base64.b64decode(
+                    durable["output_base64"], validate=True)
+                durable_result_present = (
+                    len(output) == durable["output_bytes"]
+                    and hashlib.sha256(output).hexdigest()
+                    == durable["output_sha256"])
+        except (ValueError, TypeError, binascii.Error, OSError):
             durable_result_present=False
     return {
         "request_id":request_id,

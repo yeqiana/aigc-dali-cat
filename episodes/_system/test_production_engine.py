@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import json
+import os
 import struct
 import tempfile
 import unittest
+from unittest.mock import patch
 import zlib
 from pathlib import Path
 
@@ -35,6 +37,12 @@ class CanvasTests(unittest.TestCase):
 
 
 class LedgerTests(unittest.TestCase):
+    def setUp(self):
+        # Ephemeral fixtures exercise the legacy file contract, never production MySQL.
+        fixture = patch.dict(os.environ, {"STORYOS_EPISODE_META_STORE_MODE": "json"})
+        fixture.start()
+        self.addCleanup(fixture.stop)
+
     def make_episode(self, root: Path, ratio: str | None = None) -> Path:
         ep = root / "episodes" / "10_test" / "01_demo"
         (ep / "meta").mkdir(parents=True)

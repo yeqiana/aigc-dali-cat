@@ -203,11 +203,7 @@ def run(ep: Path, task: dict, *, role: str, timeout_seconds: int = 900,
         command, stdin_bytes=prompt.encode("utf-8"), timeout=int(timeout_seconds),
         cwd=ROOT, task_type="scoped_step", codex_home_mode="inherit", request_id=request_id,
     )
-    result = (
-        codex_user_runner.execute_codex(task_request)
-        if codex_user_runner.bridge_required()
-        else codex_user_runner.execute_task(task_request)
-    )
+    result = codex_user_runner.execute_model_task(task_request)
     telemetry = codex_execution_telemetry.model_execution(
         result, provider=DEFAULT_PROVIDER, model=str(model), authority_capsule_read_once=True
     )

@@ -255,7 +255,7 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
         }
         self.assertEqual(image_scheduler._technical_retry_code(item), "LOCAL_WORKSPACE_PERMISSION")
 
-    def test_worker_process_lost_requeues_only_with_one_shared_attempt_remaining(self):
+    def test_worker_process_lost_must_reconcile_prior_attempt_before_retry(self):
         with tempfile.TemporaryDirectory() as td:
             ep = Path(td)
             self._queue(ep, {"id": "q1", "frame": 3, "kind": "baseline_candidate", "scope": "repair", "status": "tech_failed", "attempts": 1, "technical_failure_code": "WORKER_PROCESS_LOST", "last_error": "worker disappeared before terminal receipt"})
@@ -267,15 +267,20 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
             }
             with patch.object(
                     image_scheduler, "_shared_generation_attempt_state",
-                    return_value=state):
+                    return_value=state), patch.object(
+                    image_scheduler.generation_attempt_authority, "load_attempt",
+                    return_value=None):
                 result = image_scheduler.retry_tech(
                     ep, sleep_fn=lambda _seconds: self.fail("shared final retry has no legacy backoff"))
             queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))
-            self.assertEqual(result["requeued"], 1)
+            # A missing process is not proof the provider did not complete.
+            self.assertEqual(result["requeued"], 0)
             self.assertEqual(result["backoff_seconds"], 0)
-            self.assertEqual(queue["items"][0]["status"], "queued")
+            self.assertEqual(queue["items"][0]["status"], "external_blocked")
             self.assertEqual(
-                queue["items"][0]["technical_retry_shared_budget"]["remaining_before_retry"], 1)
+                queue["items"][0]["external_block"]["reason"],
+                "previous_generation_attempt_missing",
+            )
 
     def test_exhausted_shared_budget_blocks_capacity_retry_immediately(self):
         item = {"id": "q1", "frame": 1, "attempts": 2}
@@ -331,9 +336,14 @@ class TechnicalRetryPolicyTests(unittest.TestCase):
                 "remaining_attempts": 1,
                 "active_attempt_index": None,
             }
+            # Remaining budget alone is not permission to retry. The prior
+            # Provider invocation must have a durable FAILED_AFTER_DISPATCH
+            # terminal Attempt before any second paid dispatch can be queued.
             with patch.object(
                     image_scheduler, "_shared_generation_attempt_state",
-                    return_value=state):
+                    return_value=state), patch.object(
+                    image_scheduler.generation_attempt_authority, "load_attempt",
+                    return_value={"status": "FAILED_AFTER_DISPATCH"}):
                 result = image_scheduler.retry_tech(
                     ep, sleep_fn=lambda seconds: slept.append(seconds))
             queue = json.loads((ep / "meta/production-queue.json").read_text(encoding="utf-8"))

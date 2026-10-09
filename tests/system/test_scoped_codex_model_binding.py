@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import sys
+import base64
+import hashlib
 import subprocess
 import io
 import json
@@ -74,7 +76,14 @@ class ScopedCodexModelBindingTests(unittest.TestCase):
             "timed_out": False, "task_type": "scoped_step", "transport": "user_runner",
             "api_key": "must-not-persist",
         }
-        durable = {"output_base64": "secret-like-output", "raw_stdout": "private"}
+        output = b"test-only scoped receipt"
+        durable = {
+            "schema_version": 1, "request_id": "req-123", "returncode": 1,
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "output_bytes": len(output),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+            "raw_stdout": "private",
+        }
         with patch.object(worker.codex_user_runner, "read_task_result", return_value=durable) as read:
             result = worker._safe_runner_diagnostics(remote)
 
@@ -86,6 +95,30 @@ class ScopedCodexModelBindingTests(unittest.TestCase):
         })
         self.assertNotIn("api_key", result)
         self.assertNotIn("output_base64", result)
+
+    def test_missing_or_unverified_durable_result_never_claimed_present(self):
+        remote = {"request_id": "req-123", "returncode": 0}
+        output = b"valid completed event"
+        valid = {
+            "schema_version": 1, "request_id": "req-123", "returncode": 0,
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "output_bytes": len(output),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+        }
+        for candidate in ({}, {"request_id": "req-123"},
+                          {**valid, "request_id": "different"},
+                          {**valid, "output_sha256": "0" * 64},
+                          {**valid, "output_bytes": len(output) + 1},
+                          {**valid, "output_base64": "broken**base64"}):
+            with self.subTest(candidate=candidate):
+                with patch.object(worker.codex_user_runner, "read_task_result",
+                                  return_value=candidate):
+                    result = worker._safe_runner_diagnostics(remote)
+                self.assertFalse(result["durable_result_present"])
+        with patch.object(worker.codex_user_runner, "read_task_result",
+                          return_value=valid):
+            result = worker._safe_runner_diagnostics(remote)
+        self.assertTrue(result["durable_result_present"])
 
     def test_safe_runner_diagnostics_without_request_id_does_not_read_durable_result(self):
         with patch.object(worker.codex_user_runner, "read_task_result") as read:
@@ -139,6 +172,35 @@ class ScopedCodexModelBindingTests(unittest.TestCase):
                     {"capability_probe": "PASS"},
                 )
                 self.assertEqual(receipt["status"], "SUCCESS")
+
+    def test_image_payload_controller_persists_output_through_pipe(self):
+        output = io.StringIO()
+        expected = '{"text":"exact frame request"}'
+        binding = {
+            "role": "image.controller", "profile": "image_controller",
+            "model": "gpt-6-luna", "reasoning_effort": "high",
+            "model_policy_sha256": "policy-sha",
+        }
+
+        def run_codex(*_args, **kwargs):
+            self.assertIs(kwargs["stdout"], subprocess.PIPE)
+            return subprocess.CompletedProcess(["codex"], 0, stdout=expected)
+
+        with patch.object(worker, "resolve_codex", return_value=Path("codex")), \
+             patch.object(worker, "codex_exec_command", return_value=["codex", "exec", "-"]), \
+             patch.object(worker.codex_user_runner, "run_codex", side_effect=run_codex), \
+             patch.object(worker.runtime_observability, "now", return_value="now"), \
+             patch.object(worker.runtime_observability, "write_model_execution_receipt", return_value=Path("receipt.json")), \
+             patch.object(worker, "_model_event"), \
+             patch("logical_asset_identity.episode_id", return_value="episode"):
+            rc, receipt = worker.execute_model_call(
+                Path("episode"), "IMAGE_PAYLOAD_REQUEST", binding, "controller prompt",
+                output_handle=output, persist_output_stream=True, sandbox="read-only",
+            )
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(output.getvalue(), expected)
+        self.assertEqual(receipt["scoped_output_stream"], expected)
 
 
 if __name__ == "__main__":

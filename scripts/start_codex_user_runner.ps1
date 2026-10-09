@@ -7,7 +7,7 @@
     The runner must be started by the interactive Codex user. It listens on
     127.0.0.1 only, executes nothing but the Codex CLI, and keeps the Codex
     credential inside this user profile. DevSpace/SYSTEM reaches it through the
-    loopback endpoint published at runtime/codex-user-runner/endpoint.json.
+    loopback endpoint published at the shared main-checkout runtime/codex-user-runner/endpoint.json.
 
 .PARAMETER Port
     0 (default) lets the OS pick a free loopback port. A fixed port is only
@@ -36,8 +36,29 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
+
+# Git worktrees share the interactive Runner's runtime state with the main checkout.
+$SharedRoot = $RepoRoot
+$GitMarker = Join-Path $RepoRoot '.git'
+if (Test-Path -LiteralPath $GitMarker -PathType Leaf) {
+    $pointerLine = Get-Content -LiteralPath $GitMarker -TotalCount 1
+    if ($pointerLine -match '^gitdir:\s*(.+)$') {
+        $gitdir = $Matches[1].Trim()
+        if (-not [System.IO.Path]::IsPathRooted($gitdir)) {
+            $gitdir = Join-Path $RepoRoot $gitdir
+        }
+        $gitdir = [System.IO.Path]::GetFullPath($gitdir)
+        $worktreesDir = Split-Path -Parent $gitdir
+        $commonGitDir = Split-Path -Parent $worktreesDir
+        if ((Split-Path -Leaf $worktreesDir) -eq 'worktrees' -and
+            (Split-Path -Leaf $commonGitDir) -eq '.git' -and
+            (Test-Path -LiteralPath $gitdir -PathType Container)) {
+            $SharedRoot = Split-Path -Parent $commonGitDir
+        }
+    }
+}
 $Runner = Join-Path $RepoRoot 'episodes/_system/codex_user_runner.py'
-$RuntimeDir = Join-Path $RepoRoot 'runtime/codex-user-runner'
+$RuntimeDir = Join-Path $SharedRoot 'runtime/codex-user-runner'
 $Endpoint = Join-Path $RuntimeDir 'endpoint.json'
 $StdoutLog = Join-Path $RuntimeDir 'runner.out.log'
 $StderrLog = Join-Path $RuntimeDir 'runner.err.log'
@@ -117,6 +138,29 @@ if (-not (Test-Path -LiteralPath $RuntimeDir)) {
 }
 
 # ---------------------------------------------------------------------------
+
+# Prefer an already-running interactive Codex user-mode Runner.
+if (Test-Path -LiteralPath $Endpoint -PathType Leaf) {
+    $healthOutput = & $python @pythonArgs $Runner health --json 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        try {
+            $health = ($healthOutput | Out-String | ConvertFrom-Json)
+            if ($health.status -eq 'ok' -and $health.user) {
+                if ($health.user -ine $identity) {
+                    Write-Host 'CODEX_USER_RUNNER_WRONG_IDENTITY: existing runner belongs to another user' -ForegroundColor Red
+                    exit 4
+                }
+                Write-Step 'reusing existing healthy interactive Codex runner (no login or restart)'
+                exit 0
+            }
+        } catch {
+            # Existing endpoint may be busy or incompatible: do not replace it.
+        }
+    }
+    Write-Host 'CODEX_USER_RUNNER_UNAVAILABLE: shared endpoint exists but health is unverified' -ForegroundColor Red
+    Write-Host 'Do not overwrite it; diagnose or stop the existing runner explicitly.'
+    exit 4
+}
 # 3. Start the loopback runner.
 # ---------------------------------------------------------------------------
 $serveArgs = @($Runner, 'serve', '--host', '127.0.0.1', '--port', $Port)
@@ -130,11 +174,30 @@ $argLine = (($pythonArgs + $serveArgs) | ForEach-Object { '"' + $_ + '"' }) -joi
 $proc = Start-Process -FilePath $python -ArgumentList $argLine -WindowStyle Hidden -PassThru -RedirectStandardOutput $StdoutLog -RedirectStandardError $StderrLog
 Write-Step ('started pid ' + $proc.Id)
 
+# An endpoint left behind by a crashed runner is not proof that this new
+# process started. Require the fresh server's own published PID, and never
+# adopt another user's or a preexisting server's endpoint.
 $deadline = (Get-Date).AddSeconds(60)
-while ((Get-Date) -lt $deadline -and -not (Test-Path -LiteralPath $Endpoint)) { Start-Sleep -Milliseconds 500 }
-if (-not (Test-Path -LiteralPath $Endpoint)) {
-    Write-Host 'CODEX_USER_RUNNER_UNAVAILABLE: the runner did not publish its endpoint' -ForegroundColor Red
-    if (Test-Path -LiteralPath $StderrLog) { Get-Content -LiteralPath $StderrLog -Tail 20 }
+$endpointMatchesNewProcess = $false
+while ((Get-Date) -lt $deadline) {
+    if ($proc.HasExited) { break }
+    if (Test-Path -LiteralPath $Endpoint) {
+        try {
+            $published = Get-Content -LiteralPath $Endpoint -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            $endpointMatchesNewProcess = (
+                [int]$published.pid -eq [int]$proc.Id -and
+                [string]$published.host -eq '127.0.0.1' -and
+                [int]$published.port -gt 0
+            )
+            if ($endpointMatchesNewProcess) { break }
+        } catch {
+            # The new runner may still be atomically publishing its endpoint.
+        }
+    }
+    Start-Sleep -Milliseconds 500
+}
+if (-not $endpointMatchesNewProcess) {
+    Write-Host 'CODEX_USER_RUNNER_UNAVAILABLE: new runner did not publish its own endpoint' -ForegroundColor Red
     exit 4
 }
 Write-Step ('endpoint: ' + $Endpoint)

@@ -5,6 +5,7 @@ import argparse
 import difflib
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -195,7 +196,11 @@ def run_audits(ep: Path, txdir: Path, data: dict, strict_warnings: bool) -> list
             continue
         report = txdir / 'audit' / (rels.replace('/', '__') + '.json')
         report.parent.mkdir(parents=True, exist_ok=True)
-        cmd = [sys.executable, str(script), str(ep), '--file', str(ep / rel), '--report', str(report)]
+        cmd = [sys.executable]
+        if os.environ.get('STORYOS_CI_PYTHON_BOOTSTRAP') == '1':
+            # CI subprocesses need the same stdlib platform/package bootstrap.
+            cmd.append(str(Path(__file__).resolve().parents[2] / 'scripts/ci_storyos_python.py'))
+        cmd.extend([str(script), str(ep), '--file', str(ep / rel), '--report', str(report)])
         if strict_warnings:
             cmd.append('--strict-warnings')
         code = subprocess.call(cmd)

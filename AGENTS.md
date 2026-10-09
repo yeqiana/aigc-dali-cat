@@ -65,6 +65,7 @@
 - 中断恢复先验证已经到达的目标阶段；证据有效则 REUSED，不为“保险”重做昂贵 Step。
 - 图片 worker pool 只复用 Python 进程/模块，不复用跨帧 Codex 对话上下文。
 - Quota observability 仅记录真实日志计数或用户明确提供的 `/status` 百分比，不允许推测 Plus 剩余额度。
+- 本地 StoryOS 生产环境由 git-ignored `.storyos/runtime-launcher/runtime.env` 提供实际数据库/缓存连接参数。WebCodex 或终端单独运行验证/生产 Python 脚本时，必须通过 `python scripts/storyos_production_env.py episodes/_system/<script>.py ...` 加载现有运行配置，禁止把 `config/storyos.yaml` 的 localhost 默认值误当成正式生产库，也不得打印或提交凭据。
 <!-- STORY_OS_RUNTIME_DAG_REFACTOR_AGENTS_END -->
 
 <!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_AGENTS_BEGIN -->
@@ -116,7 +117,7 @@
 - 显式本地 Codex：`runtimes/CODEX.md`
 - 普通 ChatGPT Web：`runtimes/WEB.md`
 
-**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 唯一生产模式入口为 `production.mode`（默认 `COLLABORATIVE`）；执行器分别配置在 `execution.workspace.provider`、`execution.image.executor`、`execution.vision_review.executor`。宿主不可用时不得自动改走本地 Codex。只有显式设为 `CODEX_MANAGED` 或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED` 才启用整条 CODEX Runtime；旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型与生图模型分别读取 `config/storyos.yaml:models.profiles.image_controller` 和 `models.profiles.image_payload`；生图质量固定为 `high`。Story、PREIMAGE、Critic、Review、Gate、Release 不得因图片执行器而交给 Codex full-auto。
+**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 唯一生产模式入口为 `production.mode`（默认 `COLLABORATIVE`）；执行器分别配置在 `execution.workspace.provider`、`execution.image.executor`、`execution.vision_review.executor`。宿主不可用时不得自动改走本地 Codex。只有显式设为 `CODEX_MANAGED` 或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED` 才启用整条 CODEX Runtime；旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型与生图模型分别读取 `config/storyos.yaml:models.profiles.image_controller` 和 `models.profiles.image_payload`；生图质量固定为 `high`。图片生成功能仅允许 Codex 原生 ChatGPT/Codex 通道，不得自动切换到 OpenCodex（10100）代理，且无真实会话工具能力证明时不得消耗生图 Attempt。Story、PREIMAGE、Critic、Review、Gate、Release 不得因图片执行器而交给 Codex full-auto。
 
 Runtime DAG 使用通用 `scoped_model`；WORK/WEB 的非图片步骤通过 `product_runtime_adapter.py` 暴露宿主动作，CODEX 整体 Runtime 才使用 `scoped_codex_worker.py`。图片 Scheduler 读取 `execution.image.executor`（旧 `runtime.image_execution_runtime` / `STORY_OS_IMAGE_RUNTIME` 暂保留兼容）。宿主请求使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史，正常等待宿主执行记为 `HOST_WAIT`；Product Review 使用 attempt-scoped request。Concept/Story/Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，但都必须 fresh + source-SHA-bound。
 
@@ -249,21 +250,18 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现�
 <!-- STORY_OS_V240_BATCH_RUNTIME_END -->
 
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_BEGIN -->
-## Story OS V2.4.1 Image Provider Runtime
+## Story OS V2.4.1 Image Provider Runtime（历史记录，当前生产已退役）
 
-Production Batch 先读取 `config/providers/image-provider-runtime.json`：
-
-- 存在 `OPENAI_API_KEY`：优先 OpenAI Image API，GPT-Image-2 可用 `n=5`（上限10）执行 native multi-image。
-- 无 API Key 或 API transport 失败：保持 Codex Subscription fallback。
-- API Key / Authorization Header 禁止写入任何仓库文件或 Episode Evidence。
-- `output_index -> Frame` 是 Story OS 映射约定，不是 Provider 创作权威，仍必须逐帧 Review。
-- 4:5 API 请求使用 1088×1360，9:16 使用 1152×2048，之后无裁切 Normalize 到正式 Release Canvas。
+本节原先的“API Key 优先选择 OpenAI Images API、失败再回退”仅保留为**历史设计背景**，不得作为当前生产执行指令。当前 StoryOS 图片生成必须使用**原生 ChatGPT/Codex 登录通道**（`codex_subscription` / `native_codex`），严格禁止 OpenCodex 本地代理、API 图片 Provider 和 Product Runtime 图片旁路。
+`image_payload_transport.payload_capability_preflight` 在模型/图片 Attempt 之前拒绝非原生 Provider；有无 `OPENAI_API_KEY` 都不会自动授予图片 API 权限。API Key 可按独立模型策略用于被授权的非图片任务，但不能擅自启用图片供应商。
+旧 `config/providers/image-provider-runtime.json` 及旧 API 尺寸/n=5 约定不再是当前图片生产路线或正式 Authority，禁止凭其声明通过审核。
+API Key / Authorization Header 仍禁止写入仓库文件和 Episode Evidence；每帧实际像素必须独立核验。
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_END -->
 
 <!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_BEGIN -->
 ## Story OS V2.4.2 Codex Subscription Batch Runtime
 
-没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
+当图片执行器显式为 `CODEX` 且通过原生能力门禁时，Production Batch 正式走：
 
 `1 Story OS Logical Batch = 5 frames; up to 5 isolated Codex image workers in flight`
 
@@ -274,7 +272,7 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `single_http_request=false`
 - 不需要 API Key，使用本机 ChatGPT/Codex 登录态
 - Logical Batch 仍按 5 帧管理，但默认最多 5 个 Codex 图片 worker 同时在途
-- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免多个 Logical Batch 叠加造成并发放大
+- 全局 Logical Batch 并发按 CODEX 资源预算与 Scheduler 门禁控制，不因存在 API Key 而自动扩大
 - 技术失败自适应 5→4→3→2→1，只重试失败帧
 - 成功帧永不因为同批其他帧技术失败而重生
 - Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行

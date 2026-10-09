@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "episodes/_system"))
@@ -67,14 +68,19 @@ def test_terminal_episode_blocks_queue_budget_and_ledger_writes():
         # Initialize before termination so the test proves late writes are blocked.
         from production_ledger_core import init_ledger, save_json
         ledger = init_ledger(ep)
-        ok, _ = raw_candidate_budget.claim(ep, 1, "original", token="before-terminal")
-        assert ok
-        episode_lifecycle.terminate(ep, target="ABANDONED", source="direct_user:test", reason="stop production")
+        # The setup claim is a fixture lease, never a real production MySQL Attempt.
+        fake_lease = {"attempt_index": 1, "generation_key": "fixture-terminal", "fencing_token": "fixture"}
+        with patch.dict(raw_candidate_budget._ATTEMPT_LEASES, {}, clear=True), \
+             patch("generation_attempt_authority.reserve", return_value=fake_lease) as reserve:
+            ok, _ = raw_candidate_budget.claim(ep, 1, "original", token="before-terminal")
+            assert ok
+            reserve.assert_called_once()
+            episode_lifecycle.terminate(ep, target="ABANDONED", source="direct_user:test", reason="stop production")
+            with pytest.raises(RuntimeError, match="EPISODE_TERMINATED"):
+                raw_candidate_budget.commit(ep, "before-terminal")
         with pytest.raises(RuntimeError, match="EPISODE_TERMINATED"):
             scheduler_core.save_queue(ep, {"schema_version": 1, "items": [], "waves": []})
         with pytest.raises(RuntimeError, match="EPISODE_TERMINATED"):
             raw_candidate_budget.claim(ep, 1, "original", token="late-claim")
-        with pytest.raises(RuntimeError, match="EPISODE_TERMINATED"):
-            raw_candidate_budget.commit(ep, "before-terminal")
         with pytest.raises(RuntimeError, match="EPISODE_TERMINATED"):
             save_json(ep / "meta/production-ledger.json", ledger)

@@ -85,14 +85,20 @@ def test_takeover_completes_once_a_production_consumer_exists():
 # --- gate verdict must track the scanned tree, not a caller's assertion -------
 
 def test_repository_gate_agrees_with_scanned_consumers():
-    recorded = json.loads(RECORD.read_text(encoding="utf-8"))["primary_runtime"]
+    # Isolated Git worktrees need not contain the operator runtime record.
+    # Use the production loader, whose missing-record default is safely V2.
+    recorded = runtime_ownership.load().primary_runtime
     evidence = assess(ROOT, recorded)
     result = complete_from_repository(
         audit_verified=True, root=ROOT, recorded_runtime=recorded
     )
 
     assert result.effective_ownership == evidence.effective_ownership
-    assert (result.status == "COMPLETED") == evidence.effective_ownership
+    # A discovered V3 consumer is necessary, but the control-plane must also
+    # have selected V3. Missing runtime-primary.json safely defaults to V2.
+    assert (result.status == "COMPLETED") == (
+        recorded == "V3_RUNTIME" and evidence.effective_ownership
+    )
     assert "episodes/_system/runtime_ownership.py" in evidence.production_consumers
     assert "episodes/_system/runtime_dag.py" in evidence.production_consumers
     assert "episodes/_system/episode_runner.py" in evidence.production_consumers

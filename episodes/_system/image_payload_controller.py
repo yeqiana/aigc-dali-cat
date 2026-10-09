@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -26,6 +27,11 @@ class ImagePayloadControllerError(RuntimeError):
         self.code = str(code)
         self.detail = str(detail)
         super().__init__(self.code + (f": {self.detail}" if self.detail else ""))
+
+# Include validator identity in the Controller input fingerprint. Otherwise a
+# SUCCESS receipt created under older semantic rules can be mistaken for a
+# validated current Payload Request.
+CONTROLLER_VALIDATION_VERSION = "source-apparent-age-v2"
 
 
 def separate_execution_required(ep) -> bool:
@@ -125,6 +131,7 @@ def _controller_prompt(*, controller_input: dict, identity: dict, binding: dict,
         "instructions": [
             "Produce the final scene prompt from the supplied frozen StoryOS inputs.",
             "Preserve all frame, visual, identity, continuity, and source constraints.",
+            "If source_scene_prompt explicitly specifies a visual/apparent age (e.g. 47岁), keep that exact age in the generated scene prompt; never replace it with a generic character biography age (e.g. 56岁).",
             "Do not choose or change the image model, quality, canvas, references, or policy.",
             "Do not call tools, image_generation, or any image provider.",
             "Return only JSON shaped as {\"scene_prompt\":\"...\"}; no markdown or extra keys.",
@@ -157,6 +164,7 @@ def _input_fingerprint(*, prompt: str, binding: dict, identity: dict, references
         "identity": identity,
         "references": references,
         "prompt": prompt,
+        "controller_validation_version": CONTROLLER_VALIDATION_VERSION,
     }
     return _sha256_bytes(_canonical_bytes(value))
 
@@ -171,9 +179,30 @@ def _parse_controller_output(stream_text: str) -> dict:
     return {"scene_prompt": scene_prompt.strip()}
 
 
+def _validate_frame_age(*, controller_input: dict, scene_prompt: str) -> None:
+    """Reject per-frame apparent-age drift before creating the payload request.
+
+    The character-wide age may reflect the final timeline (e.g. 56), while a
+    locked 2017 storyboard frame explicitly depicts a 47-year-old appearance.
+    Only the supplied per-frame source prompt is authoritative for this test.
+    """
+    source_scene = str(controller_input.get("source_scene_prompt") or "")
+    locked_ages = set(re.findall(r"(?<!\d)(\d{1,3})\s*岁", source_scene))
+    if not locked_ages:
+        return
+    generated_ages = set(re.findall(r"(?<!\d)(\d{1,3})\s*岁", scene_prompt))
+    if generated_ages != locked_ages:
+        raise ImagePayloadControllerError(
+            "IMAGE_CONTROLLER_SOURCE_AGE_DRIFT",
+            f"frame_source_ages={sorted(locked_ages)},output_ages={sorted(generated_ages)}",
+        )
+
+
 def _build_validated_request(*, ep: Path, identity: dict, fields: dict,
                              binding: dict, payload: dict, call_id: str,
-                             controller_output: dict) -> dict:
+                             controller_output: dict, controller_input: dict) -> dict:
+    _validate_frame_age(controller_input=controller_input,
+                        scene_prompt=controller_output["scene_prompt"])
     output_sha = _sha256_bytes(_canonical_bytes(controller_output))
     request = image_payload_request.build_request(
         **identity,
@@ -197,7 +226,8 @@ def _build_validated_request(*, ep: Path, identity: dict, fields: dict,
 
 def _reuse_existing_receipt(*, ep: Path, path: Path, call_id: str,
                              input_fingerprint: str, binding: dict,
-                             identity: dict, fields: dict, payload: dict) -> dict | None:
+                             identity: dict, fields: dict, payload: dict,
+                             controller_input: dict) -> dict | None:
     if not path.is_file():
         return None
     try:
@@ -224,7 +254,7 @@ def _reuse_existing_receipt(*, ep: Path, path: Path, call_id: str,
     output = _parse_controller_output(receipt["scoped_output_stream"])
     request = _build_validated_request(
         ep=ep, identity=identity, fields=fields, binding=binding, payload=payload,
-        call_id=call_id, controller_output=output,
+        call_id=call_id, controller_output=output, controller_input=controller_input,
     )
     output_sha = _sha256_bytes(_canonical_bytes(output))
     if receipt.get("controller_output_sha256") != output_sha:
@@ -274,10 +304,47 @@ def build_payload_request(ep, *, logical_asset_key: str, frame_id: str,
     )
     call_id = "imgctrl-" + input_fingerprint[:32]
     receipt_path = _receipt_path(ep, call_id)
-    reused = _reuse_existing_receipt(
-        ep=ep, path=receipt_path, call_id=call_id, input_fingerprint=input_fingerprint,
-        binding=binding, identity=identity, fields=fields, payload=payload,
-    )
+    superseded_call_id = None
+    try:
+        reused = _reuse_existing_receipt(
+            ep=ep, path=receipt_path, call_id=call_id, input_fingerprint=input_fingerprint,
+            binding=binding, identity=identity, fields=fields, payload=payload,
+            controller_input=controller_input,
+        )
+    except ImagePayloadControllerError as exc:
+        retryable_failed_execution = False
+        if exc.code == "IMAGE_CONTROLLER_RECEIPT_NOT_REUSABLE":
+            try:
+                stale = json.loads(receipt_path.read_text(encoding="utf-8"))
+                argv = stale.get("codex_argv") if isinstance(stale, dict) else []
+                retryable_failed_execution = (
+                    isinstance(stale, dict)
+                    and stale.get("status") == "FAILED"
+                    and stale.get("controller_input_fingerprint") == input_fingerprint
+                    and stale.get("image_generation_enabled") is False
+                    and not any("image_generation" in str(arg) or str(arg) == "--image" for arg in (argv or []))
+                )
+            except Exception:
+                retryable_failed_execution = False
+        if exc.code != "IMAGE_CONTROLLER_SOURCE_AGE_DRIFT" and not retryable_failed_execution:
+            raise
+        # Preserve the rejected receipt as immutable evidence. A failed,
+        # text-only controller call may be retried once under a new call id;
+        # successful stale-age output receives the existing one-replacement
+        # path and remains subject to the per-frame age validator.
+        superseded_call_id = call_id
+        stale_digest = _sha256_bytes(receipt_path.read_bytes())
+        call_id = "imgctrl-" + _sha256_bytes(_canonical_bytes({
+            "input_fingerprint": input_fingerprint,
+            "validator": CONTROLLER_VALIDATION_VERSION,
+            "superseded_receipt_sha256": stale_digest,
+        }))[:32]
+        receipt_path = _receipt_path(ep, call_id)
+        reused = _reuse_existing_receipt(
+            ep=ep, path=receipt_path, call_id=call_id, input_fingerprint=input_fingerprint,
+            binding=binding, identity=identity, fields=fields, payload=payload,
+            controller_input=controller_input,
+        )
     if reused is not None:
         return reused
 
@@ -293,6 +360,8 @@ def build_payload_request(ep, *, logical_asset_key: str, frame_id: str,
         "provider_source": "CODEX_CLI_CONFIG",
         "transport_provider_attestation": "UNCONFIRMED",
         "runner": "codex_user_runner",
+        "controller_validation_version": CONTROLLER_VALIDATION_VERSION,
+        "supersedes_controller_call_id": superseded_call_id,
     }
     try:
         rc, receipt = scoped_codex_worker.execute_model_call(
@@ -322,7 +391,7 @@ def build_payload_request(ep, *, logical_asset_key: str, frame_id: str,
         output = _parse_controller_output(stream.getvalue())
         request = _build_validated_request(
             ep=ep, identity=identity, fields=fields, binding=binding, payload=payload,
-            call_id=call_id, controller_output=output,
+            call_id=call_id, controller_output=output, controller_input=controller_input,
         )
     except Exception:
         _controller_telemetry(ep, "CONTROLLER_EXECUTION_FINISHED", call_id=call_id,
@@ -340,6 +409,8 @@ def build_payload_request(ep, *, logical_asset_key: str, frame_id: str,
         "provider_source": "CODEX_CLI_CONFIG",
         "transport_provider_attestation": "UNCONFIRMED",
         "runner": "codex_user_runner",
+        "controller_validation_version": CONTROLLER_VALIDATION_VERSION,
+        "supersedes_controller_call_id": superseded_call_id,
     })
     runtime_observability.write_model_execution_receipt(ep, receipt=receipt)
     _controller_telemetry(ep, "CONTROLLER_EXECUTION_FINISHED", call_id=call_id,

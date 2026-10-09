@@ -23,7 +23,7 @@ ON DUPLICATE KEY UPDATE
 """.strip()
 
 _BY_LEGACY_PATH_SQL = """
-SELECT RECEIPT_ID, EPISODE_ID, STATUS, LEGACY_PATH, LEGACY_SHA256, PAYLOAD
+SELECT RECEIPT_ID, EPISODE_ID, ATTEMPT_ID, PROVIDER, MODEL, STATUS, ERROR_CODE, REQUEST_ID, LEGACY_PATH, LEGACY_SHA256, PAYLOAD
 FROM TB_PROVIDER_RECEIPT
 WHERE EPISODE_ID=%s AND LEGACY_PATH=%s
 LIMIT 1
@@ -72,6 +72,11 @@ class MySqlProviderReceiptRepository:
             "receipt_id": row.get("RECEIPT_ID") or row.get("receipt_id"),
             "episode_id": row.get("EPISODE_ID") or row.get("episode_id"),
             "status": row.get("STATUS") or row.get("status"),
+            "attempt_id": row.get("ATTEMPT_ID") or row.get("attempt_id"),
+            "provider": row.get("PROVIDER") or row.get("provider"),
+            "model": row.get("MODEL") or row.get("model"),
+            "error_code": row.get("ERROR_CODE") or row.get("error_code"),
+            "request_id": row.get("REQUEST_ID") or row.get("request_id"),
             "legacy_path": row.get("LEGACY_PATH") or row.get("legacy_path"),
             "legacy_sha256": row.get("LEGACY_SHA256") or row.get("legacy_sha256"),
             "payload": payload,

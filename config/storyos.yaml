@@ -247,8 +247,8 @@ production:
     enabled: true
     max_additional_candidates_per_frame: 2
 
-  # 图片 backend 技术失败独立于内容返修/候选池：同一 queue item 最多 3 次 backend attempt。
-  # 第 1/2 次失败后分别退避 15s/45s；耗尽后进入外部能力阻塞，不伪装成内容 FAIL。
+  # 图片 backend 技术失败独立于内容返修/候选池；以 max_attempts_per_item 实际配置为准。
+  # 当前为 1 次、无自动退避重试：失败后记录真实阻断原因，由恢复逻辑决定下一步；不可伪装成内容 FAIL。
   technical_retry:
     max_attempts_per_item: 1
     backoff_seconds: []
@@ -502,6 +502,7 @@ timeout_policy:
   fast_scout: 240
   review_critic: 900
   codex_auth_probe: 30
+  image_tool_visibility_probe: 120
   driver_carrier_control: 60
   image_probe: 900
   deep_semantic_review: 1800

@@ -104,6 +104,19 @@ class VisualProfileProductionClosureTest(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory(prefix="visual-profile-production-closure-")
         self.addCleanup(self._tmp.cleanup)
         self.root = Path(self._tmp.name) / "repo"
+        # Resuming this TEST_ONLY DAG uses the actual V3 owner gate against
+        # an isolated record, never the operator's runtime-primary.json.
+        owner_record = self.root / "meta/runtime/runtime-primary.json"
+        owner_record.parent.mkdir(parents=True, exist_ok=True)
+        owner_record.write_text(json.dumps({
+            "primary_runtime": "V3_RUNTIME",
+            "previous_runtime": "V2_RUNTIME",
+            "reason": "TEST_ONLY profile closure",
+            "updated_at": "2026-10-09T00:00:00Z",
+        }), encoding="utf-8")
+        owner_patch = mock.patch.object(runtime_dag.runtime_ownership, "ROOT", self.root)
+        owner_patch.start()
+        self.addCleanup(owner_patch.stop)
         shutil.copytree(ROOT / "standards/visual_profiles", self.root / "standards/visual_profiles")
         self._patch_roots()
 

@@ -581,8 +581,11 @@ class CliEntryCaseTest(CanonicalFullAutoBase):
 
     def run_cli(self, idea: str, *extra: str):
         """Run the one official entry and return (exit code, status document)."""
-        command = [sys.executable, str(ROOT / "episodes/_system/story_os.py"), "create", idea,
-                   "--full-auto", "--json"] + list(extra)
+        command = [sys.executable]
+        if os.environ.get("STORYOS_CI_PYTHON_BOOTSTRAP") == "1":
+            command.append(str(ROOT / "scripts/ci_storyos_python.py"))
+        command += [str(ROOT / "episodes/_system/story_os.py"), "create", idea,
+                    "--full-auto", "--json", *extra]
         completed = subprocess.run(command, cwd=ROOT, check=False, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT, text=True, encoding="utf-8",
                                    errors="replace")

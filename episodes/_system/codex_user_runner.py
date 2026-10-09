@@ -49,10 +49,10 @@ import tempfile
 import threading
 import time
 import urllib.error
-import urllib.parse
 import urllib.request
 import uuid
 from contextlib import contextmanager
+import dataclasses
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -124,13 +124,8 @@ RUNNER_TOKEN_ENV = "STORY_OS_CODEX_RUNNER_TOKEN"
 EXPECTED_USER_ENV = "STORY_OS_CODEX_RUNNER_USER"
 MAX_TIMEOUT_ENV = "STORY_OS_CODEX_BRIDGE_MAX_TIMEOUT"
 
-# Provider transport is independent from the user-mode bridge transport above.
-# Auto mode prefers the local OpenCodex proxy only while its listener is healthy;
-# otherwise the same Codex CLI invocation is pinned back to the native ChatGPT
-# backend. Explicit provider/base-url config on the command line is never rewritten.
-DEFAULT_OPENCODEX_BASE_URL = "http://127.0.0.1:10100/v1"
+# Native Codex is the only permitted CLI model transport. API keys use a separate adapter.
 NATIVE_CODEX_BASE_URL = "https://chatgpt.com/backend-api/codex"
-PROVIDER_PROBE_TIMEOUT_SECONDS = 0.75
 PROVIDER_EVIDENCE_KEYS = (
     "transport_route", "transport_route_reason", "transport_base_url",
 )
@@ -309,150 +304,67 @@ def _config_overrides(argv: list[str]) -> list[str]:
     return values
 
 
-def _provider_override(argv: list[str]) -> tuple[bool, str | None]:
-    """Return whether the caller explicitly selected a provider and its base URL."""
-    explicit = False
-    base_url = None
-    for raw in _config_overrides(argv):
-        value = str(raw).strip()
-        key, sep, payload = value.partition("=")
-        if not sep:
-            continue
-        key = key.strip()
-        payload = payload.strip().strip("\"'")
-        if key == "model_provider" or (key.startswith("model_providers.") and key.endswith(".base_url")):
-            explicit = True
-        if key == "openai_base_url" or (key.startswith("model_providers.") and key.endswith(".base_url")):
-            base_url = payload or None
-            explicit = True
-    return explicit, base_url
+def resolve_provider_transport(
+    argv: list[str], *, env: dict | None = None, task_type: str = "generic_codex",
+    health_probe=None, image_capability_probe=None,
+) -> dict | None:
+    """Pin every Codex model execution to the native backend.
 
-
-def _is_opencodex_url(value: str | None) -> bool:
-    if not value:
-        return False
-    try:
-        parsed = urllib.parse.urlparse(str(value))
-        return (parsed.hostname or "").lower() in {"127.0.0.1", "localhost", "::1"} and int(parsed.port or 80) == 10100
-    except (TypeError, ValueError):
-        return False
-
-
-def _opencodex_base_url(env: dict | None = None) -> str:
-    source = env if env is not None else os.environ
-    configured = str(source.get("OPENAI_BASE_URL") or "").strip()
-    return configured.rstrip("/") if _is_opencodex_url(configured) else DEFAULT_OPENCODEX_BASE_URL
-
-
-def _opencodex_health(base_url: str, timeout: float = PROVIDER_PROBE_TIMEOUT_SECONDS) -> tuple[bool, str]:
-    """Probe only local reachability; never dispatch a model request or consume quota."""
-    try:
-        parsed = urllib.parse.urlparse(base_url)
-        host = parsed.hostname or "127.0.0.1"
-        port = int(parsed.port or (443 if parsed.scheme == "https" else 80))
-        with socket.create_connection((host, port), timeout=float(timeout)):
-            return True, "tcp_connected"
-    except Exception as exc:
-        return False, type(exc).__name__
-
-
-def _opencodex_image_capability(base_url: str, timeout: float = PROVIDER_PROBE_TIMEOUT_SECONDS) -> tuple[bool, str]:
-    """Prove the local proxy accepts the Responses WebSocket upgrade used by image_generation.
-
-    This sends only an HTTP Upgrade handshake and closes immediately after the
-    response. It never sends a model request, prompt, tool call, or generation
-    payload, so the probe cannot consume an image-generation attempt or model quota.
-    """
-    try:
-        parsed = urllib.parse.urlparse(base_url)
-        if parsed.scheme not in {"http", "ws", ""}:
-            return False, "unsupported_probe_scheme"
-        host = parsed.hostname or "127.0.0.1"
-        port = int(parsed.port or 80)
-        prefix = (parsed.path or "").rstrip("/")
-        path = f"{prefix}/responses" if prefix else "/v1/responses"
-        key = base64.b64encode(secrets.token_bytes(16)).decode("ascii")
-        request = (
-            f"GET {path} HTTP/1.1\r\n"
-            f"Host: {host}:{port}\r\n"
-            "Upgrade: websocket\r\n"
-            "Connection: Upgrade\r\n"
-            f"Sec-WebSocket-Key: {key}\r\n"
-            "Sec-WebSocket-Version: 13\r\n\r\n"
-        ).encode("ascii")
-        with socket.create_connection((host, port), timeout=float(timeout)) as sock:
-            sock.settimeout(float(timeout))
-            sock.sendall(request)
-            response = sock.recv(4096).decode("latin-1", "replace")
-        status_line = response.split("\r\n", 1)[0].strip()
-        if " 101 " in f" {status_line} ":
-            return True, "websocket_upgrade_101"
-        if " 426 " in f" {status_line} ":
-            return False, "websocket_upgrade_required_426"
-        return False, status_line or "empty_handshake_response"
-    except Exception as exc:
-        return False, type(exc).__name__
-
-
-def _route_from_explicit_base_url(base_url: str | None) -> str:
-    if _is_opencodex_url(base_url):
-        return "opencodex"
-    if str(base_url or "").rstrip("/") == NATIVE_CODEX_BASE_URL:
-        return "native_codex"
-    return "explicit_provider"
-
-
-def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task_type: str = "generic_codex", health_probe=None, image_capability_probe=None) -> dict | None:
-    """Resolve the Codex provider route for one model execution.
-
-    This is deliberately per-dispatch: an OpenCodex outage does not poison an
-    Episode, and a later dispatch can select it again after recovery. Commands
-    that do not execute a model (for example ``codex login status``) are left
-    alone. Caller-supplied provider config always wins.
+    Never auto-discover OpenCodex, never accept arbitrary provider endpoints.
+    Login and model-catalog diagnostics do not execute a model and are left
+    untouched. Probe arguments remain solely for call-site compatibility;
+    they are never invoked. API_KEY_DIRECT has its own adapter.
     """
     command = [str(x) for x in argv]
     if "exec" not in command:
         return None
-    explicit, explicit_base = _provider_override(command)
-    source = env if env is not None else os.environ
+    source = dict(env) if env is not None else dict(os.environ)
+    if task_type == "image":
+        # Native image execution must never accept a legacy proxy/HTTP route,
+        # including when OPENAI_BASE_URL is otherwise unset. API images use a
+        # separate official adapter, not Codex subscription transport.
+        image_route = str(source.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
+        if image_route and image_route not in {"native_codex", "codex_subscription"}:
+            raise CodexUserRunnerRejected("CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED",
+                                          "non-native Codex image route")
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
-    if explicit:
-        return {
-            "transport_route": _route_from_explicit_base_url(explicit_base),
-            "transport_route_reason": "command_explicit_provider",
-            "transport_base_url": explicit_base,
-            "provider_args": [],
-        }
-    if env_base and not _is_opencodex_url(env_base):
-        return {
-            "transport_route": _route_from_explicit_base_url(env_base),
-            "transport_route_reason": "environment_explicit_provider",
-            "transport_base_url": env_base,
-            "provider_args": [],
-        }
-    opencodex_url = _opencodex_base_url(source)
-    probe = health_probe or _opencodex_health
-    healthy, _detail = probe(opencodex_url)
-    route_reason = "opencodex_unreachable"
-    if healthy and str(task_type) == "image":
-        capability_probe = image_capability_probe or _opencodex_image_capability
-        image_capable, _capability_detail = capability_probe(opencodex_url)
-        if not image_capable:
-            healthy = False
-            route_reason = "opencodex_image_capability_unavailable"
-    if healthy:
-        return {
-            "transport_route": "opencodex",
-            "transport_route_reason": "opencodex_image_capability_ok" if str(task_type) == "image" else "opencodex_health_ok",
-            "transport_base_url": opencodex_url,
-            "provider_args": [
-                "-c", 'model_provider="openai"',
-                "-c", f'openai_base_url="{opencodex_url}"',
-            ],
-        }
+    if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
+        raise CodexUserRunnerRejected(
+            "MODEL_TRANSPORT_FORBIDDEN", "non-native inherited Codex endpoint"
+        )
+    overrides = _config_overrides(command)
+    for token in command:
+        if token.startswith("--config="):
+            overrides.append(token[len("--config="):])
+        elif token.startswith("-c") and token != "-c" and "=" in token[2:]:
+            overrides.append(token[2:])
+    explicit_native = False
+    for item in overrides:
+        key, sep, raw_value = str(item).strip().partition("=")
+        if not sep:
+            continue
+        key = key.strip()
+        value = raw_value.strip().strip("\"'")
+        if key == "model_provider":
+            if value != "openai":
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "custom Codex model_provider"
+                )
+        elif key == "openai_base_url":
+            if value.rstrip("/") != NATIVE_CODEX_BASE_URL:
+                raise CodexUserRunnerRejected(
+                    "MODEL_TRANSPORT_FORBIDDEN", "custom Codex base_url"
+                )
+            explicit_native = True
+        elif key.startswith("model_providers."):
+            raise CodexUserRunnerRejected(
+                "MODEL_TRANSPORT_FORBIDDEN", "custom Codex provider configuration"
+            )
     return {
         "transport_route": "native_codex",
-        "transport_route_reason": route_reason,
+        "transport_route_reason": (
+            "native_only_explicit_native" if explicit_native else "native_only_policy"
+        ),
         "transport_base_url": NATIVE_CODEX_BASE_URL,
         "provider_args": [
             "-c", 'model_provider="openai"',
@@ -478,12 +390,67 @@ def provider_transport_evidence(remote) -> dict:
 # ---------------------------------------------------------------------------
 # Shared on-disk channel
 # ---------------------------------------------------------------------------
+def _shared_worktree_root(root: Path) -> Path:
+    """Use the authoritative repository checkout for transient Runner state.
+
+    A git-linked worktree contains a .git *file* pointing into the parent
+    repository's .git/worktrees/<slot>. No git subprocess, credentials,
+    arbitrary endpoint override, or branch mutation is needed.
+    """
+    marker = root / ".git"
+    if not marker.is_file():
+        return root
+    try:
+        content = marker.read_text(encoding="utf-8-sig").strip()
+        if not content.startswith("gitdir: "):
+            return root
+        pointer = Path(content[len("gitdir: "):].strip())
+        if not pointer.is_absolute():
+            pointer = root / pointer
+        pointer = pointer.resolve()
+        if pointer.parent.name != "worktrees" or pointer.parent.parent.name != ".git":
+            return root
+        common = pointer.parent.parent
+        if not common.is_dir() or not pointer.is_dir():
+            return root
+        # Only accept a Git marker pointing back to this repo's own linked slots.
+        # A forged pointer must not disclose another repo's Runner endpoint.
+        root.resolve(strict=True).relative_to((common.parent / ".worktrees").resolve(strict=True))
+        return common.parent
+    except (OSError, RuntimeError, ValueError):
+        return root
+
+
 def runtime_dir() -> Path:
-    return ROOT / RUNTIME_REL
+    return _shared_worktree_root(ROOT) / RUNTIME_REL
 
 
 def endpoint_path() -> Path:
-    return runtime_dir() / ENDPOINT_NAME
+    local = runtime_dir() / ENDPOINT_NAME
+    if local.is_file() or runtime_dir().resolve() != (ROOT / RUNTIME_REL).resolve():
+        return local
+    # Git worktrees must reuse the one interactive user's existing native
+    # Codex runner. Never copy its token into a worktree or discover an
+    # arbitrary endpoint outside the same canonical StoryOS repository.
+    git_pointer = ROOT / ".git"
+    if not git_pointer.is_file():
+        return local
+    try:
+        pointer = git_pointer.read_text(encoding="utf-8-sig").strip()
+        if not pointer.startswith("gitdir: "):
+            return local
+        gitdir = Path(pointer[len("gitdir: "):].strip())
+        if not gitdir.is_absolute():
+            gitdir = (ROOT / gitdir).resolve()
+        gitdir = gitdir.resolve()
+        if gitdir.parent.name != "worktrees" or gitdir.parent.parent.name != ".git":
+            return local
+        main_root = gitdir.parents[2].resolve()
+        ROOT.resolve().relative_to((main_root / ".worktrees").resolve())
+        shared = main_root / RUNTIME_REL / ENDPOINT_NAME
+        return shared if shared.is_file() else local
+    except (OSError, UnicodeError, ValueError):
+        return local
 
 
 def token_path() -> Path:
@@ -506,12 +473,77 @@ def task_result_path(request_id: str) -> Path:
     rid = str(request_id or "").strip()
     if not rid or any(ch not in "0123456789abcdefABCDEF-" for ch in rid):
         raise ValueError(f"invalid runner request_id: {request_id!r}")
-    return runtime_dir() / RESULT_DIR_NAME / f"{rid}.json"
+    # Direct execution evidence belongs to this checkout. Only the bridge
+    # endpoint and its token are shared with the interactive Runner.
+    return ROOT / RUNTIME_REL / RESULT_DIR_NAME / f"{rid}.json"
 
 
 def read_task_result(request_id: str) -> dict:
+    """Read the durable result from the Runner which actually executed it.
+
+    In a trusted Git worktree the interactive user Runner is shared with the
+    canonical checkout, but this process's own runtime_dir() is not shared.
+    Reading that local directory loses the persisted evidence and can falsely
+    quarantine Final Semantic work as unverified. The already-validated
+    endpoint_path() locates only the runner in this same repository.
+    Direct-mode results stay in this checkout and retain the original path.
+    """
+    local = task_result_path(request_id)  # Always validate caller's ID.
+    if bridge_required():
+        endpoint = endpoint_path()
+        if not endpoint.is_file():
+            return {}
+        path = endpoint.parent / RESULT_DIR_NAME / local.name
+    else:
+        path = local
+    result = _read_json(path) if path.is_file() else {}
+    if result and (not isinstance(result, dict)
+                   or str(result.get("request_id") or "") != str(request_id)):
+        return {}
+    return result
+
+
+def _direct_result_output(stdout, completed) -> bytes:
+    """Read the exact merged Codex log bytes for a durable direct-mode receipt.
+
+    A task with an Authority-owned request ID may not dispatch if its output
+    would be invisible to recovery. The caller validated the sink first.
+    """
+    if stdout is subprocess.PIPE:
+        data = completed.stdout
+        return data.encode("utf-8") if isinstance(data, str) else bytes(data or b"")
+    stdout.flush()
+    return Path(stdout.name).read_bytes()
+
+
+def _persist_direct_result(request_id: str, completed, stdout, evidence: dict) -> None:
+    """Atomically publish a non-overwritable direct-mode Runner receipt.
+
+    This records exact output and execution evidence; it does not authorize a
+    Review PASS or another paid model attempt.
+    """
     path = task_result_path(request_id)
-    return _read_json(path) if path.is_file() else {}
+    output = _direct_result_output(stdout, completed)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {
+        "schema_version": 1,
+        "request_id": request_id,
+        "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "returncode": int(completed.returncode),
+        "output_sha256": hashlib.sha256(output).hexdigest(),
+        "output_bytes": len(output),
+        "output_base64": base64.b64encode(output).decode("ascii"),
+        "evidence": evidence,
+    }
+    fd, pending = tempfile.mkstemp(prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(data, handle, ensure_ascii=False)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(pending, path)  # atomic NO-REPLACE
+    finally:
+        Path(pending).unlink(missing_ok=True)
 
 
 def _pid_alive(pid) -> bool:
@@ -1047,8 +1079,32 @@ class ExecResult:
         return self.output.decode("utf-8", "replace")
 
 
+def _prepare_strict_codex_task(task: CodexTask) -> tuple[CodexTask, dict | None]:
+    """Enforce dual-only transport for low-level task callers as well.
+
+    Existing agents also invoke execute_task / execute_codex directly,
+    bypassing run_codex. Never mutate their task or issue an automatic fallback.
+    """
+    source = {**os.environ, **dict(task.env or {})}
+    # A task payload cannot opt out when the host mandates strict transport.
+    host_policy = str(os.environ.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
+    task_policy = str(source.get("STORY_OS_MODEL_TRANSPORT_POLICY") or "").strip().upper()
+    if host_policy != "DUAL_ONLY" and task_policy != "DUAL_ONLY":
+        return task, None
+    source["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
+    route = resolve_provider_transport(task.argv, env=source, task_type=task.task_type)
+    if route is None:
+        return task, None
+    if route.get("transport_route") != "native_codex":
+        raise CodexUserRunnerRejected("MODEL_TRANSPORT_FORBIDDEN", "strict task must use native Codex")
+    return dataclasses.replace(
+        task, argv=_insert_codex_args(list(task.argv), route.get("provider_args") or [])
+    ), route
+
+
 def execute_task(task: CodexTask) -> ExecResult:
     """Run one declarative Codex task in this (runner) process."""
+    task, strict_route = _prepare_strict_codex_task(task)
     if is_non_interactive():
         raise CodexUserRunnerWrongIdentity(
             "CODEX_USER_RUNNER_WRONG_IDENTITY",
@@ -1145,6 +1201,9 @@ def execute_task(task: CodexTask) -> ExecResult:
         "client": task.client,
         "input_images": input_images,
     }
+    if strict_route:
+        evidence.update({key: strict_route[key] for key in PROVIDER_EVIDENCE_KEYS
+                         if key in strict_route})
     if isolated_home is not None:
         evidence["generated_artifacts"] = _export_generated_artifacts(isolated_home, workdir)
         try:
@@ -1241,12 +1300,26 @@ class RunnerState:
             "allowed_task_types": sorted(ALLOWED_TASK_TYPES),
             "counters": dict(self.counters),
             "inflight_request_ids": sorted(self.inflight),
-            "features": ["durable_task_results", "inflight_request_ids"],
+            "features": [
+                "durable_task_results", "inflight_request_ids",
+                "append_only_task_results", "atomic_task_result_publish",
+            ],
             "secrets_persisted": False,
         }
 
     def begin_task(self, request_id: str) -> None:
+        try:
+            previous = task_result_path(request_id)
+        except ValueError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_TASK_REJECTED", "invalid request identity"
+            ) from exc
         with self.lock:
+            if request_id in self.inflight or previous.is_file():
+                raise CodexUserRunnerRejected(
+                    "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                    "request is already executing or has durable evidence",
+                )
             self.inflight[str(request_id)] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
 
     def end_task(self, request_id: str) -> None:
@@ -1262,35 +1335,53 @@ class RunnerState:
             pass
 
     def persist_result(self, result: ExecResult) -> None:
-        """Persist task output before replying to the caller.
+        """Atomically publish an immutable result; never prune Authority evidence.
 
-        The interactive-user runner can outlive the workspace/WORK caller. A caller
-        timeout must therefore not erase the only copy of Codex stdout/evidence,
-        especially for image tasks where rc=0 with no exported artifact is a real
-        technical failure that needs diagnosis rather than a blind retry.
+        The old 200-file cap silently deleted historical Codex execution
+        receipts exactly when production needed them for UNKNOWN recovery.
+        Result publication must complete before the HTTP success response.
+        A publication error remains ambiguous, never a model SUCCESS receipt.
         """
+        request_id = str((result.remote or {}).get("request_id") or "").strip()
         try:
-            request_id = str((result.remote or {}).get("request_id") or "").strip()
-            if not request_id:
-                return
-            root = runtime_dir() / RESULT_DIR_NAME
-            root.mkdir(parents=True, exist_ok=True)
-            payload = {
-                "schema_version": 1,
-                "request_id": request_id,
-                "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-                "returncode": int(result.returncode),
-                "output_sha256": hashlib.sha256(result.output or b"").hexdigest(),
-                "output_bytes": len(result.output or b""),
-                "output_base64": base64.b64encode(result.output or b"").decode("ascii"),
-                "evidence": result.remote or {},
-            }
-            _write_json(root / f"{request_id}.json", payload)
-            rows = sorted(root.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-            for stale in rows[200:]:
-                stale.unlink(missing_ok=True)
-        except Exception:
-            pass
+            path = task_result_path(request_id)
+        except ValueError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_TASK_REJECTED", "invalid result request identity"
+            ) from exc
+        path.parent.mkdir(parents=True, exist_ok=True)
+        output = result.output or b""
+        payload = {
+            "schema_version": 1,
+            "request_id": request_id,
+            "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "returncode": int(result.returncode),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+            "output_bytes": len(output),
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "evidence": result.remote or {},
+        }
+        fd, temporary = tempfile.mkstemp(
+            prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent)
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(payload, handle, ensure_ascii=False)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.link(temporary, path)  # atomic NO-REPLACE
+        except FileExistsError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                "existing result must not be overwritten",
+            ) from exc
+        except OSError as exc:
+            raise CodexUserRunnerError(
+                "CODEX_USER_RUNNER_DURABLE_RESULT_WRITE_FAILED",
+                "result persistence failed; generation outcome must be reconciled",
+            ) from exc
+        finally:
+            Path(temporary).unlink(missing_ok=True)
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -1350,6 +1441,9 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.begin_task(task.request_id)
             try:
                 result = execute_task(task)
+                # Retain in-flight ownership through durable publication.
+                # Never reply SUCCESS before the result is readable on disk.
+                self.state.persist_result(result)
             finally:
                 self.state.end_task(task.request_id)
         except CodexUserRunnerTimeout as exc:
@@ -1371,7 +1465,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.log({"event": "error", "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             self._send(500, {"ok": False, "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             return
-        self.state.persist_result(result)
+
         self.state.log({"event": "task", **result.remote})
         self._send(200, {
             "ok": True,
@@ -1540,8 +1634,21 @@ def runner_health(*, timeout: float = HEALTH_TIMEOUT_SECONDS) -> dict:
     return body
 
 
+def execute_model_task(task: CodexTask) -> ExecResult:
+    """Canonical native-only producer task through direct/interactive bridge.
+
+    This is a feature-branch cutover: producer tasks cannot opt into legacy
+    provider fallback. No modification to caller-owned task identity or stdin.
+    """
+    native_env = dict(task.env or {})
+    native_env["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
+    native_task = dataclasses.replace(task, env=native_env)
+    return execute_codex(native_task) if bridge_required() else execute_task(native_task)
+
+
 def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResult:
     """Send one task to the interactive-user runner."""
+    task, strict_route = _prepare_strict_codex_task(task)
     creds = client_credentials()
     endpoint = creds.get("endpoint") or read_endpoint(required=False)
     endpoint_user = endpoint.get("user")
@@ -1573,7 +1680,11 @@ def execute_codex(task: CodexTask, *, timeout: float | None = None) -> ExecResul
         exc.remote = {**exc.remote, **dict(body.get("evidence") or {}), "timed_out": True, "returncode": 124}
         raise exc
     output = base64.b64decode(body.get("output_base64") or "")
-    return ExecResult(returncode=int(body.get("returncode") or 0), output=output, remote=body.get("evidence") or {})
+    evidence = dict(body.get("evidence") or {})
+    if strict_route:
+        evidence.update({key: strict_route[key] for key in PROVIDER_EVIDENCE_KEYS
+                         if key in strict_route})
+    return ExecResult(returncode=int(body.get("returncode") or 0), output=output, remote=evidence)
 
 
 # ---------------------------------------------------------------------------
@@ -1635,6 +1746,21 @@ def pin_windows_sandbox(command: list[str]) -> list[str]:
     return command
 
 
+def run_model_codex(*args, **kwargs):
+    """Canonical native-only CLI facade for model-producing tasks.
+
+    Fail closed on inherited provider overrides: never silently choose
+    OpenCodex. Keep caller output/timeout/request_id and Attempt semantics.
+    Diagnostic login/catalog commands must continue to use run_codex.
+    """
+    params = dict(kwargs)
+    raw_env = params.get("env")
+    strict_env = dict(os.environ if raw_env is None else raw_env)
+    strict_env["STORY_OS_MODEL_TRANSPORT_POLICY"] = "DUAL_ONLY"
+    params["env"] = strict_env
+    return run_codex(*args, **params)
+
+
 def run_codex(
     argv,
     *,
@@ -1669,6 +1795,29 @@ def run_codex(
         if provider_route and provider_route.get(key) is not None
     }
     if not bridge_required():
+        direct_guard = None
+        if request_id:
+            prior=task_result_path(str(request_id))
+            if stdout is not subprocess.PIPE and not (
+                hasattr(stdout,"flush") and isinstance(getattr(stdout,"name",None),(str,os.PathLike))):
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_DURABLE_OUTPUT_REQUIRED",
+                                              "durable direct execution needs PIPE or log-file sink")
+            if prior.exists():
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                                              "durable direct result already exists")
+            prior.parent.mkdir(parents=True,exist_ok=True)
+            direct_guard=prior.with_name(prior.name+".dispatching")
+            try:
+                fd=os.open(str(direct_guard),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+                os.close(fd)
+            except FileExistsError:
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_OUTCOME_UNKNOWN",
+                                              "prior dispatch requires reconciliation") from None
+            if prior.exists():
+                # A previous result won a race before this reservation.
+                # Leave the guard for explicit reconciliation rather than retry.
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                                              "existing durable result must be reconciled")
         started = time.monotonic()
         kwargs = {
             "input": input,
@@ -1711,8 +1860,13 @@ def run_codex(
             "returncode": int(completed.returncode),
             "task_type": str(task_type),
             "transport": "direct_codex_user_runner",
+            **({"request_id":str(request_id)} if request_id else {}),
             **route_evidence,
         }
+        if request_id:
+            _persist_direct_result(str(request_id), completed, stdout, completed.remote)
+            if direct_guard is not None:
+                direct_guard.unlink(missing_ok=True)
         return completed
     payload = input if input is not None else stdin_text
     # Normalize cmd.exe/python wrappers on the caller side before crossing the

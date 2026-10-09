@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 SYSTEM = Path(__file__).resolve().parent
@@ -32,16 +33,13 @@ class EngineeringTests(unittest.TestCase):
         self.assertEqual(manifest['platform_version'], story_contract.story_os_version())
         self.assertEqual(data['common_rules']['stable_evidence_gate'], 'episodes/_system/evidence_gate.py')
 
-    def test_runtime_override(self):
-        old = os.environ.get('STORY_OS_RUNTIME')
-        os.environ['STORY_OS_RUNTIME'] = 'WEB'
-        try:
-            self.assertEqual(router.detect()[0], 'WEB')
-        finally:
-            if old is None:
-                os.environ.pop('STORY_OS_RUNTIME', None)
-            else:
-                os.environ['STORY_OS_RUNTIME'] = old
+    def test_legacy_runtime_override_does_not_change_production_mode(self):
+        # production.mode owns effective runtime; STORY_OS_RUNTIME is diagnostics only.
+        with patch.dict(os.environ, {'STORY_OS_RUNTIME': 'WEB',
+                                     'STORY_OS_PRODUCTION_MODE': 'COLLABORATIVE'}):
+            effective, source = router.detect()
+        self.assertEqual(effective, 'WORK')
+        self.assertIn('STORY_OS_PRODUCTION_MODE', source)
 
     def test_backend_prompt_contract(self):
         text = backend.worker_prompt('scene', [], '1024x1280')

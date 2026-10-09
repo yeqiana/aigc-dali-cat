@@ -22,7 +22,7 @@
     "reference_endpoint": "images/edits",
     "text_endpoint": "images/generations",
     "output_format": "png",
-    "fallback_on_transport_failure": true
+    "fallback_on_transport_failure": false
   },
   "product_runtime_image": {
     "enabled": true,

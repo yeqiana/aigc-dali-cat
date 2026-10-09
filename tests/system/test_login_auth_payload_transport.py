@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import base64
 import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -15,6 +16,7 @@ if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
 
 import codex_subscription_image
+import codex_user_runner
 import image_payload_transport
 
 
@@ -175,6 +177,36 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
         external_runner.assert_not_called()
         self.assertFalse(row["image_attempt_authority_called"])
         self.assertFalse(row["image_generation_called"])
+
+    def test_explicit_opencodex_allows_only_a_real_session_start_proof_attempt(self):
+        probe = {
+            "status": "PASS", "returncode": 0, "timed_out": False,
+            "turn_completed": True, "image_generation_call_count": 0,
+            "visibility_response_completed": True,
+            "image_generation_visible_secondary": True,
+            "codex_resolution": "direct_cli",
+            "transport_model_source": "LOGIN_CATALOG_PROBE",
+        }
+        with (
+            patch.object(codex_subscription_image, "resolve_codex", return_value=Path("codex.exe")),
+            patch.object(codex_subscription_image.codex_user_runner, "bridge_required", return_value=False),
+            patch.object(codex_subscription_image, "image_runtime_preflight", return_value={}),
+            patch.object(codex_subscription_image, "_subscription_model_catalog_with_evidence",
+                         return_value=self._catalog_payload(("gpt-6-luna", "high"))),
+            patch.object(codex_subscription_image, "_probe_transport_model_diagnostic",
+                         return_value=probe) as transport_probe,
+        ):
+            row = codex_subscription_image.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high",
+                allow_unknown_capability_proof=True)
+        self.assertEqual(row["status"], "READY_FOR_REAL_CAPABILITY_PROOF")
+        self.assertEqual(row["tool_capability_state"], "UNKNOWN")
+        self.assertEqual(row["tool_registry_attestation"], "UNAVAILABLE")
+        self.assertEqual(row["session_start"], "PASS")
+        self.assertIs(row["image_attempt_authority_called"], False)
+        self.assertIs(row["image_generation_called"], False)
+        transport_probe.assert_called_once()
+        self.assertTrue(transport_probe.call_args.kwargs["tool_visibility_probe"])
 
     def test_unattested_fake_candidate_is_denied_before_external_runner(self):
         mismatched = self._provenance(model="transport-b")
@@ -784,10 +816,37 @@ class LoginAuthPayloadTransportTests(unittest.TestCase):
                          }),
         ):
             row = image_payload_transport.payload_capability_preflight(
-                model="gpt-image-2.5-flare", quality="high")
+                model="gpt-image-2.5-flare", quality="high",
+                proof_transport_model="gpt-6-luna", proof_transport_effort="high")
         self.assertEqual(row["provider"], "codex_subscription")
         self.assertEqual(row["transport_model"], "transport-a")
         self.assertFalse(row["api_key_required"])
+
+    def test_opencodex_transport_is_a_proof_attempt_not_a_capability_pass(self):
+        with (
+            patch.dict(os.environ, {"STORY_OS_IMAGE_PROVIDER_ROUTE": "opencodex"}),
+            patch.object(image_payload_transport, "selected_route", return_value={
+                "provider": "codex_subscription", "api_key_required": False,
+            }),
+            patch.object(image_payload_transport.codex_subscription_image,
+                         "payload_capability_preflight", return_value={
+                             "status": "READY_FOR_REAL_CAPABILITY_PROOF",
+                             "tool_capability_state": "UNKNOWN",
+                             "image_generation_called": False,
+                             "image_attempt_authority_called": False,
+                             "transport_model": "gpt-6-luna",
+                             "transport_effort": "high",
+                         }) as payload_probe,
+        ):
+            row = image_payload_transport.payload_capability_preflight(
+                model="gpt-image-2.5-flare", quality="high",
+                proof_transport_model="gpt-6-luna", proof_transport_effort="high")
+        self.assertEqual(row["status"], "BLOCKED")
+        self.assertEqual(row["failure_class"], "CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED")
+        self.assertEqual(row["transport_route"], "opencodex_denied")
+        self.assertIs(row["image_attempt_authority_called"], False)
+        self.assertIs(row["image_generation_called"], False)
+        payload_probe.assert_not_called()
 
 
 if __name__ == "__main__":

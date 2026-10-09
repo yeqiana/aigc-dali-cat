@@ -237,7 +237,7 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     log = ep / "meta/release-critic.jsonl"
     before = {role: row["sha256"] for role, row in rows.items()}
     with log.open("w", encoding="utf-8", newline="\n") as handle:
-        completed = codex_user_runner.run_codex(
+        completed = codex_user_runner.run_model_codex(
             cmd,
             input=release_critic_prompt(ep, candidate, rows),
             text=True,
