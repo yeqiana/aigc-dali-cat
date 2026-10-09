@@ -1138,6 +1138,25 @@ def _technical_retry_budget(ep:Path,item:dict,code:str)->tuple[bool,dict,str]:
         return False,state,"generation_attempt_already_active"
     if int(state.get("remaining_attempts") or 0) <= 0:
         return False,state,"shared_generation_attempt_budget_exhausted"
+    # A terminal OUTCOME_UNKNOWN is not evidence that the previous provider
+    # call failed. The shared Attempt-2 slot stays protected until a durable
+    # execution/receipt reconciliation settles the previous invocation.
+    consumed=int(state.get("attempts_consumed") or 0)
+    if consumed:
+        try:
+            previous=generation_attempt_authority.load_attempt(
+                ep,str(state["logical_asset_key"]),consumed)
+        except Exception:
+            return False,state,"previous_generation_attempt_unavailable"
+        if not previous:
+            return False,state,"previous_generation_attempt_missing"
+        previous_status=str(previous.get("status") or "")
+        if previous_status != "FAILED_AFTER_DISPATCH":
+            return False,state,(
+                "previous_generation_attempt_unverified"
+                if previous_status in {"OUTCOME_UNKNOWN","DISPATCH_COMMITTED","RESERVED"}
+                else "previous_generation_attempt_reconciliation_required"
+            )
     return True,state,"shared_generation_attempt_budget_available"
 
 

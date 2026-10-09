@@ -66,6 +66,12 @@ def test_technical_retry_budget_reads_shared_generation_authority(monkeypatch, t
             "active_attempt_index": None,
         },
     )
+    # Retry is permitted only when the prior consumed Attempt has a
+    # trustworthy terminal failure receipt, not merely remaining budget.
+    monkeypatch.setattr(
+        generation_attempt_authority, "load_attempt",
+        lambda *_a, **_k: {"status": "FAILED_AFTER_DISPATCH"},
+    )
     ok, state, reason = image_scheduler._technical_retry_budget(
         tmp_path, {"frame": 1}, "ASPECT_RATIO_MISMATCH"
     )
@@ -125,6 +131,11 @@ def test_retry_tech_marks_attempt_reason_and_never_grants_extra_pool(monkeypatch
         },
     )
 
+    # The previous Provider execution is formally terminal and failed.
+    monkeypatch.setattr(
+        generation_attempt_authority, "load_attempt",
+        lambda *_a, **_k: {"status": "FAILED_AFTER_DISPATCH"},
+    )
     result = image_scheduler.retry_tech(tmp_path, frame=1, sleep_fn=lambda _s: None)
 
     item = queue["items"][0]
