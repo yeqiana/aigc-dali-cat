@@ -121,7 +121,10 @@ def prepare_execution(ep: Path, item: dict) -> str:
         "prepared_at": now(),
         "expected_lifecycle": lifecycle_rel(item).as_posix(),
     }
-    _journal(ep, transaction_id, "BEGIN_PREPARED", item_id=item.get("id"), frame=item.get("frame"))
+    _journal(ep, transaction_id, "BEGIN_PREPARED", item_id=item.get("id"), frame=item.get("frame"),
+             production_revision_id=item.get("production_revision_id"),
+             frame_contract_sha256=(item.get("prompt_package") or {}).get("frame_contract_sha256"),
+             prompt_package_sha256=(item.get("prompt_package") or {}).get("package_sha256"))
     return transaction_id
 
 
@@ -134,7 +137,10 @@ def mark_worker_pending(ep: Path, item: dict) -> None:
         "worker_pending_at": now(),
         "expected_lifecycle": lifecycle_rel(item).as_posix(),
     })
-    _journal(ep, transaction_id, "WORKER_PENDING", item_id=item.get("id"), frame=item.get("frame"))
+    _journal(ep, transaction_id, "WORKER_PENDING", item_id=item.get("id"), frame=item.get("frame"),
+             production_revision_id=item.get("production_revision_id"),
+             frame_contract_sha256=(item.get("prompt_package") or {}).get("frame_contract_sha256"),
+             prompt_package_sha256=(item.get("prompt_package") or {}).get("package_sha256"))
 
 
 def mark_terminal(ep: Path, item: dict, phase: str, **details: object) -> None:
@@ -144,7 +150,10 @@ def mark_terminal(ep: Path, item: dict, phase: str, **details: object) -> None:
         return
     execution["phase"] = phase
     execution["updated_at"] = now()
-    _journal(ep, transaction_id, phase, item_id=item.get("id"), frame=item.get("frame"), **details)
+    _journal(ep, transaction_id, phase, item_id=item.get("id"), frame=item.get("frame"),
+             production_revision_id=item.get("production_revision_id"),
+             frame_contract_sha256=(item.get("prompt_package") or {}).get("frame_contract_sha256"),
+             prompt_package_sha256=(item.get("prompt_package") or {}).get("package_sha256"), **details)
 
 
 def write_lifecycle(ep: Path, item: dict, state: str, **details: object) -> dict:

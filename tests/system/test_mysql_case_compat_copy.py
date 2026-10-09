@@ -28,11 +28,13 @@ def test_all_v2_tables_have_explicit_column_mappings():
     from platform.repository.mysql.schema_v2 import DDL_STEPS
     copy = _module()
     mapping = copy.definitions(DDL_STEPS)
-    assert len(mapping) == 27
-    assert len({row[0] for row in mapping}) == 27
+    assert len(mapping) == 31
+    assert len({row[0] for row in mapping}) == 31
     assert all(columns for name, columns, ddl in mapping)
     assert all("CREATE TABLE IF NOT EXISTS" in ddl for _, _, ddl in mapping)
-    for name in ("TB_EVENT_LOG", "TB_TRACE_SPAN", "TB_ARTIFACT_INDEX"):
+    for name in ("TB_EVENT_LOG", "TB_TRACE_SPAN", "TB_ARTIFACT_INDEX",
+                 "TB_PRODUCTION_REVISION", "TB_PRODUCTION_REVISION_HEAD",
+                 "TB_PRODUCTION_REVISION_FRAME", "TB_PRODUCTION_REVISION_VISUAL_ADMISSION"):
         assert name in {row[0] for row in mapping}
 
 

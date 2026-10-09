@@ -88,6 +88,19 @@ class VisualLockAdmissionStateTests(unittest.TestCase):
             [changed],
         )
 
+    def test_pass_from_another_production_revision_is_not_reusable(self):
+        old = {**_asset(), "production_revision_id": "revision-old"}
+        new = {**_asset(), "production_revision_id": "revision-new"}
+        admission_state.record_rows(
+            self.ep, rows=[_pass_row()], assets=[old], profile_sha256=self.profile_sha,
+            story_os_version="2.6.1", required_checks=CHECKS,
+            provenance={"log": "official-review"}, attempt=1,
+        )
+        self.assertIsNotNone(admission_state.valid_pass(
+            self.ep, old, profile_sha256=self.profile_sha, story_os_version="2.6.1"))
+        self.assertIsNone(admission_state.valid_pass(
+            self.ep, new, profile_sha256=self.profile_sha, story_os_version="2.6.1"))
+
     def test_candidate_pool_ignores_latest_stochastic_fail_when_bound_pass_is_valid(self):
         asset = _asset()
         admission_state.record_rows(

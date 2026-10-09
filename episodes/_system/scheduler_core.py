@@ -426,6 +426,7 @@ def ledger_begin(ep: Path, item: dict, *, notes: str | None = None,
         batch_id=batch_id,
         transaction_id=str((item.get("execution") or {}).get("transaction_id") or "")
         or None,
+        production_revision_id=item.get("production_revision_id"),
     )
 
 
@@ -466,7 +467,8 @@ def ledger_success(ep: Path, item: dict, result: dict,
                                path=Path(str(result["output"])),
                                provider_receipt=resolved,
                                generation_key=generation_key,
-                               generation_attempt_index=generation_attempt_index)
+                               generation_attempt_index=generation_attempt_index,
+                               production_revision_id=item.get("production_revision_id"))
 
 
 def ledger_tech_fail(ep: Path, item: dict, code: str, message: str) -> None:

@@ -368,6 +368,54 @@ DDL_STEPS: tuple[tuple[str, str], ...] = (
     UNIQUE KEY UNIQUE_TB_GENERATION_ATTEMPT_KEY (GENERATION_KEY),
     INDEX INDEX_TB_GENERATION_ATTEMPT_ACTIVE (EPISODE_ID, LOGICAL_ASSET_KEY, STATUS),
     CONSTRAINT CHECK_TB_GENERATION_ATTEMPT_INDEX CHECK (ATTEMPT_INDEX BETWEEN 1 AND 2)""", "Logical Asset真实图片Generation Attempt与Lease")),
+    ("create_production_revision", _table("TB_PRODUCTION_REVISION", """    PRODUCTION_REVISION_ID VARCHAR(96) NOT NULL COMMENT 'Episode级正式生产版本唯一ID',
+    EPISODE_ID VARCHAR(256) NOT NULL COMMENT '仓库稳定Episode namespace',
+    REVISION_NO INT UNSIGNED NOT NULL COMMENT 'Episode内单调递增版本号',
+    STATUS VARCHAR(24) NOT NULL COMMENT 'PREPARING legacy; CREATED/PREPARED/VISUAL_LOCK_PENDING/READY/ACTIVE/RETIRED/FAILED',
+    INPUT_SHA256 CHAR(64) NOT NULL COMMENT '冻结Story/Storyboard/视觉输入清单SHA-256',
+    SNAPSHOT_SHA256 CHAR(64) NOT NULL COMMENT '完整Revision输入快照SHA-256',
+    BYTE_SIZE BIGINT UNSIGNED NOT NULL COMMENT '规范化Revision快照字节数',
+    VISUAL_LOCK_SHA256 CHAR(64) DEFAULT NULL COMMENT '当前Revision专属Visual Lock Authority SHA-256',
+    PARENT_REVISION_ID VARCHAR(96) DEFAULT NULL COMMENT '上一生产版本ID，仅作谱系',
+    CREATED_AT DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间，UTC语义',
+    ACTIVATED_AT DATETIME(6) DEFAULT NULL COMMENT '激活时间，UTC语义',
+    RETIRED_AT DATETIME(6) DEFAULT NULL COMMENT '退役时间，UTC语义',
+    PRIMARY KEY (PRODUCTION_REVISION_ID),
+    UNIQUE KEY UNIQUE_TB_PRODUCTION_REVISION_NO (EPISODE_ID, REVISION_NO),
+    INDEX INDEX_TB_PRODUCTION_REVISION_EP_STATUS (EPISODE_ID, STATUS),
+    CONSTRAINT CHECK_TB_PRODUCTION_REVISION_STATUS CHECK (STATUS IN ('PREPARING','CREATED','PREPARED','VISUAL_LOCK_PENDING','READY','ACTIVE','RETIRED','FAILED'))""", "Episode级不可变正式生产版本Authority")),
+    ("create_production_revision_head", _table("TB_PRODUCTION_REVISION_HEAD", """    EPISODE_ID VARCHAR(256) NOT NULL COMMENT '仓库稳定Episode namespace',
+    NEXT_REVISION_NO INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '下一个Episode级Revision序号',
+    ACTIVE_REVISION_ID VARCHAR(96) DEFAULT NULL COMMENT '唯一可派发的新生产版本',
+    FENCING_COUNTER BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Revision切换单调递增fence',
+    UPDATE_TIME DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (EPISODE_ID),
+    UNIQUE KEY UNIQUE_TB_PRODUCTION_REVISION_ACTIVE (ACTIVE_REVISION_ID)""", "Episode正式生产版本当前指针与并发Fence")),
+    ("create_production_revision_frame", _table("TB_PRODUCTION_REVISION_FRAME", """    PRODUCTION_REVISION_ID VARCHAR(96) NOT NULL COMMENT '正式生产版本ID',
+    EPISODE_ID VARCHAR(256) NOT NULL COMMENT '仓库稳定Episode namespace',
+    FRAME_NO INT NOT NULL COMMENT '语义帧号',
+    FRAME_CONTRACT_SHA256 CHAR(64) NOT NULL COMMENT 'Revision绑定的Frame Contract SHA-256',
+    PROMPT_SHA256 CHAR(64) NOT NULL COMMENT 'Revision绑定的正式Prompt SHA-256',
+    CREATE_TIME DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '绑定时间，UTC语义',
+    PRIMARY KEY (PRODUCTION_REVISION_ID, FRAME_NO),
+    INDEX INDEX_TB_PRODUCTION_REVISION_FRAME_EP (EPISODE_ID, FRAME_NO),
+    CONSTRAINT CHECK_TB_PRODUCTION_REVISION_FRAME_NO CHECK (FRAME_NO BETWEEN 1 AND 999)""", "正式生产版本逐帧合同与Prompt绑定")),
+    ("create_production_revision_visual_admission", _table("TB_PRODUCTION_REVISION_VISUAL_ADMISSION", """    PRODUCTION_REVISION_ID VARCHAR(96) NOT NULL COMMENT '正式生产版本ID',
+    EPISODE_ID VARCHAR(256) NOT NULL COMMENT '仓库稳定Episode namespace',
+    ADMISSION_ROLE VARCHAR(40) NOT NULL COMMENT 'Visual Lock四槽位角色',
+    FRAME_NO INT NOT NULL COMMENT 'Visual Lock语义帧号',
+    INPUT_SHA256 CHAR(64) NOT NULL COMMENT 'Revision冻结输入SHA-256',
+    FRAME_CONTRACT_SHA256 CHAR(64) NOT NULL COMMENT 'Admission帧合同SHA-256',
+    PROMPT_SHA256 CHAR(64) NOT NULL COMMENT 'Admission正式Prompt SHA-256',
+    ASSET_SHA256 CHAR(64) NOT NULL COMMENT '经过审核的实际图片SHA-256',
+    REVIEW_ID VARCHAR(96) NOT NULL COMMENT 'TB_REVIEW_RECORD正式审核ID',
+    REVIEW_SHA256 CHAR(64) NOT NULL COMMENT '正式审核payload SHA-256',
+    DECISION VARCHAR(16) NOT NULL COMMENT 'PASS/FAIL',
+    CREATED_AT DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '证据写入时间，UTC语义',
+    PRIMARY KEY (PRODUCTION_REVISION_ID, ADMISSION_ROLE, REVIEW_ID),
+    INDEX INDEX_TB_PRODUCTION_REVISION_VISUAL_LATEST (PRODUCTION_REVISION_ID, ADMISSION_ROLE, CREATED_AT),
+    CONSTRAINT CHECK_TB_PRODUCTION_REVISION_VISUAL_ROLE CHECK (ADMISSION_ROLE IN ('ordinary_baseline','worst_capture_condition','first_major_anomaly','high_impact_admission')),
+    CONSTRAINT CHECK_TB_PRODUCTION_REVISION_VISUAL_DECISION CHECK (DECISION IN ('PASS','FAIL'))""", "Production Revision专属Visual Lock证据")),
 )
 
 
@@ -388,3 +436,55 @@ def apply_schema(connection) -> list[str]:
         connection.execute(sql)
         applied.append(step)
     return applied
+
+
+def migrate_production_revision_lifecycle(connection, *, expected_database: str) -> dict:
+    """Expand the Revision lifecycle CHECK without rewriting historical rows.
+
+    This is an explicit migration step, never part of apply_schema or service
+    startup. It takes a MySQL advisory lock and uses one atomic ALTER TABLE so
+    concurrent deployers cannot race through a drop/add constraint window.
+    The caller must independently verify backup, target database, preflight,
+    and maintenance approval before invoking it against production.
+    """
+    if str(expected_database) != DATABASE_NAME:
+        raise ValueError("PRODUCTION_REVISION_MIGRATION_DATABASE_MISMATCH")
+    lock_name = "storyos.prod_revision.lifecycle.v1"
+    lock = connection.query_one("SELECT GET_LOCK(%s, 10) AS ACQUIRED", (lock_name,)) or {}
+    if int(lock.get("ACQUIRED") or 0) != 1:
+        raise RuntimeError("PRODUCTION_REVISION_MIGRATION_LOCK_UNAVAILABLE")
+    constraint_name = "CHECK_TB_PRODUCTION_REVISION_STATUS"
+    allowed = "'PREPARING','CREATED','PREPARED','VISUAL_LOCK_PENDING','READY','ACTIVE','RETIRED','FAILED'"
+    try:
+        rows = connection.query_all(
+            "SELECT CONSTRAINT_NAME, CHECK_CLAUSE FROM information_schema.CHECK_CONSTRAINTS "
+            "WHERE CONSTRAINT_SCHEMA=%s AND CONSTRAINT_NAME=%s",
+            (DATABASE_NAME, constraint_name),
+        ) or []
+        clause = str((rows[0] if rows else {}).get("CHECK_CLAUSE") or "").upper()
+        required_statuses = ("PREPARING", "CREATED", "PREPARED", "VISUAL_LOCK_PENDING", "READY", "ACTIVE", "RETIRED", "FAILED")
+        if clause and all(status in clause for status in required_statuses):
+            return {"status": "CURRENT", "changed": False, "constraint": constraint_name}
+        if rows:
+            alter = (
+                "ALTER TABLE TB_PRODUCTION_REVISION DROP CHECK " + constraint_name
+                + ", ADD CONSTRAINT " + constraint_name
+                + " CHECK (STATUS IN (" + allowed + "))"
+            )
+        else:
+            alter = (
+                "ALTER TABLE TB_PRODUCTION_REVISION ADD CONSTRAINT " + constraint_name
+                + " CHECK (STATUS IN (" + allowed + "))"
+            )
+        connection.execute(alter)
+        verified = connection.query_all(
+            "SELECT CHECK_CLAUSE FROM information_schema.CHECK_CONSTRAINTS "
+            "WHERE CONSTRAINT_SCHEMA=%s AND CONSTRAINT_NAME=%s",
+            (DATABASE_NAME, constraint_name),
+        ) or []
+        actual = str((verified[0] if verified else {}).get("CHECK_CLAUSE") or "").upper()
+        if not all(status in actual for status in required_statuses):
+            raise RuntimeError("PRODUCTION_REVISION_MIGRATION_VERIFY_FAILED")
+        return {"status": "MIGRATED", "changed": True, "constraint": constraint_name}
+    finally:
+        connection.query_one("SELECT RELEASE_LOCK(%s) AS RELEASED", (lock_name,))
