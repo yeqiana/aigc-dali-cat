@@ -250,21 +250,18 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现�
 <!-- STORY_OS_V240_BATCH_RUNTIME_END -->
 
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_BEGIN -->
-## Story OS V2.4.1 Image Provider Runtime
+## Story OS V2.4.1 Image Provider Runtime（历史记录，当前生产已退役）
 
-Production Batch 先读取 `config/providers/image-provider-runtime.json`：
-
-- 存在 `OPENAI_API_KEY`：优先 OpenAI Image API，GPT-Image-2 可用 `n=5`（上限10）执行 native multi-image。
-- 无 API Key 或 API transport 失败：保持 Codex Subscription fallback。
-- API Key / Authorization Header 禁止写入任何仓库文件或 Episode Evidence。
-- `output_index -> Frame` 是 Story OS 映射约定，不是 Provider 创作权威，仍必须逐帧 Review。
-- 4:5 API 请求使用 1088×1360，9:16 使用 1152×2048，之后无裁切 Normalize 到正式 Release Canvas。
+本节原先的“API Key 优先选择 OpenAI Images API、失败再回退”仅保留为**历史设计背景**，不得作为当前生产执行指令。当前 StoryOS 图片生成必须使用**原生 ChatGPT/Codex 登录通道**（`codex_subscription` / `native_codex`），严格禁止 OpenCodex 本地代理、API 图片 Provider 和 Product Runtime 图片旁路。
+`image_payload_transport.payload_capability_preflight` 在模型/图片 Attempt 之前拒绝非原生 Provider；有无 `OPENAI_API_KEY` 都不会自动授予图片 API 权限。API Key 可按独立模型策略用于被授权的非图片任务，但不能擅自启用图片供应商。
+旧 `config/providers/image-provider-runtime.json` 及旧 API 尺寸/n=5 约定不再是当前图片生产路线或正式 Authority，禁止凭其声明通过审核。
+API Key / Authorization Header 仍禁止写入仓库文件和 Episode Evidence；每帧实际像素必须独立核验。
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_END -->
 
 <!-- STORY_OS_V242_CODEX_SUBSCRIPTION_BATCH_BEGIN -->
 ## Story OS V2.4.2 Codex Subscription Batch Runtime
 
-没有 `OPENAI_API_KEY` 时，Production Batch 正式走：
+当图片执行器显式为 `CODEX` 且通过原生能力门禁时，Production Batch 正式走：
 
 `1 Story OS Logical Batch = 5 frames; up to 5 isolated Codex image workers in flight`
 
@@ -275,7 +272,7 @@ Production Batch 先读取 `config/providers/image-provider-runtime.json`：
 - `single_http_request=false`
 - 不需要 API Key，使用本机 ChatGPT/Codex 登录态
 - Logical Batch 仍按 5 帧管理，但默认最多 5 个 Codex 图片 worker 同时在途
-- 无 API Key 时全局只允许 1 个 Logical Batch 在途，避免多个 Logical Batch 叠加造成并发放大
+- 全局 Logical Batch 并发按 CODEX 资源预算与 Scheduler 门禁控制，不因存在 API Key 而自动扩大
 - 技术失败自适应 5→4→3→2→1，只重试失败帧
 - 成功帧永不因为同批其他帧技术失败而重生
 - Fast Scout 延迟到 5 帧原始生成 barrier terminal 后再执行
