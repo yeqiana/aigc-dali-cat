@@ -784,23 +784,33 @@ def _legacy_release(ep, token, reason="technical_failure_before_candidate_commit
     return result.get("decision") == "RELEASED", result
 
 def self_test():
-    import tempfile, threading
-    with tempfile.TemporaryDirectory(prefix="candidate budget 并发 ") as td:
+    """Exercise only legacy file atomicity; never reserve production MySQL Attempts."""
+    import tempfile
+    import threading
+    from unittest.mock import patch
+    import episode_lifecycle
+    import episode_state_persistence
+
+    with tempfile.TemporaryDirectory(prefix="candidate budget isolated ") as td:
         ep = Path(td)
         results = []
-        def one(i):
-            results.append(claim(ep, i + 1, "original", token=f"q{i}"))
-        threads = [threading.Thread(target=one, args=(i,)) for i in range(5)]
-        for t in threads: t.start()
-        for t in threads: t.join()
-        assert len(results) == 5 and all(x[0] for x in results)
-        ok, row = commit(ep, "q0")
-        assert ok and row["decision"] == "COMMITTED"
-        ok, row = release(ep, "q0")
-        assert not ok and row["decision"] == "COMMITTED_NOT_RELEASED"
-        ok, _ = release(ep, "q1")
-        assert ok
-    print("RAW CANDIDATE BUDGET V2.6.0 ATOMIC LIFECYCLE SELF-TEST PASS")
+        # All compatibility reads and lifecycle admission are ephemeral fixtures.
+        with (patch.object(episode_lifecycle, "assert_writable", return_value=None),
+              patch.object(episode_state_persistence, "load", return_value={"frame_count": 20}),
+              patch.object(production_ledger, "load_authority", return_value={})):
+            def one(i):
+                results.append(_legacy_claim(ep, i + 1, "original", token=f"q{i}"))
+            threads = [threading.Thread(target=one, args=(i,)) for i in range(5)]
+            for t in threads: t.start()
+            for t in threads: t.join()
+            assert len(results) == 5 and all(x[0] for x in results)
+            ok, row = _legacy_commit(ep, "q0")
+            assert ok and row["decision"] == "COMMITTED"
+            ok, row = _legacy_release(ep, "q0")
+            assert not ok and row["decision"] == "COMMITTED_NOT_RELEASED"
+            ok, _ = _legacy_release(ep, "q1")
+            assert ok
+    print("RAW CANDIDATE BUDGET LOCAL JSON ATOMIC SELF-TEST PASS")
 
 def main():
     ap = argparse.ArgumentParser()
