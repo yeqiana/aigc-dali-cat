@@ -87,6 +87,7 @@ def read_log(path: Path) -> str:
         return ""
 
 
+@unittest.skipUnless(os.name == "nt", "Windows Task Scheduler and Win32 detached-process contract")
 class DetachedDriverContractTests(unittest.TestCase):
 
     def setUp(self) -> None:
