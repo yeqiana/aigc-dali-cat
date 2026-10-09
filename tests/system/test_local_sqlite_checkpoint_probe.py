@@ -31,3 +31,34 @@ def test_invalid_payload_does_not_advance_authority(tmp_path):
     except TypeError:pass
     else:raise AssertionError("bad JSON must fail")
     assert store.read("one")=={"revision":1,"payload":{"ok":True}}
+def test_simultaneous_writers_advance_revision_once(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    store = LocalCheckpointStore(tmp_path / "concurrency.db", busy_timeout_ms=15000)
+    store.initialize()
+    assert store.compare_and_swap("asset", 0, {"winner": "initial"})
+    gate = Barrier(8)
+
+    def try_claim(value):
+        gate.wait(timeout=10)
+        return store.compare_and_swap("asset", 1, {"winner": value})
+
+    with ThreadPoolExecutor(max_workers=8) as workers:
+        outcomes = list(workers.map(try_claim, range(8)))
+    assert outcomes.count(True) == 1
+    assert outcomes.count(False) == 7
+    final = store.read("asset")
+    assert final["revision"] == 2
+    assert final["payload"]["winner"] in range(8)
+
+
+def test_open_connection_failure_does_not_leak_database_handle(tmp_path):
+    from contextlib import closing
+
+    store = LocalCheckpointStore(tmp_path / "no-leak.db")
+    store.initialize()
+    with closing(store.connect()) as connection:
+        assert connection.execute("PRAGMA journal_mode").fetchone()[0].lower() == "wal"
+    assert store.compare_and_swap("after-close", 0, {"ok": True})
+    assert store.read("after-close")["revision"] == 1
