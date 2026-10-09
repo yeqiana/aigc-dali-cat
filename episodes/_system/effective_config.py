@@ -165,8 +165,9 @@ def snapshot() -> dict:
         if raw is None or not str(raw).strip():
             sources[name] = {"value": None, "source": f"env:{env_var} (unset)", "classification": classification}
         else:
-            # STORY_OS_MANUAL_RAW_DIR holds a path, the rest are on/off switches.
-            value: object = str(raw) if env_var.endswith("_DIR") else _truthy(raw)
+            # A provider route is a string selector, not an on/off switch.
+            value: object = (str(raw).strip().lower() if env_var == "STORY_OS_IMAGE_PROVIDER_ROUTE"
+                             else str(raw) if env_var.endswith("_DIR") else _truthy(raw))
             sources[name] = {"value": value, "source": f"env:{env_var}", "classification": classification}
 
     resolved_store = storage_config.runtime_store_config()
@@ -194,6 +195,17 @@ def snapshot() -> dict:
             "source": f"env:{env_var}" if raw else f"{YAML}#{key}",
         }
 
+    # This is policy visibility, not tool-capability attestation.
+    requested_image_route = str(os.environ.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
+    out["image_transport_policy"] = {
+        "required": "native_codex",
+        "requested": requested_image_route or "native_codex",
+        "status": ("BLOCKED" if requested_image_route and
+                   requested_image_route not in {"native_codex", "codex_subscription"} else "POLICY_ALLOWED_NOT_ATTESTED"),
+        "reason": ("CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED" if requested_image_route and
+                   requested_image_route not in {"native_codex", "codex_subscription"} else None),
+        "session_image_tool_attested": None,
+    }
     out["credential_presence"] = {
         name: {"present": bool(os.environ.get(name, "").strip())} for name in SECRET_ENV
     }

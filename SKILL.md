@@ -8,6 +8,7 @@
 
 - 默认整体 Runtime 为 `WORK`，当前 ChatGPT/Work + DevSpace 负责 Story、PREIMAGE、Critic、Review、Gate、Release。
 - 默认图片执行 Runtime 为 `CODEX`；这只授权 image generation / image repair，不得把整个 Story OS 路由成 CODEX full-auto。
+- 图片生成功能必须使用 Codex 原生 ChatGPT/Codex 登录通道；不得经 OpenCodex 代理（10100）转发，也不得因代理在线而自动切换。生图会话工具能力未证实时必须 BLOCK，不能以 CLI 功能开关代替真实能力证据。
 - 整条生产链的唯一配置入口是 `config/storyos.yaml:production.mode`：默认 `COLLABORATIVE`，显式 `CODEX_MANAGED` 才使用 Codex 全链路；宿主不可用不触发自动切换。单次覆盖使用 `STORY_OS_PRODUCTION_MODE`。
 - 图片执行配置入口为 `execution.image.executor`；单次覆盖使用 `STORY_OS_IMAGE_EXECUTOR=CODEX|PRODUCT_RUNTIME|AUTO`。旧 `STORY_OS_RUNTIME` / `STORY_OS_IMAGE_RUNTIME` 仅保留兼容/调试用途。
 - Host Action 使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史；`product-host-request.json` 只作为当前指针。
