@@ -57,6 +57,20 @@ def test_multiple_unknown_frames_are_sorted_and_keep_original_error_code():
     assert all(r["retry_permitted"] is False for r in result)
 
 
+def test_authority_unavailable_remains_visible_and_does_not_grant_retry():
+    q = {"items": [_item()]}
+    before = copy.deepcopy(q)
+    with patch.object(image_scheduler, "_technical_retry_budget",
+                      side_effect=RuntimeError("mysql unavailable")):
+        result = image_scheduler.unresolved_generation_evidence_for_plan(
+            Path("episode"), q)
+    assert len(result) == 1
+    assert result[0]["frame"] == 6
+    assert result[0]["reason"] == "generation_attempt_authority_unavailable"
+    assert result[0]["retry_permitted"] is False
+    assert q == before
+
+
 def test_proven_failed_after_dispatch_is_not_reported_as_unverified():
     q = {"items": [_item()]}
     with patch.object(image_scheduler, "_technical_retry_budget",
