@@ -53,7 +53,12 @@ def prepare(ep):
     episode_performance.safe_end_named_span(ep,"CONTEXT_RECOVERY",status="PASS",metadata={"fast_path":"2.6.0"})
     return {"state":state,"resume":resume,"capabilities":caps}
 def self_test():
-    assert slo(Path("/nonexistent"))["health"]=="UNKNOWN";print("RUNTIME FAST PATH V2.6.0 SELF-TEST PASS")
+    from unittest.mock import patch
+    # Isolate the missing-performance projection; never inspect a real Episode.
+    with patch.object(episode_performance, "load", return_value=None) as load:
+        assert slo(ROOT / "episodes" / "_tests" / "nonexistent")["health"] == "UNKNOWN"
+        load.assert_called_once()
+    print("RUNTIME FAST PATH V2.6.0 SELF-TEST PASS")
 def main():
     ap=argparse.ArgumentParser();sub=ap.add_subparsers(dest="cmd",required=True)
     for name in ("prepare","resume","slo"):

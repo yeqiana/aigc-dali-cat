@@ -420,6 +420,55 @@ def ready_items(ep:Path,q:dict)->tuple[list[dict],list[dict]]:
     return ready,blocked
 
 
+def unresolved_generation_evidence_for_plan(ep:Path,q:dict)->list[dict]:
+    """Read-only evidence blockers for historical technical image Attempts.
+
+    Legacy `blocked` in the scheduler plan means a *queued dependency*
+    cannot run. A `tech_failed` row whose shared Generation Attempt outcome
+    is unknown is different: it needs review of original Provider evidence.
+    Keep these separate so an empty ready/dependency list never suggests the
+    Episode has no outstanding production work.
+    """
+    unresolved=[]
+    for item in q.get("items") or []:
+        if not isinstance(item,dict) or item.get("status")!="tech_failed":
+            continue
+        frame=int(item.get("frame") or 0)
+        if frame<1:
+            continue
+        code=str(item.get("technical_failure_code") or _technical_retry_code(item))
+        try:
+            allowed,_state,reason=_technical_retry_budget(ep,item,code)
+        except Exception:
+            # A read-only plan must not turn an unavailable MySQL Authority
+            # into permission to regenerate, nor hide unresolved Episode work.
+            allowed=False
+            reason="generation_attempt_authority_unavailable"
+        if allowed:
+            continue
+        unresolved.append({
+            "frame":frame,
+            "technical_failure_code":code,
+            "reason":reason,
+            "action":"VERIFY_TECHNICAL_GENERATION_EVIDENCE",
+            "retry_permitted":False,
+        })
+    return sorted(unresolved,key=lambda row:row["frame"])
+
+
+def plan_snapshot(ep:Path,q:dict)->dict:
+    """Extend the old CLI projection without changing any scheduling state."""
+    ready,blocked=ready_items(ep,q)
+    authority_blocked=unresolved_generation_evidence_for_plan(ep,q)
+    return {
+        "ready":[{"frame":x["frame"],"priority":x["priority"],"scope":x["scope"]} for x in ready],
+        "blocked":[{"frame":x["frame"],"depends_on":x["depends_on"]} for x in blocked],
+        "authority_blocked":authority_blocked,
+        "requires_evidence_verification":bool(authority_blocked),
+        "progress":scheduler_core.progress(ep,q),
+    }
+
+
 def current_contract_sha(ep:Path,frame:int)->str:
     return scheduler_core.current_contract_sha(ep,frame)
 
@@ -1399,8 +1448,8 @@ def main()->int:
         if a.cmd=="import-visual-lock":print(json.dumps(import_visual_lock(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="import-batch":print(json.dumps(import_batch(ep,Path(a.prompt_dir).resolve()),ensure_ascii=False,indent=2));return 0
         if a.cmd=="plan":
-            q=load_queue(ep);ready,blocked=ready_items(ep,q)
-            print(json.dumps({"ready":[{"frame":x["frame"],"priority":x["priority"],"scope":x["scope"]} for x in ready],"blocked":[{"frame":x["frame"],"depends_on":x["depends_on"]} for x in blocked],"progress":scheduler_core.progress(ep,q)},ensure_ascii=False,indent=2));return 0
+            q=load_queue(ep)
+            print(json.dumps(plan_snapshot(ep,q),ensure_ascii=False,indent=2));return 0
         if a.cmd=="run":
             run_timeout=runtime_timeout_policy.resolve("image_lane_run", a.timeout)
             if batch_scheduler.should_use(ep):

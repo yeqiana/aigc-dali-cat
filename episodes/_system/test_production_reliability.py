@@ -3,12 +3,14 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SYSTEM_DIR = Path(__file__).resolve().parent
 
@@ -65,6 +67,11 @@ class TextAuditTests(unittest.TestCase):
 
 class ReliabilityCliTests(unittest.TestCase):
     def setUp(self):
+        # Only ephemeral test fixtures use the JSON compatibility store.
+        meta_mode = patch.dict(os.environ, {'STORYOS_EPISODE_META_STORE_MODE': 'json',
+                                          'STORYOS_HOT_STATE_MODE': 'file'})
+        meta_mode.start()
+        self.addCleanup(meta_mode.stop)
         self.tmp = tempfile.TemporaryDirectory()
         self.ep = Path(self.tmp.name) / 'episode'
         (self.ep / 'meta').mkdir(parents=True)
@@ -97,7 +104,9 @@ class ReliabilityCliTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def run_script(self, script: str, *args: str):
-        return subprocess.run([sys.executable, str(SYSTEM_DIR / script), *map(str, args)], capture_output=True, text=True)
+        # Each CI child needs the same stdlib-platform bootstrap as the parent.
+        ci_runner = SYSTEM_DIR.parents[1] / 'scripts' / 'ci_storyos_python.py'
+        return subprocess.run([sys.executable, str(ci_runner), str(SYSTEM_DIR / script), *map(str, args)], capture_output=True, text=True)
 
     def test_transport_preflight_and_failure(self):
         r = self.run_script('transport_guard.py', 'preflight', self.ep, '01')

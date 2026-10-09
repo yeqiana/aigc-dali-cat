@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -7,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes" / "_system"
 
 def run(cmd):
+    if os.environ.get('STORYOS_CI_PYTHON_BOOTSTRAP') == '1' and cmd[0] == sys.executable:
+        cmd.insert(1, str(ROOT / 'scripts/ci_storyos_python.py'))
     r = subprocess.run(
         cmd, cwd=ROOT, text=True, capture_output=True,
         encoding="utf-8", errors="replace"

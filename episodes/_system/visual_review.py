@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Compatibility dispatcher: legacy Visual Profile Review vs Story OS V2.1 four-admission Visual Lock."""
 from __future__ import annotations
-import argparse, json, subprocess, sys
+import argparse, json, os, subprocess, sys
 from pathlib import Path
 
 from story_os_contract import FOUR_ADMISSION_V21_POLICY
@@ -64,7 +64,11 @@ def verify(ep: Path) -> list[str]:
 
 
 def forward(script: str, args: list[str]) -> int:
-    return subprocess.call([sys.executable, str(SYSTEM/script), *args], cwd=ROOT)
+    cmd = [sys.executable]
+    if os.environ.get('STORYOS_CI_PYTHON_BOOTSTRAP') == '1':
+        # Preserve the stdlib platform bridge in nested CI-only Python runs.
+        cmd.append(str(ROOT / 'scripts/ci_storyos_python.py'))
+    return subprocess.call([*cmd, str(SYSTEM/script), *args], cwd=ROOT)
 
 
 def main() -> int:
