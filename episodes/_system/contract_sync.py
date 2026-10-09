@@ -629,7 +629,8 @@ def collect_errors(root: Path | None = None) -> list[str]:
             "python episodes/_system/media_workspace.py self-test",
             "python episodes/_system/story_os.py doctor",
         ]:
-            if token not in wf:
+            ci_adapter_token = token.replace("python episodes/_system/", "python scripts/ci_storyos_python.py episodes/_system/", 1)
+            if token not in wf and ci_adapter_token not in wf:
                 errors.append(f"CI missing Story OS hardening check: {token}")
         for token in ['"story_os_manifest.json"', '"runtimes/**"', '"START_HERE.md"', '"README.md"']:
             if wf.count(token) < 2:
