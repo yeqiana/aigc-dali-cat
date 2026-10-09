@@ -9,7 +9,7 @@
 - 未找到正确的原始 Provider 终态证据前必须保持 `UNKNOWN`；禁止复用新 Runner 给旧 OpenCodex Attempt 伪造结果；禁止无条件 `retry-tech`、`init --force`、清空或迁移 MySQL Attempt。
 
 ## 槽位②：代码/Runtime
-- 已远程合并的 `story-platform-v3-rever`=`7a096c7`（PR #4）。
+- 历史审计基线是远端 `7a096c7`（PR #4）；此条为当时记录，不代表当前 HEAD。2026-10-09 续验时 PR #5、PR #6 均已合并，远端主分支 `90eb6ef`。
 - 本地原主目录在 `fae8d2e` 时有 3 个独立提交；其 Runtime Launcher、Worker、Exporter 和 Codex User Runner 进程还在运行，不能在其运行时原地热替换代码。
 - 已在**隔离 worktree** `.worktrees/storyos-five-mu-production-preflight-20261009` 将本地与远端合并成 `64c5934`，两侧提交均为祖先。专项测试 43 passed、契约检查通过、Doctor 0 错误/0 警告。尚未同步原主目录或重启 Runtime。
 - 生产时的 MySQL 配置只来自项目本机 `.storyos/runtime-launcher/runtime.env`（不得输出任何密钥）。不要将隔离 worktree 的测试环境替代为正式 Provider/Attempt Authority。
@@ -43,3 +43,21 @@ codex login status
 
 如任一步出现 Authority 不一致、证据缺失、未知原生工具能力，必须停止发图并报告阻断、路径与可复核证据。不得自行把 `OUTCOME_UNKNOWN` 改写成成功或失败。
 
+
+
+## 续验记录：本机只读 Authority 与原生能力复核（2026-10-09）
+
+- PR #5 (`853d574`) 与 PR #6 (`90eb6ef`) 已进入 GitHub 主分支；本地主目录已合并远端 PR #6，代码树与远端一致。未跟踪资产保留。
+- 本机 `codex login status` 实际返回 `Not logged in`、退出码 1。CLI 存在和 Runner 在线均不能替代真实登录及图片工具能力证明。
+- 通过本地主工作区正式 `scripts/storyos_production_env.py` 加载器运行 `scripts/storyos_generation_evidence_audit.py` 和 `scripts/storyos_generation_terminal_dossier.py`。两项只读命令均退出码 0。
+- 两份审计均返回 `unresolved_frames=[6,24]`。Frame 06、24 的 `authority_status=OUTCOME_UNKNOWN` 且各消耗 1 次 Attempt。
+- Frame 06 的 `recovery_reason=unsupported_non_regenerating_failure`；Frame 24 的 `recovery_reason=provider_crop_exception_limit_exceeded`。Dossier 中两帧均为 `provider_terminal_receipt_verified=false`、`generation_retry_permitted=false`。
+- Dossier 的自报声明为 `readonly=true`、`model_calls=0`、`generation_attempt_mutations=0`；这些数据不是生产可用性证明。
+- 本机 Docker：`mysql8.0` 映射 `127.0.0.1:3307`，`storyos-phase5a-mysql` 映射 `127.0.0.1:3306`。容器运行不证明原始 Provider Attempt 已裁决。
+- `meta/release-manifest.json` 仍为 `production_gate=pending`、`publish_decision=hold`；正式 publish 编号 PNG 不存在。不得标记为 `PUBLISH_READY`。
+
+### 生产恢复门槛
+
+1. 操作者登录原生 Codex，独立验证图像工具可见性；未证明就阻断。
+2. 追溯旧 Provider Frame 06/24 的原始 Request、Attempt、Receipt、RAW 和哈希；未核实就保留 `OUTCOME_UNKNOWN`，绝不重试或伪造。
+3. MySQL Authority、Visual Lock、Review Authority、Driver/Stage 均经过正式门禁后，才能考虑受控单帧生产。禁止 OpenCodex 回退和视频生成。
