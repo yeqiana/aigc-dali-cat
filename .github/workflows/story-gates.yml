@@ -85,6 +85,7 @@ jobs:
         # production Redis authority and separate system tests stay unchanged.
         env:
           STORYOS_HOT_STATE_MODE: file
+          STORYOS_EPISODE_META_STORE_MODE: json
         run: |
           # Each command uses a new interpreter with stdlib platform support
           # plus StoryOS platform.repository, avoiding the module name collision.
