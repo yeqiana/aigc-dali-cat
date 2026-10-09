@@ -21,14 +21,20 @@ def _frames():
 
 
 class FakeConnection:
-    def __init__(self, active="revision-2", status="ACTIVE", fencing=0):
+    def __init__(self, active="revision-2", status="ACTIVE", fencing=0,
+                 has_head=True, orphan=False):
         self.active = active
         self.status = status
         self.fencing = fencing
+        self.has_head = has_head
+        self.orphan = orphan
 
     def query_one(self, sql, params):
         if "TB_PRODUCTION_REVISION_HEAD" in sql:
-            return {"ACTIVE_REVISION_ID": self.active, "FENCING_COUNTER": self.fencing} if self.active else {"ACTIVE_REVISION_ID": None, "FENCING_COUNTER": self.fencing}
+            return ({"ACTIVE_REVISION_ID": self.active, "FENCING_COUNTER": self.fencing}
+                    if self.has_head else None)
+        if "SELECT PRODUCTION_REVISION_ID FROM TB_PRODUCTION_REVISION " in sql:
+            return {"PRODUCTION_REVISION_ID": "orphan"} if self.orphan else None
         if "TB_PRODUCTION_REVISION WHERE" in sql:
             return {"STATUS": self.status, "EPISODE_ID": "episode-1"}
         if "TB_PRODUCTION_REVISION_FRAME" in sql:
@@ -87,7 +93,13 @@ def test_preparing_revision_cannot_dispatch_and_legacy_episode_remains_compatibl
     with pytest.raises(revision.ProductionRevisionDenied, match="AUTHORITY_MISMATCH"):
         revision.validate_dispatch_binding(
             FakeConnection(status="PREPARING"), "episode-1", {"production_revision_id": "revision-2"})
-    assert revision.validate_dispatch_binding(FakeConnection(active=None), "episode-1", {}) is None
+    assert revision.validate_dispatch_binding(
+        FakeConnection(active=None, has_head=False), "episode-1", {}) is None
+    with pytest.raises(revision.ProductionRevisionDenied, match="BINDING_REQUIRED"):
+        revision.validate_dispatch_binding(FakeConnection(active=None), "episode-1", {})
+    with pytest.raises(revision.ProductionRevisionDenied, match="HEAD_MISSING"):
+        revision.validate_dispatch_binding(
+            FakeConnection(active=None, has_head=False, orphan=True), "episode-1", {})
     with pytest.raises(revision.ProductionRevisionDenied, match="BINDING_REQUIRED"):
         revision.validate_dispatch_binding(
             FakeConnection(active=None), "episode-1", {"production_revision_id": "revision-2"})

@@ -88,6 +88,10 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
             connection.close()
         revision_authority.prepare_revision(self.ep,row["production_revision_id"])
         revision_authority.begin_visual_lock(self.ep,row["production_revision_id"])
+        # Even before ACTIVE exists, a created Revision head must fence
+        # unbound/legacy paid dispatches in the same Episode namespace.
+        with self.assertRaisesRegex(authority.AttemptDenied, "PRODUCTION_REVISION_BINDING_REQUIRED"):
+            self._reserve()
         review_payload={"production_revision_id":row["production_revision_id"],"summary":{"passed":True},"issue_codes":[],"calibration":[]}
         assets=[]
         role_frames=(1,2,3,4)
