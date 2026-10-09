@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import tempfile
+from types import SimpleNamespace
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -28,8 +29,14 @@ class RuntimePerformanceV260Test(unittest.TestCase):
                     raise denied
                 return real_replace(src, dst)
 
-            with patch.object(runtime_atomic_store.os, "name", "nt"), \
-                    patch.object(runtime_atomic_store.os, "replace", side_effect=flaky), \
+            # Only override this module's OS facade; touching os.name globally
+            # would make pathlib instantiate WindowsPath on Linux runners.
+            fake_os = SimpleNamespace(
+                name="nt", replace=flaky,
+                fdopen=runtime_atomic_store.os.fdopen,
+                fsync=runtime_atomic_store.os.fsync,
+            )
+            with patch.object(runtime_atomic_store, "os", fake_os), \
                     patch.object(runtime_atomic_store.time, "sleep", return_value=None):
                 runtime_atomic_store.atomic_write_json(path, {"ok": True})
             self.assertEqual(runtime_atomic_store.read_json(path, {}), {"ok": True})
