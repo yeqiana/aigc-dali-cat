@@ -65,6 +65,7 @@
 - 中断恢复先验证已经到达的目标阶段；证据有效则 REUSED，不为“保险”重做昂贵 Step。
 - 图片 worker pool 只复用 Python 进程/模块，不复用跨帧 Codex 对话上下文。
 - Quota observability 仅记录真实日志计数或用户明确提供的 `/status` 百分比，不允许推测 Plus 剩余额度。
+- 本地 StoryOS 生产环境由 git-ignored `.storyos/runtime-launcher/runtime.env` 提供实际数据库/缓存连接参数。WebCodex 或终端单独运行验证/生产 Python 脚本时，必须通过 `python scripts/storyos_production_env.py episodes/_system/<script>.py ...` 加载现有运行配置，禁止把 `config/storyos.yaml` 的 localhost 默认值误当成正式生产库，也不得打印或提交凭据。
 <!-- STORY_OS_RUNTIME_DAG_REFACTOR_AGENTS_END -->
 
 <!-- STORY_OS_RUNTIME_PERFORMANCE_PACK_AGENTS_BEGIN -->
@@ -116,7 +117,7 @@
 - 显式本地 Codex：`runtimes/CODEX.md`
 - 普通 ChatGPT Web：`runtimes/WEB.md`
 
-**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 唯一生产模式入口为 `production.mode`（默认 `COLLABORATIVE`）；执行器分别配置在 `execution.workspace.provider`、`execution.image.executor`、`execution.vision_review.executor`。宿主不可用时不得自动改走本地 Codex。只有显式设为 `CODEX_MANAGED` 或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED` 才启用整条 CODEX Runtime；旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型与生图模型分别读取 `config/storyos.yaml:models.profiles.image_controller` 和 `models.profiles.image_payload`；生图质量固定为 `high`。Story、PREIMAGE、Critic、Review、Gate、Release 不得因图片执行器而交给 Codex full-auto。
+**本机存在 `codex.exe` 不再自动推导整个 Runtime=CODEX。** 唯一生产模式入口为 `production.mode`（默认 `COLLABORATIVE`）；执行器分别配置在 `execution.workspace.provider`、`execution.image.executor`、`execution.vision_review.executor`。宿主不可用时不得自动改走本地 Codex。只有显式设为 `CODEX_MANAGED` 或单次设置 `STORY_OS_PRODUCTION_MODE=CODEX_MANAGED` 才启用整条 CODEX Runtime；旧 `STORY_OS_RUNTIME` 仅保留兼容/调试用途。图片控制模型与生图模型分别读取 `config/storyos.yaml:models.profiles.image_controller` 和 `models.profiles.image_payload`；生图质量固定为 `high`。图片生成功能仅允许 Codex 原生 ChatGPT/Codex 通道，不得自动切换到 OpenCodex（10100）代理，且无真实会话工具能力证明时不得消耗生图 Attempt。Story、PREIMAGE、Critic、Review、Gate、Release 不得因图片执行器而交给 Codex full-auto。
 
 Runtime DAG 使用通用 `scoped_model`；WORK/WEB 的非图片步骤通过 `product_runtime_adapter.py` 暴露宿主动作，CODEX 整体 Runtime 才使用 `scoped_codex_worker.py`。图片 Scheduler 读取 `execution.image.executor`（旧 `runtime.image_execution_runtime` / `STORY_OS_IMAGE_RUNTIME` 暂保留兼容）。宿主请求使用 `meta/runtime/host-requests/<request_id>.json` 保存不可覆盖历史，正常等待宿主执行记为 `HOST_WAIT`；Product Review 使用 attempt-scoped request。Concept/Story/Legacy Visual 独立评审允许 `WORK_ISOLATED / WEB_ISOLATED / CODEX_ISOLATED`，但都必须 fresh + source-SHA-bound。
 

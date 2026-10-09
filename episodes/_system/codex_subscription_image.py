@@ -1056,7 +1056,8 @@ def _classify_preflight_exception(exc: Exception, *, stage: str) -> str:
 def payload_capability_preflight(*, model: str, quality: str,
                                  codex_raw: str | None = None,
                                  phase5a_canary_id: str | None = None,
-                                 phase5a_canary_context: dict | None = None) -> dict:
+                                 phase5a_canary_context: dict | None = None,
+                                 allow_unknown_capability_proof: bool = False) -> dict:
     """Prove login-auth transport before any image Attempt is reserved."""
     requested_model = str(model or "").strip()
     requested_quality = str(quality or "").strip().lower()
@@ -1147,7 +1148,7 @@ def payload_capability_preflight(*, model: str, quality: str,
                 "image_attempt_authority_called": False,
                 "image_generation_called": False,
             }
-        if (not canary_scope
+        if (not canary_scope and not allow_unknown_capability_proof
                 and not any(row.get("tool_capability_state") == "EXPLICIT_SUPPORTED" for row in eligible)):
             return {
                 "status": "BLOCKED",
@@ -1171,7 +1172,9 @@ def payload_capability_preflight(*, model: str, quality: str,
             }
             stage = "transport_probe"
             capability_state = str(row.get("tool_capability_state") or "UNKNOWN")
-            use_visibility_probe = capability_state == "UNKNOWN" and canary_scope is not None
+            use_visibility_probe = capability_state == "UNKNOWN" and (
+                canary_scope is not None or allow_unknown_capability_proof
+            )
             diagnostic = _probe_transport_model_diagnostic(
                 codex, row["model"], row["effort"],
                 candidate_provenance=candidate_provenance,
@@ -1192,7 +1195,8 @@ def payload_capability_preflight(*, model: str, quality: str,
                 "image_generation_called": bool(diagnostic.get("image_generation_call_count", 0)),
             }
             if str(diagnostic.get("status") or "") in {"PASS", "PASS_WITH_CLEANUP_TIMEOUT"}:
-                if capability_state == "UNKNOWN" and not canary_scope:
+                if (capability_state == "UNKNOWN" and not canary_scope
+                        and not allow_unknown_capability_proof):
                     failures.append({**diagnostic,
                                      "failure_class": "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN"})
                     break
@@ -1835,6 +1839,7 @@ def generate_for_frame(args: argparse.Namespace) -> dict:
             )
             provider_evidence = {
                 "provider": "codex_subscription",
+                "transport_route": "native_codex",
                 "transport_model": transport_model,
                 "transport_effort": transport_effort,
                 "transport_role": "IMAGE_TOOL_TRANSPORT",

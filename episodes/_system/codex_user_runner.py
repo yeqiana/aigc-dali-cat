@@ -319,6 +319,14 @@ def resolve_provider_transport(
     if "exec" not in command:
         return None
     source = dict(env) if env is not None else dict(os.environ)
+    if task_type == "image":
+        # Native image execution must never accept a legacy proxy/HTTP route,
+        # including when OPENAI_BASE_URL is otherwise unset. API images use a
+        # separate official adapter, not Codex subscription transport.
+        image_route = str(source.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
+        if image_route and image_route not in {"native_codex", "codex_subscription"}:
+            raise CodexUserRunnerRejected("CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED",
+                                          "non-native Codex image route")
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
     if env_base and env_base.rstrip("/") != NATIVE_CODEX_BASE_URL:
         raise CodexUserRunnerRejected(

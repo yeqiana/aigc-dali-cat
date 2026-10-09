@@ -190,6 +190,121 @@ def test_structured_controller_output_is_bound_into_canonical_request(tmp_path):
     assert result["receipt"]["payload_request_fingerprint"] == request["request_fingerprint"]
 
 
+def test_frame_specific_age_47_overrides_generic_56_and_is_preserved(tmp_path):
+    calls = []
+    frame_input = {
+        "source_scene_prompt": "2017年，一个47岁精干强壮的中年男人在山上喝水。",
+        "frame_prompt_contract": "This frame's visible appearance is 47, not the character's later age.",
+    }
+    scene = "2017年春，一个47岁精干强壮的男子喝白开水，自然纪实镜头。"
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt=scene)):
+        result = _run(tmp_path, controller_input=frame_input)
+        reused = _run(tmp_path, controller_input=frame_input)
+    assert result["status"] == "SUCCESS"
+    assert result["request"]["scene_prompt"] == scene
+    assert reused["reused"] is True
+    assert len(calls) == 1
+    assert "never replace" in calls[0]["prompt"]
+
+
+@pytest.mark.parametrize("scene", [
+    "2017年正午，一个56岁男子在山坡上喝水，不采用源提示中47岁外观。",
+    "2017年正午，一个56岁男子在山坡上喝水。",
+    "2017年正午，一个中年男子在山坡上喝水。",
+])
+def test_controller_blocks_wrong_or_missing_locked_apparent_age(tmp_path, scene):
+    calls = []
+    frame_input = {"source_scene_prompt": "2017年，一个47岁精干强壮的中年男人在山上喝水。"}
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt=scene)):
+        with pytest.raises(image_payload_controller.ImagePayloadControllerError) as exc:
+            _run(tmp_path, controller_input=frame_input)
+    assert exc.value.code == "IMAGE_CONTROLLER_SOURCE_AGE_DRIFT"
+    assert len(calls) == 1
+
+
+def test_legacy_success_receipt_age_drift_is_superseded_without_overwriting(tmp_path):
+    calls = []
+    source = {"source_scene_prompt": "2017年，一名47岁男子在山地劳作。"}
+    scene = "2017年，一名47岁男子在山地劳作。"
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt=scene)):
+        result = _run(tmp_path, controller_input=source)
+    receipt_path = Path(result["receipt_path"])
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    wrong = _completed_jsonl("2017年，一名56岁男子在山地劳作。")
+    receipt["scoped_output_stream"] = wrong
+    receipt_path.write_text(json.dumps(receipt, ensure_ascii=False), encoding="utf-8")
+    stale = receipt_path.read_bytes()
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt=scene)):
+        regenerated = _run(tmp_path, controller_input=source)
+        reused = _run(tmp_path, controller_input=source)
+    assert regenerated["reused"] is False
+    assert reused["reused"] is True
+    assert len(calls) == 2
+    assert regenerated["controller_call_id"] != result["controller_call_id"]
+    assert regenerated["receipt"]["supersedes_controller_call_id"] == result["controller_call_id"]
+    assert receipt_path.read_bytes() == stale
+
+
+def test_failed_text_only_receipt_is_preserved_and_retried_once(tmp_path):
+    calls = []
+    source = {"source_scene_prompt": "2017年，一个47岁男子在山上喝水。"}
+    scene = "2017年，一个47岁男子在山上喝白开水。"
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt=scene)):
+        first = _run(tmp_path, controller_input=source)
+    failed_path = Path(first["receipt_path"])
+    failed = json.loads(failed_path.read_text(encoding="utf-8"))
+    failed["status"] = "FAILED"
+    failed["scoped_output_stream"] = ""
+    failed_path.write_text(json.dumps(failed, ensure_ascii=False), encoding="utf-8")
+    preserved = failed_path.read_bytes()
+
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt=scene)):
+        retried = _run(tmp_path, controller_input=source)
+
+    assert retried["status"] == "SUCCESS"
+    assert retried["reused"] is False
+    assert retried["controller_call_id"] != first["controller_call_id"]
+    assert failed_path.read_bytes() == preserved
+    assert len(calls) == 2
+
+
+def test_invalid_replacement_does_not_retry_unboundedly(tmp_path):
+    calls = []
+    source = {"source_scene_prompt": "2017年，一个47岁男子在山上。"}
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt="2017年，一个47岁男子在山上。")):
+        result = _run(tmp_path, controller_input=source)
+    path = Path(result["receipt_path"])
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["scoped_output_stream"] = _completed_jsonl("2017年，一个56岁男子在山上。")
+    path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call",
+                      side_effect=_fake_executor(calls, scene_prompt="2017年，一个56岁男子在山上。")):
+        with pytest.raises(image_payload_controller.ImagePayloadControllerError) as exc:
+            _run(tmp_path, controller_input=source)
+    assert exc.value.code == "IMAGE_CONTROLLER_SOURCE_AGE_DRIFT"
+    assert len(calls) == 2
+    with _policy_patches()[0] as _, _policy_patches()[1] as _, \
+         patch.object(scoped_codex_worker, "execute_model_call") as no_reexec:
+        with pytest.raises(image_payload_controller.ImagePayloadControllerError):
+            _run(tmp_path, controller_input=source)
+    no_reexec.assert_not_called()
+
+
 def test_controller_receipt_reused_for_same_inputs_and_reexecuted_after_input_drift(tmp_path):
     calls = []
     with _policy_patches()[0] as _, _policy_patches()[1] as _, \

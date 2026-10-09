@@ -140,6 +140,35 @@ class ScopedCodexModelBindingTests(unittest.TestCase):
                 )
                 self.assertEqual(receipt["status"], "SUCCESS")
 
+    def test_image_payload_controller_persists_output_through_pipe(self):
+        output = io.StringIO()
+        expected = '{"text":"exact frame request"}'
+        binding = {
+            "role": "image.controller", "profile": "image_controller",
+            "model": "gpt-6-luna", "reasoning_effort": "high",
+            "model_policy_sha256": "policy-sha",
+        }
+
+        def run_codex(*_args, **kwargs):
+            self.assertIs(kwargs["stdout"], subprocess.PIPE)
+            return subprocess.CompletedProcess(["codex"], 0, stdout=expected)
+
+        with patch.object(worker, "resolve_codex", return_value=Path("codex")), \
+             patch.object(worker, "codex_exec_command", return_value=["codex", "exec", "-"]), \
+             patch.object(worker.codex_user_runner, "run_codex", side_effect=run_codex), \
+             patch.object(worker.runtime_observability, "now", return_value="now"), \
+             patch.object(worker.runtime_observability, "write_model_execution_receipt", return_value=Path("receipt.json")), \
+             patch.object(worker, "_model_event"), \
+             patch("logical_asset_identity.episode_id", return_value="episode"):
+            rc, receipt = worker.execute_model_call(
+                Path("episode"), "IMAGE_PAYLOAD_REQUEST", binding, "controller prompt",
+                output_handle=output, persist_output_stream=True, sandbox="read-only",
+            )
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(output.getvalue(), expected)
+        self.assertEqual(receipt["scoped_output_stream"], expected)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -287,6 +287,33 @@ def queue_summary(ep: Path) -> dict:
     }
 
 
+
+def blocked_final_semantic_recovery(q: dict) -> dict | None:
+    """A blocked review is an unresolved model call, not a fresh image request.
+
+    Only current attempt-scoped Final Semantic rows participate. Historical
+    finalized/stale review rows must never reopen an Episode's recovery.
+    """
+    blocked = [row for row in (q.get("review_work_items") or [])
+               if isinstance(row, dict)
+               and row.get("review_kind") == "FINAL_SEMANTIC"
+               and row.get("status") == "blocked"]
+    if not blocked:
+        return None
+    return {
+        "action": "VERIFY_FINAL_SEMANTIC_EXECUTION_BEFORE_RETRY",
+        "review_keys": sorted({str(row.get("review_key")) for row in blocked
+                               if row.get("review_key")}),
+        "frames": sorted({int(row.get("frame")) for row in blocked
+                          if str(row.get("frame") or "").isdigit()
+                          and int(row["frame"]) > 0}),
+        "work_pending": True,
+        "hard_stop": True,
+        "auto_recoverable": False,
+        "reason": "Final Semantic call has no verified terminal execution/commit; inspect durable worker and model receipts before any retry, never regenerate pixels",
+    }
+
+
 def _expected_frames(ep: Path) -> int:
     try:
         return int(frame_contract.frame_count(ep))
@@ -636,6 +663,8 @@ def derive(ep: Path) -> dict:
                     "frame": int(row.get("frame") or 0),
                     "code": str(row.get("code") or ""),
                     "reason": str(row.get("reason") or "non-regenerating image failure requires explicit inspection"),
+                    "recovery_action": row.get("recovery_action"),
+                    "recovery_hint": row.get("recovery_hint"),
                 } for row in plans],
                 reason="non-regenerating image failure must be resolved before any pixel review or further generation",
             )
@@ -760,6 +789,10 @@ def derive(ep: Path) -> dict:
         if runnable:
             return action_result(action="GENERATE_IMAGES",executor="CODEX_IMAGE" if image_runtime=="CODEX" else runtime,
                 frames=runnable,reason="scheduler dependency authority reports runnable image work")
+        review_block = blocked_final_semantic_recovery(q)
+        if review_block:
+            return action_result(**{**review_block, "executor": runtime})
+
         production_review_pending=[
             x for x in q.get("items") or []
             if str(x.get("scope") or "")=="batch" and x.get("status")=="review_pending"

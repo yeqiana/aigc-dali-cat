@@ -399,13 +399,44 @@ def depth(q: dict) -> int:
     return sum(str(row.get("status") or "") in ACTIVE for row in q.get(QUEUE_KEY) or [])
 
 
-def recover_claims(q: dict) -> int:
-    """Release claims left by a stopped scheduler; caller owns the queue lock."""
+def _quarantine_unverified_final_review(row: dict) -> None:
+    """Preserve identity when a Final Semantic model call lost its lease.
+
+    A missing terminal receipt is not evidence that the model never ran. Never
+    requeue this work until a durable completion / worker-death check happens.
+    """
+    row.update(status="blocked", claim_token=None, lease_expires_at=None,
+               recovery_action="VERIFY_FINAL_SEMANTIC_EXECUTION_BEFORE_RETRY",
+               technical_failure_code="FINAL_SEMANTIC_UNVERIFIED_INTERRUPTED_CALL")
+
+
+def recover_claims(q: dict, *, at: str | None = None) -> int:
+    """Recover expired leases only; never steal an active worker's claim.
+
+    Unknown lease expiry does not prove Final Semantic model execution finished:
+    quarantine unreceipted work rather than dispatching it again.
+    """
+    current = datetime.fromisoformat(at or now())
     count = 0
     for row in q.get(QUEUE_KEY) or []:
-        if row.get("status") == "running":
+        if row.get("status") != "running":
+            continue
+        raw_expiry = row.get("lease_expires_at")
+        expiry = None
+        if raw_expiry:
+            try:
+                candidate = datetime.fromisoformat(str(raw_expiry))
+                if candidate.tzinfo is not None and current.tzinfo is not None:
+                    expiry = candidate
+            except (TypeError, ValueError, OverflowError):
+                pass
+        if expiry is not None and expiry > current:
+            continue
+        if row.get("review_kind") == FINAL_SEMANTIC and not isinstance(row.get("receipt"), dict):
+            _quarantine_unverified_final_review(row)
+        else:
             row.update(status="queued", claim_token=None, lease_expires_at=None)
-            count += 1
+        count += 1
     return count
 
 
@@ -423,6 +454,10 @@ def claim(q: dict, *, lease_seconds: int = 300, at: str | None = None) -> dict |
     for row in sorted(q.get(QUEUE_KEY) or [], key=lambda value: str(value.get("queued_at") or "")):
         status = str(row.get("status") or "")
         if status == "running":
+            # A potentially still-running Final Semantic model must not be
+            # restarted by expiry alone; explicit recovery owns that decision.
+            if row.get("review_kind") == FINAL_SEMANTIC and not isinstance(row.get("receipt"), dict):
+                continue
             expiry = row.get("lease_expires_at")
             if expiry and datetime.fromisoformat(str(expiry)) > current:
                 continue
