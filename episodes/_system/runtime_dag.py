@@ -87,7 +87,7 @@ def _assert_preimage_storage_schema() -> None:
     result = preimage_storage_preflight.inspect()
     if not result.get("schema_check_passed"):
         raise RuntimeError(
-            "PREIMAGE_V2_SCHEMA_BLOCKED:" + str(result.get("status") or "UNKNOWN"))
+            f"PREIMAGE_V2_SCHEMA_BLOCKED:{result.get('status') or 'UNKNOWN'}")
 
 
 def dispatch_critic_runnable(task_type, *, adapter, episode_dir, attempt,

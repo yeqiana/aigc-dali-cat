@@ -96,8 +96,19 @@ class RuntimeTimeoutPolicyTests(unittest.TestCase):
             "isolated_ml_probe": 30,
             "isolated_ml_worker": 180,
         }
-        self.assertEqual(ttp.DEFAULT_SECONDS, expected)
-        self.assertEqual(ttp.REQUIRED_ROLES, tuple(expected))
+        # Preserve the historical contract, but new bounded roles are allowed
+        # (and must also appear in the required YAML role registry).
+        for role, seconds in expected.items():
+            self.assertEqual(ttp.DEFAULT_SECONDS[role], seconds)
+        additions = {
+            "image_tool_visibility_probe": 120,
+            "authority_lock": 30,
+            "phase5a_canary_run": 900,
+        }
+        for role, seconds in additions.items():
+            self.assertEqual(ttp.DEFAULT_SECONDS[role], seconds)
+        self.assertEqual(set(ttp.DEFAULT_SECONDS), set(expected) | set(additions))
+        self.assertEqual(ttp.REQUIRED_ROLES, tuple(ttp.DEFAULT_SECONDS))
 
 
 if __name__ == "__main__":

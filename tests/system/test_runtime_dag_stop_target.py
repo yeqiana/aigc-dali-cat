@@ -117,6 +117,19 @@ class StopTargetWiringTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="storyos-until-", dir=ROOT / "episodes/_tests")
         self.addCleanup(self.tmp.cleanup)
         self.ep = Path(self.tmp.name)
+        # Real DAG ownership gate, bound to an isolated TEST_ONLY record.
+        # Never change the operator checkout's runtime-primary.json.
+        ownership = self.ep / "meta/runtime/runtime-primary.json"
+        ownership.parent.mkdir(parents=True, exist_ok=True)
+        ownership.write_text(json.dumps({
+            "primary_runtime": "V3_RUNTIME",
+            "previous_runtime": "V2_RUNTIME",
+            "reason": "isolated DAG wiring fixture",
+            "updated_at": "2026-10-09T00:00:00Z",
+        }), encoding="utf-8")
+        owner_patch = patch.object(runtime_dag.runtime_ownership, "ROOT", self.ep)
+        owner_patch.start()
+        self.addCleanup(owner_patch.stop)
         env = patch.dict(os.environ, {"STORYOS_EPISODE_META_STORE_MODE": "json"})
         env.start()
         self.addCleanup(env.stop)

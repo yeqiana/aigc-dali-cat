@@ -48,7 +48,10 @@ def test_review_claim_is_single_and_recoverable():
     first_token = first["claim_token"]
     assert first and first["status"] == "running"
     assert review_queue.claim(q) is None
-    assert review_queue.recover_claims(q) == 1
+    # A live Review lease must not be stolen. Recovery only owns an expired
+    # claim, so use its recorded expiry rather than wall-clock timing.
+    assert review_queue.recover_claims(q) == 0
+    assert review_queue.recover_claims(q, at=first["lease_expires_at"]) == 1
     recovered = review_queue.claim(q)
     assert recovered and recovered["claim_token"] != first_token
     assert review_queue.finish(q, "R1", first_token, status="finalized") is False

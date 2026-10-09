@@ -36,7 +36,8 @@ class ReportTests(unittest.TestCase):
             self.assertIn(f'model_reasoning_effort="{backend.CODEX_IMAGE_REASONING_EFFORT}"',args)
             self.assertFalse(any('model_provider=' in x or 'openai_base_url=' in x for x in args))
         with patch.dict(os.environ,{"STORY_OS_IMAGE_PROVIDER_ROUTE":"api_http","OPENAI_BASE_URL":"http://127.0.0.1:9999/v1"}):
-            self.assertTrue(any('9999' in x for x in backend.controller_args()))
+            with self.assertRaisesRegex(backend.BackendError, "API_KEY_DIRECT_IMAGE_EXECUTOR_REQUIRED"):
+                backend.controller_args()
 
     def test_invalid_config_does_not_silently_default(self):
         for value in (None,0,False,"5",11):

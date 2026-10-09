@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 SYSTEM = ROOT / "episodes" / "_system"
 if str(SYSTEM) not in sys.path:
     sys.path.insert(0, str(SYSTEM))
+AGENTS = SYSTEM / "agents"
+if str(AGENTS) not in sys.path:
+    sys.path.insert(0, str(AGENTS))
 
 import product_review_adapter
 import runtime_router
