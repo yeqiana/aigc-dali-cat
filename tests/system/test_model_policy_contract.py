@@ -56,7 +56,7 @@ def test_nine_profiles_and_required_role_aliases_are_configured() -> None:
         ("prompt.production", "structured_text", "gpt-6-luna", "high"),
         ("critic.story", "semantic_critic", "gpt-6-luna", "high"),
         ("critic.final", "final_semantic", "gpt-6-luna", "high"),
-        ("vision.fast", "vision_fast", "gpt-6-luna", "low"),
+        ("vision.fast", "vision_fast", "gpt-6-luna", "high"),
         ("vision.visual_lock", "vision_final", "gpt-6-luna", "high"),
         ("image.controller", "image_controller", "gpt-6-luna", "high"),
     ],
