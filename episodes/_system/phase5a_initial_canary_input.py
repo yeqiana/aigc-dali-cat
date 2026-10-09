@@ -23,6 +23,7 @@ import prompt_package_persistence
 import scheduler_core
 import storage_config
 import storyos_config
+from platform.repository.mysql.schema_v2 import DATABASE_NAME
 
 INITIAL_CLAIM_ID = "native-image-proof-20261008"
 
@@ -43,7 +44,7 @@ def prepare(episode_dir: str | Path, *, canary_id: str) -> dict:
     mysql = storage_config.mysql_connection_kwargs()
     if (str(mysql.get("host")) not in {"127.0.0.1", "localhost"}
             or int(mysql.get("port") or 0) != 3306
-            or str(mysql.get("database")) != "story_os_runtime"):
+            or str(mysql.get("database")) != DATABASE_NAME):
         raise InitialCanaryPreparationError("INITIAL_CANARY_TEST_DB_REQUIRED")
 
     # Require the pre-existing, exact initial claim; never reserve a new ID.

@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 from types import MappingProxyType
 from typing import Any, Mapping
+from platform.repository.mysql.schema_v2 import DATABASE_NAME
 import runtime_timeout_policy
 import subprocess
 import time
@@ -1005,7 +1006,7 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     mysql = storage_config.mysql_connection_kwargs()
     if (str(mysql.get("host")) not in {"127.0.0.1", "localhost"}
             or int(mysql.get("port") or 0) != 3306
-            or str(mysql.get("database")) != "story_os_runtime"):
+            or str(mysql.get("database")) != DATABASE_NAME):
         raise CanaryContractError("CANARY_TEST_ONLY_MYSQL_REQUIRED")
     if (ep / "meta/episode-state.json").exists():
         raise CanaryContractError("CANARY_CANONICAL_STAGE_AUTHORITY_FORBIDDEN")
