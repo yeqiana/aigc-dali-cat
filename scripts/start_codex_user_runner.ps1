@@ -130,11 +130,30 @@ $argLine = (($pythonArgs + $serveArgs) | ForEach-Object { '"' + $_ + '"' }) -joi
 $proc = Start-Process -FilePath $python -ArgumentList $argLine -WindowStyle Hidden -PassThru -RedirectStandardOutput $StdoutLog -RedirectStandardError $StderrLog
 Write-Step ('started pid ' + $proc.Id)
 
+# An endpoint left behind by a crashed runner is not proof that this new
+# process started. Require the fresh server's own published PID, and never
+# adopt another user's or a preexisting server's endpoint.
 $deadline = (Get-Date).AddSeconds(60)
-while ((Get-Date) -lt $deadline -and -not (Test-Path -LiteralPath $Endpoint)) { Start-Sleep -Milliseconds 500 }
-if (-not (Test-Path -LiteralPath $Endpoint)) {
-    Write-Host 'CODEX_USER_RUNNER_UNAVAILABLE: the runner did not publish its endpoint' -ForegroundColor Red
-    if (Test-Path -LiteralPath $StderrLog) { Get-Content -LiteralPath $StderrLog -Tail 20 }
+$endpointMatchesNewProcess = $false
+while ((Get-Date) -lt $deadline) {
+    if ($proc.HasExited) { break }
+    if (Test-Path -LiteralPath $Endpoint) {
+        try {
+            $published = Get-Content -LiteralPath $Endpoint -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+            $endpointMatchesNewProcess = (
+                [int]$published.pid -eq [int]$proc.Id -and
+                [string]$published.host -eq '127.0.0.1' -and
+                [int]$published.port -gt 0
+            )
+            if ($endpointMatchesNewProcess) { break }
+        } catch {
+            # The new runner may still be atomically publishing its endpoint.
+        }
+    }
+    Start-Sleep -Milliseconds 500
+}
+if (-not $endpointMatchesNewProcess) {
+    Write-Host 'CODEX_USER_RUNNER_UNAVAILABLE: new runner did not publish its own endpoint' -ForegroundColor Red
     exit 4
 }
 Write-Step ('endpoint: ' + $Endpoint)
