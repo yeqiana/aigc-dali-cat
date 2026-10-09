@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import sys
+import base64
+import hashlib
 import subprocess
 import io
 import json
@@ -74,7 +76,14 @@ class ScopedCodexModelBindingTests(unittest.TestCase):
             "timed_out": False, "task_type": "scoped_step", "transport": "user_runner",
             "api_key": "must-not-persist",
         }
-        durable = {"output_base64": "secret-like-output", "raw_stdout": "private"}
+        output = b"test-only scoped receipt"
+        durable = {
+            "schema_version": 1, "request_id": "req-123", "returncode": 1,
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "output_bytes": len(output),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+            "raw_stdout": "private",
+        }
         with patch.object(worker.codex_user_runner, "read_task_result", return_value=durable) as read:
             result = worker._safe_runner_diagnostics(remote)
 
@@ -86,6 +95,30 @@ class ScopedCodexModelBindingTests(unittest.TestCase):
         })
         self.assertNotIn("api_key", result)
         self.assertNotIn("output_base64", result)
+
+    def test_missing_or_unverified_durable_result_never_claimed_present(self):
+        remote = {"request_id": "req-123", "returncode": 0}
+        output = b"valid completed event"
+        valid = {
+            "schema_version": 1, "request_id": "req-123", "returncode": 0,
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "output_bytes": len(output),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+        }
+        for candidate in ({}, {"request_id": "req-123"},
+                          {**valid, "request_id": "different"},
+                          {**valid, "output_sha256": "0" * 64},
+                          {**valid, "output_bytes": len(output) + 1},
+                          {**valid, "output_base64": "broken**base64"}):
+            with self.subTest(candidate=candidate):
+                with patch.object(worker.codex_user_runner, "read_task_result",
+                                  return_value=candidate):
+                    result = worker._safe_runner_diagnostics(remote)
+                self.assertFalse(result["durable_result_present"])
+        with patch.object(worker.codex_user_runner, "read_task_result",
+                          return_value=valid):
+            result = worker._safe_runner_diagnostics(remote)
+        self.assertTrue(result["durable_result_present"])
 
     def test_safe_runner_diagnostics_without_request_id_does_not_read_durable_result(self):
         with patch.object(worker.codex_user_runner, "read_task_result") as read:

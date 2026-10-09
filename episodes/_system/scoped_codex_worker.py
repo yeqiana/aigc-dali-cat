@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-import argparse, datetime, hashlib, json, os, shutil, subprocess, sys, time, uuid
+import argparse, base64, binascii, datetime, hashlib, json, os, re, shutil, subprocess, sys, time, uuid
 import codex_user_runner  # STORY_OS_V2_7_CODEX_USER_MODE_BRIDGE
 import execution_capsule
 import character_contract
@@ -372,8 +372,25 @@ def _safe_runner_diagnostics(remote):
     durable_result_present=False
     if request_id:
         try:
-            durable_result_present=isinstance(codex_user_runner.read_task_result(request_id),dict)
-        except Exception:
+            durable = codex_user_runner.read_task_result(request_id)
+            # read_task_result may return {} for a missing or untrusted file.
+            # An empty dict must NEVER count as durable controller evidence.
+            if (isinstance(durable, dict)
+                    and durable.get("schema_version") == 1
+                    and durable.get("request_id") == request_id
+                    and type(durable.get("returncode")) is int
+                    and type(durable.get("output_bytes")) is int
+                    and 0 <= durable["output_bytes"] <= 32 * 1024 * 1024
+                    and isinstance(durable.get("output_base64"), str)
+                    and isinstance(durable.get("output_sha256"), str)
+                    and re.fullmatch(r"[0-9a-f]{64}", durable["output_sha256"])):
+                output = base64.b64decode(
+                    durable["output_base64"], validate=True)
+                durable_result_present = (
+                    len(output) == durable["output_bytes"]
+                    and hashlib.sha256(output).hexdigest()
+                    == durable["output_sha256"])
+        except (ValueError, TypeError, binascii.Error, OSError):
             durable_result_present=False
     return {
         "request_id":request_id,

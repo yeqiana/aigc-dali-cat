@@ -1320,12 +1320,26 @@ class RunnerState:
             "allowed_task_types": sorted(ALLOWED_TASK_TYPES),
             "counters": dict(self.counters),
             "inflight_request_ids": sorted(self.inflight),
-            "features": ["durable_task_results", "inflight_request_ids"],
+            "features": [
+                "durable_task_results", "inflight_request_ids",
+                "append_only_task_results", "atomic_task_result_publish",
+            ],
             "secrets_persisted": False,
         }
 
     def begin_task(self, request_id: str) -> None:
+        try:
+            previous = task_result_path(request_id)
+        except ValueError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_TASK_REJECTED", "invalid request identity"
+            ) from exc
         with self.lock:
+            if request_id in self.inflight or previous.is_file():
+                raise CodexUserRunnerRejected(
+                    "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                    "request is already executing or has durable evidence",
+                )
             self.inflight[str(request_id)] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
 
     def end_task(self, request_id: str) -> None:
@@ -1341,35 +1355,53 @@ class RunnerState:
             pass
 
     def persist_result(self, result: ExecResult) -> None:
-        """Persist task output before replying to the caller.
+        """Atomically publish an immutable result; never prune Authority evidence.
 
-        The interactive-user runner can outlive the workspace/WORK caller. A caller
-        timeout must therefore not erase the only copy of Codex stdout/evidence,
-        especially for image tasks where rc=0 with no exported artifact is a real
-        technical failure that needs diagnosis rather than a blind retry.
+        The old 200-file cap silently deleted historical Codex execution
+        receipts exactly when production needed them for UNKNOWN recovery.
+        Result publication must complete before the HTTP success response.
+        A publication error remains ambiguous, never a model SUCCESS receipt.
         """
+        request_id = str((result.remote or {}).get("request_id") or "").strip()
         try:
-            request_id = str((result.remote or {}).get("request_id") or "").strip()
-            if not request_id:
-                return
-            root = runtime_dir() / RESULT_DIR_NAME
-            root.mkdir(parents=True, exist_ok=True)
-            payload = {
-                "schema_version": 1,
-                "request_id": request_id,
-                "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-                "returncode": int(result.returncode),
-                "output_sha256": hashlib.sha256(result.output or b"").hexdigest(),
-                "output_bytes": len(result.output or b""),
-                "output_base64": base64.b64encode(result.output or b"").decode("ascii"),
-                "evidence": result.remote or {},
-            }
-            _write_json(root / f"{request_id}.json", payload)
-            rows = sorted(root.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-            for stale in rows[200:]:
-                stale.unlink(missing_ok=True)
-        except Exception:
-            pass
+            path = task_result_path(request_id)
+        except ValueError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_TASK_REJECTED", "invalid result request identity"
+            ) from exc
+        path.parent.mkdir(parents=True, exist_ok=True)
+        output = result.output or b""
+        payload = {
+            "schema_version": 1,
+            "request_id": request_id,
+            "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "returncode": int(result.returncode),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+            "output_bytes": len(output),
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "evidence": result.remote or {},
+        }
+        fd, temporary = tempfile.mkstemp(
+            prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent)
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(payload, handle, ensure_ascii=False)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.link(temporary, path)  # atomic NO-REPLACE
+        except FileExistsError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                "existing result must not be overwritten",
+            ) from exc
+        except OSError as exc:
+            raise CodexUserRunnerError(
+                "CODEX_USER_RUNNER_DURABLE_RESULT_WRITE_FAILED",
+                "result persistence failed; generation outcome must be reconciled",
+            ) from exc
+        finally:
+            Path(temporary).unlink(missing_ok=True)
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -1429,6 +1461,9 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.begin_task(task.request_id)
             try:
                 result = execute_task(task)
+                # Retain in-flight ownership through durable publication.
+                # Never reply SUCCESS before the result is readable on disk.
+                self.state.persist_result(result)
             finally:
                 self.state.end_task(task.request_id)
         except CodexUserRunnerTimeout as exc:
@@ -1450,7 +1485,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.log({"event": "error", "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             self._send(500, {"ok": False, "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             return
-        self.state.persist_result(result)
+
         self.state.log({"event": "task", **result.remote})
         self._send(200, {
             "ok": True,
