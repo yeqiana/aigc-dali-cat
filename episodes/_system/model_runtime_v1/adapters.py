@@ -71,6 +71,7 @@ class TextDispatchPlan(Mapping):
         return len(self._fields)
 
 _APPROVED_PLANS = weakref.WeakSet()
+_API_POST_ATTEMPTED_PLANS = weakref.WeakSet()  # in-process defense, NOT durable Attempt Authority
 
 def _require_minted(plan) -> None:
     if not isinstance(plan, TextDispatchPlan) or plan not in _APPROVED_PLANS:
@@ -180,6 +181,10 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
     req = request.Request(OPENAI_RESPONSES_URL, data=data, method="POST",
                           headers={"Authorization": "Bearer " + key,
                                    "Content-Type": "application/json"})
+    if plan in _API_POST_ATTEMPTED_PLANS:
+        raise TransportDispatchBlocked("API_DIRECT_DUPLICATE_PLAN_DISPATCH")
+    # Mark before possible network I/O; unknown outcomes must reconcile original Response ID.
+    _API_POST_ATTEMPTED_PLANS.add(plan)
     try:
         if sender is None:
             raw = _post_official(req, timeout=timeout)

@@ -29,7 +29,7 @@ def test_unknown_outcome_requires_full_reconciliation_for_retry():
     row = ledger.with_result(ledger.new_execution(B, input_sha256="b"*64), status="INTERRUPTED_UNKNOWN")
     assert ledger.retry_decision(row)["may_retry"] is False
     assert ledger.retry_decision(row, worker_terminated=True, provider_reconciled=True)["may_retry"] is False
-    assert ledger.retry_decision(row, worker_terminated=True, provider_reconciled=True, attempt_authorized=True)["may_retry"] is True
+    assert ledger.retry_decision(row, worker_terminated=True, provider_reconciled=True, attempt_authorized=True)["may_retry"] is False
 
 def test_terminal_immutable_and_bad_transport_denied():
     row = ledger.with_result(ledger.new_execution(B, input_sha256="b"*64), status="BLOCKED")
@@ -37,3 +37,14 @@ def test_terminal_immutable_and_bad_transport_denied():
         ledger.with_result(row, status="SUCCEEDED")
     with pytest.raises(ValueError, match="MODEL_TRANSPORT_FORBIDDEN"):
         ledger.new_execution({**B, "transport": "opencodex"}, input_sha256="b"*64)
+
+def test_provider_self_attested_model_is_not_claimed_as_actual():
+    row=ledger.new_execution(B,input_sha256="b"*64,execution_id="ex")
+    result=ledger.with_result(row,status="SUCCEEDED",receipt={"receipt_id":"r","execution_id":"ex",
+        "actual_model_attested":"unverifiable-model"})
+    assert result["actual_model"] is None
+
+def test_boolean_retry_proofs_never_allow_duplicate_paid_attempt():
+    row=ledger.with_result(ledger.new_execution(B,input_sha256="b"*64),status="INTERRUPTED_UNKNOWN")
+    result=ledger.retry_decision(row,worker_terminated=True,provider_reconciled=True,attempt_authorized=True)
+    assert result=={"may_retry":False,"reason":"DURABLE_ATTEMPT_AUTHORITY_REQUIRED"}

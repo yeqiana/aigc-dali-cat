@@ -30,3 +30,34 @@ def inspect_api(*, key_env: str = "OPENAI_API_KEY", environ=None) -> dict:
     # Never return the credential, its length, suffix, hashes or prefix.
     return {"status": "ROUTE_PRESENT", "reason": "API_KEY_PRESENT_NOT_ATTESTED",
             "capability_status": "UNKNOWN", "may_dispatch": False}
+
+
+def inspect_native_login(*, codex_binary: str = "codex", command_runner=None,
+                         timeout: int = 8) -> dict:
+    """Read-only local Codex CLI login state. Never invokes a model or returns output.
+
+    A logged-in CLI remains NOT ATTESTED for the requested model or image tools.
+    """
+    import subprocess
+    run = command_runner if command_runner is not None else subprocess.run
+    if not isinstance(timeout, int) or not 1 <= timeout <= 30:
+        raise ValueError("CODEX_LOGIN_PROBE_TIMEOUT_INVALID")
+    if codex_binary != "codex":
+        return {"status": "BLOCKED", "reason": "CODEX_CLI_UNAPPROVED_COMMAND",
+                "capability_status": "UNKNOWN", "may_dispatch": False}
+    try:
+        completed = run([codex_binary, "login", "status"], capture_output=True,
+                        timeout=timeout, check=False, text=True)
+        stdout = str(getattr(completed, "stdout", "") or "")
+        stderr = str(getattr(completed, "stderr", "") or "")
+        combined = (stdout + "\n" + stderr).lower()
+        if getattr(completed, "returncode", None) == 0 and "logged in" in combined and "not logged in" not in combined:
+            return {"status": "LOGIN_PRESENT", "reason": "CODEX_SESSION_PRESENT_NOT_ATTESTED",
+                    "capability_status": "UNKNOWN", "may_dispatch": False}
+        if "not logged in" in combined:
+            return {"status": "BLOCKED", "reason": "CODEX_SESSION_NOT_LOGGED_IN",
+                    "capability_status": "UNKNOWN", "may_dispatch": False}
+    except Exception:
+        pass
+    return {"status": "BLOCKED", "reason": "CODEX_LOGIN_STATUS_UNVERIFIED",
+            "capability_status": "UNKNOWN", "may_dispatch": False}

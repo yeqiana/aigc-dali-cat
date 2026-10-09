@@ -202,7 +202,7 @@ def test_direct_api_rejects_oversized_and_empty_identity_responses():
         adapters.dispatch_openai_text(plan, prompt="hello", authorized=True, api_key="private",
                                      sender=lambda req, timeout: b"X"*(adapters.MAX_API_RESPONSE_BYTES+1))
     with pytest.raises(adapters.TransportDispatchBlocked, match="API_DIRECT_OUTCOME_UNKNOWN"):
-        adapters.dispatch_openai_text(plan, prompt="hello", authorized=True, api_key="private",
+        adapters.dispatch_openai_text(_plan({**B, "transport": "API_KEY_DIRECT"}), prompt="hello", authorized=True, api_key="private",
                                      sender=lambda req, timeout: b'{"id":"","status":"completed"}')
 
 def test_default_sender_does_not_inherit_environment_proxy_or_follow_redirect():
@@ -302,7 +302,7 @@ def test_api_post_rejects_ids_that_cannot_be_reconciled():
     plan = _plan({**B, "transport": "API_KEY_DIRECT"})
     for bad in ("resp-other", "http://example.test/x", "resp_x/../y", "  "):
         with pytest.raises(adapters.TransportDispatchBlocked, match="API_DIRECT_OUTCOME_UNKNOWN"):
-            adapters.dispatch_openai_text(plan, prompt="hi", authorized=True, api_key="fake",
+            adapters.dispatch_openai_text(_plan({**B, "transport": "API_KEY_DIRECT"}), prompt="hi", authorized=True, api_key="fake",
                 sender=lambda req, timeout: json.dumps({"id":bad,"status":"completed",
                     "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode())
 
@@ -344,3 +344,36 @@ def test_api_provider_model_identity_mismatch_is_not_marked_attested():
     assert result["actual_model"] is None
     assert result["reported_model_matches_request"] is False
     assert result["status"]=="REQUIRES_VALIDATION"
+
+def test_api_minted_plan_cannot_reissue_second_post_in_same_process():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    seen=[]
+    def sender(req,timeout):
+        seen.append(req.get_method())
+        return json.dumps({"id":"resp_once","status":"completed",
+            "output":[{"type":"message","content":[{"type":"output_text","text":"ok"}]}]}).encode()
+    first=adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,
+                                        api_key="fake",sender=sender)
+    assert first["status"]=="REQUIRES_VALIDATION"
+    with pytest.raises(adapters.TransportDispatchBlocked,match="DUPLICATE_PLAN_DISPATCH"):
+        adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,
+                                      api_key="fake",sender=sender)
+    assert seen==["POST"]
+    recovered=adapters.reconcile_openai_text(plan,response_id="resp_once",
+        authorized=True,api_key="fake",
+        sender=lambda req,timeout:sender(req,timeout))
+    assert recovered["status"]=="REQUIRES_VALIDATION"
+
+def test_unknown_outcome_marks_plan_spent_and_disallows_repost():
+    plan=_plan({**B,"transport":"API_KEY_DIRECT"})
+    seen=[]
+    def interrupted(req,timeout):
+        seen.append(req.get_method())
+        raise TimeoutError("private-model-output-here")
+    with pytest.raises(adapters.TransportDispatchBlocked,match="OUTCOME_UNKNOWN"):
+        adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,
+                                      api_key="fake",sender=interrupted)
+    with pytest.raises(adapters.TransportDispatchBlocked,match="DUPLICATE_PLAN_DISPATCH"):
+        adapters.dispatch_openai_text(plan,prompt="hello",authorized=True,
+                                      api_key="fake",sender=interrupted)
+    assert seen==["POST"]

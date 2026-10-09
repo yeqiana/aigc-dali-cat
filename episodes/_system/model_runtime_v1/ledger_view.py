@@ -39,7 +39,9 @@ def with_result(row: dict, *, status: str, receipt: dict | None = None) -> dict:
     result["status"] = status
     if receipt and status == "SUCCEEDED":
         result["provider_receipt_id"] = receipt["receipt_id"]
-        result["actual_model"] = receipt.get("actual_model_attested") or None
+        # A Provider Receipt cannot attest its own model identity.
+        # Keep UNKNOWN until independent trusted runtime evidence is verified.
+        result["actual_model"] = None
         result["artifact_sha256"] = receipt.get("artifact_sha256")
     result["review_authority_granted"] = False
     return result
@@ -51,4 +53,6 @@ def retry_decision(row: dict, *, worker_terminated: bool = False,
         return {"may_retry": False, "reason": "NOT_INTERRUPTED_UNKNOWN"}
     if not (worker_terminated and provider_reconciled and attempt_authorized):
         return {"may_retry": False, "reason": "EXECUTION_UNCERTAIN_RECONCILE_FIRST"}
-    return {"may_retry": True, "reason": "EXPLICIT_ATTEMPT_AUTHORIZED"}
+    # Three caller-supplied booleans cannot grant a new paid execution. The
+    # existing durable MySQL Generation Attempt Authority must reserve it.
+    return {"may_retry": False, "reason": "DURABLE_ATTEMPT_AUTHORITY_REQUIRED"}
