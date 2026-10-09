@@ -81,6 +81,10 @@ jobs:
           tests/system/test_generation_unknown_technical_retry_guard.py
           tests/system/test_image_scheduler_review_exit_v4.py
       - name: State machine and Story OS unit tests
+        # Ephemeral legacy unit fixtures use file-backed hot state only;
+        # production Redis authority and separate system tests stay unchanged.
+        env:
+          STORYOS_HOT_STATE_MODE: file
         run: |
           # Each command uses a new interpreter with stdlib platform support
           # plus StoryOS platform.repository, avoiding the module name collision.
