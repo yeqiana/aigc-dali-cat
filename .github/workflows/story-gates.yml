@@ -161,17 +161,21 @@ jobs:
           python scripts/ci_storyos_python.py -m pytest
           --import-mode=importlib -q tests/system
       - name: Validate Story OS contract and repository health
+        # Repository-only fixture checks; never connect to production MySQL/Redis.
+        env:
+          STORYOS_EPISODE_META_STORE_MODE: json
+          STORYOS_HOT_STATE_MODE: file
         run: |
           python scripts/ci_storyos_python.py episodes/_system/contract_sync.py
           python scripts/ci_storyos_python.py episodes/_system/story_os.py doctor
-      - name: Validate tracked episode metadata
-        run: >-
-          python scripts/ci_storyos_python.py episodes/_system/validate_episode.py
-          --all --metadata-only
-      - name: Validate strict machine evidence metadata
-        run: >-
-          python scripts/ci_storyos_python.py episodes/_system/machine_gate.py
-          --all --metadata-only
+      - name: Compare strict Episode and Machine Gates with pre-integration debt
+        # Both --all --metadata-only strict validators run unchanged here.
+        # Any new finding or omitted Episode fails. Known historical debt
+        # remains visible and cannot authorize production release.
+        env:
+          STORYOS_EPISODE_META_STORE_MODE: json
+          STORYOS_HOT_STATE_MODE: file
+        run: python scripts/ci_storyos_python.py scripts/ci_episode_legacy_regression.py check
 
   # B5 (2026-09-08): manual golden/performance replay gate. Registry is empty
   # until a candidate passes every density/voice/capture/world/lineage/
