@@ -80,6 +80,44 @@ def test_proven_failed_after_dispatch_is_not_reported_as_unverified():
             Path("episode"), q) == []
 
 
+def test_plan_matches_next_action_evidence_blocking_contract():
+    # Keep both existing read-only entrypoints aligned on the same MySQL
+    # Attempt authority, without promoting either to an execution gate.
+    import next_action
+
+    ep = Path("episode")
+    q = {"items": [_item(24, "ASPECT_RATIO_MISMATCH"), _item(6)]}
+    with patch.object(
+        image_scheduler, "_technical_retry_budget",
+        return_value=(False, {"attempts_consumed": 1},
+                      "previous_generation_attempt_unverified")
+    ):
+        scheduled = image_scheduler.unresolved_generation_evidence_for_plan(ep, q)
+        canonical = next_action._unsafe_technical_generation_retries(ep, q)
+    assert [
+        (x["frame"], x["technical_failure_code"], x["reason"])
+        for x in scheduled
+    ] == [
+        (x["frame"], x["technical_failure_code"], x["reason"])
+        for x in canonical
+    ]
+    assert all(x["retry_permitted"] is False for x in scheduled)
+
+
+def test_exhausted_shared_budget_remains_a_visible_non_retry_blocker():
+    q = {"items": [_item()]}
+    with patch.object(
+        image_scheduler, "_technical_retry_budget",
+        return_value=(False, {"remaining_attempts": 0},
+                      "shared_generation_attempt_budget_exhausted")
+    ):
+        blocked = image_scheduler.unresolved_generation_evidence_for_plan(
+            Path("episode"), q
+        )
+    assert blocked[0]["reason"] == "shared_generation_attempt_budget_exhausted"
+    assert blocked[0]["retry_permitted"] is False
+
+
 def test_queued_generated_and_review_rows_do_not_become_attempt_blockers():
     q = {"items": [
         _item(1, status="queued"),
