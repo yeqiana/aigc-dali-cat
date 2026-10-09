@@ -382,8 +382,36 @@ def provider_transport_evidence(remote) -> dict:
 # ---------------------------------------------------------------------------
 # Shared on-disk channel
 # ---------------------------------------------------------------------------
+def _shared_worktree_root(root: Path) -> Path:
+    """Use the authoritative repository checkout for transient Runner state.
+
+    A git-linked worktree contains a .git *file* pointing into the parent
+    repository's .git/worktrees/<slot>. No git subprocess, credentials,
+    arbitrary endpoint override, or branch mutation is needed.
+    """
+    marker = root / ".git"
+    if not marker.is_file():
+        return root
+    try:
+        content = marker.read_text(encoding="utf-8-sig").strip()
+        if not content.startswith("gitdir: "):
+            return root
+        pointer = Path(content[len("gitdir: "):].strip())
+        if not pointer.is_absolute():
+            pointer = root / pointer
+        pointer = pointer.resolve()
+        if pointer.parent.name != "worktrees" or pointer.parent.parent.name != ".git":
+            return root
+        common = pointer.parent.parent
+        if not common.is_dir() or not pointer.is_dir():
+            return root
+        return common.parent
+    except (OSError, RuntimeError, ValueError):
+        return root
+
+
 def runtime_dir() -> Path:
-    return ROOT / RUNTIME_REL
+    return _shared_worktree_root(ROOT) / RUNTIME_REL
 
 
 def endpoint_path() -> Path:

@@ -55,3 +55,58 @@ def test_codex_inconclusive_login_status_fails_closed():
     from subprocess import CompletedProcess
     row=r.inspect_native_login(command_runner=lambda argv,**kw:CompletedProcess(argv,0,stdout="",stderr=""))
     assert row["status"]=="BLOCKED"
+
+
+def test_effective_login_uses_interactive_runner_not_system_login():
+    from subprocess import CompletedProcess
+    from unittest.mock import Mock
+    runner=Mock()
+    runner.bridge_required.return_value=True
+    runner.runner_health.return_value={"interactive_user":True,"codex_available":True}
+    runner.run_codex.return_value=CompletedProcess(["codex","login","status"],0,
+        stdout="Logged in using ChatGPT",stderr="private-token-should-not-appear")
+    row=r.inspect_effective_codex_login(bridge=runner)
+    assert row["status"]=="LOGIN_PRESENT"
+    assert row["reason"]=="INTERACTIVE_CODEX_LOGIN_VERIFIED"
+    assert row["capability_status"]=="UNKNOWN"
+    assert row["may_dispatch"] is False
+    assert "private-token-should-not-appear" not in str(row)
+    runner.run_codex.assert_called_once()
+    assert runner.run_codex.call_args.args[0]==["codex","login","status"]
+
+
+def test_effective_login_fails_closed_without_healthy_user_runner():
+    from unittest.mock import Mock
+    bridge=Mock()
+    bridge.bridge_required.return_value=True
+    bridge.runner_health.side_effect=OSError("private failed endpoint")
+    row=r.inspect_effective_codex_login(bridge=bridge)
+    assert row["status"]=="BLOCKED"
+    assert row["reason"]=="USER_RUNNER_SESSION_UNAVAILABLE"
+    assert "private failed endpoint" not in str(row)
+    bridge.run_codex.assert_not_called()
+
+
+def test_effective_login_cannot_take_auth_file_presence_as_verified_login():
+    from subprocess import CompletedProcess
+    from unittest.mock import Mock
+    bridge=Mock()
+    bridge.bridge_required.return_value=True
+    bridge.runner_health.return_value={"interactive_user":True,
+        "codex_available":True,"codex_auth_present":True}
+    bridge.run_codex.return_value=CompletedProcess([],1,stdout="Not logged in",stderr="")
+    row=r.inspect_effective_codex_login(bridge=bridge)
+    assert row["status"]=="BLOCKED"
+    assert row["reason"]=="INTERACTIVE_CODEX_LOGIN_UNVERIFIED"
+    assert row["may_dispatch"] is False
+
+
+def test_effective_login_rejects_system_pretending_to_be_interactive():
+    from unittest.mock import Mock
+    bridge=Mock()
+    bridge.bridge_required.return_value=True
+    bridge.runner_health.return_value={"interactive_user":False,
+        "codex_available":True,"codex_auth_present":True}
+    row=r.inspect_effective_codex_login(bridge=bridge)
+    assert row["status"]=="BLOCKED"
+    bridge.run_codex.assert_not_called()

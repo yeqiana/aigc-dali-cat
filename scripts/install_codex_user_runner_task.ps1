@@ -31,6 +31,14 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
+
+# An at-logon task must survive feature-worktree deletion and branch switching.
+# Never register a permanent task pointing into an isolated Git worktree.
+if ($Register -and (Test-Path -LiteralPath (Join-Path $RepoRoot '.git') -PathType Leaf)) {
+    Write-Host 'CODEX_USER_RUNNER_TASK_REQUIRES_CANONICAL_CHECKOUT' -ForegroundColor Red
+    Write-Host 'Run the task installer from the main StoryOS checkout, not a feature worktree.'
+    exit 3
+}
 $StartScript = Join-Path $RepoRoot 'scripts/start_codex_user_runner.ps1'
 
 $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
