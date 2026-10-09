@@ -34,6 +34,19 @@ def _guard(path: Path) -> threading.RLock:
             _LOCAL_GUARDS[key] = lock
         return lock
 
+def _win32_existing_lock_contention(exc: PermissionError, lock_path: Path) -> bool:
+    """Retry Windows sharing/ACL races only when an actual lock already exists.
+
+    Never reinterpret a genuine denied directory/target as permission to write.
+    The O_EXCL open is retried; mutual exclusion remains mandatory.
+    """
+    return (
+        os.name == "nt"
+        and getattr(exc, "winerror", None) in {5, 32}
+        and lock_path.is_file()
+    )
+
+
 class FileLock:
     def __init__(self, target: Path, timeout: float = 15.0, stale_seconds: float = 120.0):
         self.target = Path(target)
@@ -52,7 +65,13 @@ class FileLock:
                 os.write(self.fd, payload)
                 os.fsync(self.fd)
                 return
-            except FileExistsError:
+            except (FileExistsError, PermissionError) as exc:
+                # Win32 may report ERROR_ACCESS_DENIED/SHARING_VIOLATION
+                # rather than EEXIST while another process owns the .lock.
+                # Only treat it as contention if the lock file actually exists.
+                if isinstance(exc, PermissionError):
+                    if not _win32_existing_lock_contention(exc, self.lock_path):
+                        raise
                 try:
                     age = time.time() - self.lock_path.stat().st_mtime
                     if age > self.stale_seconds:

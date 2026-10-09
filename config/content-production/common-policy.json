@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "source": "aigc-cat-partner/common-policy",
+  "authority": "derived_prompt_transport_only",
+  "priority_order": [
+    "frame_contract",
+    "character_identity",
+    "scene_continuity",
+    "visual_style",
+    "frame_action",
+    "text_layout"
+  ],
+  "text_strategy": {
+    "allow_text_in_image_default": false,
+    "post_text_default": true,
+    "forbidden_in_image": [
+      "人物姓名标签",
+      "章节标题",
+      "帧序号",
+      "当前帧",
+      "角色名：台词",
+      "中文乱码"
+    ]
+  },
+  "continuity": {
+    "max_execution_references": 2,
+    "preferred_reference_order": [
+      "character_identity",
+      "first_frame_anchor",
+      "previous_frame",
+      "scene_or_style"
+    ]
+  },
+  "safety": {
+    "rewrite_map": {
+      "追打": "危险追赶",
+      "殴打": "冲突压迫",
+      "暴打": "危险冲突",
+      "虐打": "危险冲突",
+      "击打瞬间": "保护者上前阻止的瞬间",
+      "施暴特写": "站位对峙和保护动作",
+      "喷血": "旧伤痕",
+      "满脸血": "脸色苍白且衣领凌乱",
+      "开放伤口": "被毛巾轻轻按住的伤处",
+      "伤口特写": "毛巾、药瓶和担忧表情特写",
+      "裸露儿童": "完整衣物遮挡的儿童",
+      "犯罪审美": "生活化保护感"
+    },
+    "active_risk_terms": [
+      "喷血",
+      "满脸血",
+      "开放伤口",
+      "伤口特写",
+      "施暴特写",
+      "击打瞬间",
+      "裸露儿童",
+      "犯罪审美"
+    ]
+  }
+}
