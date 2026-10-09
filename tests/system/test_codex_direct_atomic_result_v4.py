@@ -13,6 +13,12 @@ if str(SYS) not in sys.path:
 import codex_user_runner as runner
 
 
+@pytest.fixture(autouse=True)
+def _direct_transport_mode(monkeypatch):
+    # These tests exercise the direct writer, not the logged-in user bridge.
+    monkeypatch.setattr(runner, "bridge_required", lambda: False)
+
+
 def test_direct_result_is_a_complete_loadable_json_after_publish(tmp_path, monkeypatch):
     monkeypatch.setattr(runner, "runtime_dir", lambda: tmp_path)
     rid = "e" * 32

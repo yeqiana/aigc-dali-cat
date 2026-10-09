@@ -43,6 +43,14 @@
 | D | 正式 UNKNOWN、Provider 回执、Scheduler 安全 | 24 passed |
 | **合计** | | **117 passed + 2 subtests** |
 
+## 主工作区集成复核
+
+安全集成提交 `9286ac5` 后按精确锚点同步 `read_task_result`，额外四槽位回归发现**主工作区此前还缺少已有的 `endpoint_path` 可信 Git worktree 发现逻辑**（原来主分支仅返回本工作区 `runtime_dir()/endpoint.json`）。虽然安全集成分支这段代码早已存在，主工作区模拟独立工作区测试会失败。现通过 SHA 校验备份后将该成熟逻辑精确补齐，没有直接复制整个 `codex_user_runner.py`，也未改主 Git HEAD。
+
+`test_codex_direct_atomic_result_v4.py` 单元测试测试的是 direct writer，本地 Windows 后台的实际默认是 `user_runner`，故测试必须显式 pin `bridge_required=False`，不得把直接写文件误当成桥接模式的回执读取结果。
+
+主/隔离再回归 **36 + 39 + 16 + 30 = 121 passed**；原生任务/图片 Provider 调用为 0。隔离分支三个外来 dirty 文件原样保留，主工作区既有变更不重置或覆盖。此修复**不代表**缺少 Provider 收据的旧 Frame 06/24 已解锁。
+
 ## 生产边界
 
 - TEST_ONLY Epoch 2 仍是 `READY`、0/2 Attempt，实际 image tool capability 仍 `UNKNOWN`。不因为本地 `codex_auth_present=true` 就伪造图片工具通过。
