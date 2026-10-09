@@ -22,7 +22,7 @@
 
 ## 槽位④：原生 Codex 交接
 - StoryOS 固定：`production.mode=COLLABORATIVE`、`execution.workspace.provider=webcodex`、`execution.image.executor=CODEX`、`execution.vision_review.executor=CODEX`，最多 5 个**在途**图片任务，首个真实恢复阶段建议只允许 1 帧且必须经过完整门禁。
-- 本机 `codex-cli 0.153.4` 存在，但 `codex login status` 返回 `Not logged in`。必须由操作者在本机完成正式原生 Codex 登录，再只读验证实际图像工具可用；登录不自动证明图片工具可用。
+- **历史检查限定：** `codex-cli 0.153.4` 由 WebCodex Agent 的 `NT AUTHORITY\SYSTEM` 进程执行时，`codex login status` 返回 `Not logged in`；**这不代表交互用户未登录**。随后通过 StoryOS 已有的交互用户态 Runner 只读检查确认 `LOGIN_PRESENT` / `INTERACTIVE_CODEX_LOGIN_VERIFIED`。不需要操作者重新登录，但仍须独立验证图片工具可用性；登录并不证明图片工具可用。
 - **绝不**切换到 OpenCodex (10100)、其他代理、伪造 Runner、fixture、dry-run 代替正式产出；StoryOS 是图文系统，不引入视频生成。
 - 在 Frame 06/24 的原始 Provider 终态仍不可验证时，**不可**执行：
   `story_os.py driver start <episode> --resume`
@@ -48,7 +48,7 @@ codex login status
 ## 续验记录：本机只读 Authority 与原生能力复核（2026-10-09）
 
 - PR #5 (`853d574`) 与 PR #6 (`90eb6ef`) 已进入 GitHub 主分支；本地主目录已合并远端 PR #6，代码树与远端一致。未跟踪资产保留。
-- 本机 `codex login status` 实际返回 `Not logged in`、退出码 1。CLI 存在和 Runner 在线均不能替代真实登录及图片工具能力证明。
+- 当时的 `Not logged in`、退出码 1 **仅发生于 SYSTEM 执行上下文**，不可推断真实交互用户未登录。之后 `model_runtime_v1.offline_readiness.inspect_effective_codex_login()` 通过已有用户态 Runner 返回 `status=LOGIN_PRESENT`、`reason=INTERACTIVE_CODEX_LOGIN_VERIFIED`、`execution_context=interactive_user_runner`。未读取/输出授权令牌，未调用付费模型；图片工具能力仍为 `UNKNOWN`、`may_dispatch=false`。
 - 通过本地主工作区正式 `scripts/storyos_production_env.py` 加载器运行 `scripts/storyos_generation_evidence_audit.py` 和 `scripts/storyos_generation_terminal_dossier.py`。两项只读命令均退出码 0。
 - 两份审计均返回 `unresolved_frames=[6,24]`。Frame 06、24 的 `authority_status=OUTCOME_UNKNOWN` 且各消耗 1 次 Attempt。
 - Frame 06 的 `recovery_reason=unsupported_non_regenerating_failure`；Frame 24 的 `recovery_reason=provider_crop_exception_limit_exceeded`。Dossier 中两帧均为 `provider_terminal_receipt_verified=false`、`generation_retry_permitted=false`。
@@ -58,6 +58,6 @@ codex login status
 
 ### 生产恢复门槛
 
-1. 操作者登录原生 Codex，独立验证图像工具可见性；未证明就阻断。
+1. 原生 Codex **交互用户登录已验证**，不要重复要求登录。下一项是通过相同用户态通道独立验证图像工具真实可用；若能力仍为 `UNKNOWN`，继续阻断生产派发。
 2. 追溯旧 Provider Frame 06/24 的原始 Request、Attempt、Receipt、RAW 和哈希；未核实就保留 `OUTCOME_UNKNOWN`，绝不重试或伪造。
 3. MySQL Authority、Visual Lock、Review Authority、Driver/Stage 均经过正式门禁后，才能考虑受控单帧生产。禁止 OpenCodex 回退和视频生成。
