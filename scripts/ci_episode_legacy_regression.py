@@ -51,7 +51,9 @@ def _record(root: Path, script: str) -> dict:
         "STORYOS_MYSQL_PORT": "1",
     })
     # This interpreter is deliberately offline. No mock PASS records are written.
-    proc = subprocess.run([sys.executable, "-c", BOOTSTRAP, script],
+    # -I prevents project-root/platform from shadowing stdlib platform
+    # before BOOTSTRAP imports it; then the bridge path is explicitly added.
+    proc = subprocess.run([sys.executable, "-I", "-X", "utf8", "-c", BOOTSTRAP, script],
                           cwd=root, env=env, capture_output=True, text=True,
                           encoding="utf-8", errors="replace", timeout=150)
     if proc.returncode not in (0, 1):
