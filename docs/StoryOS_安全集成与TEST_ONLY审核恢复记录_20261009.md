@@ -44,3 +44,9 @@
 - 新合同在错误合并结果上明确 **3 failed**（预期失败复现）；在独立集成工作树剔除这两处代理旁路后 **13 passed**（新旧路由测试联合复测）。
 - 合并候选此时在业务逻辑上与 `b31b1c7` 一致。主工作区所新增的 OpenCodex 例外**不允许合并**；不以“自动文本合并”取代策略评审。
 - 该集成候选只记录隔离验证，不意味着把主工作树中已有 133 项未提交变更重置、替换或合并到正式生产。禁止对此作为正式生产 Stage/Review Authority 证据。
+## 6. 图片 Provider 配置兜底硬约束（2026-10-09）
+
+- 对 `image_payload_transport.payload_capability_preflight` 再加一层**被选 Provider 身份检查**。无论来自 `AUTO`、旧配置还是显式 Route，只允许 `codex_subscription`；`openai_images_api`、`product_runtime_image`、未知第三方 Provider 都在生图 Attempt 与模型调用前以 `CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED` 阻断。
+- 这项修改只对当前用户要求的图片 payload 生产通道生效，不擅自改造非图片文本模型路由、Episode Stage Authority 或遗留仓库的物理存储记录。
+- `test_native_image_no_proxy_bypass.py` 新增 provider 参数化回归，验证三类非原生 Provider 均被 BLOCK 且不调用原生 provider / 图片 Attempt。
+- 补丁后的集成工作树四槽位：A 100 passed + 4 subtests，B 49 passed，C 20 passed，D 33 passed；合计 **202 pytest passed + 4 subtests**（各组文件无重叠）。

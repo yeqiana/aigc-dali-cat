@@ -11,7 +11,6 @@ import os
 
 import codex_subscription_image
 import image_provider_runtime
-import openai_images_provider
 
 
 def selected_route(requested_count: int = 1) -> dict:
@@ -31,26 +30,19 @@ def payload_capability_preflight(*, model: str, quality: str,
                 "failure_class": "CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED",
                 "failure_stage": "transport_policy", "transport_route": "opencodex_denied",
                 "image_attempt_authority_called": False, "image_generation_called": False}
-    if provider == "openai_images_api":
-        result = openai_images_provider.payload_capability_preflight(
-            model=str(model), quality=str(quality))
-    elif provider == "codex_subscription":
-        result = codex_subscription_image.payload_capability_preflight(
-            model=str(model), quality=str(quality), codex_raw=codex_raw,
-            allow_unknown_capability_proof=False)
-    elif provider == "product_runtime_image":
-        result = {
-            "status": "BLOCKED",
-            "failure_class": "HOST_ACTION_REQUIRED",
-            "provider": provider,
-            "host_action_required": True,
-        }
-    else:
-        result = {
-            "status": "BLOCKED",
-            "failure_class": "NO_AUTOMATABLE_IMAGE_PAYLOAD_PROVIDER",
-            "provider": provider or None,
-        }
+    if provider != "codex_subscription":
+        # This production is native Codex-only even if AUTO or an API key
+        # selects another provider in a legacy runtime configuration.
+        return {**route, "provider": provider or None,
+                "status": "BLOCKED",
+                "failure_class": "CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED",
+                "failure_stage": "provider_policy",
+                "transport_route": "non_native_provider_denied",
+                "image_attempt_authority_called": False,
+                "image_generation_called": False}
+    result = codex_subscription_image.payload_capability_preflight(
+        model=str(model), quality=str(quality), codex_raw=codex_raw,
+        allow_unknown_capability_proof=False)
     return {
         **route,
         **result,

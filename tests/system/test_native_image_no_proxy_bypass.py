@@ -53,3 +53,25 @@ def test_transport_diagnostic_is_text_only_not_proxy_image_probe():
     assert matches
     assert all(isinstance(node, ast.Constant) and node.value == "smoke"
                for node in matches), "diagnostic may not change into a proxy image task"
+
+def test_legacy_image_provider_selection_cannot_bypass_native_codex():
+    import sys
+    from unittest.mock import patch
+    if str(SYSTEM) not in sys.path:
+        sys.path.insert(0, str(SYSTEM))
+    import image_payload_transport
+
+    for provider in ("openai_images_api", "product_runtime_image", "third_party_proxy"):
+        with (patch.object(image_payload_transport, "selected_route",
+                           return_value={"provider": provider}),
+              patch.object(image_payload_transport.codex_subscription_image,
+                           "payload_capability_preflight") as native_probe,
+              patch.dict(__import__("os").environ, {"STORY_OS_IMAGE_PROVIDER_ROUTE": "native_codex"})):
+            result = image_payload_transport.payload_capability_preflight(
+                model="image-policy-contract", quality="high")
+        assert result["status"] == "BLOCKED"
+        assert result["failure_class"] == "CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED"
+        assert result["failure_stage"] == "provider_policy"
+        assert result["image_attempt_authority_called"] is False
+        assert result["image_generation_called"] is False
+        native_probe.assert_not_called()
