@@ -35,7 +35,7 @@ class Phase5AReplacementClaimTests(unittest.TestCase):
 
     def test_explicit_validation_epoch_is_append_only_after_exhausted_replacement(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
+            root=Path(td).resolve()
             with patch.object(canary, "ROOT", root):
                 first_id="phase5a-first"
                 first=canary.initialize_workspace(first_id)
@@ -78,7 +78,7 @@ class Phase5AReplacementClaimTests(unittest.TestCase):
 
     def test_new_validation_epoch_still_requires_explicit_authorization(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
+            root=Path(td).resolve()
             with patch.object(canary, "ROOT", root):
                 first=canary.initialize_workspace("phase5a-first")
                 canary.claim_global_canary(first,"phase5a-first")
@@ -93,7 +93,7 @@ class Phase5AReplacementClaimTests(unittest.TestCase):
 
     def test_exactly_one_replacement_claim_is_allowed(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
+            root=Path(td).resolve()
             with patch.object(canary, "ROOT", root):
                 first_id="phase5a-first"
                 first=canary.initialize_workspace(first_id)

@@ -75,30 +75,30 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
                 episode, canary_id, "UNVERIFIED_REVIEW_PROJECTION", report)
 
     def test_retirement_evidence_rejects_active_attempt(self):
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "ATTEMPT_ACTIVE"):
-                self._evidence_call(Path(td), "phase5a-validation-e2", active=1)
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", active=1)
 
     def test_retirement_evidence_rejects_existing_success_receipt(self):
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "REVIEW_RECEIPT_PRESENT"):
-                self._evidence_call(Path(td), "phase5a-validation-e2", receipt={"decision": "PASS"})
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", receipt={"decision": "PASS"})
 
     def test_retirement_evidence_rejects_stage_or_release_authority(self):
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "STAGE_AUTHORITY_PRESENT"):
-                self._evidence_call(Path(td), "phase5a-validation-e2", stage=True)
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", stage=True)
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "RELEASE_AUTHORITY_PRESENT"):
-                self._evidence_call(Path(td), "phase5a-validation-e2", release_status="PUBLISH_READY")
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", release_status="PUBLISH_READY")
 
     def test_retirement_evidence_rejects_promotable_and_release_eligible_markers(self):
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "PROMOTABLE_SOURCE_DENIED"):
-                self._evidence_call(Path(td), "phase5a-validation-e2", marker_overrides={"promotable": True})
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", marker_overrides={"promotable": True})
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "RELEASE_AUTHORITY_PRESENT"):
-                self._evidence_call(Path(td), "phase5a-validation-e2",
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2",
                                     marker_overrides={"release_eligible": True})
 
     def test_retirement_evidence_rejects_pending_review(self):
@@ -106,9 +106,9 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
             "items": [{"frame": 1, "status": "review_pending"}],
             "review_work_items": [{"review_kind": "FINAL_SEMANTIC", "status": "running"}],
         }
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
             with self.assertRaisesRegex(canary.CanaryContractError, "REVIEW_RECOVERABLE"):
-                self._evidence_call(Path(td), "phase5a-validation-e2", queue=queue)
+                self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", queue=queue)
 
     def test_expired_running_review_without_runner_binding_is_retireable_evidence(self):
         queue = {
@@ -122,8 +122,8 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
                 "receipt": None,
             }],
         }
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
-            evidence = self._evidence_call(Path(td), "phase5a-validation-e2", queue=queue)
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
+            evidence = self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", queue=queue)
         self.assertEqual(len(evidence["stale_review_claims"]), 1)
         self.assertFalse(evidence["stale_review_claims"][0]["runner_request_bound"])
 
@@ -138,13 +138,13 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
                     **binding,
                 }],
             }
-            with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
+            with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
                 with self.assertRaisesRegex(canary.CanaryContractError, "REVIEW_RECOVERABLE"):
-                    self._evidence_call(Path(td), "phase5a-validation-e2", queue=queue)
+                    self._evidence_call(Path(td).resolve(), "phase5a-validation-e2", queue=queue)
 
     def test_retirement_is_idempotent_and_preserves_attempt_budget(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             canary_id = "phase5a-validation-e2"
             with patch.object(canary, "ROOT", root):
                 episode, claim = self._workspace_and_claim(root, canary_id)
@@ -184,7 +184,7 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
 
     def test_retired_phase5a_reserve_denies_attempt_without_database_access(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             canary_id = "phase5a-validation-e2"
             with patch.object(canary, "ROOT", root):
                 episode, _claim = self._workspace_and_claim(root, canary_id)
@@ -217,7 +217,7 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
 
     def test_only_reserved_successor_id_can_claim_the_next_epoch(self):
         with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
+            root = Path(td).resolve()
             previous_id = "phase5a-validation-e2"
             reserved_id = "phase5a-validation-e3-123456abcdef"
             with patch.object(canary, "ROOT", root):
@@ -303,8 +303,8 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
             def save_queue(self, _ep, _queue):
                 self.calls += 1
 
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
-            root = Path(td)
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
+            root = Path(td).resolve()
             canary_id = "phase5a-validation-e2"
             episode, _claim = self._workspace_and_claim(root, canary_id)
             path = canary._retirement_path(canary_id)
@@ -331,8 +331,8 @@ class Phase5AValidationRetirementTests(unittest.TestCase):
             def save_queue(self, _ep, _queue):
                 self.calls += 1
 
-        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td)):
-            root = Path(td)
+        with tempfile.TemporaryDirectory() as td, patch.object(canary, "ROOT", Path(td).resolve()):
+            root = Path(td).resolve()
             canary_id = "phase5a-validation-e2"
             episode, _claim = self._workspace_and_claim(root, canary_id)
             lock_target = canary.validation_epoch_lock_target(episode)
