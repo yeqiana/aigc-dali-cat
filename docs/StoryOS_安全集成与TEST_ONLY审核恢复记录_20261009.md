@@ -35,3 +35,12 @@
 2. 校验正式 Episode 自身的 PREIMAGE / image route / M00 授权与原生工具可用性；TEST_ONLY 结果不得作为正式像素和审核权威。
 3. Final Semantic 的独立回执缺失仍需真实诊断；禁止盲目重复模型执行。
 4. SQLite 只做 LOCAL 评估，完成 MySQL/Redis/文件 Authority 对账与可回滚迁移后才可切换。
+## 5. 安全集成试验与原生路由红绿回归（2026-10-09）
+
+- 创建独立集成工作树 `storyos-main-integration-20261009`，基线 `b31b1c7`，原始主工作树未修改。
+- 对 8 个重叠文件执行三方文本合并；6 个冲突区优先选中已经验证的 native-only 逻辑，2 个文件文本自动合并。
+- 合并后差异复审发现：原主工作区非冲突代码仍将 `opencodex` 引回 `codex_subscription_image.py` 的 gateway provider/诊断，以及 `image_worker_pool.py` 的 Visual Lock proof 例外。**此前宽回归通过，但语义上违反原生通道红线。**
+- 为此新增 `tests/system/test_native_image_no_proxy_bypass.py` 三条 AST 结构合同：Provider Gateway 必须固定为 `codex_subscription`；任何图片能力例外都必须受 Phase5A grant 约束，不得附加 OpenCodex 旁路；工具诊断只能使用 text-only smoke 任务。
+- 新合同在错误合并结果上明确 **3 failed**（预期失败复现）；在独立集成工作树剔除这两处代理旁路后 **13 passed**（新旧路由测试联合复测）。
+- 合并候选此时在业务逻辑上与 `b31b1c7` 一致。主工作区所新增的 OpenCodex 例外**不允许合并**；不以“自动文本合并”取代策略评审。
+- 该集成候选只记录隔离验证，不意味着把主工作树中已有 133 项未提交变更重置、替换或合并到正式生产。禁止对此作为正式生产 Stage/Review Authority 证据。
