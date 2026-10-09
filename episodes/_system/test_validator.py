@@ -127,6 +127,23 @@ class ValidatorTests(unittest.TestCase):
         findings = []
         validator.check_story_gate(gates, 20, findings, creative_gates_required=False)
         self.assertIn("task_not_closed", {f.code for f in findings if f.level == "FAIL"})
+        # Locked-story skips novelty but not independent review / story closure.
+        gates["reviews"]["story"] = "pending"
+        gates["story"]["climax_frame"] = None
+        findings = []
+        validator.check_story_gate(gates, 25, findings, creative_gates_required=False)
+        codes = {f.code for f in findings if f.level == "FAIL"}
+        self.assertIn("task_not_closed", codes)
+        self.assertIn("climax_frame", codes)
+        self.assertTrue("review_not_passed" in codes or "story_review_not_passed" in codes)
+
+    def test_authored_story_still_requires_novelty_checks(self):
+        gates = self.base_gates()
+        gates["story"]["recent5_checked"] = False
+        findings = []
+        validator.check_story_gate(gates, 25, findings)
+        self.assertIn("recent5_not_checked", {f.code for f in findings})
+
 
     def test_visual_gate_requires_real_anchors(self):
         with tempfile.TemporaryDirectory() as td:

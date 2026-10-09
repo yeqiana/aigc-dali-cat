@@ -299,7 +299,9 @@ def locked_story_contract(episode_dir: Path) -> bool:
         return False
     if not isinstance(request, dict):
         return False
-    story_input = request.get("story_input") or {}
+    story_input = request.get("story_input")
+    if not isinstance(story_input, dict):
+        return False
     return (
         story_input.get("mode") == "locked_story"
         and story_input.get("allow_structure_rewrite") is False

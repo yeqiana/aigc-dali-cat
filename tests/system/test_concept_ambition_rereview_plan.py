@@ -59,3 +59,34 @@ def test_rereview_plan_is_noop_when_review_matches_current_candidates():
         assert plan["required"] is False
         assert plan["reason"] == "CURRENT_REVIEW_VALID"
         assert plan["action"] == "NONE"
+
+
+def test_concept_required_locked_story(monkeypatch, tmp_path):
+    import runtime_request
+    monkeypatch.setattr(concept_ambition, "episode_contract_version", lambda _ep: "2.6.1")
+    monkeypatch.setattr(runtime_request, "authority_for_episode", lambda _ep: {
+        "story_input": {
+            "mode": "locked_story", "allow_structure_rewrite": False
+        }
+    })
+    assert concept_ambition.required(tmp_path) is False
+
+
+def test_concept_required_authored_story(monkeypatch, tmp_path):
+    import runtime_request
+    monkeypatch.setattr(concept_ambition, "episode_contract_version", lambda _ep: "2.6.1")
+    monkeypatch.setattr(runtime_request, "authority_for_episode", lambda _ep: {
+        "story_input": {
+            "mode": "auto_create", "allow_structure_rewrite": True
+        }
+    })
+    assert concept_ambition.required(tmp_path) is True
+
+
+def test_concept_required_fails_closed_when_request_unavailable(monkeypatch, tmp_path):
+    import runtime_request
+    monkeypatch.setattr(concept_ambition, "episode_contract_version", lambda _ep: "2.6.1")
+    def unavailable(_ep):
+        raise RuntimeError("request unavailable")
+    monkeypatch.setattr(runtime_request, "authority_for_episode", unavailable)
+    assert concept_ambition.required(tmp_path) is True
