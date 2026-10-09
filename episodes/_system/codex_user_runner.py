@@ -522,8 +522,28 @@ def task_result_path(request_id: str) -> Path:
 
 
 def read_task_result(request_id: str) -> dict:
-    path = task_result_path(request_id)
-    return _read_json(path) if path.is_file() else {}
+    """Read the durable result from the Runner which actually executed it.
+
+    In a trusted Git worktree the interactive user Runner is shared with the
+    canonical checkout, but this process's own runtime_dir() is not shared.
+    Reading that local directory loses the persisted evidence and can falsely
+    quarantine Final Semantic work as unverified. The already-validated
+    endpoint_path() locates only the runner in this same repository.
+    Direct-mode results stay in this checkout and retain the original path.
+    """
+    local = task_result_path(request_id)  # Always validate caller's ID.
+    if bridge_required():
+        endpoint = endpoint_path()
+        if not endpoint.is_file():
+            return {}
+        path = endpoint.parent / RESULT_DIR_NAME / local.name
+    else:
+        path = local
+    result = _read_json(path) if path.is_file() else {}
+    if result and (not isinstance(result, dict)
+                   or str(result.get("request_id") or "") != str(request_id)):
+        return {}
+    return result
 
 
 def _direct_result_output(stdout, completed) -> bytes:
