@@ -437,7 +437,13 @@ def unresolved_generation_evidence_for_plan(ep:Path,q:dict)->list[dict]:
         if frame<1:
             continue
         code=str(item.get("technical_failure_code") or _technical_retry_code(item))
-        allowed,_state,reason=_technical_retry_budget(ep,item,code)
+        try:
+            allowed,_state,reason=_technical_retry_budget(ep,item,code)
+        except Exception:
+            # A read-only plan must not turn an unavailable MySQL Authority
+            # into permission to regenerate, nor hide unresolved Episode work.
+            allowed=False
+            reason="generation_attempt_authority_unavailable"
         if allowed:
             continue
         unresolved.append({
