@@ -114,6 +114,20 @@ def validate_dispatch_binding(connection, episode_id: str, context: dict,
         # Fail closed: connectivity/permission/schema errors are not evidence
         # that this Episode may use a legacy unbound production path.
         raise ProductionRevisionDenied("PRODUCTION_REVISION_AUTHORITY_UNAVAILABLE") from exc
+    if head is None:
+        # A truly legacy Episode has no Revision head AND no historical
+        # Revision rows. Never mistake an orphaned Revision for legacy.
+        try:
+            orphan = connection.query_one(
+                "SELECT PRODUCTION_REVISION_ID FROM TB_PRODUCTION_REVISION "
+                "WHERE EPISODE_ID=%s LIMIT 1", (str(episode_id),))
+        except Exception as exc:
+            raise ProductionRevisionDenied("PRODUCTION_REVISION_AUTHORITY_UNAVAILABLE") from exc
+        if orphan:
+            raise ProductionRevisionDenied("PRODUCTION_REVISION_HEAD_MISSING")
+        if supplied:
+            raise ProductionRevisionDenied("PRODUCTION_REVISION_BINDING_REQUIRED")
+        return None
     selected_revision = active
     if supplied and supplied != active:
         pending = connection.query_one(
@@ -125,10 +139,10 @@ def validate_dispatch_binding(connection, episode_id: str, context: dict,
                 or str(pending.get("STATUS") or "") != "VISUAL_LOCK_PENDING"):
             raise ProductionRevisionDenied("PRODUCTION_REVISION_BINDING_REQUIRED")
         selected_revision = supplied
-    elif supplied is None and active is not None:
-        raise ProductionRevisionDenied("PRODUCTION_REVISION_BINDING_REQUIRED")
     elif supplied is None:
-        return None
+        # An existing head reserves the Episode namespace even when the new
+        # Revision is only PREPARED or VISUAL_LOCK_PENDING.
+        raise ProductionRevisionDenied("PRODUCTION_REVISION_BINDING_REQUIRED")
     if selected_revision is None:
         raise ProductionRevisionDenied("PRODUCTION_REVISION_NOT_ACTIVE")
     row = connection.query_one(
