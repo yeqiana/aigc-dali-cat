@@ -79,7 +79,12 @@ def _record(root: Path, script: str) -> dict:
             normalized = normalized.replace("\\", "/")
             errors[f"{current} | {normalized}"] += 1
     if not checked:
-        raise RuntimeError(f"{script} did not enumerate any Episode")
+        raise RuntimeError(
+            f"{script} did not enumerate any Episode (rc={proc.returncode}; "
+            f"stdout={proc.stdout[-2400:]!r}; stderr={proc.stderr[-2400:]!r}; "
+            f"tracked_states={len(list(root.glob('episodes/**/meta/episode-state.json')))}). "
+            "Never report PASS on empty inventory."
+        )
     if (proc.returncode != 0) != bool(errors):
         raise RuntimeError(f"{script} exit/failure mismatch (rc={proc.returncode}, errors={sum(errors.values())})")
     return {
