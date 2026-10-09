@@ -24,3 +24,11 @@
 - `preproduction_handoff.verify()` 的实际查询及后续只读双路径测试均在 3307 连接返回 `OperationalError 1049: Unknown database 'STORY_OS_RUNTIME'`。对应 V2 schema 当前不可用，不能根据这里的失败推定 PREIMAGE 内容本身必定坏了。
 - 禁止在没有现有数据库清单、Schema 来源与 Authority 对账之前自动 `CREATE DATABASE`、调整正式 runtime.env 或从 TEST_ONLY 数据库迁移。
 - 正式下一步应先排除数据库 V2 Schema 连接/环境路由问题，随后再执行 PREIMAGE VERIFY；再决定是否需要派生重建，不得直接重新生图。
+
+## 4. 只读 V2 Schema 准入证据与增量保护
+
+- 正式 3307 连接的 `SHOW DATABASES` 返回 5 个 schema，其中相关仅有小写 `story_os_runtime`；**不存在区分大小写的 `STORY_OS_RUNTIME`**。小写旧库可读取到 28 张表，`TB_*`（V2）表计数 0。不能直接把 V2 Repository 的数据库参数从大写改为小写：表结构不兼容。
+- 新增 `episodes/_system/preimage_storage_preflight.py`，使用 `information_schema` 做只读校验；检查精确 V2 Schema 身份及少量必需 V2 表，明确区分 `V2_SCHEMA_MISSING`、`V2_TABLES_MISSING`、`V2_SCHEMA_PRESENT_UNATTESTED`。**结构检查成功也永远不会发放生产写入权限**。
+- 正式环境只读运行该模块输出：`status=V2_SCHEMA_MISSING`、`case_only_schema_present=true`、`schema_check_passed=false`、`production_authority_granted=false`。
+- `tests/system/test_preimage_storage_preflight.py` 验证大小写别名不能放行、表不齐不能放行、元数据存在不产生 Authority、连接失败 fail-closed；4 passed。
+- 生产阻断边界：在明确 V2 Schema 容器/迁移归属、对账计划和备份之前，不执行任何 `CREATE DATABASE`、DDL、数据库连接强制改写或 PREIMAGE 物化。
