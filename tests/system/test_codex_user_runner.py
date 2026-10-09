@@ -415,7 +415,8 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
         bridged = bridge.ExecResult(
             returncode=0, output=b"{\"passed\": true}\n",
             remote={"user": RUNNER_USER, "transport": "user_runner"})
-        with self.transport("auto"), \
+        # Explicit bridge routing is portable; auto detects Windows SYSTEM only.
+        with self.transport("user_runner"), \
                 mock.patch.object(bridge, "current_identity", return_value=SYSTEM_ID), \
                 mock.patch.object(bridge, "execute_codex", return_value=bridged) as exec_mock, \
                 mock.patch.object(bridge.subprocess, "run") as subprocess_mock:
@@ -494,7 +495,11 @@ class CodexUserRunnerBridgeTests(unittest.TestCase):
                 cwd=ROOT, codex_home_mode="isolated", task_type="image"))
         home = Path(seen["home"])
         self.assertNotEqual(home, user_home)
-        self.assertTrue(home.is_relative_to(user_app_data / "StoryOS" / bridge.RUNNER_TASK_HOME_NAME))
+        expected_home_root = (
+            user_app_data / "StoryOS" / bridge.RUNNER_TASK_HOME_NAME
+            if os.name == "nt" else Path.home() / ".storyos" / bridge.RUNNER_TASK_HOME_NAME
+        )
+        self.assertTrue(home.is_relative_to(expected_home_root))
         self.assertFalse(home.is_relative_to(ROOT))
         self.assertFalse(home.is_relative_to(bridge.runtime_dir()))
         self.assertFalse(home.exists(), "the throwaway credential copy must be removed")
