@@ -75,11 +75,10 @@ jobs:
       - name: Compile Story OS
         run: python -m compileall -q episodes/_system skills/dali-cat-story
       - name: State machine and Story OS unit tests
-        env:
-          # Direct execution of episodes/_system/*.py otherwise omits repo root.
-          # The project-owned platform.repository package requires this path.
-          PYTHONPATH: "."
         run: |
+          # Each command uses a new interpreter with stdlib platform support
+          # plus StoryOS platform.repository, avoiding the module name collision.
+          python() { command python scripts/ci_storyos_python.py "$@"; }
           python episodes/_system/test_validator.py -v
           python episodes/_system/test_machine_gate.py -v
           python episodes/_system/test_production_reliability.py -v
@@ -143,25 +142,27 @@ jobs:
           python episodes/_system/test_validation_stage_v223.py
           python episodes/_system/test_visual_narrative_core_v22_r2.py
       - name: Runtime system regression tests
-        env:
-          PYTHONPATH: "."
-        run: python -m unittest discover -s tests/system -p "test_*.py" -v
-      - name: Image scheduler authority projection regressions
-        env:
-          PYTHONPATH: "."
         run: >-
-          python -m pytest -q
+          python scripts/ci_storyos_python.py -m unittest discover
+          -s tests/system -p "test_*.py" -v
+      - name: Image scheduler authority projection regressions
+        run: >-
+          python scripts/ci_storyos_python.py -m pytest -q
           tests/system/test_image_scheduler_authority_plan.py
           tests/system/test_generation_unknown_technical_retry_guard.py
           tests/system/test_image_scheduler_review_exit_v4.py
       - name: Validate Story OS contract and repository health
         run: |
-          python episodes/_system/contract_sync.py
-          python episodes/_system/story_os.py doctor
+          python scripts/ci_storyos_python.py episodes/_system/contract_sync.py
+          python scripts/ci_storyos_python.py episodes/_system/story_os.py doctor
       - name: Validate tracked episode metadata
-        run: python episodes/_system/validate_episode.py --all --metadata-only
+        run: >-
+          python scripts/ci_storyos_python.py episodes/_system/validate_episode.py
+          --all --metadata-only
       - name: Validate strict machine evidence metadata
-        run: python episodes/_system/machine_gate.py --all --metadata-only
+        run: >-
+          python scripts/ci_storyos_python.py episodes/_system/machine_gate.py
+          --all --metadata-only
 
   # B5 (2026-09-08): manual golden/performance replay gate. Registry is empty
   # until a candidate passes every density/voice/capture/world/lineage/
