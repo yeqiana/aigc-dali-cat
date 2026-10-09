@@ -336,7 +336,7 @@ def launch(
             timeout=timeout,
             check=False,
             task_type="critic",
-            **({"request_id": planned_request_id} if planned_request_id else {}),
+            request_id=planned_request_id or None,
         )
     finished_at = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
     duration_ms = max(0, int((time.perf_counter() - started_clock) * 1000))

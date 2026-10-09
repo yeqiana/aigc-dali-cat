@@ -32,10 +32,35 @@ def test_other_review_work_still_requeues_after_restart():
     assert review_queue.claim(q)["status"]=="running"
 
 def test_committed_receipt_can_be_adopted_on_restart():
-    q={review_queue.QUEUE_KEY:[_row(review_queue.FINAL_SEMANTIC,{"status":"SUCCESS"})]}
-    assert review_queue.recover_claims(q)==1
-    assert q[review_queue.QUEUE_KEY][0]["status"]=="queued"
-    assert review_queue.claim(q)["status"]=="running"
+    row = _row(review_queue.FINAL_SEMANTIC)
+    row.update(
+        episode_id="test/episode", logical_asset_key="test/episode/frame-01",
+        generation_key="gen-01", attempt_index=1,
+        artifact_sha256="a" * 64, model_role="vision.final",
+        model="test-model", profile="vision_final", reasoning_effort="high",
+        model_policy_sha256="b" * 64,
+    )
+    receipt = {
+        **{key: row[key] for key in (
+            "episode_id", "logical_asset_key", "generation_key",
+            "attempt_index", "artifact_sha256", "model_role",
+            "model", "profile", "reasoning_effort", "model_policy_sha256",
+        )},
+        "review_kind": review_queue.FINAL_SEMANTIC, "status": "SUCCESS",
+    }
+    row["receipt"] = receipt
+    q = {review_queue.QUEUE_KEY: [row]}
+    assert review_queue.recover_claims(q) == 1
+    assert row["status"] == "queued"
+    assert review_queue.claim(q)["status"] == "running"
+
+
+def test_unverified_legacy_receipt_cannot_be_used_as_restart_authority():
+    row = _row(review_queue.FINAL_SEMANTIC, {"status": "SUCCESS"})
+    q = {review_queue.QUEUE_KEY: [row]}
+    assert review_queue.recover_claims(q) == 1
+    assert review_queue.claim(q) is None
+    assert row["status"] == "blocked"
 def test_recover_preserves_valid_final_semantic_lease():
     row = _row(review_queue.FINAL_SEMANTIC)
     row["lease_expires_at"] = "2050-01-01T00:00:00+00:00"

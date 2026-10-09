@@ -35,6 +35,45 @@ SYSTEM_ID = "NT AUTHORITY" + BACKSLASH + "SYSTEM"
 RUNNER_USER = "RENRP" + BACKSLASH + "yeqian"
 CODEX_VERSION = "codex-cli 0.153.4"
 
+def test_isolated_worktree_reads_only_own_repository_runner_endpoint(tmp_path):
+    import codex_user_runner as runner
+    import pathlib
+    root = tmp_path / "repo"
+    isolated = root / ".worktrees" / "integration"
+    isolated.mkdir(parents=True)
+    shared_dir = root / "runtime" / "codex-user-runner"
+    shared_dir.mkdir(parents=True)
+    shared = shared_dir / "endpoint.json"
+    shared.write_text('{"pid":123,"port":9999,"host":"127.0.0.1"}', encoding="utf-8")
+    worktree_gitdir = root / ".git" / "worktrees" / "integration"
+    worktree_gitdir.mkdir(parents=True)
+    (isolated / ".git").write_text(
+        "gitdir: " + str(worktree_gitdir), encoding="utf-8")
+    with mock.patch.object(runner, "ROOT", isolated):
+        assert runner.endpoint_path().resolve() == shared.resolve()
+
+
+def test_worktree_rejects_endpoint_from_unrelated_repository(tmp_path):
+    import codex_user_runner as runner
+    root = tmp_path / "repo"
+    worktree = root / "other" / "integration"
+    worktree.mkdir(parents=True)
+    other_git = root / ".git" / "worktrees" / "integration"
+    other_git.mkdir(parents=True)
+    (worktree / ".git").write_text("gitdir: " + str(other_git), encoding="utf-8")
+    shared = root / "runtime" / "codex-user-runner" / "endpoint.json"
+    shared.parent.mkdir(parents=True)
+    shared.write_text('{"pid":123}', encoding="utf-8")
+    with mock.patch.object(runner, "ROOT", worktree):
+        assert runner.endpoint_path() == worktree / "runtime" / "codex-user-runner" / "endpoint.json"
+
+
+def test_mocked_runner_runtime_stays_isolated_from_live_runner(tmp_path):
+    import codex_user_runner as runner
+    with mock.patch.object(runner, "runtime_dir", return_value=tmp_path):
+        assert runner.endpoint_path() == tmp_path / "endpoint.json"
+
+
 
 class FakeCompleted:
     """Minimal subprocess.CompletedProcess stand-in."""

@@ -35,3 +35,27 @@
 2. 校验正式 Episode 自身的 PREIMAGE / image route / M00 授权与原生工具可用性；TEST_ONLY 结果不得作为正式像素和审核权威。
 3. Final Semantic 的独立回执缺失仍需真实诊断；禁止盲目重复模型执行。
 4. SQLite 只做 LOCAL 评估，完成 MySQL/Redis/文件 Authority 对账与可回滚迁移后才可切换。
+## 5. 安全集成试验与原生路由红绿回归（2026-10-09）
+
+- 创建独立集成工作树 `storyos-main-integration-20261009`，基线 `b31b1c7`，原始主工作树未修改。
+- 对 8 个重叠文件执行三方文本合并；6 个冲突区优先选中已经验证的 native-only 逻辑，2 个文件文本自动合并。
+- 合并后差异复审发现：原主工作区非冲突代码仍将 `opencodex` 引回 `codex_subscription_image.py` 的 gateway provider/诊断，以及 `image_worker_pool.py` 的 Visual Lock proof 例外。**此前宽回归通过，但语义上违反原生通道红线。**
+- 为此新增 `tests/system/test_native_image_no_proxy_bypass.py` 三条 AST 结构合同：Provider Gateway 必须固定为 `codex_subscription`；任何图片能力例外都必须受 Phase5A grant 约束，不得附加 OpenCodex 旁路；工具诊断只能使用 text-only smoke 任务。
+- 新合同在错误合并结果上明确 **3 failed**（预期失败复现）；在独立集成工作树剔除这两处代理旁路后 **13 passed**（新旧路由测试联合复测）。
+- 合并候选此时在业务逻辑上与 `b31b1c7` 一致。主工作区所新增的 OpenCodex 例外**不允许合并**；不以“自动文本合并”取代策略评审。
+- 该集成候选只记录隔离验证，不意味着把主工作树中已有 133 项未提交变更重置、替换或合并到正式生产。禁止对此作为正式生产 Stage/Review Authority 证据。
+## 6. 图片 Provider 配置兜底硬约束（2026-10-09）
+
+- 对 `image_payload_transport.payload_capability_preflight` 再加一层**被选 Provider 身份检查**。无论来自 `AUTO`、旧配置还是显式 Route，只允许 `codex_subscription`；`openai_images_api`、`product_runtime_image`、未知第三方 Provider 都在生图 Attempt 与模型调用前以 `CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED` 阻断。
+- 这项修改只对当前用户要求的图片 payload 生产通道生效，不擅自改造非图片文本模型路由、Episode Stage Authority 或遗留仓库的物理存储记录。
+- `test_native_image_no_proxy_bypass.py` 新增 provider 参数化回归，验证三类非原生 Provider 均被 BLOCK 且不调用原生 provider / 图片 Attempt。
+- 补丁后的集成工作树四槽位：A 100 passed + 4 subtests，B 49 passed，C 20 passed，D 33 passed；合计 **202 pytest passed + 4 subtests**（各组文件无重叠）。
+## 7. 正式《五十亩山地之后》只读生产核验（2026-10-09）
+
+- 通过主工作区 `scripts/storyos_production_env.py` 加载正式 `runtime.env`，仅执行 `image_scheduler.py plan/show`、`next_action.py show`，没有下发图片、审核、状态推进或预算消费。
+- 正式 Stage 为 `STORYBOARD_LOCKED`；最新调度器投影：`ready=[]`、`blocked=[]`，当前没有新的 queued 图片、inflight 为 0；正式门禁 `production_gate=pending`，发布为 `hold`。
+- 生产 Ledger 计数为 `generated_frames=2`、`content_passed_frames=1`、`pending_review_frames=1`；Generation Budget 为 `committed=4 / limit=40`，可用 36。此处计数**不是**正式 25 张图片完成或视觉锁已批准。
+- 图片队列共有 11 条当前/历史记录：Frame01 原始图片 `generated`、Frame05 原始图片 `generated`、Frame01 最新 repair attempt-2 `generated`；Frame06/24 是历史 `tech_failed`；Frame01 有六条 `superseded` repair 记录。独立 Final Semantic Review Queue 在这次正式查询中为空；与 TEST_ONLY Canary 的 isolated review 队列不可混淆。
+- 最新 `next_action` 明确为 `PRODUCT_REVIEW`，`executor=WORK`，`review_kind=story-semantic-critic-shadow`，理由为 fresh isolated product review awaiting completion。要先依据该独立审核的权威回执判断下一步，不能因图片已有像素就虚报 Story Review PASS。
+- 本机只读 `codex --version` 报 `codex-cli 0.153.4`；该信息不构成当前会话 image_generation 可用证明，也不能替代正式生图工具 attestation。
+- **后续顺序**：查验并完成 WORK Story Semantic Shadow 的正式结果 → 校验已存在 Frame01/05 及 Frame01 repair 的像素和版本绑定 → 依 Stage/Visual Lock Authority 决定 Frame06/24 技术失败是否允许恢复；不要在没有 ready 项的情况下重跑 Scheduler、重消耗 Attempt。

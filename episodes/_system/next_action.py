@@ -288,6 +288,38 @@ def queue_summary(ep: Path) -> dict:
 
 
 
+
+def _unsafe_technical_generation_retries(ep: Path, q: dict) -> list[dict]:
+    """Read the shared Attempt authority before advertising automatic retry."""
+    import image_scheduler
+    blocked: list[dict] = []
+    for item in q.get("items") or []:
+        if not isinstance(item, dict) or item.get("status") != "tech_failed":
+            continue
+        frame = int(item.get("frame") or 0)
+        if frame < 1:
+            continue
+        code = str(item.get("technical_failure_code") or "")
+        allowed, _state, reason = image_scheduler._technical_retry_budget(ep, item, code)
+        if not allowed:
+            blocked.append({"frame": frame, "technical_failure_code": code,
+                            "reason": reason})
+    return sorted(blocked, key=lambda item: item["frame"])
+
+
+def _technical_generation_evidence_action(ep: Path, q: dict) -> dict | None:
+    unresolved = _unsafe_technical_generation_retries(ep, q)
+    if not unresolved:
+        return None
+    return {
+        "action": "VERIFY_TECHNICAL_GENERATION_EVIDENCE",
+        "executor": "WORK",
+        "frames": sorted({row["frame"] for row in unresolved}),
+        "unresolved": unresolved,
+        "reason": "technical image rows lack verified retry authority; inspect provider receipts and real Attempt terminal outcome before any new native Codex dispatch",
+    }
+
+
 def blocked_final_semantic_recovery(q: dict) -> dict | None:
     """A blocked review is an unresolved model call, not a fresh image request.
 
@@ -682,6 +714,9 @@ def derive(ep: Path) -> dict:
                         "blocking":True, "work_pending":True, "auto_recoverable":False, "hard_stop":True,
                         "frames":blocked_frames, "reason":"image provider technical retry epoch exhausted"}
             if qs["counts"].get("tech_failed"):
+                unsafe = _technical_generation_evidence_action(ep, q)
+                if unsafe:
+                    return action_result(**unsafe)
                 return action_result(action="RETRY_TECHNICAL_FAILURES", executor="CODEX_IMAGE",
                         reason="technical image failure must recover before authority-refresh dependents")
             try:
@@ -825,6 +860,9 @@ def derive(ep: Path) -> dict:
                     frames=blocked_frames,hard_stop=True,auto_recoverable=False,
                     reason="image provider technical retry budget is exhausted; content/candidate budgets are preserved")
         if qs["counts"].get("tech_failed"):
+            unsafe = _technical_generation_evidence_action(ep, q)
+            if unsafe:
+                return action_result(**unsafe)
             return action_result(action="RETRY_TECHNICAL_FAILURES", executor="CODEX_IMAGE",
                     reason="technical image failures remain; successful siblings must be reused")
         if qs["counts"].get("interrupted_unknown"):
@@ -1032,7 +1070,7 @@ def apply_runtime_block_semantics(data: dict) -> dict:
     Keep legacy ``blocking`` for compatibility, but expose explicit semantics.
     """
     action = str(data.get("action") or "")
-    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED", "EXTERNAL_IMAGE_PROVIDER_BLOCKED", "IMAGE_ATTEMPT_BLOCKED"}
+    hard_stop_actions = {"REPAIR_STATE", "RECOVER_INTERRUPTED_IMAGES", "USER_DECISION_REQUIRED", "EXTERNAL_IMAGE_PROVIDER_BLOCKED", "IMAGE_ATTEMPT_BLOCKED", "VERIFY_TECHNICAL_GENERATION_EVIDENCE"}
     recoverable_actions = {
         "GENERATE_IMAGES",
         "RETRY_TECHNICAL_FAILURES",

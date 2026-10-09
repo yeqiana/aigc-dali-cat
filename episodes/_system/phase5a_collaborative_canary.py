@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 from types import MappingProxyType
 from typing import Any, Mapping
+from platform.repository.mysql.schema_v2 import DATABASE_NAME
 import runtime_timeout_policy
 import subprocess
 import time
@@ -431,6 +432,35 @@ def _validation_epoch_source_evidence(previous_episode: Path) -> dict[str, Any]:
     }
 
 
+def _retirement_source_claim(episode: Path, canary_id: str) -> dict[str, Any]:
+    """Permit the original TEST_ONLY global claim to retire as epoch one.
+
+    Never reuse the original claim if a replacement or newer validation
+    epoch exists. The old image Attempt and all receipts remain immutable.
+    """
+    claims = _validation_epoch_claims()
+    if claims:
+        latest = claims[-1]
+        if (latest.get("canary_id") != canary_id
+                or Path(str(latest.get("workspace") or "")).resolve() != episode):
+            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_NOT_LATEST_EPOCH")
+        return dict(latest)
+
+    claim_path = (ROOT / GLOBAL_CLAIM_REL).resolve()
+    if (ROOT / REPLACEMENT_CLAIM_REL).exists():
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_NOT_LATEST_EPOCH")
+    try:
+        original = json.loads(claim_path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as exc:
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EPOCH_CLAIM_REQUIRED") from exc
+    if (not isinstance(original, Mapping)
+            or original.get("canary_type") != CANARY_TYPE
+            or original.get("canary_id") != canary_id
+            or Path(str(original.get("workspace") or "")).resolve() != episode):
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EPOCH_CLAIM_REQUIRED")
+    return {**original, "validation_epoch": 1, "_epoch_index": 1}
+
+
 def _assert_review_queue_not_recoverable(queue: Mapping[str, Any], *, at: str | None = None) -> list[dict[str, Any]]:
     """Retirement is forbidden while Review can still be resumed or completed.
 
@@ -478,6 +508,22 @@ def _assert_review_queue_not_recoverable(queue: Mapping[str, Any], *, at: str | 
                 "runner_request_bound": False,
                 "result_receipt_present": False,
             })
+        elif status == "blocked":
+            # Only an already quarantined, unreceipted, unbound legacy Final
+            # Semantic can be reviewed for retirement. Caller independently
+            # verifies the official receipt, local diagnostic, and critic log.
+            request_ids = ("runner_request_id", "request_id", "user_runner_request_id", "codex_request_id")
+            if (row.get("review_kind") != "FINAL_SEMANTIC"
+                    or row.get("technical_failure_code") != "FINAL_SEMANTIC_UNVERIFIED_INTERRUPTED_CALL"
+                    or row.get("recovery_action") != "VERIFY_FINAL_SEMANTIC_EXECUTION_BEFORE_RETRY"
+                    or any(str(row.get(key) or "").strip() for key in request_ids)
+                    or row.get("receipt") is not None):
+                raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECOVERABLE")
+            stale_claims.append({
+                "review_key": row.get("review_key"), "review_kind": "FINAL_SEMANTIC",
+                "status": "blocked", "lease_expires_at": None,
+                "runner_request_bound": False, "result_receipt_present": False,
+            })
         elif status not in {"finalized", "failed", "stale"}:
             raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_STATUS_UNKNOWN")
     if any(str(row.get("review_kind") or row.get("kind") or "").upper() == "FINAL_SEMANTIC"
@@ -522,13 +568,7 @@ def _retirement_evidence(ep: Path, canary_id: str, reason: str,
         if str(release.get("status") or "").upper() in {"PUBLISH_READY", "PUBLISHED"}:
             raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_RELEASE_AUTHORITY_PRESENT")
 
-    claims = _validation_epoch_claims()
-    claim = next((row for row in claims if row.get("canary_id") == canary_id
-                  and Path(str(row.get("workspace") or "")).resolve() == episode), None)
-    if claim is None:
-        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EPOCH_CLAIM_REQUIRED")
-    if claims[-1].get("canary_id") != canary_id:
-        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_NOT_LATEST_EPOCH")
+    _retirement_source_claim(episode, canary_id)
 
     key = logical_asset_identity.frame_asset_key(episode, 1)
     state = generation_attempt_authority.load_asset_state(episode, key)
@@ -544,6 +584,12 @@ def _retirement_evidence(ep: Path, canary_id: str, reason: str,
     # potentially recoverable authority; never retire around it.
     if frame_semantic_review.review_receipt_for_frame(episode, 1) is not None:
         raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_REVIEW_RECEIPT_PRESENT")
+    # A model execution receipt may survive independently of a final review
+    # projection or empty local critic log. Do not retire a potentially
+    # recoverable Final Semantic call merely because its queue receipt is absent.
+    if any(str(row.get("model_role") or "") == "vision.final"
+           for row in _model_execution_receipts(episode)):
+        raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_MODEL_RECEIPT_PRESENT")
     queue = scheduler_core.load_queue(episode)
     stale_review_claims = _assert_review_queue_not_recoverable(queue)
 
@@ -631,10 +677,7 @@ def retire_validation_epoch(ep: str | Path, canary_id: str, *,
                 raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_CONFLICT")
             return dict(existing)
         evidence = _retirement_evidence(episode, canary_id, retirement_reason, evidence_ref)
-        epoch_rows = _validation_epoch_claims()
-        source = next((row for row in epoch_rows if row.get("canary_id") == canary_id), None)
-        if source is None:
-            raise CanaryContractError("CANARY_VALIDATION_RETIREMENT_EPOCH_CLAIM_REQUIRED")
+        source = _retirement_source_claim(episode, canary_id)
         successor_id = f"phase5a-validation-e{int(source['_epoch_index']) + 1}-{uuid.uuid4().hex[:12]}"
         record = {
             "schema_version": 1,
@@ -838,6 +881,29 @@ def claim_global_canary(
         previous_workspace = Path(str(current.get("workspace") or "")).resolve()
         previous_id = str(current.get("canary_id") or "")
         validate_workspace(previous_workspace, previous_id)
+        # A root epoch can be followed by the append-only epoch ledger
+        # without ever replacing or mutating the original global claim.
+        existing_epochs = _validation_epoch_claims()
+        if existing_epochs:
+            matching_epoch = _matching_validation_epoch_claim(expected)
+            if matching_epoch is not None:
+                return {**expected, "resumed": True, "replacement": False,
+                        "validation_epoch": int(matching_epoch.get("validation_epoch") or 0),
+                        "previous_canary_id": matching_epoch.get("previous_canary_id")}
+            if not allow_validation_epoch:
+                raise CanaryContractError("CANARY_VALIDATION_EPOCH_EXPLICIT_AUTHORIZATION_REQUIRED")
+            return _claim_validation_epoch(
+                episode, str(canary_id), previous_claim=existing_epochs[-1])
+
+        # Explicitly authorized epoch-2 successor for a retired initial
+        # Canary; this does not reuse or clear the original Attempt budget.
+        original_retirement = _read_retirement(previous_id)
+        if original_retirement is not None:
+            if not allow_validation_epoch:
+                raise CanaryContractError("CANARY_VALIDATION_EPOCH_EXPLICIT_AUTHORIZATION_REQUIRED")
+            return _claim_validation_epoch(
+                episode, str(canary_id),
+                previous_claim={**current, "validation_epoch": 1, "_epoch_index": 1})
         evidence = _replacement_source_evidence(previous_workspace)
         replacement = {
             "canary_type": CANARY_TYPE,
@@ -977,6 +1043,29 @@ def _active_canary_queue_items(queue: Mapping[str, Any]) -> list[dict[str, Any]]
     ]
 
 
+def _assert_final_semantic_recovery_safe(queue: Mapping[str, Any], item: Mapping[str, Any]) -> None:
+    """Do not advertise READY for an interrupted, unreceipted final critic.
+
+    Generation success is independent of Final Semantic completion. A blocked
+    model call cannot be replayed merely because the image output exists.
+    Only the official Review Authority may reconcile or requeue its evidence.
+    """
+    generation_key = str(item.get("generation_key") or "")
+    if not generation_key:
+        return
+    for review in queue.get("review_work_items") or []:
+        if (not isinstance(review, Mapping)
+                or review.get("review_kind") != "FINAL_SEMANTIC"
+                or str(review.get("generation_key") or "") != generation_key):
+            continue
+        if review.get("status") == "blocked":
+            if (review.get("technical_failure_code")
+                    == "FINAL_SEMANTIC_UNVERIFIED_INTERRUPTED_CALL"
+                    and not isinstance(review.get("receipt"), dict)):
+                raise CanaryContractError("CANARY_FINAL_SEMANTIC_EXECUTION_UNVERIFIED")
+            raise CanaryContractError("CANARY_FINAL_SEMANTIC_BLOCKED_REQUIRES_RECOVERY")
+
+
 def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     """Check all durable bindings before asking the canonical scheduler to run."""
     import fast_frame_scout
@@ -1005,7 +1094,7 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     mysql = storage_config.mysql_connection_kwargs()
     if (str(mysql.get("host")) not in {"127.0.0.1", "localhost"}
             or int(mysql.get("port") or 0) != 3306
-            or str(mysql.get("database")) != "story_os_runtime"):
+            or str(mysql.get("database")) != DATABASE_NAME):
         raise CanaryContractError("CANARY_TEST_ONLY_MYSQL_REQUIRED")
     if (ep / "meta/episode-state.json").exists():
         raise CanaryContractError("CANARY_CANONICAL_STAGE_AUTHORITY_FORBIDDEN")
@@ -1080,6 +1169,7 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     # A queued item may be run only when no lease is active and the hard ceiling
     # still has capacity.
     validate_queued_attempt(item, asset_state)
+    _assert_final_semantic_recovery_safe(queue, item)
     return {
         "episode": ep,
         "episode_path": str(ep.resolve()),

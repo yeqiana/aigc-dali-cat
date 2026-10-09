@@ -426,7 +426,31 @@ def runtime_dir() -> Path:
 
 
 def endpoint_path() -> Path:
-    return runtime_dir() / ENDPOINT_NAME
+    local = runtime_dir() / ENDPOINT_NAME
+    if local.is_file() or runtime_dir().resolve() != (ROOT / RUNTIME_REL).resolve():
+        return local
+    # Git worktrees must reuse the one interactive user's existing native
+    # Codex runner. Never copy its token into a worktree or discover an
+    # arbitrary endpoint outside the same canonical StoryOS repository.
+    git_pointer = ROOT / ".git"
+    if not git_pointer.is_file():
+        return local
+    try:
+        pointer = git_pointer.read_text(encoding="utf-8-sig").strip()
+        if not pointer.startswith("gitdir: "):
+            return local
+        gitdir = Path(pointer[len("gitdir: "):].strip())
+        if not gitdir.is_absolute():
+            gitdir = (ROOT / gitdir).resolve()
+        gitdir = gitdir.resolve()
+        if gitdir.parent.name != "worktrees" or gitdir.parent.parent.name != ".git":
+            return local
+        main_root = gitdir.parents[2].resolve()
+        ROOT.resolve().relative_to((main_root / ".worktrees").resolve())
+        shared = main_root / RUNTIME_REL / ENDPOINT_NAME
+        return shared if shared.is_file() else local
+    except (OSError, UnicodeError, ValueError):
+        return local
 
 
 def token_path() -> Path:
@@ -449,19 +473,42 @@ def task_result_path(request_id: str) -> Path:
     rid = str(request_id or "").strip()
     if not rid or any(ch not in "0123456789abcdefABCDEF-" for ch in rid):
         raise ValueError(f"invalid runner request_id: {request_id!r}")
-    return runtime_dir() / RESULT_DIR_NAME / f"{rid}.json"
+    # Direct execution evidence belongs to this checkout. Only the bridge
+    # endpoint and its token are shared with the interactive Runner.
+    return ROOT / RUNTIME_REL / RESULT_DIR_NAME / f"{rid}.json"
 
 
 def read_task_result(request_id: str) -> dict:
-    path = task_result_path(request_id)
-    row = _read_json(path) if path.is_file() else {}
-    if row and (not isinstance(row, dict) or str(row.get("request_id") or "") != request_id):
+    """Read the durable result from the Runner which actually executed it.
+
+    In a trusted Git worktree the interactive user Runner is shared with the
+    canonical checkout, but this process's own runtime_dir() is not shared.
+    Reading that local directory loses the persisted evidence and can falsely
+    quarantine Final Semantic work as unverified. The already-validated
+    endpoint_path() locates only the runner in this same repository.
+    Direct-mode results stay in this checkout and retain the original path.
+    """
+    local = task_result_path(request_id)  # Always validate caller's ID.
+    if bridge_required():
+        endpoint = endpoint_path()
+        if not endpoint.is_file():
+            return {}
+        path = endpoint.parent / RESULT_DIR_NAME / local.name
+    else:
+        path = local
+    result = _read_json(path) if path.is_file() else {}
+    if result and (not isinstance(result, dict)
+                   or str(result.get("request_id") or "") != str(request_id)):
         return {}
-    return row
+    return result
 
 
 def _direct_result_output(stdout, completed) -> bytes:
-    """Read exact model output bytes from the caller's durable sink."""
+    """Read the exact merged Codex log bytes for a durable direct-mode receipt.
+
+    A task with an Authority-owned request ID may not dispatch if its output
+    would be invisible to recovery. The caller validated the sink first.
+    """
     if stdout is subprocess.PIPE:
         data = completed.stdout
         return data.encode("utf-8") if isinstance(data, str) else bytes(data or b"")
@@ -470,11 +517,15 @@ def _direct_result_output(stdout, completed) -> bytes:
 
 
 def _persist_direct_result(request_id: str, completed, stdout, evidence: dict) -> None:
-    """Atomically create a non-overwritable direct-mode runner receipt."""
+    """Atomically publish a non-overwritable direct-mode Runner receipt.
+
+    This records exact output and execution evidence; it does not authorize a
+    Review PASS or another paid model attempt.
+    """
     path = task_result_path(request_id)
     output = _direct_result_output(stdout, completed)
     path.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
+    data = {
         "schema_version": 1,
         "request_id": request_id,
         "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
@@ -487,14 +538,12 @@ def _persist_direct_result(request_id: str, completed, stdout, evidence: dict) -
     fd, pending = tempfile.mkstemp(prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent))
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
-            json.dump(payload, handle, ensure_ascii=False)
+            json.dump(data, handle, ensure_ascii=False)
             handle.flush()
             os.fsync(handle.fileno())
-        os.link(pending, path)  # atomic publish; does not replace existing proof
+        os.link(pending, path)  # atomic NO-REPLACE
     finally:
         Path(pending).unlink(missing_ok=True)
-
-
 
 
 def _pid_alive(pid) -> bool:
@@ -1251,12 +1300,26 @@ class RunnerState:
             "allowed_task_types": sorted(ALLOWED_TASK_TYPES),
             "counters": dict(self.counters),
             "inflight_request_ids": sorted(self.inflight),
-            "features": ["durable_task_results", "inflight_request_ids"],
+            "features": [
+                "durable_task_results", "inflight_request_ids",
+                "append_only_task_results", "atomic_task_result_publish",
+            ],
             "secrets_persisted": False,
         }
 
     def begin_task(self, request_id: str) -> None:
+        try:
+            previous = task_result_path(request_id)
+        except ValueError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_TASK_REJECTED", "invalid request identity"
+            ) from exc
         with self.lock:
+            if request_id in self.inflight or previous.is_file():
+                raise CodexUserRunnerRejected(
+                    "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                    "request is already executing or has durable evidence",
+                )
             self.inflight[str(request_id)] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
 
     def end_task(self, request_id: str) -> None:
@@ -1272,35 +1335,53 @@ class RunnerState:
             pass
 
     def persist_result(self, result: ExecResult) -> None:
-        """Persist task output before replying to the caller.
+        """Atomically publish an immutable result; never prune Authority evidence.
 
-        The interactive-user runner can outlive the workspace/WORK caller. A caller
-        timeout must therefore not erase the only copy of Codex stdout/evidence,
-        especially for image tasks where rc=0 with no exported artifact is a real
-        technical failure that needs diagnosis rather than a blind retry.
+        The old 200-file cap silently deleted historical Codex execution
+        receipts exactly when production needed them for UNKNOWN recovery.
+        Result publication must complete before the HTTP success response.
+        A publication error remains ambiguous, never a model SUCCESS receipt.
         """
+        request_id = str((result.remote or {}).get("request_id") or "").strip()
         try:
-            request_id = str((result.remote or {}).get("request_id") or "").strip()
-            if not request_id:
-                return
-            root = runtime_dir() / RESULT_DIR_NAME
-            root.mkdir(parents=True, exist_ok=True)
-            payload = {
-                "schema_version": 1,
-                "request_id": request_id,
-                "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-                "returncode": int(result.returncode),
-                "output_sha256": hashlib.sha256(result.output or b"").hexdigest(),
-                "output_bytes": len(result.output or b""),
-                "output_base64": base64.b64encode(result.output or b"").decode("ascii"),
-                "evidence": result.remote or {},
-            }
-            _write_json(root / f"{request_id}.json", payload)
-            rows = sorted(root.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-            for stale in rows[200:]:
-                stale.unlink(missing_ok=True)
-        except Exception:
-            pass
+            path = task_result_path(request_id)
+        except ValueError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_TASK_REJECTED", "invalid result request identity"
+            ) from exc
+        path.parent.mkdir(parents=True, exist_ok=True)
+        output = result.output or b""
+        payload = {
+            "schema_version": 1,
+            "request_id": request_id,
+            "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+            "returncode": int(result.returncode),
+            "output_sha256": hashlib.sha256(output).hexdigest(),
+            "output_bytes": len(output),
+            "output_base64": base64.b64encode(output).decode("ascii"),
+            "evidence": result.remote or {},
+        }
+        fd, temporary = tempfile.mkstemp(
+            prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent)
+        )
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+                json.dump(payload, handle, ensure_ascii=False)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.link(temporary, path)  # atomic NO-REPLACE
+        except FileExistsError as exc:
+            raise CodexUserRunnerRejected(
+                "CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                "existing result must not be overwritten",
+            ) from exc
+        except OSError as exc:
+            raise CodexUserRunnerError(
+                "CODEX_USER_RUNNER_DURABLE_RESULT_WRITE_FAILED",
+                "result persistence failed; generation outcome must be reconciled",
+            ) from exc
+        finally:
+            Path(temporary).unlink(missing_ok=True)
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -1360,6 +1441,9 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.begin_task(task.request_id)
             try:
                 result = execute_task(task)
+                # Retain in-flight ownership through durable publication.
+                # Never reply SUCCESS before the result is readable on disk.
+                self.state.persist_result(result)
             finally:
                 self.state.end_task(task.request_id)
         except CodexUserRunnerTimeout as exc:
@@ -1381,7 +1465,7 @@ class _Handler(BaseHTTPRequestHandler):
             self.state.log({"event": "error", "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             self._send(500, {"ok": False, "code": "CODEX_EXEC_FAILED", "detail": repr(exc)})
             return
-        self.state.persist_result(result)
+
         self.state.log({"event": "task", **result.remote})
         self._send(200, {
             "ok": True,

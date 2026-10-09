@@ -118,7 +118,8 @@ def test_direct_file_sink_persists_exact_output(tmp_path):
         with log.open("w",encoding="utf8",newline="\n") as handle:
             runner.run_model_codex(["codex","exec","-"],request_id=rid,
                                    stdout=handle,input="abc")
-    with mock.patch.object(runner,"task_result_path",return_value=result):
+    with mock.patch.object(runner,"task_result_path",return_value=result), \
+         mock.patch.object(runner,"bridge_required",return_value=False):
         record=runner.read_task_result(rid)
     assert base64.b64decode(record["output_base64"])==output
 
@@ -145,7 +146,8 @@ def test_nonzero_direct_exit_is_recovered_as_failure_not_success(tmp_path):
         cp=runner.run_model_codex(["codex","exec","-"],request_id=rid,
                                   input="x",stdout=subprocess.PIPE)
     assert cp.returncode==13
-    with mock.patch.object(runner,"task_result_path",return_value=path):
+    with mock.patch.object(runner,"task_result_path",return_value=path), \
+         mock.patch.object(runner,"bridge_required",return_value=False):
         row=runner.read_task_result(rid)
     assert row["returncode"]==13
     assert b"turn.failed" in base64.b64decode(row["output_base64"])

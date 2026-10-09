@@ -28,6 +28,7 @@ def test_git_worktrees_use_one_shared_runner_endpoint_directory(tmp_path):
         assert runner.runtime_dir()==main/runner.RUNTIME_REL
         assert runner.endpoint_path()==main/runner.RUNTIME_REL/runner.ENDPOINT_NAME
         assert runner.token_path()==main/runner.RUNTIME_REL/runner.TOKEN_NAME
+        assert runner.task_result_path("a"*32)==feature/runner.RUNTIME_REL/runner.RESULT_DIR_NAME/("a"*32+".json")
     with mock.patch.object(runner,"ROOT",main):
         assert runner.runtime_dir()==main/runner.RUNTIME_REL
 
