@@ -125,9 +125,9 @@ EXPECTED_USER_ENV = "STORY_OS_CODEX_RUNNER_USER"
 MAX_TIMEOUT_ENV = "STORY_OS_CODEX_BRIDGE_MAX_TIMEOUT"
 
 # Provider transport is independent from the user-mode bridge transport above.
-# Auto mode prefers the local OpenCodex proxy only while its listener is healthy;
-# otherwise the same Codex CLI invocation is pinned back to the native ChatGPT
-# backend. Explicit provider/base-url config on the command line is never rewritten.
+# Default Codex model execution is pinned to the native ChatGPT/Codex backend;
+# local OpenCodex reachability never silently rewrites the route. Explicit
+# per-command provider/base-url overrides remain visible and unchanged.
 DEFAULT_OPENCODEX_BASE_URL = "http://127.0.0.1:10100/v1"
 NATIVE_CODEX_BASE_URL = "https://chatgpt.com/backend-api/codex"
 PROVIDER_PROBE_TIMEOUT_SECONDS = 0.75
@@ -405,10 +405,8 @@ def _route_from_explicit_base_url(base_url: str | None) -> str:
 def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task_type: str = "generic_codex", health_probe=None, image_capability_probe=None) -> dict | None:
     """Resolve the Codex provider route for one model execution.
 
-    This is deliberately per-dispatch: an OpenCodex outage does not poison an
-    Episode, and a later dispatch can select it again after recovery. Commands
-    that do not execute a model (for example ``codex login status``) are left
-    alone. Caller-supplied provider config always wins.
+    Native ChatGPT/Codex is mandatory for image tasks, regardless of proxy health.
+    Non-image tasks retain explicit overrides.
     """
     command = [str(x) for x in argv]
     if "exec" not in command:
@@ -416,7 +414,12 @@ def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task
     explicit, explicit_base = _provider_override(command)
     source = env if env is not None else os.environ
     env_base = str(source.get("OPENAI_BASE_URL") or "").strip()
+    image_route = str(source.get("STORY_OS_IMAGE_PROVIDER_ROUTE") or "").strip().lower()
+    if task_type == "image" and image_route and image_route not in {"native_codex", "codex_subscription"}:
+        raise CodexUserRunnerRejected("CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED")
     if explicit:
+        if task_type == "image" and _route_from_explicit_base_url(explicit_base) != "native_codex":
+            raise CodexUserRunnerRejected("CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED")
         return {
             "transport_route": _route_from_explicit_base_url(explicit_base),
             "transport_route_reason": "command_explicit_provider",
@@ -424,35 +427,20 @@ def resolve_provider_transport(argv: list[str], *, env: dict | None = None, task
             "provider_args": [],
         }
     if env_base and not _is_opencodex_url(env_base):
+        if task_type == "image" and _route_from_explicit_base_url(env_base) != "native_codex":
+            raise CodexUserRunnerRejected("CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED")
         return {
             "transport_route": _route_from_explicit_base_url(env_base),
             "transport_route_reason": "environment_explicit_provider",
             "transport_base_url": env_base,
             "provider_args": [],
         }
-    opencodex_url = _opencodex_base_url(source)
-    probe = health_probe or _opencodex_health
-    healthy, _detail = probe(opencodex_url)
-    route_reason = "opencodex_unreachable"
-    if healthy and str(task_type) == "image":
-        capability_probe = image_capability_probe or _opencodex_image_capability
-        image_capable, _capability_detail = capability_probe(opencodex_url)
-        if not image_capable:
-            healthy = False
-            route_reason = "opencodex_image_capability_unavailable"
-    if healthy:
-        return {
-            "transport_route": "opencodex",
-            "transport_route_reason": "opencodex_image_capability_ok" if str(task_type) == "image" else "opencodex_health_ok",
-            "transport_base_url": opencodex_url,
-            "provider_args": [
-                "-c", 'model_provider="openai"',
-                "-c", f'openai_base_url="{opencodex_url}"',
-            ],
-        }
+    # Native Codex is the mandatory default for StoryOS. Local proxy health
+    # must never silently retarget a Codex subscription/image request.
+    # A non-native provider still requires an explicit per-command override.
     return {
         "transport_route": "native_codex",
-        "transport_route_reason": route_reason,
+        "transport_route_reason": "native_only_default",
         "transport_base_url": NATIVE_CODEX_BASE_URL,
         "provider_args": [
             "-c", 'model_provider="openai"',

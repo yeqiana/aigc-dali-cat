@@ -112,6 +112,7 @@ RETRYABLE_TECH_CODES = {
 # A later provider setup must explicitly restore this capability before any
 # new image request is queued; do not blindly retry and exhaust worker slots.
 PRE_DISPATCH_CAPABILITY_BLOCK_CODES = frozenset({
+    "CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED",
     "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN",
     "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE_FOR_VISIBLE_MODELS",
     "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
@@ -785,13 +786,30 @@ async def _run_scheduler_async(ep:Path,max_workers:int,timeout:int,codex:str|Non
     save_queue(ep,q)
     ready,_=ready_items(ep,q)
     if not ready:
+        review_rows=q.get(review_queue.QUEUE_KEY) or []
+        # A valid running review lease may belong to a different scheduler:
+        # do not start a lane that could duplicate work or wait indefinitely.
+        if review_enabled and any(row.get("status") == "running" for row in review_rows):
+            return 24
         if review_enabled and review_queue.depth(q):
             review_stop.set();review_changed.set()
             await review_queue.run_lane(ep,changed=review_changed,progress=review_progress,
                 stop=review_stop,codex=codex,timeout=timeout,
                 max_inflight=int(review_cfg.get("max_inflight",2)))
+        q = load_queue(ep)
         statuses={x.get("status") for x in q.get("items") or []}
-        return 22 if "blocked" in statuses else (22 if "interrupted_unknown" in statuses else (24 if "running" in statuses else (20 if "queued" in statuses else 0)))
+        review_rows=q.get(review_queue.QUEUE_KEY) or []
+        review_interrupted=any(
+            row.get("review_kind") == review_queue.FINAL_SEMANTIC
+            and row.get("status") == "blocked" for row in review_rows)
+        review_active=any(row.get("status") in review_queue.ACTIVE for row in review_rows)
+        if review_interrupted or "blocked" in statuses or "interrupted_unknown" in statuses:
+            return 22
+        if "running" in statuses or any(row.get("status") == "running" for row in review_rows):
+            return 24
+        if "queued" in statuses or review_active:
+            return 20
+        return 0
 
     runtime,_=runtime_router.detect()
     image_runtime,_=runtime_router.image_execution_runtime()

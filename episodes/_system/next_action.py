@@ -636,6 +636,8 @@ def derive(ep: Path) -> dict:
                     "frame": int(row.get("frame") or 0),
                     "code": str(row.get("code") or ""),
                     "reason": str(row.get("reason") or "non-regenerating image failure requires explicit inspection"),
+                    "recovery_action": row.get("recovery_action"),
+                    "recovery_hint": row.get("recovery_hint"),
                 } for row in plans],
                 reason="non-regenerating image failure must be resolved before any pixel review or further generation",
             )

@@ -30,6 +30,13 @@ import story_json
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER_REL = Path("meta/production-ledger.json")
 SUPPORTED_AUTO_CODES = {"ASPECT_RATIO_MISMATCH"}
+# Missing native Codex image-tool capability is not a failed image generation.
+NATIVE_IMAGE_CAPABILITY_CODES = frozenset({
+    "CODEX_NATIVE_IMAGE_PROVIDER_REQUIRED",
+    "LOGIN_AUTH_IMAGE_TOOL_CAPABILITY_UNKNOWN",
+    "LOGIN_AUTH_IMAGE_TOOL_UNAVAILABLE_FOR_VISIBLE_MODELS",
+    "LOGIN_AUTH_IMAGE_TOOL_CONFIG_UNAVAILABLE",
+})
 
 
 def _read(path: Path) -> dict:
@@ -83,6 +90,13 @@ def inspect_item(ep: Path, item: dict) -> dict:
     frame = int(item.get("frame") or 0)
     code = str(item.get("technical_failure_code") or "")
     base = {"frame": frame, "item_id": str(item.get("id") or ""), "code": code, "auto_resolvable": False}
+    if code in NATIVE_IMAGE_CAPABILITY_CODES:
+        return {
+            **base,
+            "reason": "native_codex_session_image_tool_attestation_missing",
+            "recovery_action": "VERIFY_NATIVE_CODEX_IMAGE_CAPABILITY",
+            "recovery_hint": "Confirm native Codex image tool in a real session or finish the fixed bounded Phase5A canary; preserve the queue item and Attempt until then",
+        }
     if frame <= 0 or code not in SUPPORTED_AUTO_CODES:
         return {**base, "reason": "unsupported_non_regenerating_failure"}
 
