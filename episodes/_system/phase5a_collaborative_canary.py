@@ -978,6 +978,29 @@ def _active_canary_queue_items(queue: Mapping[str, Any]) -> list[dict[str, Any]]
     ]
 
 
+def _assert_final_semantic_recovery_safe(queue: Mapping[str, Any], item: Mapping[str, Any]) -> None:
+    """Do not advertise READY for an interrupted, unreceipted final critic.
+
+    Generation success is independent of Final Semantic completion. A blocked
+    model call cannot be replayed merely because the image output exists.
+    Only the official Review Authority may reconcile or requeue its evidence.
+    """
+    generation_key = str(item.get("generation_key") or "")
+    if not generation_key:
+        return
+    for review in queue.get("review_work_items") or []:
+        if (not isinstance(review, Mapping)
+                or review.get("review_kind") != "FINAL_SEMANTIC"
+                or str(review.get("generation_key") or "") != generation_key):
+            continue
+        if review.get("status") == "blocked":
+            if (review.get("technical_failure_code")
+                    == "FINAL_SEMANTIC_UNVERIFIED_INTERRUPTED_CALL"
+                    and not isinstance(review.get("receipt"), dict)):
+                raise CanaryContractError("CANARY_FINAL_SEMANTIC_EXECUTION_UNVERIFIED")
+            raise CanaryContractError("CANARY_FINAL_SEMANTIC_BLOCKED_REQUIRES_RECOVERY")
+
+
 def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     """Check all durable bindings before asking the canonical scheduler to run."""
     import fast_frame_scout
@@ -1081,6 +1104,7 @@ def _preflight(ep: Path, canary_id: str) -> dict[str, Any]:
     # A queued item may be run only when no lease is active and the hard ceiling
     # still has capacity.
     validate_queued_attempt(item, asset_state)
+    _assert_final_semantic_recovery_safe(queue, item)
     return {
         "episode": ep,
         "episode_path": str(ep.resolve()),
