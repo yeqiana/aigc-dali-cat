@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -62,7 +63,11 @@ def cmd_next(ep: Path):
 
 
 def forward(script, args):
-    return subprocess.call([sys.executable, str(SYSTEM_DIR / script), *args], cwd=ROOT)
+    command = [sys.executable]
+    if os.environ.get("STORYOS_CI_PYTHON_BOOTSTRAP") == "1":
+        # Keep the stdlib platform / platform.repository bridge in CI children.
+        command.append(str(ROOT / "scripts/ci_storyos_python.py"))
+    return subprocess.call([*command, str(SYSTEM_DIR / script), *args], cwd=ROOT)
 
 
 def main():
