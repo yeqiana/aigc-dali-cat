@@ -405,6 +405,9 @@ def _shared_worktree_root(root: Path) -> Path:
         common = pointer.parent.parent
         if not common.is_dir() or not pointer.is_dir():
             return root
+        # Only accept a Git marker pointing back to this repo's own linked slots.
+        # A forged pointer must not disclose another repo's Runner endpoint.
+        root.resolve(strict=True).relative_to((common.parent / ".worktrees").resolve(strict=True))
         return common.parent
     except (OSError, RuntimeError, ValueError):
         return root
@@ -443,7 +446,47 @@ def task_result_path(request_id: str) -> Path:
 
 def read_task_result(request_id: str) -> dict:
     path = task_result_path(request_id)
-    return _read_json(path) if path.is_file() else {}
+    row = _read_json(path) if path.is_file() else {}
+    if row and (not isinstance(row, dict) or str(row.get("request_id") or "") != request_id):
+        return {}
+    return row
+
+
+def _direct_result_output(stdout, completed) -> bytes:
+    """Read exact model output bytes from the caller's durable sink."""
+    if stdout is subprocess.PIPE:
+        data = completed.stdout
+        return data.encode("utf-8") if isinstance(data, str) else bytes(data or b"")
+    stdout.flush()
+    return Path(stdout.name).read_bytes()
+
+
+def _persist_direct_result(request_id: str, completed, stdout, evidence: dict) -> None:
+    """Atomically create a non-overwritable direct-mode runner receipt."""
+    path = task_result_path(request_id)
+    output = _direct_result_output(stdout, completed)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema_version": 1,
+        "request_id": request_id,
+        "recorded_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "returncode": int(completed.returncode),
+        "output_sha256": hashlib.sha256(output).hexdigest(),
+        "output_bytes": len(output),
+        "output_base64": base64.b64encode(output).decode("ascii"),
+        "evidence": evidence,
+    }
+    fd, pending = tempfile.mkstemp(prefix=f".{request_id}.", suffix=".pending", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            json.dump(payload, handle, ensure_ascii=False)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.link(pending, path)  # atomic publish; does not replace existing proof
+    finally:
+        Path(pending).unlink(missing_ok=True)
+
+
 
 
 def _pid_alive(pid) -> bool:
@@ -1660,6 +1703,29 @@ def run_codex(
         if provider_route and provider_route.get(key) is not None
     }
     if not bridge_required():
+        direct_guard = None
+        if request_id:
+            prior=task_result_path(str(request_id))
+            if stdout is not subprocess.PIPE and not (
+                hasattr(stdout,"flush") and isinstance(getattr(stdout,"name",None),(str,os.PathLike))):
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_DURABLE_OUTPUT_REQUIRED",
+                                              "durable direct execution needs PIPE or log-file sink")
+            if prior.exists():
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                                              "durable direct result already exists")
+            prior.parent.mkdir(parents=True,exist_ok=True)
+            direct_guard=prior.with_name(prior.name+".dispatching")
+            try:
+                fd=os.open(str(direct_guard),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+                os.close(fd)
+            except FileExistsError:
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_OUTCOME_UNKNOWN",
+                                              "prior dispatch requires reconciliation") from None
+            if prior.exists():
+                # A previous result won a race before this reservation.
+                # Leave the guard for explicit reconciliation rather than retry.
+                raise CodexUserRunnerRejected("CODEX_USER_RUNNER_DUPLICATE_REQUEST_ID",
+                                              "existing durable result must be reconciled")
         started = time.monotonic()
         kwargs = {
             "input": input,
@@ -1702,8 +1768,13 @@ def run_codex(
             "returncode": int(completed.returncode),
             "task_type": str(task_type),
             "transport": "direct_codex_user_runner",
+            **({"request_id":str(request_id)} if request_id else {}),
             **route_evidence,
         }
+        if request_id:
+            _persist_direct_result(str(request_id), completed, stdout, completed.remote)
+            if direct_guard is not None:
+                direct_guard.unlink(missing_ok=True)
         return completed
     payload = input if input is not None else stdin_text
     # Normalize cmd.exe/python wrappers on the caller side before crossing the

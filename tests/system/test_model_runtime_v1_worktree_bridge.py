@@ -45,3 +45,12 @@ def test_runtime_root_does_not_depend_on_worker_identity_or_cli_login(tmp_path):
          mock.patch.object(runner,"ROOT",feature):
         assert runner.runtime_dir()==main/runner.RUNTIME_REL
     # The login credential remains in the runner process' user profile.
+
+
+def test_git_marker_cannot_redirect_runner_to_unrelated_repo(tmp_path):
+    original,feature=_fake_worktree(tmp_path)
+    unrelated=tmp_path/"other_repo"
+    pointer=unrelated/".git"/"worktrees"/"evil-slot"
+    pointer.mkdir(parents=True)
+    (feature/".git").write_text("gitdir: "+str(pointer),encoding="utf-8")
+    assert runner._shared_worktree_root(feature)==feature

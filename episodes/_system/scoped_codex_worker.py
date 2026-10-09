@@ -295,19 +295,23 @@ def execute_model_call(ep, step, binding, prompt_text, *, codex_raw=None, timeou
         # stream for sentinel validation. Other scoped work keeps its existing
         # streaming/discard behavior.
         capture_preflight_output = step == "EXACT_CONTROLLER_CAPABILITY_PREFLIGHT"
-        sink = subprocess.PIPE if capture_preflight_output else (output_handle or subprocess.DEVNULL)
+        capture_output_stream = capture_preflight_output or bool(runner_request_id) or (
+            persist_output_stream and output_handle is not None
+        )
+        sink = subprocess.PIPE if capture_output_stream else (output_handle or subprocess.DEVNULL)
         execution_started=True
         cp=codex_user_runner.run_model_codex(cmd,input=prompt_text,text=True,encoding="utf-8",
             stdout=sink,stderr=subprocess.STDOUT,timeout=timeout,check=False,
             task_type="scoped_step",request_id=runner_request_id)
         rc=int(cp.returncode)
-        if capture_preflight_output:
+        if capture_output_stream:
             captured = getattr(cp, "stdout", None)
             if isinstance(captured, bytes):
                 captured = captured.decode("utf-8", "replace")
             if output_handle is not None and captured:
                 output_handle.write(str(captured))
                 output_handle.flush()
+        if capture_preflight_output:
             runner_diagnostics=_safe_runner_diagnostics(getattr(cp,"remote",None))
         status="SUCCESS" if rc==0 else "FAILED"
     except subprocess.TimeoutExpired as exc:
