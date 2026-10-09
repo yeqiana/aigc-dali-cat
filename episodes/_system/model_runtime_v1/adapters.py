@@ -10,6 +10,10 @@ import hashlib
 import json
 import os
 import subprocess
+from urllib.error import HTTPError
+import weakref
+from collections.abc import Mapping
+from types import MappingProxyType
 from urllib import request
 
 NATIVE_CODEX_BASE = "https://chatgpt.com/backend-api/codex"
@@ -18,6 +22,28 @@ MAX_PROMPT_BYTES = 131072
 
 class TransportDispatchBlocked(RuntimeError):
     pass
+
+class TextDispatchPlan(Mapping):
+    """Immutable, locally minted plan. An ordinary dict cannot authorize execution."""
+    __slots__ = ("_fields", "__weakref__")
+    __hash__ = object.__hash__
+    __eq__ = object.__eq__
+    def __init__(self, fields: dict):
+        object.__setattr__(self, "_fields", MappingProxyType(dict(fields)))
+    def __setattr__(self, name, value):
+        raise AttributeError("MODEL_EXECUTION_PLAN_IMMUTABLE")
+    def __getitem__(self, key):
+        return self._fields[key]
+    def __iter__(self):
+        return iter(self._fields)
+    def __len__(self):
+        return len(self._fields)
+
+_APPROVED_PLANS = weakref.WeakSet()
+
+def _require_minted(plan) -> None:
+    if not isinstance(plan, TextDispatchPlan) or plan not in _APPROVED_PLANS:
+        raise TransportDispatchBlocked("MODEL_EXECUTION_PLAN_UNTRUSTED")
 
 def plan_text(binding: dict, *, proof: dict | None = None, trusted_verify=None) -> dict:
     from . import capability
@@ -32,10 +58,13 @@ def plan_text(binding: dict, *, proof: dict | None = None, trusted_verify=None) 
     for key in ("role", "requested_model", "policy_sha256"):
         if not binding.get(key):
             raise TransportDispatchBlocked("MODEL_BINDING_INCOMPLETE")
-    return {"verified_capability": True, "transport": binding["transport"], "requested_model": binding["requested_model"],
+    fields = {"transport": binding["transport"], "requested_model": binding["requested_model"],
             "role": binding["role"], "policy_sha256": binding["policy_sha256"],
             "modality": "text_generation", "status": "PLANNED",
             "actual_model": None, "fallback_automatic": False}
+    plan = TextDispatchPlan(fields)
+    _APPROVED_PLANS.add(plan)
+    return plan
 
 def _validate_prompt(prompt: str) -> None:
     if not isinstance(prompt, str) or not prompt.strip() or len(prompt.encode("utf-8")) > MAX_PROMPT_BYTES:
@@ -44,12 +73,11 @@ def _validate_prompt(prompt: str) -> None:
 def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, runner=None,
                         codex_command: str = "codex", timeout: int = 120) -> dict:
     _validate_prompt(prompt)
+    _require_minted(plan)
     if plan.get("transport") != "CODEX_NATIVE" or plan.get("modality") != "text_generation":
         raise TransportDispatchBlocked("MODEL_TRANSPORT_MISMATCH")
     if not authorized:
         raise TransportDispatchBlocked("MODEL_DISPATCH_NOT_AUTHORIZED")
-    if plan.get("verified_capability") is not True:
-        raise TransportDispatchBlocked("MODEL_CAPABILITY_NOT_ATTESTED")
     if runner is None:
         import codex_user_runner
         runner = codex_user_runner.run_codex
@@ -59,9 +87,10 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
     clean_env.pop("OPENAI_BASE_URL", None)
     clean_env.pop("STORY_OS_IMAGE_PROVIDER_ROUTE", None)
     try:
-        result = runner(argv, stdin_text=prompt, stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE, timeout=timeout, check=False,
-                        env=clean_env, task_type="generic_codex")
+        result = runner(argv, input=prompt, text=True, encoding="utf-8",
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        timeout=timeout, check=False, env=clean_env,
+                        task_type="generic_codex")
     except Exception as exc:
         raise TransportDispatchBlocked("CODEX_NATIVE_OUTCOME_UNKNOWN") from None
     if getattr(result, "returncode", 1) != 0:
@@ -69,6 +98,8 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
     output = getattr(result, "stdout", b"") or b""
     if isinstance(output, str):
         output = output.encode("utf-8")
+    if not output.strip():
+        raise TransportDispatchBlocked("CODEX_NATIVE_EMPTY_OUTPUT")
     return {"status": "REQUIRES_VALIDATION", "transport": "CODEX_NATIVE",
             "requested_model": plan["requested_model"], "actual_model": None,
             "output_sha256": hashlib.sha256(output).hexdigest(),
@@ -77,6 +108,7 @@ def dispatch_codex_text(plan: dict, *, prompt: str, authorized: bool = False, ru
 def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
                          api_key: str | None = None, sender=None, timeout: int = 120) -> dict:
     _validate_prompt(prompt)
+    _require_minted(plan)
     if plan.get("transport") != "API_KEY_DIRECT" or plan.get("modality") != "text_generation":
         raise TransportDispatchBlocked("MODEL_TRANSPORT_MISMATCH")
     if not authorized:
@@ -98,10 +130,16 @@ def dispatch_openai_text(plan: dict, *, prompt: str, authorized: bool = False,
         result = json.loads(raw.decode("utf-8"))
         if not isinstance(result, dict) or not isinstance(result.get("id"), str):
             raise ValueError("invalid response")
-    except Exception:
-        # Never include HTTP exception bodies/headers or keys in exceptions.
-        # A timeout may have reached the provider: forbid blind retries.
+    except HTTPError as exc:
+        # A definite 4xx API refusal is not a successful generation. Never leak body.
+        if exc.code in {400, 401, 403, 404, 413, 422, 429}:
+            raise TransportDispatchBlocked("API_DIRECT_REQUEST_REJECTED") from None
         raise TransportDispatchBlocked("API_DIRECT_OUTCOME_UNKNOWN") from None
+    except Exception:
+        # Unknown network outcome may have reached provider. No automatic retry.
+        raise TransportDispatchBlocked("API_DIRECT_OUTCOME_UNKNOWN") from None
+    if result.get("error") or result.get("status") in {"failed", "incomplete", "cancelled"}:
+        raise TransportDispatchBlocked("API_DIRECT_RESPONSE_NOT_COMPLETE")
     return {"status": "REQUIRES_VALIDATION", "transport": "API_KEY_DIRECT",
             "requested_model": plan["requested_model"], "reported_model": result.get("model"),
             "actual_model": None, "provider_response_id": result["id"],

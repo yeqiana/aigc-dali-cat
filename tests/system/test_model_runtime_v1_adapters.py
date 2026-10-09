@@ -50,7 +50,7 @@ def test_no_calls_before_authorization():
     with pytest.raises(adapters.TransportDispatchBlocked, match="NOT_AUTHORIZED"):
         adapters.dispatch_codex_text(plan, prompt="hello", runner=lambda *a, **k: pytest.fail("called"))
     with pytest.raises(adapters.TransportDispatchBlocked, match="NOT_AUTHORIZED"):
-        adapters.dispatch_openai_text({**plan, "transport": "API_KEY_DIRECT"}, prompt="hello",
+        adapters.dispatch_openai_text(_plan({**B, "transport": "API_KEY_DIRECT"}), prompt="hello",
                                      api_key="secret", sender=lambda *a, **k: pytest.fail("called"))
 
 def test_direct_api_fixed_official_url_and_no_key_in_result():
@@ -80,3 +80,57 @@ def test_api_transport_failure_is_unknown_not_retryable_success():
 def test_image_modality_must_use_existing_image_adapter_not_text():
     with pytest.raises(adapters.TransportDispatchBlocked, match="MODALITY_UNSUPPORTED"):
         _plan({**B, "declared_capabilities": ["image_generation"]})
+
+def test_forged_plan_cannot_dispatch_to_native_or_api():
+    fake = {"transport": "CODEX_NATIVE", "modality": "text_generation",
+            "verified_capability": True, "requested_model": "requested"}
+    with pytest.raises(adapters.TransportDispatchBlocked, match="PLAN_UNTRUSTED"):
+        adapters.dispatch_codex_text(fake, prompt="hello", authorized=True,
+                                     runner=lambda *a, **kw: pytest.fail("ran"))
+    with pytest.raises(adapters.TransportDispatchBlocked, match="PLAN_UNTRUSTED"):
+        adapters.dispatch_openai_text({**fake, "transport": "API_KEY_DIRECT"},
+                                     prompt="hello", authorized=True, api_key="fake",
+                                     sender=lambda *a, **kw: pytest.fail("ran"))
+
+def test_issued_plan_is_immutable_and_cannot_be_elevated_by_editing():
+    plan = _plan(B)
+    with pytest.raises(TypeError):
+        plan["transport"] = "API_KEY_DIRECT"
+    with pytest.raises(AttributeError, match="PLAN_IMMUTABLE"):
+        plan._fields = {"transport": "API_KEY_DIRECT"}
+
+def test_native_uses_input_for_both_direct_and_bridge_modes():
+    plan = _plan(B)
+    seen = []
+    def stub(argv, **kw):
+        seen.append(kw)
+        return subprocess.CompletedProcess(argv, 0, stdout='{"type":"turn.completed"}\n', stderr='')
+    adapters.dispatch_codex_text(plan, prompt="你好，世界", authorized=True, runner=stub)
+    assert seen[0]["input"] == "你好，世界"
+    assert seen[0]["text"] is True
+    assert seen[0]["encoding"] == "utf-8"
+    assert "stdin_text" not in seen[0]
+
+def test_codex_empty_output_must_not_claim_success():
+    plan = _plan(B)
+    with pytest.raises(adapters.TransportDispatchBlocked, match="NATIVE_EMPTY_OUTPUT"):
+        adapters.dispatch_codex_text(plan, prompt="hello", authorized=True,
+            runner=lambda argv, **kw: subprocess.CompletedProcess(argv, 0, stdout=b"", stderr=b""))
+
+def test_api_http_unauthorized_is_sanitized_definite_refusal():
+    from urllib.error import HTTPError
+    plan = _plan({**B, "transport": "API_KEY_DIRECT"})
+    def sender(req, timeout):
+        raise HTTPError(req.full_url, 401, "forbidden-secret", {}, None)
+    with pytest.raises(adapters.TransportDispatchBlocked, match="^API_DIRECT_REQUEST_REJECTED$") as caught:
+        adapters.dispatch_openai_text(plan, prompt="test", authorized=True, sender=sender,
+                                     api_key="secret")
+    assert "forbidden-secret" not in str(caught.value)
+
+def test_api_incomplete_response_cannot_claim_success():
+    plan = _plan({**B, "transport": "API_KEY_DIRECT"})
+    def sender(req, timeout):
+        return json.dumps({"id": "resp-123", "status": "incomplete", "model": "requested"}).encode()
+    with pytest.raises(adapters.TransportDispatchBlocked, match="RESPONSE_NOT_COMPLETE"):
+        adapters.dispatch_openai_text(plan, prompt="test", authorized=True, sender=sender,
+                                     api_key="secret")
