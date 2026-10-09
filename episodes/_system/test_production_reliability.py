@@ -68,7 +68,8 @@ class TextAuditTests(unittest.TestCase):
 class ReliabilityCliTests(unittest.TestCase):
     def setUp(self):
         # Only ephemeral test fixtures use the JSON compatibility store.
-        meta_mode = patch.dict(os.environ, {'STORYOS_EPISODE_META_STORE_MODE': 'json'})
+        meta_mode = patch.dict(os.environ, {'STORYOS_EPISODE_META_STORE_MODE': 'json',
+                                          'STORYOS_HOT_STATE_MODE': 'file'})
         meta_mode.start()
         self.addCleanup(meta_mode.stop)
         self.tmp = tempfile.TemporaryDirectory()
