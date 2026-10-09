@@ -50,3 +50,12 @@
 - 这项修改只对当前用户要求的图片 payload 生产通道生效，不擅自改造非图片文本模型路由、Episode Stage Authority 或遗留仓库的物理存储记录。
 - `test_native_image_no_proxy_bypass.py` 新增 provider 参数化回归，验证三类非原生 Provider 均被 BLOCK 且不调用原生 provider / 图片 Attempt。
 - 补丁后的集成工作树四槽位：A 100 passed + 4 subtests，B 49 passed，C 20 passed，D 33 passed；合计 **202 pytest passed + 4 subtests**（各组文件无重叠）。
+## 7. 正式《五十亩山地之后》只读生产核验（2026-10-09）
+
+- 通过主工作区 `scripts/storyos_production_env.py` 加载正式 `runtime.env`，仅执行 `image_scheduler.py plan/show`、`next_action.py show`，没有下发图片、审核、状态推进或预算消费。
+- 正式 Stage 为 `STORYBOARD_LOCKED`；最新调度器投影：`ready=[]`、`blocked=[]`，当前没有新的 queued 图片、inflight 为 0；正式门禁 `production_gate=pending`，发布为 `hold`。
+- 生产 Ledger 计数为 `generated_frames=2`、`content_passed_frames=1`、`pending_review_frames=1`；Generation Budget 为 `committed=4 / limit=40`，可用 36。此处计数**不是**正式 25 张图片完成或视觉锁已批准。
+- 图片队列共有 11 条当前/历史记录：Frame01 原始图片 `generated`、Frame05 原始图片 `generated`、Frame01 最新 repair attempt-2 `generated`；Frame06/24 是历史 `tech_failed`；Frame01 有六条 `superseded` repair 记录。独立 Final Semantic Review Queue 在这次正式查询中为空；与 TEST_ONLY Canary 的 isolated review 队列不可混淆。
+- 最新 `next_action` 明确为 `PRODUCT_REVIEW`，`executor=WORK`，`review_kind=story-semantic-critic-shadow`，理由为 fresh isolated product review awaiting completion。要先依据该独立审核的权威回执判断下一步，不能因图片已有像素就虚报 Story Review PASS。
+- 本机只读 `codex --version` 报 `codex-cli 0.153.4`；该信息不构成当前会话 image_generation 可用证明，也不能替代正式生图工具 attestation。
+- **后续顺序**：查验并完成 WORK Story Semantic Shadow 的正式结果 → 校验已存在 Frame01/05 及 Frame01 repair 的像素和版本绑定 → 依 Stage/Visual Lock Authority 决定 Frame06/24 技术失败是否允许恢复；不要在没有 ready 项的情况下重跑 Scheduler、重消耗 Attempt。
