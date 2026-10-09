@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 
 import frame_contract
+import content_prompt_policy
 
 PROMPT_DIR = Path("prompts/production")
 MAX_CHARS = 250
@@ -55,12 +56,18 @@ def _clean_storyboard_text(text: str) -> str:
     return value
 
 
-def prompt_for_contract(contract: dict, *, exact_scene: str | None = None) -> str:
+def prompt_for_contract(contract: dict, *, exact_scene: str | None = None,
+                        use_common_policy: bool = False) -> str:
     frame = str(contract.get("frame") or "").zfill(2)
     beat = _clean_storyboard_text(exact_scene if exact_scene is not None else
                                   ((contract.get("storyboard_frame") or {}).get("text") or ""))
     if not beat:
         raise ValueError(f"frame {frame} has no localized scene text; refuse generic fallback")
+    if use_common_policy:
+        # Derived transport only; never guess a missing locked scene.
+        return content_prompt_policy.build_scene_prompt(
+            contract, exact_scene=beat, max_chars=MAX_CHARS, max_bytes=MAX_BYTES
+        )
     suffix = "按当前Frame Contract生成；真实生活相册感、自然瞬间、普通摄影曝光，避免电影布光、海报摆拍和无依据的额外元素。"
     text = f"{beat} {suffix}".strip()
     while len(text) > MAX_CHARS or len(text.encode("utf-8")) > MAX_BYTES:
