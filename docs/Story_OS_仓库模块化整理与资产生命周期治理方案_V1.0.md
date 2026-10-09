@@ -225,7 +225,7 @@ workbench 临时日志
 状态：部分完成
 
 - V2 文档归档：完成（20 份 `Story_OS_V2*` 迁入 `docs/archive/v2-evolution/`）。
-- Visual Pattern：`library/visual-patterns/` 已建立；4 份 `standards/` 视觉经验规范因生产代码硬引用暂停，方案见 `docs/standards_视觉经验规范解耦方案_20260911.md`。
+- Visual Pattern：`library/visual-patterns/` 已建立；4 份 `standards/` 视觉经验规范因生产代码硬引用暂停，方案见 `docs/archive/governance-history/standards_视觉经验规范解耦方案_20260911.md`。
 
 ## Phase 4
 
@@ -242,13 +242,13 @@ workbench 临时日志
 
 ```
 1. Runtime Debug 剩余日志归档        ✅ 已完成
-2. 根目录治理清单                    ✅ docs/仓库根目录治理清单_20260911.md
-3. .storyos_tmp / cache 分类          ✅ docs/运行时临时目录与缓存分类_20260911.md
-4. standards 解耦方案                ✅ docs/standards_视觉经验规范解耦方案_20260911.md
+2. 根目录治理清单                    ✅ docs/archive/governance-history/仓库根目录治理清单_20260911.md
+3. .storyos_tmp / cache 分类          ✅ docs/archive/governance-history/运行时临时目录与缓存分类_20260911.md
+4. standards 解耦方案                ✅ docs/archive/governance-history/standards_视觉经验规范解耦方案_20260911.md
 5. 根目录移动                        ⏸ 待确认
 ```
 
-第 5 步的候选与建议归档位置见 `docs/仓库根目录治理清单_20260911.md` 第四节。
+第 5 步的候选与建议归档位置见 `docs/archive/governance-history/仓库根目录治理清单_20260911.md` 第四节。
 
 ---
 
