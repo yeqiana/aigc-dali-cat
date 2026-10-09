@@ -48,6 +48,7 @@ def begin(
     references: list[str] | None = None,
     batch_id: str | None = None,
     transaction_id: str | None = None,
+    production_revision_id: str | None = None,
 ) -> tuple[bool, str]:
     """Mirror ``production_ledger.py begin`` for a scheduler queue item."""
     namespace = SimpleNamespace(
@@ -64,6 +65,7 @@ def begin(
         reference=[str(x) for x in (references or [])],
         batch_id=batch_id,
         runtime_transaction_id=transaction_id,
+        production_revision_id=production_revision_id,
     )
     return _invoke(production_ledger.cmd_begin, namespace)
 
@@ -76,6 +78,7 @@ def success(
     provider_receipt: Path | None = None,
     generation_key: str | None = None,
     generation_attempt_index: int | None = None,
+    production_revision_id: str | None = None,
 ) -> tuple[bool, str]:
     """Mirror ``production_ledger.py success`` for a committed candidate."""
     namespace = SimpleNamespace(
@@ -86,6 +89,7 @@ def success(
         generation_key=str(generation_key or "").strip() or None,
         generation_attempt_index=(int(generation_attempt_index)
                                   if generation_attempt_index is not None else None),
+        production_revision_id=str(production_revision_id or "").strip() or None,
     )
     return _invoke(production_ledger.cmd_success, namespace)
 

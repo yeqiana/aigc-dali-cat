@@ -278,15 +278,15 @@ def init_queue(ep:Path,force:bool=False)->dict:
         save_queue(ep,q);return q
 
 
-def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,strict_model:bool=False,replace:bool=False)->dict:
+def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:list[dict],capture_id:str,model:str,depends_on:list[int],quality:str=DEFAULT_IMAGE_QUALITY,strict_model:bool=False,replace:bool=False,production_revision_id:str|None=None)->dict:
     with queue_transaction(ep):
         q=load_queue(ep)
         key=f"{frame:02d}"
-        active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed"}]
+        active=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and str(x.get("production_revision_id") or "")==str(production_revision_id or "") and x.get("status") in {"queued","running","generated","tech_failed"}]
         if active and not replace:
             return active[-1]
         if replace:
-            replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
+            replaceable=[x for x in q.get("items") or [] if f"{int(x.get('frame')):02d}"==key and x.get("kind")==kind and str(x.get("production_revision_id") or "")==str(production_revision_id or "") and x.get("status") in {"queued","running","generated","tech_failed","blocked","scout_repair"}]
             for x in replaceable:x["status"]="superseded"
         contract=frame_contract.provenance(ep,frame)
         if frame_contract.required(ep):
@@ -304,6 +304,7 @@ def add_item(ep:Path,*,frame:int,kind:str,prompt_file:Path,scope:str,references:
             "frame":frame,
             "kind":kind,
             "scope":scope,
+            "production_revision_id":str(production_revision_id) if production_revision_id else None,
             "status":"queued",
             "prompt_file":repo_rel(prompt_file),
             "references":references,
@@ -348,13 +349,30 @@ def import_visual_lock(ep:Path,prompt_dir:Path)->dict:
     plan_path=ep/"meta/visual-lock-plan.json"
     if not plan_path.is_file():raise ValueError("visual-lock-plan missing; run visual_lock_v21.py prepare")
     plan=read_json(plan_path)
+    revision_id=str(plan.get("production_revision_id") or "") or None
+    revision_bindings={}
+    if revision_id:
+        import production_revision_authority
+        revision_bindings={int(row["frame"]):row for row in production_revision_authority.load_frame_bindings(ep,revision_id)}
+        import prompt_package
     q=init_queue(ep)
     added=[]
     for row in plan.get("items") or []:
         frame=int(row["frame"]);prompt=prompt_dir/f"{frame:02d}.txt"
         if not prompt.is_file():raise ValueError(f"Visual Lock prompt missing: {prompt}")
+        binding=revision_bindings.get(frame) if revision_id else None
+        if revision_id:
+            if not binding or str(row.get("production_revision_id") or "")!=revision_id:
+                raise ValueError(f"Visual Lock plan is not bound to Revision frame {frame:02d}")
+            package=prompt_package.compile_frame(ep,frame,prompt,write=False)
+            if (str(package.get("package_sha256") or "").lower()!=str(binding.get("prompt_sha256") or "").lower()
+                    or str(package.get("frame_contract_sha256") or "").lower()!=str(binding.get("frame_contract_sha256") or "").lower()):
+                raise ValueError(f"Revision Prompt/Frame Contract SHA mismatch at frame {frame:02d}")
         policy=image_model_policy.for_episode(ep)
-        added.append(add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=policy["model"],quality=policy["quality"],strict_model=bool(policy.get("strict_model")),depends_on=[int(x) for x in row.get("depends_on") or []],replace=False))
+        item=add_item(ep,frame=frame,kind="original",prompt_file=prompt,scope="visual_lock",references=contract_references(ep,frame,scope="visual_lock"),capture_id=f"visual-lock-{frame:02d}",model=policy["model"],quality=policy["quality"],strict_model=bool(policy.get("strict_model")),depends_on=[int(x) for x in row.get("depends_on") or []],replace=False,production_revision_id=revision_id)
+        if revision_id and str((item.get("prompt_package") or {}).get("package_sha256") or "").lower()!=str(binding.get("prompt_sha256") or "").lower():
+            raise ValueError(f"queued Visual Lock Prompt SHA mismatch at frame {frame:02d}")
+        added.append(item)
     return {"added":[x["id"] for x in added]}
 
 

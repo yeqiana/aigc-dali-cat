@@ -49,7 +49,7 @@ def _checks_pass(row: dict, required_checks: tuple[str, ...]) -> bool:
 
 
 def binding(asset: dict, *, profile_sha256: str, story_os_version: str) -> dict:
-    return {
+    row = {
         "id": str(asset.get("id") or ""),
         "role": str(asset.get("role") or ""),
         "frame": int(asset.get("frame") or 0),
@@ -58,6 +58,10 @@ def binding(asset: dict, *, profile_sha256: str, story_os_version: str) -> dict:
         "profile_sha256": str(profile_sha256 or "").lower(),
         "story_os_version": str(story_os_version or ""),
     }
+    revision_id = str(asset.get("production_revision_id") or "").strip()
+    if revision_id:
+        row["production_revision_id"] = revision_id
+    return row
 
 
 def valid_pass(ep: Path, asset: dict, *, profile_sha256: str, story_os_version: str) -> dict | None:

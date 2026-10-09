@@ -172,7 +172,11 @@ def _execute_batch_with_image_capacity(ep:Path,contract:dict,items:list[dict],ti
             budget_kind=raw_candidate_budget.kind_for_queue_item(item);token=str(item["id"])
             budget_semantic_key=raw_candidate_budget.semantic_key_for_queue_item(item)
             ok,row=raw_candidate_budget.claim(ep,int(item["frame"]),budget_kind,reason=f"provider_batch batch={contract['batch_id']}",token=token,semantic_key=budget_semantic_key,
-                generation_context={"scope":item.get("scope"),"model_role":"image.payload","payload_model":model,
+                generation_context={"scope":item.get("scope"),"queue_item_id":item.get("id"),
+                    "production_revision_id":item.get("production_revision_id"),
+                    "frame_contract_sha256":(item.get("prompt_package") or {}).get("frame_contract_sha256"),
+                    "prompt_package_sha256":(item.get("prompt_package") or {}).get("package_sha256"),
+                    "model_role":"image.payload","payload_model":model,
                     "payload_quality":quality,"model_policy_sha256":image_model_policy.for_episode(ep).get("model_policy_sha256"),
                     "provider":route["provider"],"batch_id":contract["batch_id"]})
             if not ok:

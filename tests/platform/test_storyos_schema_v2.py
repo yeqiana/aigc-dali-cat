@@ -34,6 +34,9 @@ def test_v2_schema_contains_high_volume_json_targets():
         "TB_PRODUCTION_RECOVERY_JOURNAL",
         "TB_METRIC_SNAPSHOT",
         "TB_PROMPT_PACKAGE",
+        "TB_PRODUCTION_REVISION",
+        "TB_PRODUCTION_REVISION_HEAD",
+        "TB_PRODUCTION_REVISION_FRAME",
     ):
         assert table in ddl
 
