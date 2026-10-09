@@ -27,10 +27,24 @@
 - `_manifest.json` 记录逐文件 SHA，不包含登录 token
 - 这是**灾备副本**，不自动成为任何 Review 或 Generation Attempt 的终态 Authority；不能据此补造历史 SUCCESS
 
+## 在线 Runner 受控切换及端到端验收（2026-10-09）
+
+**新代码已实际部署，不再是待重启状态。** 先修复 `scripts/start_codex_user_runner.ps1`：启动后只接受与 **新进程 PID** 严格相等、loopback host 为 127.0.0.1、port 有效的 `endpoint.json`，不把旧端点文件误当新 Runner 启动证明。主 checkout 与安全集成分支均通过 PowerShell Parser（0 syntax errors）和 Git whitespace 检查。
+
+部署时先经带认证的现有 Runner 健康接口复核 `inflight_request_ids=[]`，确保交互用户会话 Active、正式生图进程 0、200 份执行回执备份清单存在，然后只停止属于该交互用户 Session 1 的旧 `codex_user_runner.py serve` 进程 PID **18716**；使用原 `StoryOS-Codex-User-Runner` Windows 交互登录计划任务启动新进程。新 PID **40460**，仍属于 Session 1。启动脚本已经正确验证新进程 endpoint。
+
+新进程经正式 `runner_health` 实测：`status=ok`、`codex_auth_present=true`、`interactive_user=true`、`inflight=0`，且 `features` **同时包含** `append_only_task_results` 和 `atomic_task_result_publish`。没有移动/覆盖 Codex 登录凭证。
+
+进一步通过**真实 User Runner（非模拟）**派发只读 `smoke` 任务 `codex --version`（不调用模型），新请求返回 `returncode=0`。按同一 Request ID 读回新增的持久化回执，完成 Base64/字节数/SHA256 核对；从 **200 → 201** 个真实回执，确认原 200 个文件全部仍存在且字节长度不变，新回执持久化成功。新增真实任务不属于 image Generation、Review 或 Episode Stage Authority，不能拿版本查询结果代替原生图片工具 PRIMARY 能力验收。
+
+本次切换包含两次**执行前失败、未停止原进程**的守卫：一次 PowerShell 到 Python 的引用参数解析错误，一次活跃 Runner 输出日志被锁导致无法校验日志副本。后续使用经认证的本地健康接口完成执行前检查，并保留先前复制的日志；不声称其是完整字节快照。真正的 200 份执行回执备份独立完成哈希校验。
+
+**仍需独立推进**：TEST_ONLY Phase5A Epoch 2 已准备 0/2，但原生生图工具的实际 Capability 尚无 PRIMARY 成功证据。正式《五十亩山地之后》Frame 06/24 的旧 OpenCodex `OUTCOME_UNKNOWN` 不可因本次 Runner 切换而退款或重派。用户不需要重新登录。
+
 ## 测试与上线约束
 
 隔离分支已有四槽位回归 36 + 19 + 27 + 29 = **111 passed**，其中另有 8 subtests；修复 3 条测试因 direct/bridge 假环境混淆的失败后通过。增强的 `health.features` 回归会再次执行。
 
-**关键：原生 User Runner 是已经在运行的 Python 进程，更新磁盘上的源代码不代表在线进程自动热加载。** 必须在确认 `inflight_request_ids=[]`、无真实调度生产，且确保可以恢复同一登录用户 Runner 后受控重启。重启后再次调用 `runner_health` 确认新增两个 features，才可宣布在线进程已应用防删除功能。在此之前，旧在线进程可能继续淘汰最早回执；保留上述快照并禁止高风险连续派发。
+**已按上线门禁完成受控重启和实测。** 更新磁盘源码并不自动热加载旧 Python 进程；本次先确认 `inflight_request_ids=[]`、正式图片任务为 0，再通过原交互用户计划任务重启，并从在线 `runner_health` 验证新增两个 features。随后真实 `codex --version` 只读 smoke 使回执数从 200 增至 201，历史 200 份仍在。因此**Runner 回执保留代码现已在线生效**；这与图片工具 Capability 是否可用、旧 Attempt 是否可核销是不同门禁。
 
 正式《五十亩山地之后》仍是 **2/25 帧**；Frame 06/24 的旧 OpenCodex `OUTCOME_UNKNOWN` 不能直接改终态、退款或重派。TEST_ONLY Phase5A Epoch2 虽 READY/0/2，但 native image capability 仍未实际 PASS。
