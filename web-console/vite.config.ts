@@ -28,7 +28,9 @@ export default defineConfig(() => {
             // 历史 Run 大包只随监控模块加载；Episode 证据与 Registry 分别独立。
             const normalized = id.replace(/\\/g, '/');
             if (normalized.includes('/src/data/storyosRunSnapshots.ts')) return 'historical-runs';
-            if (normalized.includes('/src/data/storyosEpisodeSnapshots.ts')) return 'historical-episodes';
+            if (normalized.includes('/src/data/storyosEpisodePart1.ts')) return 'historical-episode-a';
+            if (normalized.includes('/src/data/storyosEpisodePart2.ts')) return 'historical-episode-b';
+            if (normalized.includes('/src/data/storyosEpisodePart3.ts')) return 'historical-episode-c';
           },
         },
       },
