@@ -25,9 +25,10 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMor
   const text = (value?: string | number | boolean | null) => value === null || value === undefined || value === '' ? '未提供' : String(value);
   return <section aria-label="平台权威阶段摘要" className="rounded-[6px] border border-[var(--border-normal)] bg-[var(--bg-surface)] text-[12px] text-[var(--text-primary)]">
     <div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-[var(--border-subtle)]">
-      <div><h2 className="text-[14px] font-semibold">平台阶段证据</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来自 Runtime API，区别于下方历史工作区运行快照。只读。</p></div>
+      <div><h2 className="text-[14px] font-semibold">平台阶段证据</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来自当前配置的只读状态 API；本机文件模式是磁盘证据，不代表在线 Runtime。</p></div>
       <span className="shrink-0 text-[11px] text-[var(--text-tertiary)]">{lastSync ? '读取于 ' + lastSync : '未获取成功'}</span>
     </div>
+    {items.some(item => item.state_source === 'local_workspace_episode_state_file') && <p role="status" className="px-4 py-2 text-[var(--warning)] font-medium">本机真实作品状态文件：只读磁盘记录，不是实时调度、Worker 心跳或 MySQL 权威状态。</p>}
     {items.some(item => item.state_source === 'isolated-test') && <p role="status" className="px-4 py-2 text-[var(--warning)] font-medium">本机隔离测试数据：仅用于验证 HTTP 接口与界面，不代表任何正式作品阶段。</p>}
     {dataState === 'loading' ? <p role="status" className="px-4 py-5 text-[var(--text-secondary)]">正在读取平台阶段…</p>
     : dataState === 'offline' ? <p role="alert" className="px-4 py-5 text-[var(--warning)]">无法连接 Platform API；本区不展示历史数据冒充在线状态。</p>
@@ -45,7 +46,7 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMor
       <div className="flex flex-wrap gap-2 items-center px-4 py-3"> {visibleCount < items.length && <button type="button" onClick={() => setVisibleCount(v => v + 20)} className="px-3 py-1.5 border border-[var(--border-normal)] rounded-[5px]">展开已读取记录</button>} {hasMore && <button type="button" disabled={loadingMore} onClick={onLoadMore} className="px-3 py-1.5 border border-[var(--border-normal)] rounded-[5px] disabled:opacity-50">{loadingMore ? '读取下一页…' : '从 Platform API 加载下一页'}</button>} <span className="text-[11px] text-[var(--text-tertiary)]">当前可见 {Math.min(visibleCount,items.length)} / 已读取 {items.length} 条</span></div>
     </>}
     {selected && <div className="border-t border-[var(--border-strong)] bg-[var(--bg-elevated)] px-4 py-4 space-y-3">
-      <div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="text-[13px] font-semibold truncate">{selected.title || selected.episode_ref || selected.episode_id}</h3><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">阶段详情（权威 Runtime 只读查询）</p></div><button onClick={() => setSelected(null)} aria-label="关闭阶段详情" type="button" className="p-1.5 rounded hover:bg-[var(--bg-hover)]"><X size={16}/></button></div>
+      <div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="text-[13px] font-semibold truncate">{selected.title || selected.episode_ref || selected.episode_id}</h3><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">阶段详情（请参考实际数据源标记，未知字段不推断）</p></div><button onClick={() => setSelected(null)} aria-label="关闭阶段详情" type="button" className="p-1.5 rounded hover:bg-[var(--bg-hover)]"><X size={16}/></button></div>
       {detailState === 'loading' ? <p role="status" className="text-[var(--text-secondary)]">读取阶段详情中…</p> : detailState === 'unavailable' ? <p role="alert" className="text-[var(--warning)]">详情接口不可用；不推断执行状态。</p> : <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
         {[
           ['生产阶段', stageLabel(detail?.production_stage || selected.production_stage || 'NO_STATE')],

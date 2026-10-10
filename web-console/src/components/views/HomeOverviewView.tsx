@@ -47,6 +47,7 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
     return (blocked.length || failed.length) ? [{ ep, blocked: blocked.length, failed: failed.length }] : [];
   }), [episodes]);
   const runtimeIsFixture = runtime.some(item => item.state_source === 'isolated-test');
+  const runtimeIsLocalFile = runtime.some(item => item.state_source === 'local_workspace_episode_state_file');
   const published = episodes.filter(ep => ['PUBLISHED', 'POST_MORTEM'].includes(ep.currentStage)).length;
   const pending = episodes.length - published;
   const filtered = episodes.filter(ep => (ep.title + ' ' + ep.code + ' ' + ep.genre).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
@@ -80,6 +81,7 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
         {runtimeStatus === 'loading' ? <p role="status" className="text-[12px] text-[var(--text-secondary)]">正在读取权威阶段摘要…</p> : runtimeStatus === 'offline' ? <p role="alert" className="text-[12px] text-[var(--warning)]">Platform API 未连接。下方仅展示本地工作区快照。</p> : <>
           {runtimeStatus === 'partial' && <p role="alert" className="text-[12px] text-[var(--warning)]">接口报告部分错误，以下记录可能不完整。</p>}
           {runtimeIsFixture && <p role="status" className="text-[12px] font-medium text-[var(--warning)]">当前来自隔离内存样例 API，仅用于本地联调，不是正式生产数据。</p>}
+          {runtimeIsLocalFile && <p role="status" className="text-[12px] font-medium text-[var(--warning)]">来自本机 episodes 下真实的 episode-state.json；只读磁盘快照，不是在线 Runtime 或 MySQL 权威状态。</p>}
           <p className="text-[12px] text-[var(--text-secondary)]">已载入 {runtime.length}{runtimeTotal !== null ? ' / ' + runtimeTotal : ''} 条 · 读取时间 {fetchedAt || '未知'} · 不代表全部实时运行状态</p>
           <div className="grid md:grid-cols-2 gap-x-6">{runtime.slice(0, 4).map((item, i) => <div key={item.episode_id + ':' + i} className="flex items-center justify-between gap-3 py-2 border-b border-[var(--border-subtle)] text-[12px]"><span className="truncate" title={item.title || item.episode_ref || item.episode_id}>{item.title || item.episode_ref || item.episode_id || '未命名作品'}</span><span className="shrink-0 text-[var(--text-tertiary)]">{stageLabel(item.production_stage || 'NO_STATE')}</span></div>)}</div>
           {runtime.length === 0 && <p className="text-[12px] text-[var(--text-tertiary)]">接口已响应，但没有阶段记录。</p>}
