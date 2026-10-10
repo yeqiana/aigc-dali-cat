@@ -26,7 +26,7 @@ import {
   Maximize2,
   Eye,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle, ImageOff
 } from 'lucide-react';
 import {
   StoryRunItem,
@@ -52,6 +52,7 @@ type DetailTabKey =
   | 'runtime';
 
 type DangerousActionType = 'REGENERATE' | 'SKIP' | 'FORCE_PASS' | 'CANCEL';
+const hasVerifiedPreview=(url?:string)=>Boolean(url && !url.startsWith('data:image/svg+xml') && !url.includes('/placeholder'));
 
 export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
   run,
@@ -447,7 +448,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                         key={f.frameNo}
                         type="button"
                         onClick={() => setSelectedFrame(f)}
-                        className={`p-1.5 rounded-[4px] border text-left flex flex-col justify-between aspect-3/4 transition-colors cursor-pointer relative overflow-hidden group ${
+                        className={`p-1.5 rounded-[4px] border text-left flex flex-col justify-between ${hasVerifiedPreview(f.thumbnail)?'aspect-[4/5]':'min-h-[96px]'} transition-colors cursor-pointer relative overflow-hidden group ${
                           isSelected ? 'ring-1 ring-[#4C8DFF] border-[#4C8DFF]' : ''
                         } ${
                           isPassed
@@ -474,13 +475,13 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                         </div>
 
                         {/* 缩略图预览 */}
-                        {f.thumbnail ? (
+                        {hasVerifiedPreview(f.thumbnail) ? (
                           <img
                             src={f.thumbnail}
                             alt={f.frameCode}
                             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity"
                           />
-                        ) : null}
+                        ) : <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-[var(--text-tertiary)]"><ImageOff size={18}/><span className="text-[11px]">无原图</span></div>}
 
                         {/* 底部业务状态文本 (绝不靠颜色猜) */}
                         <div className="mt-auto z-10 bg-[#0B0D10]/90 px-1 py-0.5 rounded-[2px] text-[10px] font-mono truncate text-center font-medium">
@@ -754,19 +755,19 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">Worker 实例:</span>
-                      <span className="text-[#F1F3F5] font-semibold">{run.runtimeEnv?.workerId || 'worker-node-01-eu'}</span>
+                      <span className="text-[#F1F3F5] font-semibold">{run.runtimeEnv?.workerId || '未提供'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">GPU 硬件规格:</span>
-                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.gpuNode || 'NVIDIA A100-SXM4-80GB'}</span>
+                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.gpuNode || '未提供'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">心跳检测间隔:</span>
-                      <span className="text-[#3FB950] font-semibold">{run.runtimeEnv?.heartbeatInterval || '5000 ms'}</span>
+                      <span className="text-[#3FB950] font-semibold">{run.runtimeEnv?.heartbeatInterval || '未提供'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">并发池插槽:</span>
-                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.activeConcurrency || '4 Slots'}</span>
+                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.activeConcurrency || '未提供'}</span>
                     </div>
                   </div>
                 </div>
@@ -779,15 +780,15 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">模型引擎:</span>
-                      <span className="text-[#F1F3F5] font-semibold">{run.runtimeEnv?.modelProvider || 'gpt-image-2.5-flare'}</span>
+                      <span className="text-[#F1F3F5] font-semibold">{run.runtimeEnv?.modelProvider || '未提供'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">默认画幅比例:</span>
-                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.aspectRatio || '4:5 竖版'}</span>
+                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.aspectRatio || '未提供'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#737D8A]">原生输出分辨率:</span>
-                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.imageResolution || '1080 × 1350 px'}</span>
+                      <span className="text-[#A7AFBA]">{run.runtimeEnv?.imageResolution || '未提供'}</span>
                     </div>
                   </div>
                 </div>
@@ -837,7 +838,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               {/* ===================== [上半部分：人看的信息] ===================== */}
               <div className="space-y-3">
                 {/* 最终大图展示 */}
-                {selectedFrame.thumbnail ? (
+                {hasVerifiedPreview(selectedFrame.thumbnail) ? (
                   <div className="rounded-[4px] overflow-hidden border border-[#232830] relative group aspect-[4/5] bg-[#0B0D10]">
                     <img
                       src={selectedFrame.thumbnail}
@@ -858,10 +859,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   </div>
                 ) : (
                   <div className="rounded-[4px] border border-dashed border-[#2D333D] aspect-[4/5] bg-[#0F1115] flex flex-col items-center justify-center text-[#737D8A] text-xs p-4 text-center">
-                    <Flame className="w-7 h-7 text-[#D28B26] mb-2 opacity-50" />
-                    <span className="text-[#A7AFBA]">暂无最终渲染图</span>
+                    <ImageOff className="w-6 h-6 text-[var(--text-tertiary)] mb-2" />
+                    <span className="text-[var(--text-secondary)]">未附带可验证的原图</span>
                     <span className="text-[10px] text-[#505864] mt-1">
-                      {selectedFrame.status === 'RETRYING' ? '自动重试中，请稍候...' : '任务排队调度中'}
+                      历史快照中仅保存帧状态，无法验证实时生成进度
                     </span>
                   </div>
                 )}
@@ -881,7 +882,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <div className="flex justify-between">
                     <span className="text-[#737D8A]">耗时 (Duration):</span>
-                    <span className="text-[#F1F3F5] font-medium tabular-nums">{selectedFrame.duration || '33s'}</span>
+                    <span className="text-[#F1F3F5] font-medium tabular-nums">{selectedFrame.duration || '未提供'}</span>
                   </div>
 
                   <div className="flex justify-between">
@@ -915,12 +916,12 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                 <div className="bg-[#0F1115] p-3 rounded-[4px] border border-[#232830] space-y-2">
                   <div className="flex justify-between">
                     <span className="text-[#737D8A]">Provider:</span>
-                    <span className="text-[#F1F3F5] font-mono">{selectedFrame.provider || 'gpt-image-2.5-flare'}</span>
+                    <span className="text-[#F1F3F5] font-mono">{selectedFrame.provider || '未提供'}</span>
                   </div>
 
                   <div className="flex justify-between">
                     <span className="text-[#737D8A]">Model:</span>
-                    <span className="text-[#F1F3F5] font-mono">{selectedFrame.modelName || 'flux-cinematic-pro'}</span>
+                    <span className="text-[#F1F3F5] font-mono">{selectedFrame.modelName || '未提供'}</span>
                   </div>
 
                   {selectedFrame.artifactName && (
@@ -932,7 +933,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                         className="text-[#3FB950] hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <span>{selectedFrame.artifactName}</span>
-                        <span className="text-[#737D8A]">({selectedFrame.artifactSize || '4.2 MB'})</span>
+                        <span className="text-[#737D8A]">({selectedFrame.artifactSize || '大小未知'})</span>
                         <ChevronRight className="w-3 h-3 text-[#737D8A]" />
                       </button>
                     </div>
