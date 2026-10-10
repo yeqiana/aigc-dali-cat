@@ -37,8 +37,10 @@ class WorktreeAuditContractTests(unittest.TestCase):
         self.assertNotIn("branch", entries[1])
 
     def test_final_porcelain_record_without_trailing_blank_line(self):
-        raw = "worktree /repo/.worktrees/wt\\nHEAD " + "a" * 40 + "\\nbranch refs/heads/feature\\n"
-        self.assertEqual(len(parse_worktrees(raw)), 1)
+        raw = "worktree /repo/.worktrees/wt\nHEAD " + "a" * 40 + "\nbranch refs/heads/feature"
+        rows = parse_worktrees(raw)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["branch"], "feature")
 
     def test_primary_path_normalization_cannot_bypass_protection(self):
         import os
