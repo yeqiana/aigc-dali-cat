@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import time
 from pathlib import Path
 
@@ -340,7 +341,8 @@ def _current_y_ratios_for_chunk(ep: Path) -> dict[str, float | None]:
         if not isinstance(row, dict):
             continue
         try:
-            ratios[str(key).zfill(2)] = float(row.get("y_ratio"))
+            value = float(row.get("y_ratio"))
+            ratios[str(key).zfill(2)] = value if math.isfinite(value) else None
         except (ValueError, TypeError):
             ratios[str(key).zfill(2)] = None
     return ratios
@@ -401,7 +403,7 @@ def _record_chunk_results(
                 current_ratio = ratio_snapshot.get(key)
             else:
                 current_ratio = subtitle_layout.current_frame_y_ratio(ep, key)
-            if current_ratio is None or abs(current_ratio - ratio) > 0.005:
+            if current_ratio is None or not math.isfinite(current_ratio) or abs(current_ratio - ratio) > 0.005:
                 repairs[key] = {
                     "y_ratio": ratio,
                     "reason": "actual-pixel subtitle obstruction: " + reason[:420],
