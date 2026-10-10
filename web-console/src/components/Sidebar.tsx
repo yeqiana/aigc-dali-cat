@@ -90,20 +90,23 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           <button type="button" onClick={onOpenNotifications} className="relative p-1.5 rounded-[4px] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]" title="通知" aria-label="通知"><Bell size={16}/>{unreadCount > 0 && <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#58A6FF]" />}</button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-4 space-y-5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-2.5 py-3 space-y-4">
         <div className="px-1">
           <button type="button" onClick={() => openModal('story')} className="os-action os-action-primary w-full !h-9 text-[13px] font-semibold"><Plus size={16}/> 新建故事</button>
         </div>
-        <nav aria-label="主要页面" className="space-y-0.5"><p className="px-3 pb-2 os-eyebrow">工作空间</p>
-          {nav.map(item => {
+        <nav aria-label="主要页面" className="space-y-1"><p className="px-3 pb-2 os-eyebrow">内容制作</p>
+          {nav.slice(0,3).map(item => {
             const Icon = item.icon;
             return <button key={item.id} type="button" onClick={() => onSelectTab(item.id)} aria-current={currentTab === item.id ? 'page' : undefined}
               className={`relative w-full h-9 flex items-center gap-3 px-3 rounded-[6px] text-left transition-colors ${currentTab === item.id ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-semibold shadow-[inset_2px_0_0_var(--info)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}>
               <Icon size={16} aria-hidden="true"/><span>{item.label}</span>
             </button>;
           })}
+          <div className="mx-2 my-3 border-t border-[var(--border-subtle)]" />
+          <p className="px-3 pb-2 os-eyebrow">运行与管理</p>
+          {nav.slice(3).map(item => {const Icon=item.icon;return <button key={item.id} type="button" onClick={()=>onSelectTab(item.id)} aria-current={currentTab===item.id?'page':undefined} className={`relative flex h-9 w-full items-center gap-3 rounded-[6px] px-3 text-left transition-colors ${currentTab===item.id?'bg-[var(--bg-selected)] font-semibold text-[var(--text-primary)] shadow-[inset_2px_0_0_var(--info)]':'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]'}`}><Icon size={16} aria-hidden="true"/><span>{item.label}</span></button>})}
         </nav>
-        <section aria-label="项目列表" className="pt-3 border-t border-[var(--border-subtle)]">
+        <section aria-label="项目列表" className="pt-2 border-t border-[var(--border-subtle)]">
           <div className="flex items-center justify-between px-2 pb-2">
             <button type="button" onClick={() => setProjectsOpen(!projectsOpen)} className="flex items-center gap-1 text-[11px] font-semibold tracking-wide text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
               {projectsOpen ? <ChevronDown size={13}/> : <ChevronRight size={13}/>} 项目空间 <span className="font-normal">{projects.length}</span>
