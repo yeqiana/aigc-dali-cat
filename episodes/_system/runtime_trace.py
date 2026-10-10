@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import argparse, datetime as dt, json, threading, time, uuid
+from functools import lru_cache
 from collections import Counter, defaultdict
 from pathlib import Path
 import storyos_config
@@ -17,7 +18,10 @@ class TraceContextUnavailable(RuntimeError):
     """拒绝写入没有 trace_id 的 Span 事件，避免产生不可关联事实。"""
 
 def now():return dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
+@lru_cache(maxsize=1)
 def _cfg():
+    # This process already snapshots storyos.yaml at module import; avoid
+    # re-reading/parsing the trace policy for every nested event attribute.
     rel=storyos_config.get_path(_CONFIG,"agent_runtime.trace.config")
     data=json.loads((ROOT/str(rel)).read_text(encoding="utf-8-sig"))
     if not isinstance(data,dict):raise ValueError("trace config root must be object")

@@ -108,9 +108,10 @@ def _write(ep: Path, data: dict) -> None:
 
 def _review_frame_records(ep: Path) -> tuple[list[dict], dict]:
     """Use final subtitled publish pixels when the canonical subtitle layout is required."""
-    base_rows = base.frame_records(ep, require_files=False)
     if not subtitle_layout.layout_required(ep):
+        # No separate metadata scan is needed when published pixels are already approved.
         return base.frame_records(ep, require_files=True), {"mode": "approved_base"}
+    base_rows = base.frame_records(ep, require_files=False)
     report_path = ep / subtitle_layout.REPORT_REL
     if not report_path.is_file():
         raise ValueError("subtitle layout audit missing before final caption/image review")
@@ -192,7 +193,10 @@ def dirty_frames(ep: Path) -> tuple[list[dict], dict, dict[str, str], dict[str, 
             dirty.append(row)
     return dirty, current, image_sha, caption_sha, texts, source_meta
 
-def _prompt(ep: Path, rows: list[dict], texts: dict[str, str], out: Path) -> str:
+def _prompt(ep: Path, rows: list[dict], texts: dict[str, str], out: Path, *, absolute_output: bool = False) -> str:
+    # Host Review uses repository-relative output paths; the episode-scoped
+    # native Codex subprocess needs an absolute target instead.
+    output_ref = str(out.resolve()) if absolute_output else out.relative_to(ROOT).as_posix()
     mapping = "\n".join(
         f"- frame {r['frame']}: final_publish_image={r['path_rel']} | caption={json.dumps(texts[r['frame']], ensure_ascii=False)}"
         for r in rows
@@ -206,6 +210,7 @@ For each frame judge two things:
 2. subtitle_unobstructed: rendered text does not cover a face, anomaly evidence, hand/action, key prop, native text, or causal clue. Subtitle geometry, line-count, and render integrity are already checked locally. Treat those checks as passed; do not re-evaluate placement aesthetics or geometry. Judge only semantic obstruction visible in the pixels.
 3. If and only if subtitle_unobstructed=false while supported=true, recommend ONE safer vertical baseline using suggested_y_ratio from exactly {list(subtitle_layout.PIXEL_SAFE_Y_RATIOS)}. Choose from actual pixel evidence, not aesthetics. If none of those locations is clearly safer, return null. Also give obstruction_reason naming what is covered.
 Do not re-review overall story quality, character continuity, or visual style. Empty captions automatically pass both checks.
+This is a frozen, narrowly scoped pixel-review request. Use ONLY the attached images, the frame-to-caption mapping, and the local pre-scan hints below. Do not inspect the repository, AGENTS.md, SKILL.md, project memory, other episodes, or any unrelated files. Do not run shell tools or generate new assets; only return the requested JSON decision.
 Mappings:
 {mapping}
 
@@ -213,7 +218,7 @@ Local pre-scan (advisory only, never authoritative):
 {ocr_hint or "none"}
 {face_hint or "none"}
 
-Write ONLY JSON to {out.relative_to(ROOT).as_posix()}:
+Write ONLY JSON to {output_ref}:
 {{"frames":[{{"frame":"01","supported":true,"subtitle_unobstructed":true,"suggested_y_ratio":null,"obstruction_reason":"","notes":"specific pixel evidence"}}],"summary":{{"passed":true}}}}
 Return one row for every attached frame. summary.passed=false if any supported=false or subtitle_unobstructed=false.
 """
@@ -259,13 +264,13 @@ def _run_chunk(ep: Path, rows: list[dict], texts: dict[str, str], codex_raw: str
         "exec", "--skip-git-repo-check", "--ephemeral",
         "-m", runtime_router.vision_review_model(),
         "-c", f'model_reasoning_effort="{runtime_router.vision_review_effort("fast")}"',
-        "-s", codex_critic_runner.default_sandbox(), "-C", str(ROOT), "--json",
+        "-s", codex_critic_runner.default_sandbox(), "-C", str(ep), "--json",
     ]
     for row in rows:
         cmd += ["-i", str(row["path"])]
     cmd += ["-"]
     started = time.perf_counter()
-    cp = runtime_command.run_argv(cmd, cwd=ROOT, stdin_text=_prompt(ep, rows, texts, out), timeout=timeout, capture=True)
+    cp = runtime_command.run_argv(cmd, cwd=ep, stdin_text=_prompt(ep, rows, texts, out, absolute_output=True), timeout=timeout, capture=True)
     vision_elapsed = time.perf_counter() - started
     log = ep / "meta" / f"caption-image-audit-v2-{suffix}.jsonl"
     log.write_text(cp.stdout or "", encoding="utf-8", newline="\n")
@@ -379,7 +384,9 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
     if review_meta.get("mode") == "final_publish_with_subtitle" and review_meta.get("layout_current") is not True:
         details = "; ".join((review_meta.get("layout_errors") or [])[:5])
         raise ValueError(f"subtitle layout audit is stale; rerender before caption/image review: {details}")
-    rows_by_key = {r["frame"]: r for r in base.frame_records(ep, require_files=False)}
+    # Reuse the SHA index already returned by dirty_frames: avoid a second
+    # full authority/file scan for every caption review or resume.
+    frame_keys = frozenset(image_sha)
     evidence = current if isinstance(current, dict) else {}
     evidence.update({
         "schema_version": SCHEMA,
@@ -388,7 +395,7 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
     })
     dest = evidence.setdefault("frames", {})
     reviewed = 0
-    reused = len(rows_by_key) - len(dirty)
+    reused = len(frame_keys) - len(dirty)
     empty_caption_count = 0
     vision_call_count = 0
     vision_elapsed_seconds = 0.0
@@ -512,12 +519,12 @@ def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -
             source_meta = {**repaired_source_meta, "review_image": repaired_meta}
             auto_repaired = repair_keys
 
-        passed = all((dest.get(k) or {}).get("passed") is True for k in rows_by_key)
+        passed = all((dest.get(k) or {}).get("passed") is True for k in frame_keys)
         evidence["summary"] = {
             "passed": passed,
             "reviewed_dirty_frames": reviewed,
             "reused_frames": reused,
-            "total_frames": len(rows_by_key),
+            "total_frames": len(frame_keys),
             "auto_repaired_frames": auto_repaired,
             "auto_repair_count": len(auto_repaired),
             "local_reviewed_frames": sorted(local_cleared),
