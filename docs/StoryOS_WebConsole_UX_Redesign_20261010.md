@@ -173,3 +173,22 @@ S1 负责 App、Sidebar、Home；S2 负责 ProductionMonitorView / RunDetail；S
 - 正式 API 环境需要提供安全、明确的验证连接信息后才能执行生产读端 E2E；后端健康不可达不能宣称上线。
 - 浏览器资源失败注入、选中两个不同 Episode 后的快速切换、异常状态人工审核路径需要继续扩充覆盖。
 - 当前仍有较大的历史 Run 模块，建议根据真实工作流需求按运行记录异步分页，而非一次加载完整静态快照。
+
+## 第八轮：本机启动与四槽闭环（2026-10-10）
+
+### 四槽交付
+- 本轮基线 55164f21。四隔离工作树中文提交：ab17afaa（本机只读测试启动）、30e38c01（历史 Run 单记录按需加载）、2815333d（隔离数据源显式标记）、6c84a515（真正运行中的 Vite/Chrome 端到端验收），无冲突合并到独立集成分支。
+- 本地一键启动器 web-console/scripts/launch-local-console.mjs 管理 127.0.0.1:3100 Vite 和 127.0.0.1:18080 Python Fixture 两个子服务；服务只监听 loopback。VITE_PLATFORM_API_URL 在子进程环境中临时配置，绝不覆写本机生产运行配置。
+- Fixture 仅使用 RuntimeStatusApiController + MemoryStatuses，不调用 build_default_controllers，不连接 MySQL/Redis，不调用图片模型。测试数据 source=isolated-test；页面底部、工作台和权威阶段面板明确写明隔离测试，不应混作正式生产数据。
+- 11 条历史 Run 静态大包拆成索引 + 11 个动态加载的完整详情模块；只有点击 Run 详情才加载一个模块。测试证明 11/11 Run 字段与冻结 Git 基线一致。
+- Chrome 对运行中的本地 Vite 页面执行：首页打开、经代理调用隔离 API、确认测试模式标识、打开生产监控并点击历史 Run 详情只加载一个模块。1366/1440px 截图在忽略目录 .storyos-tmp/ui-qa/。
+
+### 本机使用
+- 在 web-console 目录执行 npm run dev:local:fixture；打开 http://127.0.0.1:3100/；Ctrl+C 正常关闭。需要 Chrome、Node 和 Python312，可用 STORYOS_PYTHON 指定替代 Python 路径。
+- 验证命令：npm run lint；npm run build -- --base=./；npm run test:runs；npm run test:bundles；npm run test:local-browser（此项要求已启动本地服务）。
+
+### 真实环境边界
+- 真实生产 Platform API 的 127.0.0.1:8080 仍没有核准的健康可达证据；真实 MySQL/Redis/正式 Runtime 的端到端联调未完成。当前启用的是明确标记的 18080 内存 Fixture，而非正式生产后端。
+- 要读取真实生产数据，应先核准环境变量的数据库目标、访问权限和只读安全边界；绝不因能本地启动前端就自动启动带生产配置的 Runtime 或生图任务。
+
+**最终集成验收（已执行）：** TypeScript/Vite、Run 11/11 等价、Episode 11/11 等价、两类独立 Bundle 检查、Platform API 合约、监控门禁、Workflow 分页、五页面离线浏览器 5/5、隔离 Python HTTP 浏览器 2/2、1366px 基础可访问性 3/3、Episode 懒加载、监控 100→101 分页、受限只读探测、本机实际 Vite/Chrome 导航与 Run 单条模块加载均通过。1366/1440px 本机截图已生成并人工检查；静态/接口测试通过不等于正式生产 API 已可用。

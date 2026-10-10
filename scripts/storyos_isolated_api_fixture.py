@@ -2,6 +2,7 @@
 from __future__ import annotations
 import sys
 from pathlib import Path
+import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -37,9 +38,14 @@ class MemoryStatuses:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="仅内存的本地测试 API，禁止生产数据库访问")
+    parser.add_argument("--port", type=int, default=0)
+    args = parser.parse_args()
+    if not 0 <= args.port <= 65535:
+        parser.error("port must be in 0..65535")
     server = build_http_server(
         {"RuntimeStatusApiController": RuntimeStatusApiController(MemoryStatuses())},
-        host="127.0.0.1", port=0,
+        host="127.0.0.1", port=args.port,
     )
     print("READY", server.server_address[1], flush=True)
     try:

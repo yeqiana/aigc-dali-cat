@@ -329,6 +329,11 @@ export default function App() {
 
   return (
     <div id="storyos-workspace-root" className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased select-text">
+      {import.meta.env.VITE_STORYOS_FIXTURE_MODE === 'true' && (
+        <div role="status" data-testid="local-fixture-banner" className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none border border-[var(--warning)] bg-[var(--bg-elevated)] px-4 py-2 rounded-[5px] shadow-lg text-[12px] text-[var(--text-primary)]">
+          本机隔离测试模式 · Platform API 仅使用内存样例数据 · 非真实生产状态
+        </div>
+      )}
       {/* 1. 纯黑底白字极简左侧边栏 */}
       <Sidebar
         currentTab={currentTab}

@@ -30,7 +30,7 @@ export default defineConfig(() => {
           manualChunks(id: string) {
             // 历史 Run 大包只随监控模块加载；Episode 证据与 Registry 分别独立。
             const normalized = id.replace(/\\/g, '/');
-            if (normalized.includes('/src/data/storyosRunSnapshots.ts')) return 'historical-runs';
+
           },
         },
       },
