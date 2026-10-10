@@ -68,6 +68,10 @@ def inspect(ep: Path) -> dict:
         "status": "NEEDS_EVIDENCE",
         "contract_status": contract.get("status"),
         "model_success_receipt_count": successful,
+        # A SUCCESS receipt here is only a historic count, not a validated
+        # same-input reuse permit. Its input/source revision and paid-run
+        # identity still require the canonical Worker/Authority validation.
+        "model_success_receipt_reuse_verified": False,
         "model_success_is_story_lock": False,
         "model_generation_required": None,
         "review_path_present": bool(review),

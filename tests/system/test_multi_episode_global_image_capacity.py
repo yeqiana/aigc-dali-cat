@@ -50,9 +50,32 @@ def _ready(base: Path, tag: str, process: subprocess.Popen) -> None:
         if (base / (tag+".ready")).is_file():
             return
         if process.poll() is not None:
-            raise AssertionError(f"worker {tag} exited early ({process.returncode})")
+            # The old test discarded stderr, hiding the reason why a Windows
+            # worker exited before acquiring its machine-global image slots.
+            # Read only after exit, so a crashed child cannot block CI.
+            diagnostic = (process.stderr.read(8192).decode("utf-8", errors="replace")
+                          if process.stderr else "")
+            diagnostic = diagnostic[-1800:]
+            raise AssertionError(
+                f"worker {tag} exited early ({process.returncode}); "
+                f"child_stderr_tail={diagnostic!r}"
+            )
         time.sleep(.03)
     raise AssertionError("worker never claimed global capacity")
+
+
+def test_failed_worker_startup_includes_child_lock_diagnostic(tmp_path):
+    from io import BytesIO
+
+    class CrashedWorker:
+        returncode = 1
+        stderr = BytesIO(b"GLOBAL_IMAGE_CAPACITY_LOCK_FAILED")
+
+        def poll(self):
+            return 1
+
+    with pytest.raises(AssertionError, match="GLOBAL_IMAGE_CAPACITY_LOCK_FAILED"):
+        _ready(tmp_path, "failed", CrashedWorker())
 
 
 def test_two_episodes_share_one_five_image_machine_cap(tmp_path):
@@ -80,6 +103,51 @@ def test_two_episodes_share_one_five_image_machine_cap(tmp_path):
                     proc.wait(timeout=5)
             if proc.stderr:
                 proc.stderr.close()
+
+
+def test_fresh_slot_files_need_no_prelock_byte_initialization(tmp_path):
+    shared = tmp_path / "brand-new-slot-root"
+    with capacity.image_permits(capacity.CAPACITY, shared_dir=shared, wait_seconds=1):
+        files = sorted(shared.glob("slot-*.lock"))
+        assert len(files) == capacity.CAPACITY
+        assert all(path.stat().st_size == 0 for path in files)
+    # An empty locked file is also valid after a crash/restart and must not
+    # be truncated, replaced, or unlinked between owners.
+    with capacity.image_permits(capacity.CAPACITY, shared_dir=shared, wait_seconds=1):
+        assert all(path.stat().st_size == 0 for path in files)
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows byte-range initialization race")
+def test_windows_concurrent_first_open_on_fresh_lock_files(tmp_path):
+    # Reproduce the original hazardous sequence repeatedly: two independent
+    # processes race to create the same five previously nonexistent slot files.
+    # Both must acquire their disjoint 2+3 slots without early process death.
+    for index in range(8):
+        base = tmp_path / f"fresh-{index}"
+        base.mkdir()
+        a = _child(base, "episode_a", 2)
+        b = _child(base, "episode_b", 3)
+        try:
+            _ready(base, "episode_a", a)
+            _ready(base, "episode_b", b)
+            with pytest.raises(capacity.GlobalImageCapacityError,
+                               match="GLOBAL_IMAGE_CAPACITY_BUSY"):
+                with capacity.image_permits(
+                    1, shared_dir=base / "slots", wait_seconds=0.05
+                ):
+                    pytest.fail("a sixth slot was admitted")
+        finally:
+            for tag, proc in (("episode_a", a), ("episode_b", b)):
+                (base / (tag + ".release")).touch()
+                if proc.poll() is None:
+                    try:
+                        proc.wait(timeout=8)
+                    except subprocess.TimeoutExpired:
+                        proc.kill()
+                        proc.wait(timeout=5)
+                if proc.stderr:
+                    proc.stderr.close()
+        assert a.returncode == b.returncode == 0
 
 
 def test_crashed_episode_releases_machine_slots_without_stale_lock_deletion(tmp_path):
