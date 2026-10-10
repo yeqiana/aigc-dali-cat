@@ -43,6 +43,8 @@ def snapshot(episode: Path) -> dict:
     if not episode.is_dir():
         raise ValueError("Episode directory does not exist")
     durations: list[float] = []
+    durations_by_role: dict[str, list[float]] = {}
+    durations_by_outcome: dict[str, list[float]] = {}
     input_tokens = 0
     output_tokens = 0
     observed_input = 0
@@ -61,11 +63,16 @@ def snapshot(episode: Path) -> dict:
             invalid += 1
             continue
         valid += 1
-        roles[str(row.get("model_role") or "UNKNOWN")] += 1
-        statuses[str(row.get("status") or "UNKNOWN")] += 1
+        role = str(row.get("model_role") or "UNKNOWN")
+        status = str(row.get("status") or "UNKNOWN")
+        roles[role] += 1
+        statuses[status] += 1
         duration = row.get("duration_ms")
         if isinstance(duration, (int, float)) and not isinstance(duration, bool) and math.isfinite(duration) and duration >= 0:
-            durations.append(float(duration))
+            measured = float(duration)
+            durations.append(measured)
+            durations_by_role.setdefault(role, []).append(measured)
+            durations_by_outcome.setdefault(status, []).append(measured)
         incoming, outgoing = _usage(row)
         if incoming is not None:
             input_tokens += incoming
@@ -103,6 +110,16 @@ def snapshot(episode: Path) -> dict:
         "model_duration_ms_p50": percentile(durations, 0.5),
         "model_duration_ms_p95": percentile(durations, 0.95),
         "model_duration_ms_sum": round(sum(durations), 3) if durations else None,
+        "model_duration_ms_by_role": {
+            name: {"count": len(values), "p50": percentile(values, .5),
+                   "p95": percentile(values, .95), "sum": round(sum(values), 3)}
+            for name, values in sorted(durations_by_role.items())
+        },
+        "model_duration_ms_by_outcome": {
+            name: {"count": len(values), "p50": percentile(values, .5),
+                   "p95": percentile(values, .95)}
+            for name, values in sorted(durations_by_outcome.items())
+        },
         "input_tokens_observed_receipts": observed_input,
         "input_tokens_observed_sum": input_tokens if observed_input else None,
         "output_tokens_observed_receipts": observed_output,
