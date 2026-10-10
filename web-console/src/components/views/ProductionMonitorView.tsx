@@ -32,6 +32,7 @@ import { REAL_STORY_RUNS } from '../../data/storyosRunSnapshots';
 import { STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosManifestSnapshot';
 import { StoryRunDetailView } from './StoryRunDetailView';
 import { RuntimeAuthorityPanel } from './RuntimeAuthorityPanel';
+import { ExclusiveReadGate } from '../../api/exclusiveReadGate';
 import type { RuntimeStatusSummary } from '../../api/platformApi';
 
 interface ProductionMonitorViewProps {
@@ -58,8 +59,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [apiState, setApiState] = useState<'loading' | 'ok' | 'partial' | 'offline'>('loading');
   const [lastSync, setLastSync] = useState<string | null>(null);
-  const requestGeneration = useRef(0);
-  const requestInFlight = useRef(false);
+  const requestGate = useRef(new ExclusiveReadGate());
   const [apiWarning, setApiWarning] = useState<string | null>(null);
 
   // 选中的 Story Run 详情视图
@@ -68,16 +68,15 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   // 从真实平台接口同步 canonical stage 投影；丰富的帧/证据详情继续来自工作区生成投影。
   const loadLatestStatuses = async (isManual = false) => {
     // 同一页面只允许一个阶段查询在途；旧请求不能覆盖刷新后的数据。
-    if (requestInFlight.current) {
+    const generation = requestGate.current.begin();
+    if (generation === null) {
       if (isManual) onShowToast('正在读取阶段摘要，请稍候');
       return;
     }
-    requestInFlight.current = true;
-    const generation = ++requestGeneration.current;
     try {
       setIsRefreshing(true);
       const data = await platformApi.runtimeStatuses(100, 0);
-      if (generation !== requestGeneration.current) return;
+      if (!requestGate.current.isCurrent(generation)) return;
       setApiState(data.errors?.length ? 'partial' : 'ok');
       setApiWarning(data.errors?.length ? 'Platform API 返回部分错误，请勿据此推断未返回的故事状态。' : null);
       setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
@@ -87,17 +86,14 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
     } catch (err) {
-      if (generation !== requestGeneration.current) return;
+      if (!requestGate.current.isCurrent(generation)) return;
       console.error('Failed to fetch runtime statuses:', err);
       setApiState('offline');
       setRuntimeRows([]);
       setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
       if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
-      if (generation === requestGeneration.current) {
-        requestInFlight.current = false;
-        setIsRefreshing(false);
-      }
+      if (requestGate.current.finish(generation)) setIsRefreshing(false);
     }
   };
 
@@ -105,8 +101,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     loadLatestStatuses();
     return () => {
       // 组件卸载/StrictMode 重新挂载时废弃当前结果，不更新已卸载页面。
-      requestGeneration.current += 1;
-      requestInFlight.current = false;
+      requestGate.current.invalidate();
     };
   }, []);
 
