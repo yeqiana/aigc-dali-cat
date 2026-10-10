@@ -108,7 +108,10 @@ def _proofs(status="ATTEMPT_HISTORY_READ_ONLY", driver="NEVER_STARTED",
                        "source": "mysql"}
         if script.endswith("storyos_creative_recovery_readonly.py"):
             return 0, {"status": "REVIEW_EVIDENCE_NOT_YET_CREATED",
+                       "contract_status": "DRAFT",
+                       "review_path_present": False,
                        "model_success_receipt_count": 0,
+                       "model_success_receipt_reuse_verified": False,
                        "model_generation_required": None}
         if script.endswith("storyos_attempt_readonly_preflight.py"):
             return (0 if status == "ATTEMPT_HISTORY_READ_ONLY" else 2), {
@@ -136,6 +139,18 @@ def test_preflight_new_idea_can_start_without_existing_episode(monkeypatch):
     assert result["codex"]["model_client_version_ok"] is True
     assert result["codex"]["model_entitlement_verified"] is False
     assert result["model_calls"] == result["sql_writes"] == 0
+
+
+def test_native_preflight_exposes_unlocked_story_without_reuse_authority(monkeypatch):
+    monkeypatch.setattr(native, "_probe", _proofs())
+    result = native.preflight(_test_env(), episode=native.ROOT / "episodes")
+    recovery = result["creative_story_recovery"]
+    assert recovery["contract_status"] == "DRAFT"
+    assert recovery["review_path_present"] is False
+    assert recovery["model_success_receipt_reuse_verified"] is False
+    assert recovery["model_success_is_story_lock"] is False
+    assert recovery["model_generation_required"] is None
+    assert result["production_authorization"] is False
 
 
 def test_preflight_blocks_incompatible_cli_before_paid_production(monkeypatch):
