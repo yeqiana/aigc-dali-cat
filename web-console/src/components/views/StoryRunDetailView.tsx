@@ -486,14 +486,13 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                           <img
                             src={framePreview}
                             alt={hasVerifiedPreview(f.thumbnail)?f.frameCode:'本地已批准 Frame '+f.frameNo}
-                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity"
+                            className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                           />
                         ) : <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-[var(--text-tertiary)]"><ImageOff size={18}/><span className="text-[11px]">无原图</span></div>}
 
-                        {framePreview && !hasVerifiedPreview(f.thumbnail) && <span className="absolute left-1.5 bottom-7 z-10 rounded bg-black/70 px-1 py-0.5 text-[10px] text-white">已批准素材</span>}
                         {/* 底部业务状态文本 (绝不靠颜色猜) */}
                         <div className="mt-auto z-10 bg-[#0B0D10]/90 px-1 py-0.5 rounded-[2px] text-[10px] font-mono truncate text-center font-medium">
-                          {getFrameBottomLabel(f)}
+                          {framePreview && !hasVerifiedPreview(f.thumbnail) ? '已批准素材' : getFrameBottomLabel(f)}
                         </div>
                       </button>
                     );
