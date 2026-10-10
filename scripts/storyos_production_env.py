@@ -15,7 +15,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-from phase9_runtime_launcher import load_runtime_env_file
+from phase9_runtime_launcher import RUNTIME_ENV_KEYS, load_runtime_env_file
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_ENV = ROOT / ".storyos/runtime-launcher/runtime.env"
@@ -31,7 +31,20 @@ def prepare_command(path: str, args: list[str], *, environ: dict[str, str] | Non
         raise ValueError("STORYOS_RUNTIME_SCRIPT_OUTSIDE_ALLOWED_ROOTS")
     if not runtime_env.is_file():
         raise ValueError("STORYOS_RUNTIME_ENV_MISSING_FAIL_CLOSED")
-    env, _loaded_keys = load_runtime_env_file(runtime_env, dict(os.environ if environ is None else environ))
+    source = dict(os.environ if environ is None else environ)
+    if str(source.get("STORY_OS_PRODUCTION_MODE") or "").strip().upper() == "CODEX_MANAGED":
+        # The interactive-user Codex Runner is a long-lived process with its
+        # own environment. Its inherited STORYOS_* database variables may
+        # point to a *different*, older MySQL store than the canonical ignored
+        # runtime.env used by the foreground production owner.
+        # Native formal production must always load one authoritative DB
+        # identity; never let a stale Runner login environment override it.
+        for key in RUNTIME_ENV_KEYS:
+            source.pop(key, None)
+        for key in ("OPENAI_BASE_URL", "OPENAI_API_BASE", "CODEX_BASE_URL",
+                    "STORY_OS_OPENCODEX_URL", "OPENAI_API_KEY"):
+            source.pop(key, None)
+    env, _loaded_keys = load_runtime_env_file(runtime_env, source)
     required = ("STORYOS_MYSQL_HOST", "STORYOS_MYSQL_PORT", "STORYOS_MYSQL_DB")
     if any(not env.get(key) for key in required):
         raise ValueError("STORYOS_RUNTIME_DB_CONFIG_INCOMPLETE")
