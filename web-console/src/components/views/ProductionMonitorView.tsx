@@ -30,6 +30,8 @@ import { StoryRunItem, FrameDetailItem, StoryRunStatus, StoryRunStage } from '..
 import { platformApi } from '../../api/platformApi';
 import { REAL_STORY_RUNS, STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosRealData';
 import { StoryRunDetailView } from './StoryRunDetailView';
+import { RuntimeAuthorityPanel } from './RuntimeAuthorityPanel';
+import type { RuntimeStatusSummary } from '../../api/platformApi';
 
 interface ProductionMonitorViewProps {
   onSelectStoryRun?: (run: StoryRunItem) => void;
@@ -42,6 +44,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
 }) => {
   // 权威生产运行数据状态 (Zero Mock)
   const [runs, setRuns] = useState<StoryRunItem[]>(REAL_STORY_RUNS);
+  const [runtimeRows, setRuntimeRows] = useState<RuntimeStatusSummary[]>([]);
 
   // 过滤状态
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -67,42 +70,15 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       setApiState(data.errors?.length ? 'partial' : 'ok');
       setApiWarning(data.errors?.length ? 'Platform API 返回部分错误，请勿据此推断未返回的故事状态。' : null);
       setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
-      if (data.items.length > 0) {
-        const stageMap: Record<string, StoryRunStage> = {
-          IDEA_LOCKED: 'CREATE',
-          STORYBOARD_LOCKED: 'STORYBOARD',
-          VISUAL_CALIBRATED: 'VISUAL_LOCK',
-          PRODUCTION_PASSED: 'PRODUCTION',
-          PUBLISH_READY: 'PUBLISH',
-          PUBLISHED: 'COMPLETED',
-          DATA_REVIEWED: 'COMPLETED',
-        };
-        setRuns((current) =>
-          current.map((run) => {
-            // 先尝试稳定身份匹配。同名作品只能在候选唯一时作为回退，
-            // 不允许 API 的同名摘要覆盖错误的本地 Run。
-            const exact = data.items.filter(item => item.episode_id === run.runId ||
-              item.business_episode_id === run.runId || item.episode_ref === run.runId);
-            const candidates = exact.length ? exact : data.items.filter(item =>
-              item.title === run.storyName || item.episode_ref === run.storyName);
-            const row = candidates.length === 1 ? candidates[0] : undefined;
-            if (!row) return run;
-            const stageLabel = row.production_stage || run.stageLabel;
-            return {
-              ...run,
-              storyName: row.title || run.storyName,
-              stageLabel,
-              currentStage: stageMap[stageLabel] || run.currentStage,
-            };
-          })
-        );
-      }
+      // 不将平台阶段数据按标题合并进历史 Story Run；两种证据各自独立展示。
+      setRuntimeRows(data.items ?? []);
       if (isManual) {
         onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
     } catch (err) {
       console.error('Failed to fetch runtime statuses:', err);
       setApiState('offline');
+      setRuntimeRows([]);
       setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
       if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
@@ -286,9 +262,11 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         </div>
       </div>
 
-      <p role="status" className="text-[11px] text-[var(--text-tertiary)]">阶段字段从 Platform API 同步；运行、心跳、帧数等字段来自工作区快照，不能作为实时调度依据。当前未开放暂停、恢复、重试接口。</p>
+      <p role="status" className="text-[11px] text-[var(--text-tertiary)]">平台阶段摘要与下方历史工作区 Run 快照分开呈现。历史运行状态、心跳与帧数并非实时。暂停/重试尚未接入。</p>
+      <RuntimeAuthorityPanel items={runtimeRows} dataState={apiState} lastSync={lastSync}/>
 
       <div role="status" className="flex items-center justify-between gap-3 rounded-[5px] border border-[var(--border-normal)] px-3 py-2 text-[11px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
+      <p className="text-[12px] font-semibold text-[var(--text-primary)] pt-2">历史工作区运行快照（非实时）</p>
       {/* ======================= 1. Operational Status Bar ======================= */}
       <div className="h-[48px] px-3 bg-[#13161B] border border-[#232830] rounded-[6px] flex items-center justify-between overflow-x-auto text-xs font-mono">
         <div className="flex items-center gap-4 shrink-0">
