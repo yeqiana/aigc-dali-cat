@@ -144,6 +144,29 @@ def reserve_standalone_number(ep: Path, business_id: str, title: str, series_id:
     return record["episode_id"]
 
 
+def existing_standalone_storage_id(ep: Path, business_id: str, title: str) -> str:
+    """Find the original claimed storage UID for an interrupted bootstrap.
+
+    A partial on-disk directory is NOT permission to assign a new storage UID,
+    especially if its ABANDONED claim lacks an initialized MySQL state.
+    """
+    if _mode() == "json":
+        raise RuntimeError("EPISODE_MYSQL_IDENTITY_REQUIRED")
+    _connection, episodes, _states = _repositories()
+    owner = episodes.unique_owner_by_namespace(episode_namespace(ep))
+    if not owner:
+        raise RuntimeError("EPISODE_EXISTING_PATH_AUTHORITY_MISSING")
+    if (
+        str(owner.get("business_episode_id") or "") != business_id
+        or str(owner.get("title") or "") != title
+    ):
+        raise RuntimeError("EPISODE_EXISTING_PATH_IDENTITY_CONFLICT")
+    storage_id = str(owner.get("episode_id") or "")
+    if not storage_id:
+        raise RuntimeError("EPISODE_EXISTING_PATH_STORAGE_ID_MISSING")
+    return storage_id
+
+
 def _history_mode(previous: str | None, current: str) -> str | None:
     if previous is None:
         return "migration" if current != "IDEA_LOCKED" else None

@@ -46,6 +46,14 @@ ORDER BY UPDATE_TIME DESC, EPISODE_ID DESC
 LIMIT 1
 """.strip()
 
+_NAMESPACE_OWNERS_SQL = """
+SELECT EPISODE_ID, BUSINESS_EPISODE_ID, EPISODE_NAMESPACE,
+       SERIES_ID, TITLE, TOOL_VERSION, DISPOSITION, UPDATE_TIME
+FROM TB_EPISODE
+WHERE EPISODE_NAMESPACE=%s
+LIMIT 2
+""".strip()
+
 _ALL_NAMESPACES_SQL = """
 SELECT EPISODE_NAMESPACE
 FROM TB_EPISODE
@@ -140,6 +148,15 @@ class MySqlEpisodeRepository:
         return self._decode(
             self.connection.query_one(_BY_NAMESPACE_SQL, (str(episode_namespace),))
         )
+
+    def unique_owner_by_namespace(self, episode_namespace: str) -> dict | None:
+        """Never conceal an old duplicate namespace behind ORDER BY LIMIT 1."""
+        rows = self.connection.query_all(
+            _NAMESPACE_OWNERS_SQL, (str(episode_namespace),)
+        )
+        if len(rows) > 1:
+            raise RuntimeError("EPISODE_NAMESPACE_AMBIGUOUS_AUTHORITY")
+        return self._decode(rows[0]) if rows else None
 
     def list_namespaces(self) -> list[str]:
         rows = self.connection.query_all(_ALL_NAMESPACES_SQL)

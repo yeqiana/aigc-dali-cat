@@ -406,6 +406,17 @@ def create_episode(
             reserved_storage_id = episode_state_persistence.reserve_standalone_number(
                 episode, business_id, title, series_id
             )
+        elif episode.parent.resolve() == (
+            root / "episodes" / DEFAULT_STANDALONE_SERIES
+        ).resolve():
+            business_id, _series_id = _canonical_identity_for_path(
+                root, episode, title
+            )
+            reserved_storage_id = (
+                episode_state_persistence.existing_standalone_storage_id(
+                    episode, business_id, title
+                )
+            )
     # The durable claim remains visible to concurrent creators after unlock.
     # Even a crash here leaves the number unavailable for reassignment.
     return _create_episode_impl(

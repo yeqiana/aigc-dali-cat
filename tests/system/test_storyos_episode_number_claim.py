@@ -45,6 +45,12 @@ class FakeMySql:
     def list_namespaces(self):
         return [r["episode_namespace"] for r in self.rows]
 
+    def unique_owner_by_namespace(self, namespace):
+        rows = [row for row in self.rows if row["episode_namespace"] == namespace]
+        if len(rows) > 1:
+            raise RuntimeError("EPISODE_NAMESPACE_AMBIGUOUS_AUTHORITY")
+        return rows[0] if rows else None
+
     def reserve_standalone_number(self, record):
         assert record["business_episode_id"] not in {
             r["business_episode_id"] for r in self.rows
@@ -136,6 +142,42 @@ def test_json_mode_never_claims_mysql(tmp_path, fake_authority, monkeypatch):
 def test_existing_episode_does_not_reserve_another_number(tmp_path, fake_authority):
     ep = tmp_path / "episodes" / "00_独立篇" / "06_继续中的作品"
     ep.mkdir(parents=True)
-    found = story_creator.create_episode(tmp_path, "继续中的作品")
+    fake_authority.rows.append({
+        "episode_namespace": "00_独立篇/06_继续中的作品",
+        "business_episode_id": "00-06",
+        "episode_id": "EPU_EXISTING_ORIGINAL_CLAIM",
+        "title": "继续中的作品",
+    })
+    observed = {}
+    def resume(root, title, visual_profile=None, **kwargs):
+        observed.update(kwargs)
+        return kwargs["_episode_override"]
+    from pytest import MonkeyPatch
+    # fake_authority already installs the creator stub; wrap to inspect UID.
+    with MonkeyPatch.context() as patch:
+        patch.setattr(story_creator, "_create_episode_impl", resume)
+        found = story_creator.create_episode(tmp_path, "继续中的作品")
     assert found == ep
+    assert observed["_reserved_storage_id"] == "EPU_EXISTING_ORIGINAL_CLAIM"
     assert fake_authority.claims == []
+
+
+def test_existing_partial_dir_without_mysql_owner_fails_closed(tmp_path, fake_authority):
+    path = tmp_path / "episodes" / "00_独立篇" / "06_孤立目录"
+    path.mkdir(parents=True)
+    with pytest.raises(RuntimeError, match="AUTHORITY_MISSING"):
+        story_creator.create_episode(tmp_path, "孤立目录")
+    assert fake_authority.claims == []
+
+
+def test_existing_namespace_different_business_owner_fails_closed(tmp_path, fake_authority):
+    path = tmp_path / "episodes" / "00_独立篇" / "06_冲突作品"
+    path.mkdir(parents=True)
+    fake_authority.rows.append({
+        "episode_namespace": "00_独立篇/06_冲突作品",
+        "business_episode_id": "00-09",
+        "episode_id": "EPU_WRONG",
+        "title": "冲突作品",
+    })
+    with pytest.raises(RuntimeError, match="IDENTITY_CONFLICT"):
+        story_creator.create_episode(tmp_path, "冲突作品")

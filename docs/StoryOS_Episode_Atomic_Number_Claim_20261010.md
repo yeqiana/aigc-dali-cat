@@ -18,3 +18,11 @@
 正式上线前仍需 CI（Windows/Ubuntu、Qodana）和针对独立测试 MySQL 的真实跨进程集成测试。不在用户目前原生 Codex 正式生产期间执行数据库迁移或反复创建。
 
 安全范围限定 canonical story_creator.create_episode 入口；任何旧脚本直接写 TB_EPISODE 的行为应另行审计，不视为获得编号互斥保证。
+
+## 中断后恢复同一个存储身份
+
+如果创建已持久占号且目录已经建立，但 episode-state 尚未初始化，后续同名 create 在锁内校验 namespace、业务编号和标题，并使用原占号记录的存储主键继续 Bootstrap。MySQL 若查不到对应 authority、存在重名 namespace 或权威行信息冲突，直接 fail closed，不产生第二个 storage ID。此行为由独立回归覆盖。
+
+## 真实 MySQL 双进程验收脚本（不自动运行）
+
+tests/integration/storyos_atomic_mysql_two_processes.py 需要专用 MySQL 测试容器的凭据以环境变量 STORYOS_ATOMIC_TEST_PASSWORD 注入，并要求 STORYOS_ATOMIC_TEST_CONTAINER=storyos-test-only-mysql-authority。脚本只连接 127.0.0.1:33417，在随机命名的 STORYOS_ISO_EPCLAIM_* 数据库中执行两个真实操作系统进程的并发创建、崩溃保号、重启与重复主键拒绝验证，finally 删除专用临时数据库。脚本不得读取正式 runtime.env，不接受正式 MySQL 端口，也不调用模型。CI 不自动运行它，必须由有测试容器授权的操作者显式提供独立测试凭据。
