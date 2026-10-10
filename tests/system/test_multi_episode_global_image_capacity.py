@@ -64,6 +64,20 @@ def _ready(base: Path, tag: str, process: subprocess.Popen) -> None:
     raise AssertionError("worker never claimed global capacity")
 
 
+def test_failed_worker_startup_includes_child_lock_diagnostic(tmp_path):
+    from io import BytesIO
+
+    class CrashedWorker:
+        returncode = 1
+        stderr = BytesIO(b"GLOBAL_IMAGE_CAPACITY_LOCK_FAILED")
+
+        def poll(self):
+            return 1
+
+    with pytest.raises(AssertionError, match="GLOBAL_IMAGE_CAPACITY_LOCK_FAILED"):
+        _ready(tmp_path, "failed", CrashedWorker())
+
+
 def test_two_episodes_share_one_five_image_machine_cap(tmp_path):
     a = _child(tmp_path, "episode_a", 2)
     b = _child(tmp_path, "episode_b", 3)
