@@ -501,3 +501,54 @@ button:not(:disabled) {cursor:pointer;}
 .os-stat-number {font-size:23px;margin-top:6px;font-weight:650;}
 .os-source-info,.os-source-warning {border-radius:6px;}
 @media(max-width:1279px) {.os-page-heading {font-size:20px;}}
+
+/* R14 — a single restrained console finish for both native and Ant Design surfaces. */
+.theme-dark {
+  --bg-app:#0c1119; --bg-workspace:#111923; --bg-surface:#141d29;
+  --bg-elevated:#1a2634; --bg-hover:#1b2a3a; --bg-selected:#21344b;
+  --border-subtle:#263342; --border-normal:#354557; --border-strong:#4a5d72;
+  --text-primary:#edf3f9; --text-secondary:#aebccb; --text-tertiary:#8b9bab;
+  --text-disabled:#6c7b8c; --info:#72aaff; --focus:#86b9ff;
+  --sidebar-width:224px; --header-height:52px;
+}
+.theme-light {
+  --bg-app:#f7f9fc; --bg-workspace:#ffffff; --bg-surface:#fff;
+  --bg-elevated:#f5f7fa; --bg-hover:#eef3f9; --bg-selected:#e9f0fb;
+  --border-subtle:#e0e7f0; --border-normal:#cad5e2; --border-strong:#aab8c9;
+  --text-primary:#172333; --text-secondary:#526278; --text-tertiary:#65758b;
+  --info:#326fcd;
+}
+.theme-light-gradient {
+  --bg-app:#f5f8fd; --bg-workspace:#fff; --bg-surface:#fff;
+  --bg-elevated:#f3f7fc; --bg-hover:#edf3fb; --bg-selected:#e7f0fc;
+  --border-subtle:#dce6f1; --border-normal:#c6d4e6;
+  --text-primary:#182638; --text-secondary:#50617a; --text-tertiary:#62748d;
+}
+html,body {letter-spacing:0; font-size:13px;}
+.os-page-heading {font-size:23px;line-height:1.32;font-weight:680;letter-spacing:-.024em;}
+.os-section-heading {font-size:15px;line-height:1.45;font-weight:620;letter-spacing:-.015em;}
+.os-eyebrow {font-size:11px;line-height:16px;letter-spacing:.08em;font-weight:650;}
+.os-action {font-size:12px;min-height:32px;}
+.os-action-primary {background:#326ed5;border-color:#326ed5;color:#fff;}
+.os-action-primary:hover {background:#3e7ae6;border-color:#3e7ae6;}
+.os-source-info,.os-source-warning {border-radius:5px;}
+#storyos-workspace-root main {min-width:0;}
+/* AntD is the UI control system: refine through theme tokens and modest shared CSS only. */
+.ant-table-wrapper .ant-table {font-size:13px;}
+.ant-table-wrapper .ant-table-thead > tr > th {
+  font-size:11px;letter-spacing:.065em;text-transform:uppercase;
+  font-weight:650!important;
+}
+.ant-table-wrapper .ant-table-tbody > tr > td {vertical-align:middle;line-height:1.48;}
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {background:var(--bg-hover)!important;}
+.ant-table-wrapper .ant-table-tbody > tr.storyos-ant-selected > td {
+  background:color-mix(in srgb,var(--info) 9%,var(--bg-surface));
+}
+.ant-table-wrapper .ant-table-tbody > tr.storyos-ant-selected:hover > td {background:var(--bg-selected)!important;}
+.ant-table-wrapper .ant-table-pagination {margin:15px 8px 7px!important;}
+.ant-pagination .ant-pagination-total-text {color:var(--text-tertiary);font-size:12px;}
+.ant-pagination .ant-pagination-item-active {font-weight:650;}
+.ant-tabs .ant-tabs-tab {font-size:13px;}
+.ant-btn {font-weight:530;}
+.ant-input,.ant-select-selector {font-size:13px!important;}
+@media(max-width:1280px){.os-page-heading {font-size:21px;}}
