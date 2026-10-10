@@ -36,7 +36,8 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({ activeEpisode, allEpisodes
       {showEpisode && <span className="hidden lg:block text-[11px] tabular-nums text-[var(--text-tertiary)]">{activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧</span>}
     </div>
     <div className="flex items-center gap-3 shrink-0">
-      <span className="hidden md:inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[11px] text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />{showEpisode ? '历史作品视图' : 'StoryOS Workspace'}</span>
+      {import.meta.env.VITE_STORYOS_LOCAL_EVIDENCE_MODE === 'true' && <span role="status" data-testid="local-real-evidence-banner" title="本机真实作品状态文件；只读快照，非 MySQL 权威运行状态，不代表在线任务" className="inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]"/>本机真实作品状态文件 · 只读</span>}
+      <span className="hidden xl:inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[11px] text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />{showEpisode ? '历史作品视图' : 'StoryOS Workspace'}</span>
       {showEpisode && <button type="button" onClick={onToggleContextPanel} title={contextPanelOpen?'收起详情':'打开详情'} aria-label="切换详情面板" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[4px]"><PanelRight size={16}/></button>}
     </div>
   </header>;

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { AlertCircle, Check, GitBranch, RefreshCw } from 'lucide-react';
+import { AlertCircle, GitBranch, RefreshCw } from 'lucide-react';
 import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
 import { WorkflowDetailPanel } from './WorkflowDetailPanel';
 
@@ -80,7 +80,7 @@ export const WorkflowWorkspaceView: React.FC = () => {
       <button type="button" onClick={()=>setReload(v=>v+1)} disabled={loading} className="os-action disabled:opacity-50"><RefreshCw size={15}/>刷新</button>
     </header>
     <section className="os-card p-5 md:p-6"><div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="os-eyebrow mb-1">STAGE MAP</p><h2 className="os-section-heading">标准生产阶段</h2></div><span className="text-[11px] text-[var(--text-tertiary)]">共 7 个阶段 · 仅展示顺序</span></div><div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7">
-      {STAGE_ORDER.map((stage,i) => <div key={stage} className="relative flex min-h-[80px] flex-col justify-between rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-app)] p-3"><span className="text-[11px] font-mono text-[var(--text-tertiary)]">{String(i + 1).padStart(2, '0')}</span><span className="flex items-center gap-2 text-[12px] font-semibold text-[var(--text-primary)]"><span className="flex h-5 w-5 items-center justify-center rounded-full border border-[var(--border-normal)] text-[var(--text-tertiary)]"><Check size={11}/></span>{stageLabel(stage)}</span></div>)}
+      {STAGE_ORDER.map((stage,i) => <div key={stage} className="relative flex min-h-[80px] flex-col justify-between rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-app)] p-3"><span className="text-[11px] font-mono text-[var(--text-tertiary)]">{String(i + 1).padStart(2, '0')}</span><span className="flex items-center gap-2 text-[12px] font-semibold text-[var(--text-primary)]"><span className="flex h-5 w-5 items-center justify-center rounded-full border border-[var(--border-normal)] text-[var(--text-tertiary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--text-tertiary)]"/></span>{stageLabel(stage)}</span></div>)}
     </div><p className="mt-4 text-[11px] text-[var(--text-tertiary)]">图示只解释阶段顺序；节点不是可点击的阶段推进操作。</p></section>
     <section className="os-card space-y-4 p-5 md:p-6">
       <div className="flex items-center justify-between gap-3"><div><p className="os-eyebrow mb-1">EPISODE STATUS</p><h2 className="os-section-heading">各作品所处阶段</h2></div><select aria-label="筛选阶段" value={filter} onChange={e=>setFilter(e.target.value)} className="h-9 rounded-[9px] border border-[var(--border-normal)] bg-[var(--bg-elevated)] px-3 text-[12px]"><option value="ALL">所有阶段</option>{STAGE_ORDER.map(x=><option key={x} value={x}>{stageLabel(x)}</option>)}</select></div>

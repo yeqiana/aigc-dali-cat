@@ -312,7 +312,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     <div id="storyos-production-monitor-view" className="mx-auto max-w-[1500px] space-y-5 pb-16 font-sans text-[var(--text-primary)]">
       {/* 顶部标题与控制栏 (UI Baseline v1: 弱装饰、扁平、简洁) */}
       <div className="os-card flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-6">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-start gap-1">
           <h1 className="os-page-heading">
             生产监控
           </h1><p className="mt-1.5 text-[12px] leading-5 text-[var(--text-secondary)]">实时状态以只读 API 为准；历史 Run 快照仅用于追溯。</p>
