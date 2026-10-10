@@ -325,6 +325,27 @@ def _placement_repairs_used(ep: Path, frame: str, *, frames: dict | None = None)
         return 0
 
 
+def _current_y_ratios_for_chunk(ep: Path) -> dict[str, float | None]:
+    """Read the current pixel placement report once when multiple repairs need it.
+
+    The same report is not reused after an automatic re-render: each review
+    cycle creates a new local snapshot and all SHA-bound evidence is rechecked.
+    """
+    path = ep / subtitle_layout.REPORT_REL
+    if not path.is_file():
+        return {}
+    rows = (subtitle_layout.read_json(path).get("frames") or {})
+    ratios = {}
+    for key, row in rows.items():
+        if not isinstance(row, dict):
+            continue
+        try:
+            ratios[str(key).zfill(2)] = float(row.get("y_ratio"))
+        except (ValueError, TypeError):
+            ratios[str(key).zfill(2)] = None
+    return ratios
+
+
 def _record_chunk_results(
     *,
     ep: Path,
@@ -341,6 +362,9 @@ def _record_chunk_results(
     # Preserve each frame's repair budget, but don't parse the same layout
     # configuration once per frame in a five-frame review chunk.
     repair_frames = _placement_repair_frames(ep)
+    # For multi-frame chunks, share the actual-pixel placement report across
+    # repair candidates instead of opening/parsing it for each obstructed frame.
+    ratio_snapshot: dict[str, float | None] | None = None
     for row in chunk:
         key = row["frame"]
         result = got.get(key)
@@ -371,7 +395,12 @@ def _record_chunk_results(
         if (cycle == 1 and supported and not unobstructed and ratio is not None
                 and used < subtitle_layout.MAX_AUTO_PLACEMENT_REPAIRS_PER_FRAME
                 and reason):
-            current_ratio = subtitle_layout.current_frame_y_ratio(ep, key)
+            if len(chunk) > 1:
+                if ratio_snapshot is None:
+                    ratio_snapshot = _current_y_ratios_for_chunk(ep)
+                current_ratio = ratio_snapshot.get(key)
+            else:
+                current_ratio = subtitle_layout.current_frame_y_ratio(ep, key)
             if current_ratio is None or abs(current_ratio - ratio) > 0.005:
                 repairs[key] = {
                     "y_ratio": ratio,
