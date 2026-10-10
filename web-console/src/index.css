@@ -552,3 +552,17 @@ html,body {letter-spacing:0; font-size:13px;}
 .ant-btn {font-weight:530;}
 .ant-input,.ant-select-selector {font-size:13px!important;}
 @media(max-width:1280px){.os-page-heading {font-size:21px;}}
+
+/* R17: shared console density and visual rhythm. */
+#storyos-workspace-root main{scrollbar-gutter:stable;min-width:0}
+#storyos-workspace-root .os-page-heading{font-size:22px;line-height:1.35;letter-spacing:-.026em;font-weight:680}
+#storyos-workspace-root .os-section-heading{font-size:14px;font-weight:650;line-height:1.5}
+#storyos-workspace-root .ant-table-wrapper .ant-table-thead>tr>th{font-size:11px;letter-spacing:.035em;font-weight:700!important;text-transform:none;white-space:nowrap}
+#storyos-workspace-root .ant-table-wrapper .ant-table-tbody>tr>td{line-height:1.45}
+#storyos-workspace-root .ant-table-wrapper .ant-table-tbody>tr>td:first-child{font-weight:520}
+#storyos-workspace-root .ant-input-affix-wrapper,#storyos-workspace-root .ant-select-selector{border-radius:5px!important}
+#storyos-workspace-root .ant-btn{border-radius:5px}
+#storyos-workspace-root .ant-table-pagination{margin:12px 8px!important}
+#storyos-workspace-root button:focus-visible,#storyos-workspace-root a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media(max-width:1280px){#storyos-workspace-root main{padding-inline:16px}#storyos-workspace-root .os-page-heading{font-size:20px}}
+@media(max-width:900px){#storyos-workspace-root main{padding-inline:12px}#storyos-workspace-root .ant-table{font-size:12px}}
