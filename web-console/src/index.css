@@ -486,3 +486,18 @@ button:not(:disabled) {cursor:pointer;}
 .os-source-info {background:color-mix(in srgb,var(--info) 7%,var(--bg-surface));border:1px solid color-mix(in srgb,var(--info) 22%,var(--border-subtle));color:var(--text-secondary);border-radius:10px;}
 .os-source-warning {background:color-mix(in srgb,var(--warning) 8%,var(--bg-surface));border:1px solid color-mix(in srgb,var(--warning) 23%,var(--border-subtle));color:var(--text-secondary);border-radius:10px;}
 @media(prefers-reduced-motion:reduce){button,a,select,input,.os-data-row{transition:none!important;}}
+
+/* R12 polish: StoryOS follows DESIGN.md — flat dense work surfaces, not a card gallery. */
+.theme-dark { --app-card-shadow:none; --radius-lg:8px; --radius-md:6px; }
+.theme-light,.theme-light-gradient { --app-card-shadow:none; }
+.os-card { border-radius:8px; box-shadow:none; }
+.os-card-soft { border-radius:6px; }
+.os-page-heading {font-size:20px;line-height:28px;font-weight:600;letter-spacing:-.01em;}
+.os-section-heading {font-size:14px;line-height:20px;font-weight:600;}
+.os-eyebrow {text-transform:none;letter-spacing:.03em;font-weight:600;}
+.os-action {height:32px;border-radius:6px;padding:0 12px;}
+.os-action-primary {box-shadow:none;}
+.os-stat {min-height:84px;border-radius:6px;padding:12px 16px;}
+.os-stat-number {font-size:23px;margin-top:6px;font-weight:650;}
+.os-source-info,.os-source-warning {border-radius:6px;}
+@media(max-width:1279px) {.os-page-heading {font-size:20px;}}
