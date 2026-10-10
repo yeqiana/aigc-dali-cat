@@ -20,6 +20,9 @@ const platformProxy = {
 
 export default defineConfig(() => {
   return {
+    // Portable build assets must load both from the hosted console and the
+    // isolated file:// browser QA used by offline production evidence tests.
+    base: './',
     plugins: [react(), tailwindcss()],
     build: {
       rollupOptions: {
