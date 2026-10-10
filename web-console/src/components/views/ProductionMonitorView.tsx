@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Play,
   Pause,
@@ -42,7 +42,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   onSelectStoryRun,
   onShowToast,
 }) => {
-  // 权威生产运行数据状态 (Zero Mock)
+  // 历史运行快照，仅用于展示，不代表当前实时运行状态
   const [runs, setRuns] = useState<StoryRunItem[]>(REAL_STORY_RUNS);
   const [runtimeRows, setRuntimeRows] = useState<RuntimeStatusSummary[]>([]);
 
@@ -57,6 +57,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [apiState, setApiState] = useState<'loading' | 'ok' | 'partial' | 'offline'>('loading');
   const [lastSync, setLastSync] = useState<string | null>(null);
+  const requestGeneration = useRef(0);
+  const requestInFlight = useRef(false);
   const [apiWarning, setApiWarning] = useState<string | null>(null);
 
   // 选中的 Story Run 详情视图
@@ -64,9 +66,17 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
 
   // 从真实平台接口同步 canonical stage 投影；丰富的帧/证据详情继续来自工作区生成投影。
   const loadLatestStatuses = async (isManual = false) => {
+    // 同一页面只允许一个阶段查询在途；旧请求不能覆盖刷新后的数据。
+    if (requestInFlight.current) {
+      if (isManual) onShowToast('正在读取阶段摘要，请稍候');
+      return;
+    }
+    requestInFlight.current = true;
+    const generation = ++requestGeneration.current;
     try {
       setIsRefreshing(true);
       const data = await platformApi.runtimeStatuses(100, 0);
+      if (generation !== requestGeneration.current) return;
       setApiState(data.errors?.length ? 'partial' : 'ok');
       setApiWarning(data.errors?.length ? 'Platform API 返回部分错误，请勿据此推断未返回的故事状态。' : null);
       setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
@@ -76,21 +86,30 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
     } catch (err) {
+      if (generation !== requestGeneration.current) return;
       console.error('Failed to fetch runtime statuses:', err);
       setApiState('offline');
       setRuntimeRows([]);
       setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
       if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
-      setIsRefreshing(false);
+      if (generation === requestGeneration.current) {
+        requestInFlight.current = false;
+        setIsRefreshing(false);
+      }
     }
   };
 
   useEffect(() => {
     loadLatestStatuses();
+    return () => {
+      // 组件卸载/StrictMode 重新挂载时废弃当前结果，不更新已卸载页面。
+      requestGeneration.current += 1;
+      requestInFlight.current = false;
+    };
   }, []);
 
-  // 自动增量刷新
+  // 自动刷新不会和手动刷新并发，也不会在卸载后覆盖较新请求
   useEffect(() => {
     if (refreshInterval <= 0) return;
     const interval = setInterval(() => {
