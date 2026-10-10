@@ -60,35 +60,34 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
     <div id="storyos-home-overview" className="w-full min-w-0 space-y-4 pb-6 text-[var(--text-primary)]">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
         <div>
-          <p className="mb-2 os-eyebrow">WORKSPACE OVERVIEW</p>
+          <p className="mb-1 text-[11px] font-semibold tracking-[.08em] text-[var(--text-tertiary)]">内容工作区</p>
           <h1 className="os-page-heading">工作台</h1>
-          <p className="mt-2 max-w-[500px] text-[13px] leading-6 text-[var(--text-secondary)]">聚合正在制作的故事、真实状态文件与待处理事项，快速找到下一步。</p>
+          <p className="mt-1 text-[13px] leading-5 text-[var(--text-secondary)]">正在制作的故事与已记录的生产状态</p>
         </div>
-        <button type="button" onClick={onNewStory} className="os-action os-action-primary !h-10 text-[13px]"><Plus size={16}/> 新建故事</button>
+        <button type="button" onClick={onNewStory} className="os-action os-action-primary !h-9 text-[13px]"><Plus size={16}/> 新建故事</button>
       </header>
-      <section aria-label="项目概况" className="grid grid-cols-2 gap-px border-y border-[var(--border-subtle)] bg-[var(--border-subtle)] lg:grid-cols-4">
+      <section aria-label="项目概况" className="grid grid-cols-3 gap-px border-y border-[var(--border-subtle)] bg-[var(--border-subtle)]">
         {[
           { label: '项目', value: projects.length, note: '当前工作区' },
           { label: '故事', value: episodes.length, note: '已收录' },
-          { label: '待继续', value: pending, note: '未进入已发布阶段' },
-          { label: '需关注', value: unloadedCount ? '—' : attention.length, note: unloadedCount ? '历史审核证据按需读取，无法统计全量' : '有明确审核阻塞证据' }
-        ].map((m, i) => <div key={m.label} className="min-w-0 bg-[var(--bg-app)] px-4 py-3">
+          { label: '待继续', value: pending, note: '尚未发布' }
+        ].map((m, i) => <div key={m.label} className="min-w-0 bg-[var(--bg-app)] px-5 py-3.5">
           <div className="os-stat-label">{m.label}</div>
           <div className={`os-stat-number ${m.label === '需关注' && typeof m.value === 'number' && m.value > 0 ? 'text-[var(--danger)]' : ''}`}>{m.value}</div>
-          <div className="mt-2 text-[11px] leading-4 text-[var(--text-tertiary)]">{m.note}</div>
+          <div className="mt-1.5 text-[12px] leading-4 text-[var(--text-tertiary)]">{m.note}</div>
         </div>)}
       </section>
       <section aria-label="平台生产阶段摘要" className="space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><p className="os-eyebrow mb-1">PRODUCTION EVIDENCE</p><h2 className="os-section-heading">{runtimeIsLocalFile ? '本机真实作品状态（文件快照）' : '平台生产阶段'}</h2><p className="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">已记录的作品生产阶段 · 不包含在线 Worker、队列或心跳。</p></div>
+          <div><h2 className="os-section-heading">{runtimeIsLocalFile ? '生产阶段记录' : '平台生产阶段'}</h2><p className="mt-1 text-[12px] leading-5 text-[var(--text-secondary)]">已记录的作品生产阶段 · 不包含在线 Worker、队列或心跳。</p></div>
           <button type="button" onClick={() => setRuntimeRefresh(v => v + 1)} disabled={runtimeStatus === 'loading'} className="os-action disabled:opacity-50"><RefreshCw size={14}/> 刷新</button>
         </div>
         {runtimeStatus === 'loading' ? <p role="status" className="text-[12px] text-[var(--text-secondary)]">正在读取权威阶段摘要…</p> : runtimeStatus === 'offline' ? <p role="alert" className="text-[12px] text-[var(--warning)]">Platform API 未连接。下方仅展示本地工作区快照。</p> : <>
           {runtimeStatus === 'partial' && <p role="alert" className="text-[12px] text-[var(--warning)]">接口报告部分错误，以下记录可能不完整。</p>}
           {runtimeIsFixture && <p role="status" className="text-[12px] font-medium text-[var(--warning)]">当前来自隔离内存样例 API，仅用于本地联调，不是正式生产数据。</p>}
-          {runtimeIsLocalFile && <p role="status" className="os-source-warning px-4 py-3 text-[12px] leading-5">来自本机 episodes 下真实的 episode-state.json；只读磁盘快照，不是在线 Runtime 或 MySQL 权威状态。</p>}
+          {runtimeIsLocalFile && <p role="status" className="os-source-warning px-3 py-2 text-[12px] leading-5">来自本机 episodes 下真实的 episode-state.json；只读磁盘快照，不是在线 Runtime 或 MySQL 权威状态。</p>}
           <p className="text-[12px] text-[var(--text-secondary)]">已载入 {runtime.length}{runtimeTotal !== null ? ' / ' + runtimeTotal : ''} 条 · 读取时间 {fetchedAt || '未知'} · 不代表全部实时运行状态</p>
-          <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">{runtime.slice((runtimePage-1)*runtimePageSize,runtimePage*runtimePageSize).map((item, i) => <div key={item.episode_id + ':' + i} className="os-data-row flex items-center justify-between gap-3 px-3 py-2 text-[12px]"><span className="truncate" title={item.title || item.episode_ref || item.episode_id}>{item.title || item.episode_ref || item.episode_id || '未命名作品'}</span><span className="shrink-0 text-[var(--text-tertiary)]">{stageLabel(item.production_stage || 'NO_STATE')}</span></div>)}</div>
+          <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">{runtime.slice((runtimePage-1)*runtimePageSize,runtimePage*runtimePageSize).map((item, i) => <div key={item.episode_id + ':' + i} className="os-data-row flex min-h-[42px] items-center justify-between gap-4 px-4 py-2 text-[13px]"><span className="truncate" title={item.title || item.episode_ref || item.episode_id}>{item.title || item.episode_ref || item.episode_id || '未命名作品'}</span><span className="shrink-0 border-l border-[var(--border-normal)] pl-3 text-[12px] text-[var(--text-secondary)]">{stageLabel(item.production_stage || 'NO_STATE')}</span></div>)}</div>
           {runtime.length>runtimePageSize && <Pagination size="small" current={runtimePage} pageSize={runtimePageSize} total={runtime.length} onChange={setRuntimePage} showTotal={total=>`当前已载入 ${total} 条`} />}
           {runtime.length === 0 && <p className="text-[12px] text-[var(--text-tertiary)]">接口已响应，但没有阶段记录。</p>}
           <button type="button" onClick={() => onNavigate('pipeline')} className="flex items-center gap-1 text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">查看完整工作流 <ArrowRight size={14}/></button>
@@ -104,9 +103,9 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
           <div className="overflow-hidden border-y border-[var(--border-subtle)]">
             {filtered.length === 0 && <p className="py-10 text-center text-[13px] text-[var(--text-tertiary)]">没有符合条件的故事。可以清除搜索后继续查看。</p>}
             {filtered.slice((storyPage-1)*storyPageSize,storyPage*storyPageSize).map(ep => <button key={ep.id} type="button" onClick={() => onSelectEpisode(ep)}
-              aria-label={`打开故事 ${ep.title}`} className="os-data-row group w-full min-w-0 flex items-center gap-4 px-4 py-3 border-b last:border-b-0 border-[var(--border-subtle)] text-left">
-              <div className="h-12 w-10 shrink-0 overflow-hidden rounded-[4px] bg-[var(--bg-elevated)]">{ep.coverImage && <img alt="" loading="lazy" src={ep.coverImage} className="h-full w-full object-cover" />}</div>
-              <div className="min-w-0 flex-1"><div className="truncate font-medium text-[13px]">{ep.title}</div><div className="mt-1 truncate text-[12px] text-[var(--text-tertiary)]">{STAGES[ep.currentStage] ?? ep.currentStage} · {ep.completedFrames}/{ep.totalFrames} 帧</div></div>
+              aria-label={`打开故事 ${ep.title}`} className="os-data-row group w-full min-w-0 flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 border-[var(--border-subtle)] text-left">
+              <div className="flex h-12 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[4px] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">{ep.coverImage ? <img alt="" loading="lazy" src={ep.coverImage} className="h-full w-full object-cover" /> : <Folder size={16} className="text-[var(--text-tertiary)]" />}</div>
+              <div className="min-w-0 flex-1"><div className="truncate text-[14px] font-semibold leading-5">{ep.title}</div><div className="mt-1 truncate text-[12px] text-[var(--text-secondary)]">{STAGES[ep.currentStage] ?? ep.currentStage} · {ep.completedFrames}/{ep.totalFrames} 帧</div></div>
               <div className="hidden sm:block w-24 shrink-0"><div className="h-1 rounded-full bg-[var(--border-normal)]"><div className="h-full rounded-full bg-[#58A6FF]" style={{width: `${percentage(ep)}%`}}/></div><div className="mt-1 text-right text-[11px] tabular-nums text-[var(--text-tertiary)]">{percentage(ep)}%</div></div>
               <ArrowRight size={15} className="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)]"/>
             </button>)}
