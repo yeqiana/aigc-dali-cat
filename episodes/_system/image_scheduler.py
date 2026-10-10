@@ -1234,6 +1234,17 @@ def _technical_retry_budget(ep:Path,item:dict,code:str)->tuple[bool,dict,str]:
         if not previous:
             return False,state,"previous_generation_attempt_missing"
         previous_status=str(previous.get("status") or "")
+        if previous_status == "OUTCOME_UNKNOWN" and consumed == 1:
+            try:
+                import generation_unknown_recovery
+                authorization = generation_unknown_recovery.load_authorized_attempt_two(
+                    ep, str(state["logical_asset_key"]), str(previous.get("generation_key") or ""))
+            except Exception:
+                authorization = None
+            if authorization and generation_unknown_recovery.valid_authorization_record(authorization):
+                state["unknown_recovery_authorization_id"] = authorization.get("AUTHORIZATION_ID")
+                state["recovery_of_generation_key"] = previous.get("generation_key")
+                return True,state,"explicit_unknown_recovery_authorization_available"
         if previous_status != "FAILED_AFTER_DISPATCH":
             return False,state,(
                 "previous_generation_attempt_unverified"

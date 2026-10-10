@@ -105,7 +105,8 @@ def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
         rel = episode.relative_to(ROOT).as_posix()
         rc, attempts = _probe(env, "scripts/storyos_attempt_readonly_preflight.py",
                               ["--episode", rel])
-        if rc != 0 or attempts.get("status") != "ATTEMPT_HISTORY_READ_ONLY":
+        if rc != 0 or attempts.get("status") not in {
+                "ATTEMPT_HISTORY_READ_ONLY", "UNKNOWN_RECOVERY_AUTHORIZED"}:
             # UNKNOWN is a terminal historical fact, NOT a retry permission.
             blockers.append("GENERATION_ATTEMPT_AUTHORITY_RECONCILIATION_REQUIRED")
         rc, driver = _probe(env, "episodes/_system/runtime_driver.py",

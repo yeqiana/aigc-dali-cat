@@ -136,8 +136,13 @@ def advance_host_loop(ep: Path, *, codex: str | None, timeout: int, run_id: str,
         if not progressed:
             return rc, f"{note} stop_cycle={cycle} host_owns={detail}".strip()
         note = f"{note} cycle={cycle} {detail};".strip()
-        if detail.rsplit(" rc=", 1)[-1] != "0":
-            return 21, f"{note} host_action_technical_failure".strip()
+        action_rc = detail.rsplit(" rc=", 1)[-1]
+        if action_rc != "0" and action_rc != "21":
+            return (int(action_rc) if action_rc.isdigit() else 21), f"{note} host_action_hard_stop".strip()
+        # A bounded local technical failure is replanned through canonical DAG
+        # and Authority immediately. Scheduler/Attempt gates decide whether an
+        # authorized retry exists; this loop never dispatches a second image by
+        # itself and remains bounded by HOST_LOOP_MAX_CYCLES.
         rc = runtime_dag.execute(ep, codex=codex, timeout=timeout, run_id=run_id, trace_id=trace_id)
         # A resumed episode can already be at a queue/review boundary that does
         # not map to a remaining DAG step.  In that case the DAG correctly

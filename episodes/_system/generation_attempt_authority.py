@@ -118,7 +118,7 @@ def _previous_attempt_denial(connection, episode_id: str, key: str,
     if index <= 0:
         return None
     row = connection.query_one(
-        "SELECT STATUS FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s "
+        "SELECT STATUS, GENERATION_KEY FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s "
         "AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s FOR UPDATE",
         (episode_id, key, index),
     )
@@ -126,6 +126,12 @@ def _previous_attempt_denial(connection, episode_id: str, key: str,
         return "GENERATION_ATTEMPT_PREVIOUS_HISTORY_MISSING"
     status = str(row.get("STATUS") or "")
     if status == "OUTCOME_UNKNOWN":
+        if index == 1 and attempts_consumed == 1:
+            import generation_unknown_recovery
+            authorization = generation_unknown_recovery.authorization_for_attempt_two(
+                connection, episode_id, key, str(row.get("GENERATION_KEY") or ""))
+            if generation_unknown_recovery.valid_authorization_record(authorization):
+                return "AUTHORIZED_UNKNOWN_RECOVERY:" + str(authorization["AUTHORIZATION_ID"])
         return "GENERATION_ATTEMPT_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED"
     if status not in {"SUCCEEDED", "FAILED_AFTER_DISPATCH"}:
         return "GENERATION_ATTEMPT_PREVIOUS_STATUS_UNRECONCILED"
@@ -223,6 +229,10 @@ def _reserve_impl(ep: str | Path, logical_asset_key: str, generation_context: di
             # OUTCOME_UNKNOWN; rolling that back would erase the evidence while
             # still returning a blocked dispatch.
             history_denial = _previous_attempt_denial(connection, episode_id, key, consumed)
+            recovery_authorization_id = None
+            if history_denial and history_denial.startswith("AUTHORIZED_UNKNOWN_RECOVERY:"):
+                recovery_authorization_id = history_denial.split(":", 1)[1]
+                history_denial = None
             budget_denial = consumed >= MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET
             if history_denial:
                 lease = None
@@ -239,6 +249,9 @@ def _reserve_impl(ep: str | Path, logical_asset_key: str, generation_context: di
                 if old and str(old.get("STATUS")) not in {"RELEASED_PRE_DISPATCH"}:
                     raise AttemptDenied("GENERATION_ATTEMPT_ALREADY_ACTIVE", f"generation_key={generation_key}")
                 digest = hashlib.sha256(token.encode("ascii")).hexdigest()
+                if recovery_authorization_id:
+                    context["unknown_recovery_authorization_id"] = recovery_authorization_id
+                    context["unknown_recovery_source_attempt_index"] = consumed
                 payload = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
                 if old:
                     connection.execute(
@@ -329,6 +342,42 @@ def _locked_lease(connection, lease: dict, fencing_token: int) -> tuple[dict, di
     return state, row
 
 
+def _validate_unknown_recovery_dispatch(connection, lease: dict, row: dict) -> None:
+    """Recheck the immutable authorization from persisted Attempt context at dispatch."""
+    if int(lease.get("attempt_index") or 0) != 2:
+        return
+    context = _context(row)
+    recovery_id = str(context.get("unknown_recovery_authorization_id") or "")
+    source = connection.query_one(
+        "SELECT STATUS, GENERATION_KEY FROM TB_GENERATION_ATTEMPT "
+        "WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=1 FOR UPDATE",
+        (lease["episode_id"], lease["logical_asset_key"]))
+    if not source:
+        raise AttemptDenied("GENERATION_ATTEMPT_PREVIOUS_HISTORY_MISSING")
+    # Attempt 2 after UNKNOWN must always carry the explicit recovery authority;
+    # a missing context id is not a compatibility escape hatch.
+    if source.get("STATUS") != "OUTCOME_UNKNOWN":
+        if recovery_id:
+            raise AttemptDenied("GENERATION_ATTEMPT_UNKNOWN_RECOVERY_SOURCE_CHANGED")
+        return
+    if not recovery_id:
+        raise AttemptDenied("GENERATION_ATTEMPT_UNKNOWN_RECOVERY_AUTHORITY_REQUIRED")
+    import generation_unknown_recovery
+    authorization = connection.query_one(
+        "SELECT AUTHORIZATION_ID, UNKNOWN_ATTEMPT_INDEX, UNKNOWN_GENERATION_KEY, TARGET_ATTEMPT_INDEX, EVIDENCE_JSON, EVIDENCE_SHA256, "
+        "AUTHORIZED_BY, RISK_ASSESSMENT, DUPLICATE_CHARGE_ACK "
+        "FROM TB_GENERATION_UNKNOWN_RECOVERY_AUTHORIZATION WHERE AUTHORIZATION_ID=%s "
+        "AND EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s FOR UPDATE",
+        (recovery_id, lease["episode_id"], lease["logical_asset_key"]))
+    if (not source or source.get("STATUS") != "OUTCOME_UNKNOWN"
+            or not authorization
+            or int(authorization.get("UNKNOWN_ATTEMPT_INDEX") or 0) != 1
+            or authorization.get("UNKNOWN_GENERATION_KEY") != source.get("GENERATION_KEY")
+            or int(authorization.get("TARGET_ATTEMPT_INDEX") or 0) != 2
+            or not generation_unknown_recovery.valid_authorization_record(authorization)):
+        raise AttemptDenied("GENERATION_ATTEMPT_UNKNOWN_RECOVERY_AUTHORITY_INVALID")
+
+
 def commit_dispatch(ep: str | Path, lease: dict, fencing_token: int, *, provider: str | None = None) -> dict:
     """Irreversibly consume this slot at the exact provider dispatch boundary."""
     connection = _connect()
@@ -338,6 +387,7 @@ def commit_dispatch(ep: str | Path, lease: dict, fencing_token: int, *, provider
             state, row = _locked_lease(connection, lease, fencing_token)
             if row.get("STATUS") != "RESERVED" or row.get("LEASE_EXPIRES_AT") <= now:
                 raise AttemptDenied("STALE_GENERATION_ATTEMPT_FENCE")
+            _validate_unknown_recovery_dispatch(connection, lease, row)
             connection.execute(
                 "UPDATE TB_GENERATION_ATTEMPT SET STATUS='DISPATCH_COMMITTED',DISPATCH_COMMITTED_AT=%s,PROVIDER=COALESCE(%s,PROVIDER) "
                 "WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s AND STATUS='RESERVED'",
@@ -371,6 +421,7 @@ def commit_dispatch_many(ep: str | Path, leases: list[dict], *, provider: str | 
                 _state, row = _locked_lease(connection, lease, fence)
                 if row.get("STATUS") != "RESERVED" or row.get("LEASE_EXPIRES_AT") <= _utcnow():
                     raise AttemptDenied("STALE_GENERATION_ATTEMPT_FENCE")
+                _validate_unknown_recovery_dispatch(connection, lease, row)
             for lease in leases:
                 connection.execute(
                     "UPDATE TB_GENERATION_ATTEMPT SET STATUS='DISPATCH_COMMITTED',DISPATCH_COMMITTED_AT=%s,PROVIDER=COALESCE(%s,PROVIDER) WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s AND STATUS='RESERVED'",

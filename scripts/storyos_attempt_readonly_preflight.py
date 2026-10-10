@@ -56,10 +56,26 @@ def inspect_attempt_history(connection, *, episode_id: str) -> dict:
             (episode_id,),
         ) or []
         counts = dict(sorted(Counter(str(row.get("STATUS") or "UNKNOWN") for row in attempts).items()))
-        unknown = sorted({
-            str(row.get("LOGICAL_ASSET_KEY") or "") for row in attempts
-            if str(row.get("STATUS") or "") == "OUTCOME_UNKNOWN"
-        })
+        unknown_rows = [row for row in attempts if str(row.get("STATUS") or "") == "OUTCOME_UNKNOWN"]
+        unknown = sorted({str(row.get("LOGICAL_ASSET_KEY") or "") for row in unknown_rows})
+        authorized_unknown = set()
+        authorized_unknown_rows = 0
+        if unknown_rows:
+            import generation_unknown_recovery
+            for row in unknown_rows:
+                authorization = connection.query_one(
+                    "SELECT AUTHORIZATION_ID, EVIDENCE_JSON, EVIDENCE_SHA256, AUTHORIZED_BY, "
+                    "RISK_ASSESSMENT, DUPLICATE_CHARGE_ACK "
+                    "FROM TB_GENERATION_UNKNOWN_RECOVERY_AUTHORIZATION "
+                    "WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND UNKNOWN_ATTEMPT_INDEX=%s "
+                    "AND UNKNOWN_GENERATION_KEY=(SELECT GENERATION_KEY FROM TB_GENERATION_ATTEMPT "
+                    "WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s) "
+                    "AND TARGET_ATTEMPT_INDEX=2 LIMIT 1",
+                    (episode_id, row.get("LOGICAL_ASSET_KEY"), row.get("ATTEMPT_INDEX"),
+                     episode_id, row.get("LOGICAL_ASSET_KEY"), row.get("ATTEMPT_INDEX")))
+                if generation_unknown_recovery.valid_authorization_record(authorization):
+                    authorized_unknown.add(str(row.get("LOGICAL_ASSET_KEY") or ""))
+                    authorized_unknown_rows += 1
         active_statuses = {"RESERVED", "DISPATCH_COMMITTED"}
         known_terminal = {"SUCCEEDED", "FAILED_AFTER_DISPATCH", "OUTCOME_UNKNOWN",
                           "RELEASED_PRE_DISPATCH"}
@@ -75,9 +91,10 @@ def inspect_attempt_history(connection, *, episode_id: str) -> dict:
             if str(row.get("STATUS") or "") not in active_statuses | known_terminal
         })
         blocked_assets = set(unknown) | set(active) | set(unverified)
-        status = ("OUTCOME_UNKNOWN_BLOCKED" if unknown else
-                  "ACTIVE_ATTEMPT_BLOCKED" if active else
+        status = ("ACTIVE_ATTEMPT_BLOCKED" if active else
                   "UNVERIFIED_ATTEMPT_STATUS_BLOCKED" if unverified else
+                  "OUTCOME_UNKNOWN_BLOCKED" if unknown and authorized_unknown_rows != len(unknown_rows) else
+                  "UNKNOWN_RECOVERY_AUTHORIZED" if unknown else
                   "ATTEMPT_HISTORY_READ_ONLY")
         result.update({
             "status": status,
@@ -85,6 +102,7 @@ def inspect_attempt_history(connection, *, episode_id: str) -> dict:
             "asset_state_rows": len(asset_states),
             "attempt_status_counts": counts,
             "outcome_unknown_assets": unknown,
+            "authorized_unknown_recovery_assets": sorted(authorized_unknown),
             "active_attempt_assets": active,
             "unverified_status_assets": unverified,
             "attempt_budget": [{
@@ -124,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
                   "model_calls": 0, "reason": "ATTEMPT_READONLY_PREFLIGHT_FAILED",
                   "error_type": type(exc).__name__}
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
-    return 0 if result["status"] == "ATTEMPT_HISTORY_READ_ONLY" else 2
+    return 0 if result["status"] in {"ATTEMPT_HISTORY_READ_ONLY", "UNKNOWN_RECOVERY_AUTHORIZED"} else 2
 
 
 if __name__ == "__main__":

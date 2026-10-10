@@ -847,6 +847,17 @@ def derive(ep: Path) -> dict:
                     reason="actual-pixel review authorized content repair")
         if qs["counts"].get("external_blocked"):
             blocked_items=[x for x in q.get("items") or [] if x.get("status")=="external_blocked"]
+            authorized_recovery_frames=[]
+            for item in blocked_items:
+                allowed,_state,reason=image_scheduler._technical_retry_budget(
+                    ep,item,image_scheduler._technical_retry_code(item))
+                if allowed and reason=="explicit_unknown_recovery_authorization_available":
+                    frame=int(item.get("frame") or 0)
+                    if frame>0:authorized_recovery_frames.append(frame)
+            if authorized_recovery_frames:
+                return action_result(action="RETRY_TECHNICAL_FAILURES",executor="CODEX_IMAGE",
+                        frames=sorted(set(authorized_recovery_frames)),
+                        reason="explicit UNKNOWN recovery authorization allows only the shared-budget Attempt 2 through canonical Scheduler")
             failover_frames=sorted({
                 int(x.get("frame") or 0) for x in blocked_items
                 if int(x.get("frame") or 0)>0 and image_scheduler.availability_fallback_model(x)

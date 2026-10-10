@@ -1364,12 +1364,27 @@ class ContinuousHostLoopTests(unittest.TestCase):
         self.assertEqual(rc, product_runtime_adapter.HOST_ACTION_REQUIRED_RC)
         self.assertIn("max_cycles=2", note)
 
-    def test_loop_returns_technical_failure_from_a_local_host_action(self):
-        with patch.object(workflow_runner, "host_loop_step", return_value=(True, "REVIEW_ORDINARY_BASELINE rc=21")), \
-                patch.object(workflow_runner.runtime_dag, "execute", side_effect=AssertionError("DAG must not run after a failed host action")):
+    def test_loop_replans_after_bounded_local_technical_failure(self):
+        steps = [(True, "GENERATE_IMAGES rc=21"), (True, "GENERATE_IMAGES rc=0")]
+        dag_codes = [product_runtime_adapter.HOST_ACTION_REQUIRED_RC, 0]
+        following = [
+            {"action": "RETRY_TECHNICAL_FAILURES", "executor": "CODEX_IMAGE"},
+            {"action": "UNSUPPORTED", "executor": "WORK"},
+        ]
+        with patch.object(workflow_runner, "host_loop_step", side_effect=steps), \
+                patch.object(workflow_runner.runtime_dag, "execute", side_effect=dag_codes) as dag, \
+                patch.object(workflow_runner.next_action, "write", side_effect=following):
             rc, note = workflow_runner.advance_host_loop(Path("ep"), codex=None, timeout=1800, run_id="r", trace_id="t")
-        self.assertEqual(rc, 21)
-        self.assertIn("host_action_technical_failure", note)
+        self.assertEqual(rc, 0)
+        self.assertEqual(dag.call_count, 2)
+        self.assertIn("GENERATE_IMAGES", note)
+
+    def test_loop_preserves_nonretryable_local_action_code(self):
+        with patch.object(workflow_runner, "host_loop_step", return_value=(True, "RETRY_TECHNICAL_FAILURES rc=24")), \
+                patch.object(workflow_runner.runtime_dag, "execute", side_effect=AssertionError("hard stop must not replan")):
+            rc, note = workflow_runner.advance_host_loop(Path("ep"), codex=None, timeout=1800, run_id="r", trace_id="t")
+        self.assertEqual(rc, 24)
+        self.assertIn("host_action_hard_stop", note)
 
     def test_content_review_fail_is_progress_not_technical_failure(self):
         action = {"action": "REVIEW_VISUAL_LOCK", "executor": "CODEX_VISION"}
