@@ -50,8 +50,11 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   const [onlyException, setOnlyException] = useState(false);
 
   // 自动刷新机制 (仅增量刷新数据，不触发整页 reload)
-  const [refreshInterval, setRefreshInterval] = useState<number>(5);
+  const [refreshInterval, setRefreshInterval] = useState<number>(15);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [apiState, setApiState] = useState<'loading' | 'ok' | 'partial' | 'offline'>('loading');
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [apiWarning, setApiWarning] = useState<string | null>(null);
 
   // 选中的 Story Run 详情视图
   const [selectedRunForDetail, setSelectedRunForDetail] = useState<StoryRunItem | null>(null);
@@ -61,6 +64,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     try {
       setIsRefreshing(true);
       const data = await platformApi.runtimeStatuses(100, 0);
+      setApiState(data.errors?.length ? 'partial' : 'ok');
+      setApiWarning(data.errors?.length ? 'Platform API 返回部分错误，请勿据此推断未返回的故事状态。' : null);
+      setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
       if (data.items.length > 0) {
         const stageMap: Record<string, StoryRunStage> = {
           IDEA_LOCKED: 'CREATE',
@@ -73,12 +79,13 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         };
         setRuns((current) =>
           current.map((run) => {
-            const row = data.items.find((item) =>
-              item.episode_id === run.runId ||
-              item.business_episode_id === run.runId ||
-              item.title === run.storyName ||
-              item.episode_ref === run.storyName
-            );
+            // 先尝试稳定身份匹配。同名作品只能在候选唯一时作为回退，
+            // 不允许 API 的同名摘要覆盖错误的本地 Run。
+            const exact = data.items.filter(item => item.episode_id === run.runId ||
+              item.business_episode_id === run.runId || item.episode_ref === run.runId);
+            const candidates = exact.length ? exact : data.items.filter(item =>
+              item.title === run.storyName || item.episode_ref === run.storyName);
+            const row = candidates.length === 1 ? candidates[0] : undefined;
             if (!row) return run;
             const stageLabel = row.production_stage || run.stageLabel;
             return {
@@ -91,12 +98,15 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         );
       }
       if (isManual) {
-        onShowToast('已同步最新 canonical stage 投影');
+        onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
     } catch (err) {
       console.error('Failed to fetch runtime statuses:', err);
+      setApiState('offline');
+      setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
+      if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
-      setTimeout(() => setIsRefreshing(false), 300);
+      setIsRefreshing(false);
     }
   };
 
@@ -133,7 +143,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       return false;
     }
     if (onlyException) {
-      if (run.status !== 'BLOCKED' && run.status !== 'FAILED' && run.status !== 'RETRYING' && run.exceptionType === 'none') {
+      if (!['BLOCKED', 'FAILED', 'RETRYING'].includes(run.status) && run.exceptionType !== 'manual' && run.exceptionType !== 'auto_retry') {
         return false;
       }
     }
@@ -157,13 +167,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return { label: '严重积压', color: 'text-[#F85149]', bg: 'bg-[#F85149]/10' };
   };
 
-  // Heartbeat 心跳状态规则：<15s 正常, 15–30s 弱提示, 30–120s 心跳延迟(黄), >120s 疑似失联(红)
-  const getHeartbeatStatus = (seconds: number) => {
-    if (seconds < 15) return { color: 'text-[#3FB950]', dot: 'bg-[#3FB950]', label: '正常' };
-    if (seconds <= 30) return { color: 'text-[#A7AFBA]', dot: 'bg-[#737D8A]', label: '弱提示' };
-    if (seconds <= 120) return { color: 'text-[#D29922]', dot: 'bg-[#D29922]', label: '心跳延迟' };
-    return { color: 'text-[#F85149]', dot: 'bg-[#F85149]', label: '疑似失联' };
-  };
+  // 本地快照的相对心跳文本并非在线探活结果，不可根据旧秒数显示实时健康。
+  const getHeartbeatStatus = (_seconds: number) => ({ color: 'text-[#737D8A]', dot: 'bg-[#737D8A]', label: '历史快照（未验证当前心跳）' });
 
   // 如果点击查看了某个具体的 Story Run，无缝展示高阶独立全量详情页（尸解仙排障与流水线）
   if (selectedRunForDetail) {
@@ -283,6 +288,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
 
       <p role="status" className="text-[11px] text-[var(--text-tertiary)]">阶段字段从 Platform API 同步；运行、心跳、帧数等字段来自工作区快照，不能作为实时调度依据。当前未开放暂停、恢复、重试接口。</p>
 
+      <div role="status" className="flex items-center justify-between gap-3 rounded-[5px] border border-[var(--border-normal)] px-3 py-2 text-[11px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
       {/* ======================= 1. Operational Status Bar ======================= */}
       <div className="h-[48px] px-3 bg-[#13161B] border border-[#232830] rounded-[6px] flex items-center justify-between overflow-x-auto text-xs font-mono">
         <div className="flex items-center gap-4 shrink-0">
@@ -359,7 +365,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
             <span className="text-[var(--text-tertiary)] font-medium">未提供</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[#737D8A]">队列:</span>
+            <span className="text-[#737D8A]">快照等待:</span>
             <span className="text-[#D29922] font-medium">{metrics.queueWaiting}</span>
           </div>
           <div className="flex items-center gap-1">
@@ -408,13 +414,13 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
               className="h-[28px] bg-[#0F1115] border border-[#232830] text-[#F1F3F5] rounded-[4px] px-2 text-xs outline-hidden cursor-pointer"
             >
               <option value="all">全部阶段</option>
-              <option value="IDEA_LOCK">创意锁定</option>
-              <option value="STORYBOARD_LOCK">分镜锁定</option>
-              <option value="VISUAL_CALIBRATE">视觉校准</option>
-              <option value="PROD_APPROVED">生产通过</option>
-              <option value="READY_TO_PUBLISH">待发布</option>
-              <option value="PUBLISHED">已发布</option>
-              <option value="POST_MORTEM">数据复盘</option>
+              <option value="CREATE">创意</option>
+              <option value="STORYBOARD">分镜</option>
+              <option value="VISUAL_LOCK">视觉锁定</option>
+              <option value="PRODUCTION">生产</option>
+              <option value="PUBLISH">发布</option>
+              <option value="COMPLETED">已完成</option>
+
             </select>
           </div>
 
@@ -549,7 +555,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                       <td className="px-3 font-mono text-[11px] whitespace-nowrap">
                         <span className={`inline-flex items-center gap-1.5 ${hb.color}`} title={`心跳规则: ${hb.label}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${hb.dot}`} />
-                          <span>{run.lastHeartbeatAgo}</span>
+                          <span title="历史工作区快照，非实时探活">快照 {run.lastHeartbeatAgo}</span>
                         </span>
                       </td>
 
@@ -618,12 +624,12 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-[#3FB950]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950]" />
-            <span>工作区只读证据投影</span>
+            <span>本地运行证据快照（非在线状态）</span>
           </span>
           <span>·</span>
           <span>实际槽位以 Runner 为准</span>
           <span>·</span>
-          <span>{metrics.queueWaiting} 待调度</span>
+          <span>{metrics.queueWaiting} 条快照等待记录</span>
         </div>
       </div>
 
