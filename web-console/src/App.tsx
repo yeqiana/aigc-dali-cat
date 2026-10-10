@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
+import { StoryNextAction } from './components/StoryNextAction';
 import { ProductionMetricsPanel } from './components/ProductionMetricsPanel';
 import { ActivityStream } from './components/ActivityStream';
 import { CommandDock } from './components/CommandDock';
@@ -414,6 +415,7 @@ export default function App() {
           {/* 核心工作流：呼吸感单主轴 */}
           {currentTab === 'workbench' && (
             <div className="max-w-3xl mx-auto space-y-3">
+              <StoryNextAction episode={activeEpisode} onOpenWorkflow={() => setCurrentTab('pipeline')} />
               {/* 单行极简流水线微型指示器（支持真实点击切换生产阶段） */}
               <StatusFlowBanner
                 currentStage={activeEpisode.currentStage}
