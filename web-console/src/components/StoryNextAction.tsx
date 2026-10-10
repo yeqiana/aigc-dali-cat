@@ -4,7 +4,7 @@ import type { Episode } from '../types';
 
 interface Props { episode: Episode; onOpenWorkflow: () => void; }
 
-const isLocalDraft = (episode: Episode) => /^ep-(home|proj)-/.test(episode.id) || episode.runtimeRequest.sourceBadge === '待连接工作区';
+const isLocalDraft = (episode: Episode) => /^ep-(home|proj)-/.test(episode.id);
 export const StoryNextAction: React.FC<Props> = ({ episode, onOpenWorkflow }) => {
   const failed = (episode.frameReviews || []).filter(item => item.verdict === 'FAIL');
   const warned = (episode.frameReviews || []).filter(item => item.verdict === 'WARN');

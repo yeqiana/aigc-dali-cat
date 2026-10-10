@@ -62,3 +62,22 @@ S1 负责 App、Sidebar、Home；S2 负责 ProductionMonitorView / RunDetail；S
 - 实时 Platform API 连接及健康、并发、队列真实值；当前监控仅可审阅历史运行快照与权威 stage summary，二者不得混成一个实时状态。
 - 受控写入端点未确认前，暂停 / 重试 / 阶段推进 / 质检放行仍必须保持不可执行。草稿仅写入浏览器 Local Storage，不代表创建正式 Episode。
 - 真实 API E2E、详细页每一个交互、自动化无障碍扫描和各主视图多分辨率截图未完成；本轮静态路由冒烟不能代替这些验收。
+## 第三轮四槽迭代（2026-10-10）
+
+### 四槽隔离交付
+- 槽 1：工作台直接读取 /api/v1/runtime/statuses 的阶段摘要，并标注读取时间、部分失败和断连状态；独立提交 d0269dc4，集成 ae23e545。
+- 槽 2：生产监控新增 RuntimeAuthorityPanel；从 Runtime API 获取阶段列表，逐作品 GET /api/v1/runtime/status 查询执行状态、阻塞、心跳与帧数。历史工作区 Run 表独立显示，不按标题把 API 阶段混写进去；独立提交 9a07c6a6，集成 5f11421c。
+- 槽 3：故事制作页增加 StoryNextAction。根据工作区 Frame Review 与 Preflight 记录区分草稿、阻塞、待确认、无审核记录，绝不直接驱动生产；独立提交 f011247e，集成 8e8af325。
+- 槽 4：Agent 页面新增 MemorySearchPanel，通过现有 POST /api/v1/memory/search 检索经验（需用户主动输入）；Workflow 列表增加逐作品权威详情查看，独立提交 63257665，集成 c5052b87。
+- 集成精修：草稿判断只依据本机新建草稿 ID；制作阶段明确标注“工作区投影，正式阶段以 Runtime API 为准”。
+
+### 已验证
+- 四个独立 Worktree 各自执行 npm run lint + npm run build，全部通过；集成分支另行通过 TypeScript、vite build --base=./ 与 git diff --check。
+- Chrome 静态构建 + **模拟 Platform API 响应** 的五项交互冒烟 PASS：home 阶段摘要、monitor 权威 Run 详情、workflow 阶段详情、Agents Memory 检索、story 下一步提示。测试中的“权威阶段样例”仅是注入在测试页面的桩数据，不属于真实业务库。
+- 生成并检查 1366×768 首页、1440×900 首页、1440×900 监控、1440×900 Workflow、1920×1080 Story 截图；Workflow 首次截图在懒加载中，延长等待后重拍并检查实际页面。截图保存在集成 Worktree 的 Git 忽略目录 .storyos-tmp/ui-qa/。
+- 本机健康检查 GET http://127.0.0.1:8080/healthz 当前不可达，未进行真实后端 E2E；本轮不能把模拟响应成功当作 Platform API 联调完成。
+
+### 未解决 / 下一轮
+- 正式部署环境的真实 API 联调、分页边界、稳定身份与变更权威验收；正式生产写操作必须先拿到明确授权 API 契约。
+- 主入口 JS 仍约 1.24MB（构建原始值），超过 Vite 500KB 提示线。需定位内容静态快照和依赖的具体占比后再拆包。
+- 需要可重复执行的正式浏览器 E2E、失败注入测试、无障碍检查与项目级数据一致性审查。

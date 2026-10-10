@@ -19,7 +19,7 @@ export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({currentStage,
   const index = STAGES.findIndex(step => step.key === currentStage);
   return <section className="border-b border-[var(--border-subtle)] pb-4 text-[var(--text-primary)]">
     <div className="mb-3 flex items-center justify-between gap-3">
-      <div><h2 className="text-[14px] font-semibold">生产阶段</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">正式阶段只读 · 仅 Runtime 可以推进门禁</p></div>
+      <div><h2 className="text-[14px] font-semibold">生产阶段</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">工作区阶段投影 · 正式阶段请以 Runtime API 为准；本页不可推进门禁</p></div>
       <button type="button" onClick={onOpenPipelineView} className="flex items-center gap-1 text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">查看完整流程 <ArrowRight size={14}/></button>
     </div>
     <ol className="flex items-start gap-1 overflow-x-auto py-1">
