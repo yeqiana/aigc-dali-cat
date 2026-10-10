@@ -1,0 +1,41 @@
+name: Web Console R10 R11 Checks
+
+on:
+  pull_request:
+    paths:
+      - "web-console/**"
+      - ".github/workflows/webconsole-r10-r11-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-build-and-contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: web-console
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web-console/package-lock.json
+      - name: Install reproducible dependencies
+        run: npm ci
+      - name: Check TypeScript types
+        run: npm run lint
+      - name: Build publishable console bundle
+        run: npm run build
+      - name: Check HTTP authority-contract client
+        run: npm run test:api
+      - name: Check historical Run evidence equivalence
+        run: npm run test:runs
+      - name: Check lazy bundle boundaries
+        run: npm run test:bundles
