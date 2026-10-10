@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, datetime as dt, heapq, json, threading, time, uuid
+import argparse, datetime as dt, heapq, json, math, threading, time, uuid
 from functools import lru_cache
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -103,6 +103,15 @@ def _rows(ep):
     # Compatibility helper for existing read-only diagnostics.
     return list(_iter_rows(ep))
 
+def _elapsed_ms_for_summary(raw):
+    """Untrusted diagnostic events must not poison aggregate output with NaN."""
+    try:
+        amount=float(raw or 0)
+    except (TypeError,ValueError,OverflowError):
+        return 0.0
+    return amount if math.isfinite(amount) and amount >= 0 else 0.0
+
+
 def summarize(ep,*,write=True):
     by=defaultdict(float)
     counts=Counter()
@@ -118,7 +127,7 @@ def summarize(ep,*,write=True):
             continue
         finished+=1
         category=str(row.get("category") or "UNKNOWN")
-        elapsed=float(row.get("elapsed_ms") or 0)
+        elapsed=_elapsed_ms_for_summary(row.get("elapsed_ms"))
         by[category]+=elapsed
         counts[str(row.get("status") or "UNKNOWN")]+=1
         # Earlier spans win on equal duration, preserving stable-sort output.
@@ -132,7 +141,8 @@ def summarize(ep,*,write=True):
        "latest_trace_id":latest,"event_count":total,"span_end_count":finished,
        "status_counts":dict(counts),
        "elapsed_ms_by_category":{k:round(v,3) for k,v in by.items()},
-       "slowest_spans":[{k:r.get(k) for k in ("name","category","status","elapsed_ms","span_id")} for r in slow]}
+       "slowest_spans":[{**{k:r.get(k) for k in ("name","category","status","span_id")},
+                         "elapsed_ms":_elapsed_ms_for_summary(r.get("elapsed_ms"))} for r in slow]}
     if write:
         runtime_observability.write_summary(ep,runtime_observability.TRACE_SUMMARY_REL,kind="trace_summary",payload=s)
     return s
