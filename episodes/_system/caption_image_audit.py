@@ -304,12 +304,22 @@ def _suggested_ratio(result: dict) -> float | None:
         return None
 
 
-def _placement_repairs_used(ep: Path, frame: str) -> int:
+def _placement_repair_frames(ep: Path) -> dict:
+    """One read per review chunk; do not cache across re-render/repair cycles."""
     path = ep / "meta/subtitle-layout.json"
     if not path.is_file():
-        return 0
+        return {}
     try:
-        row = (base.read_json(path).get("frames") or {}).get(str(frame).zfill(2)) or {}
+        frames = base.read_json(path).get("frames") or {}
+        return frames if isinstance(frames, dict) else {}
+    except Exception:
+        return {}
+
+
+def _placement_repairs_used(ep: Path, frame: str, *, frames: dict | None = None) -> int:
+    try:
+        rows = frames if frames is not None else _placement_repair_frames(ep)
+        row = rows.get(str(frame).zfill(2)) or {}
         return int(row.get("auto_placement_repairs_used") or 0) if isinstance(row, dict) else 0
     except Exception:
         return 0
@@ -328,6 +338,9 @@ def _record_chunk_results(
     got = {str(x.get("frame") or "").zfill(2): x for x in (data.get("frames") or []) if isinstance(x, dict)}
     repairs: dict[str, dict] = {}
     reviewed = 0
+    # Preserve each frame's repair budget, but don't parse the same layout
+    # configuration once per frame in a five-frame review chunk.
+    repair_frames = _placement_repair_frames(ep)
     for row in chunk:
         key = row["frame"]
         result = got.get(key)
@@ -336,7 +349,7 @@ def _record_chunk_results(
         supported = result.get("supported") is True
         unobstructed = result.get("subtitle_unobstructed") is True
         passed = supported and unobstructed
-        used = _placement_repairs_used(ep, key)
+        used = _placement_repairs_used(ep, key, frames=repair_frames)
         ratio = _suggested_ratio(result)
         reason = str(result.get("obstruction_reason") or result.get("notes") or "").strip()
         dest[key] = {
