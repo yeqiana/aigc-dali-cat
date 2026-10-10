@@ -3,9 +3,9 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 
-// Web Console 只通过这一组代理访问 Platform API（默认 http://127.0.0.1:8080）。
-// 与 web-console/.env.example 的 VITE_PLATFORM_API_URL 同源，二者不形成第二入口。
-const platformApiTarget = process.env.VITE_PLATFORM_API_URL || 'http://127.0.0.1:8080';
+// 开发模式的只读本机证据 API 始终通过同源 Vite 代理；避免跨域读取本机文件。
+// 正式部署保留现有 VITE_PLATFORM_API_URL 配置，只有本机启动器才使用私有代理覆盖。
+const platformApiTarget = process.env.STORYOS_PLATFORM_PROXY_TARGET || process.env.VITE_PLATFORM_API_URL || 'http://127.0.0.1:8080';
 
 const platformProxy = {
   '/api': {
