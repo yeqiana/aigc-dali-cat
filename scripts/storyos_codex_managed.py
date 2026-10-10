@@ -96,6 +96,19 @@ def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
                  and health.get("codex_auth_present") is True)
     if not native_ok:
         blockers.append("NATIVE_CODEX_AUTH_OR_USER_RUNNER_UNAVAILABLE")
+    # The bridge presence check does not prove that the policy-bound -m model
+    # can run on this CLI version. Check the CLI floor without any paid call.
+    # This is necessary but not sufficient: account entitlement is still
+    # unverified until a separate real native Codex model probe succeeds.
+    model_args = (["--episode", episode.relative_to(ROOT).as_posix()]
+                  if episode is not None else [])
+    rc, model_readiness = _probe(
+        env, "scripts/storyos_native_model_readiness.py", model_args
+    )
+    model_version_ok = (rc == 0
+                        and model_readiness.get("status") == "CLIENT_VERSION_COMPATIBLE")
+    if not model_version_ok:
+        blockers.append("NATIVE_CODEX_MODEL_CLI_VERSION_OR_POLICY_UNVERIFIED")
     rc, schema = _probe(env, "scripts/storyos_revision_schema_readonly.py", [])
     if rc != 0 or schema.get("status") != "READY_FOR_FURTHER_ADMISSION":
         blockers.append("PRODUCTION_MYSQL_REVISION_SCHEMA_UNVERIFIED")
@@ -132,6 +145,10 @@ def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
             "schema_reason": schema.get("reason"),
         },
         "codex": {"bridge_ok": native_ok, "mode_ok": mode_ok,
+                  "model_client_version_ok": model_version_ok,
+                  "model_minimum_cli_version": model_readiness.get("minimum_cli_version"),
+                  "model_policy_source": model_readiness.get("policy_source"),
+                  "model_entitlement_verified": False,
                   "tool_generation_proven": False},
         "attempt": {"status": attempts.get("status"),
                     "outcome_unknown_assets": attempts.get("outcome_unknown_assets", []),
