@@ -112,6 +112,40 @@ def test_non_availability_failures_do_not_advance_model(failure_class: str) -> N
     assert model_policy.next_fallback("image.payload", failure_class) is None
 
 
+@pytest.mark.parametrize("role", [
+    "story.authoring", "critic.story", "critic.final",
+    "vision.fast", "vision.visual_lock", "image.controller",
+])
+@pytest.mark.parametrize("failure_class", ["MODEL_UNAVAILABLE", "PROVIDER_CAPACITY"])
+def test_primary_only_native_codex_model_does_not_fallback(role: str, failure_class: str) -> None:
+    # No hidden switch away from the frozen Luna model is allowed.
+    assert model_policy.resolve(role)["model"] == "gpt-6-luna"
+    assert model_policy.next_fallback(role, failure_class) is None
+
+
+def test_bound_primary_only_model_does_not_fallback_on_unavailability(monkeypatch, tmp_path: Path) -> None:
+    bound = {
+        "policy_version": "frozen-test",
+        "policy_sha256": "b" * 64,
+        "profiles": {
+            "semantic_critic": {"model": "frozen-native-text", "reasoning_effort": "high"},
+        },
+        "role_aliases": {"critic.story": "semantic_critic"},
+    }
+    monkeypatch.setitem(sys.modules, "model_policy_persistence", SimpleNamespace(
+        load=lambda episode: copy.deepcopy(bound),
+    ))
+    assert model_policy.resolve("critic.story", tmp_path)["model"] == "frozen-native-text"
+    assert model_policy.next_fallback("critic.story", "MODEL_UNAVAILABLE", episode=tmp_path) is None
+
+
+def test_image_fallback_contract_is_unaffected_by_primary_only_native_change() -> None:
+    selected = model_policy.next_fallback("image.payload", "MODEL_UNAVAILABLE")
+    assert selected is not None
+    assert selected["candidate_index"] == 1
+    assert selected["model"] == "gpt-image-2.5-sunburst"
+
+
 def test_controller_and_payload_are_separate_capability_profiles() -> None:
     controller = model_policy.resolve("image.controller")
     payload = model_policy.resolve("image.payload")
