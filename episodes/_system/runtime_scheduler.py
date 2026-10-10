@@ -10,7 +10,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import runtime_dag
 import runtime_resource_manager
 import runtime_failure_strategy
 import task_priority
@@ -122,6 +121,9 @@ def load_node_contract(source) -> list[dict]:
     """Load a Node Contract from a dict/list or a JSON file; no files are written."""
     if isinstance(source, (str, Path)):
         source = json.loads(Path(source).read_text(encoding="utf-8"))
+    # Avoid the import-time Scheduler -> DAG -> Scheduler cycle. The module
+    # is already cached once it is first needed for planning.
+    import runtime_dag
     rows = runtime_dag.normalize_node_contracts(source)
     for row in rows:
         if str(row.get("node_type") or "") not in NODE_TYPES:
@@ -149,6 +151,7 @@ def schedule(source, *, completed=(), failed=(), max_workers: int = 1, resource_
         raise ValueError("max_workers must be at least 1")
     workers = int(max_workers)
     rows = load_node_contract(source)
+    import runtime_dag
     resolved = runtime_dag.resolve_node_dependencies(rows, completed=completed, failed=failed)
     ready = task_priority.stable_sort(resolved["ready"])
     resources = runtime_resource_manager.normalize(resource_snapshot, max_workers=workers)
