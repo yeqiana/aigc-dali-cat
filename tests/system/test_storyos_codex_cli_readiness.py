@@ -37,3 +37,22 @@ def test_missing_cd_fails_closed_and_no_secrets():
     assert data["status"]=="CLI_FLAGS_INCOMPLETE"
     assert data["flags"]["-C"] is False
     assert data["episode_cwd_is_security_boundary"] is False
+
+def test_user_runner_bridge_auth_is_a_presence_check_only():
+    healthy={"status":"ok","interactive_user":True,"codex_available":True,
+             "codex_home_accessible":True,"codex_auth_present":True,
+             "user":"SECRET_WINDOWS_ACCOUNT","token":"DO_NOT_PRINT"}
+    result=tool.inspect_storyos_bridge(health_provider=lambda:healthy)
+    assert result["status"]=="BRIDGE_AUTH_PRESENT"
+    assert result["model_execution_verified"] is False
+    assert "SECRET" not in str(result)
+    assert "token" not in str(result)
+
+
+def test_missing_bridge_auth_fail_closed():
+    result=tool.inspect_storyos_bridge(health_provider=lambda:{
+        "status":"ok","interactive_user":True,"codex_available":True,
+        "codex_home_accessible":True})
+    assert result["status"]=="BRIDGE_AUTH_UNVERIFIED"
+    assert result["auth_context_present"] is False
+    assert tool.inspect_storyos_bridge(health_provider=lambda:(_ for _ in ()).throw(RuntimeError("SECRET")))["status"]=="BRIDGE_UNAVAILABLE"
