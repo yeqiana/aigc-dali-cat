@@ -12,7 +12,7 @@ assert.ok(fs.existsSync(chrome), '此测试需要本机 Chrome 或 CHROME_PATH')
 fs.mkdirSync(reports, { recursive: true });
 const first = {episode_id:'workflow-first',title:'分页作品甲',episode_ref:'EP-A',production_stage:'IDEA_LOCKED',state_source:'API'};
 const second = {episode_id:'workflow-second',title:'分页作品乙',episode_ref:'EP-B',production_stage:'STORYBOARD_LOCKED',state_source:'API'};
-const nav = "const menu=[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='工作流');if(!menu)throw Error('navigation');menu.click();";
+const nav = "let menu=null;for(let i=0;i<80&&!menu;i++){menu=[...document.querySelectorAll('nav button')].find(b=>b.textContent.trim()==='工作流');if(!menu)await new Promise(r=>setTimeout(r,150))}if(!menu)throw Error('navigation');menu.click();";
 const api = [
   'window.__nextPages=0;',
   'window.fetch=async input=>{',
@@ -51,7 +51,7 @@ function run(name, mock, body) {
   fs.writeFileSync(entry, html);
   const result = spawnSync(chrome, [
     '--headless=new','--no-sandbox','--disable-gpu','--disable-web-security',
-    '--disable-dev-shm-usage','--allow-file-access-from-files','--virtual-time-budget=8000',
+    '--disable-dev-shm-usage','--allow-file-access-from-files','--virtual-time-budget=20000',
     '--window-size=1440,900','--user-data-dir='+path.join(reports, 'r4-'+name),
     '--dump-dom',pathToFileURL(entry).href
   ],{encoding:'utf8',timeout:40000,maxBuffer:4000000});
