@@ -9,6 +9,7 @@ import { ContextPanel } from './components/ContextPanel';
 
 // Views
 import { ProductionMonitorView } from './components/views/ProductionMonitorView';
+import { HomeOverviewView } from './components/views/HomeOverviewView';
 import { ProductionPipelineView } from './components/views/ProductionPipelineView';
 import { SeriesLibraryView } from './components/views/SeriesLibraryView';
 import { RuntimeLogsView } from './components/views/RuntimeLogsView';
@@ -16,7 +17,7 @@ import { SettingsView } from './components/views/SettingsView';
 
 import { REAL_EPISODES } from './data/storyosRealData';
 import { platformApi } from './api/platformApi';
-import { Episode, NavigationTab, ProductionStage, BatchItem, ThemeMode, ProjectItem } from './types';
+import { Episode, NavigationTab, ProductionStage, ThemeMode, ProjectItem } from './types';
 
 const STORY_PLACEHOLDER_IMAGE = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%201000%22%3E%3Crect%20width%3D%22800%22%20height%3D%221000%22%20fill%3D%22%23e4e4e7%22%2F%3E%3Cpath%20d%3D%22M160%20720%20340%20500l120%20140%2090-110%20110%20190H160Z%22%20fill%3D%22%23a1a1aa%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22330%22%20r%3D%2270%22%20fill%3D%22%23a1a1aa%22%2F%3E%3C%2Fsvg%3E';
 import { Search, X, CheckCircle2, AlertCircle, Bell, Clock } from 'lucide-react';
@@ -55,8 +56,8 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
 export default function App() {
   const [episodes, setEpisodes] = useState<Episode[]>(REAL_EPISODES);
   const [activeEpisode, setActiveEpisode] = useState<Episode>(REAL_EPISODES[0]);
-  const [currentTab, setCurrentTab] = useState<NavigationTab>('production_monitor');
-  const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
+  const [currentTab, setCurrentTab] = useState<NavigationTab>('overview');
+  const [isGeneratingBatch] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [contextPanelOpen, setContextPanelOpen] = useState(true);
 
@@ -253,11 +254,7 @@ export default function App() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: '1', title: '婚礼前夜 制作全量通过', desc: '20 帧全量渲染完成并通过逐帧语义审查，发布决策 GO', time: '刚刚', unread: true },
-    { id: '2', title: '主角新娘 (P01) 视觉基准锁定', desc: '4:5 1080×1350 肖像一致性评分 98.8% (Ordinary01/Worst11/Anomaly03/Impact15)', time: '1小时前', unread: false },
-    { id: '3', title: 'Release Preflight 合规放行', desc: '4:5 1080×1350 叙事画幅全量校验通过，无拉伸无黑边', time: '昨天', unread: false }
-  ]);
+  const [notifications, setNotifications] = useState<{ id: string; title: string; desc: string; time: string; unread: boolean }[]>([]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -279,92 +276,19 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // 阶段真实流转切换
-  const handleStageChange = (newStage: ProductionStage) => {
-    const updated: Episode = {
-      ...activeEpisode,
-      currentStage: newStage,
-      updatedAt: '刚刚',
-    };
-    setActiveEpisode(updated);
-    setEpisodes(prev => prev.map(ep => ep.id === updated.id ? updated : ep));
-    showToast(`阶段已真实切换为: ${newStage}`);
+  // 生产阶段和生成/审查权威属于 Platform Runtime，Web Console 暂无写入 API。
+  // 这些入口必须明确说明只读，绝不在本地伪造成功或推进 canonical stage。
+  const handleStageChange = (_newStage: ProductionStage) => {
+    showToast('当前仅可查看阶段。请在受控 StoryOS Runtime 完成状态流转。');
   };
-
-  // 真实批次出图调度（动态累加出图帧数）
   const handleQuickGenerateNextBatch = () => {
-    setIsGeneratingBatch(true);
-    setTimeout(() => {
-      setIsGeneratingBatch(false);
-      const nextCompleted = Math.min(activeEpisode.totalFrames, activeEpisode.completedFrames + 5);
-      const nextPercent = Math.round((nextCompleted / activeEpisode.totalFrames) * 100);
-
-      const newItems: BatchItem[] = [21, 22, 23, 24, 25].map((idx) => ({
-        id: `b5-f${idx}`,
-        frameIndex: idx,
-        prompt: `4:5 电影级镜头，主角林澈推开古宅偏殿木门，冷光穿透雨幕 (Frame #${idx})`,
-        imageUrl: `https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=700&auto=format&fit=crop&q=80`,
-        status: 'qa_passed',
-        qaScore: 0.98,
-        progress: 100,
-        consistencyScore: 0.98,
-        renderTime: '11.8s',
-        seed: 4892010 + idx,
-      }));
-
-      const updated: Episode = {
-        ...activeEpisode,
-        completedFrames: nextCompleted,
-        stageProgressPercent: nextPercent,
-        currentStage: nextCompleted >= activeEpisode.totalFrames ? 'READY_TO_PUBLISH' : 'PROD_APPROVED',
-        currentBatch: {
-          batchId: 'BATCH_05',
-          batchNumber: 5,
-          batchName: '第 5 批次 (Frame #21 - #25)',
-          targetFrames: '21-25',
-          totalImages: newItems.length,
-          createdAt: '刚刚',
-          status: 'completed',
-          items: newItems,
-        },
-        updatedAt: '刚刚',
-      };
-
-      setActiveEpisode(updated);
-      setEpisodes(prev => prev.map(ep => ep.id === updated.id ? updated : ep));
-      showToast(`第 5 批次 5 帧 (4:5 1080×1350) 已成功生成并入库 (${nextCompleted}/${activeEpisode.totalFrames} 帧)`);
-    }, 1200);
+    showToast('尚未接入受控图片调度 API，未发起生成。');
   };
-
-  // 命令输入调度
-  const handleCommandSubmit = (commandText: string) => {
-    showToast(`StoryOS 已调度: “${commandText.slice(0, 16)}...”`);
-
-    if (commandText.length > 5) {
-      const newEpId = `ep-cmd-${Date.now()}`;
-      const title = commandText.length > 14 ? commandText.slice(0, 14) + '...' : commandText;
-      const newEp = buildNewEpisode(newEpId, title, undefined, commandText);
-      newEp.code = `EP-0${episodes.length + 1}`;
-      newEp.currentStage = 'PROD_APPROVED';
-      newEp.stageProgressPercent = 16;
-      newEp.completedFrames = 5;
-
-      setEpisodes(prev => [newEp, ...prev]);
-      // 自动归入项目同级的“最近故事”中
-      const nextRecent = [newEpId, ...recentStoryIds.filter(id => id !== newEpId)];
-      saveRecentStories(nextRecent);
-      setActiveEpisode(newEp);
-      setCurrentTab('workbench');
-      showToast(`已从主页调度生成《${newEp.title}》，已自动归入项目同级的「最近故事」`);
-    }
+  const handleCommandSubmit = (_commandText: string) => {
+    showToast('当前仅支持工作区查看，命令未提交至生产 Runtime。');
   };
-
-  const handleReviewAction = (frameId: string, action: 'pass' | 'inpaint' | 'reject') => {
-    if (action === 'inpaint') {
-      showToast(`Frame #${frameId} 已执行 Inpaint 倒影微瑕修复，质检通过`);
-    } else if (action === 'pass') {
-      showToast(`Frame #${frameId} 质检已核准通过`);
-    }
+  const handleReviewAction = (_frameId: string, _action: 'pass' | 'inpaint' | 'reject') => {
+    showToast('该操作需要审核权威接口，当前未执行任何审核变更。');
   };
 
   const searchResults = episodes.filter(ep =>
@@ -424,6 +348,8 @@ export default function App() {
               <span>{toastMessage}</span>
             </div>
           )}
+
+          {currentTab === 'overview' && <HomeOverviewView episodes={episodes} projects={projects} onSelectEpisode={(ep) => { setActiveEpisode(ep); setCurrentTab('workbench'); }} onNewStory={() => handleCreateStoryFromHome()} onNavigate={setCurrentTab} />}
 
           {/* 生产监控台主控页 (StoryOS 生产监控台 V1.0 - Dense Operations Console) */}
           {currentTab === 'production_monitor' && (
