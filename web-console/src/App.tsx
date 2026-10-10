@@ -329,11 +329,6 @@ export default function App() {
 
   return (
     <div id="storyos-workspace-root" className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased select-text">
-      {import.meta.env.VITE_STORYOS_LOCAL_EVIDENCE_MODE === 'true' && (
-        <div role="status" data-testid="local-real-evidence-banner" className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none border border-[var(--warning)] bg-[var(--bg-elevated)] px-4 py-2 rounded-[5px] shadow-lg text-[12px] text-[var(--text-primary)]">
-          本机真实作品状态文件 · 只读快照 · 非 MySQL 权威运行状态，不代表在线任务
-        </div>
-      )}
       {import.meta.env.VITE_STORYOS_FIXTURE_MODE === 'true' && (
         <div role="status" data-testid="local-fixture-banner" className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none border border-[var(--warning)] bg-[var(--bg-elevated)] px-4 py-2 rounded-[5px] shadow-lg text-[12px] text-[var(--text-primary)]">
           本机隔离测试模式 · Platform API 仅使用内存样例数据 · 非真实生产状态
@@ -414,7 +409,7 @@ export default function App() {
 
           {/* 剧集库视图 */}
           {currentTab === 'episodes' && (
-            <div className="max-w-4xl mx-auto">
+            <div className="w-full">
               <SeriesLibraryView
                 episodes={episodes}
                 activeEpisode={activeEpisode}

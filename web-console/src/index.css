@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 /* =========================================================================
    StoryOS Centralized Theme System (主题色单点中枢)
    所有主题色在此处唯一定义，通过 CSS 变量分发至全局
@@ -457,3 +456,33 @@ html, body {
 ::-webkit-scrollbar-thumb:hover {
   filter: brightness(0.8);
 }
+
+/* StoryOS R10 design system: accessible studio UI */
+.theme-dark {
+  --bg-app:#0b1019; --bg-workspace:#101724; --bg-surface:#151e2c; --bg-elevated:#1c2736;
+  --bg-hover:#243143; --bg-selected:#253650; --border-subtle:#293548;
+  --border-normal:#36445a; --border-strong:#4b5d75; --text-primary:#f3f7fc;
+  --text-secondary:#b0bdd0; --text-tertiary:#91a0b6; --info:#79b3ff; --focus:#91c4ff;
+  --sidebar-width:240px; --header-height:60px; --app-card-shadow:0 10px 28px rgba(2,8,23,.12);
+}
+.theme-light,.theme-light-gradient { --app-card-shadow:0 7px 28px rgba(27,39,65,.06); }
+html,body {letter-spacing:.005em;}
+:where(button,a,input,select,textarea):focus-visible {outline:2px solid var(--focus);outline-offset:2px;}
+button:not(:disabled) {cursor:pointer;}
+.os-card {border:1px solid var(--border-subtle);background:var(--bg-surface);border-radius:14px;box-shadow:var(--app-card-shadow);}
+.os-card-soft {border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface);}
+.os-page-heading {font-size:clamp(22px,2vw,28px);line-height:1.3;font-weight:720;letter-spacing:-.025em;color:var(--text-primary);}
+.os-section-heading {color:var(--text-primary);font-weight:650;font-size:15px;letter-spacing:-.01em;}
+.os-eyebrow {color:var(--text-tertiary);font-size:11px;font-weight:650;letter-spacing:.095em;text-transform:uppercase;}
+.os-action {border:1px solid var(--border-normal);border-radius:9px;height:36px;padding:0 14px;font-size:12px;font-weight:600;color:var(--text-secondary);background:var(--bg-elevated);display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.os-action:hover {border-color:var(--focus);color:var(--text-primary);background:var(--bg-hover);}
+.os-action-primary {color:#fff;background:#346fe5;border-color:#346fe5;box-shadow:0 5px 14px rgba(37,99,235,.18);}
+.os-action-primary:hover {color:#fff;background:#2864d2;border-color:#2864d2;}
+.os-stat {border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface);padding:18px 20px;min-height:116px;}
+.os-stat-label {color:var(--text-secondary);font-size:12px;font-weight:550;}
+.os-stat-number {margin-top:10px;color:var(--text-primary);font-size:29px;font-weight:720;letter-spacing:-.04em;font-variant-numeric:tabular-nums;}
+.os-data-row {transition:background-color .16s ease;}
+.os-data-row:hover {background:var(--bg-hover);}
+.os-source-info {background:color-mix(in srgb,var(--info) 7%,var(--bg-surface));border:1px solid color-mix(in srgb,var(--info) 22%,var(--border-subtle));color:var(--text-secondary);border-radius:10px;}
+.os-source-warning {background:color-mix(in srgb,var(--warning) 8%,var(--bg-surface));border:1px solid color-mix(in srgb,var(--warning) 23%,var(--border-subtle));color:var(--text-secondary);border-radius:10px;}
+@media(prefers-reduced-motion:reduce){button,a,select,input,.os-data-row{transition:none!important;}}

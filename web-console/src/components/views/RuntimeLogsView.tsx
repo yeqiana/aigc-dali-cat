@@ -277,25 +277,25 @@ export const RuntimeLogsView: React.FC = () => {
   };
 
   return (
-    <div id="runtime-logs-view" className="w-full h-full flex flex-col overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans select-none relative">
+    <div id="runtime-logs-view" className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[var(--bg-app)] font-sans text-[var(--text-primary)]">
       {/* 1. 顶部全局工具栏与状态统计 (占满宽度) */}
-      <div className="shrink-0 p-3 lg:px-4 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="flex shrink-0 flex-col justify-between gap-3 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-4 lg:flex-row lg:items-center">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-[4px] bg-[var(--bg-elevated)] border border-[var(--border-normal)] text-[#58A6FF]">
+          <div className="text-[var(--text-tertiary)]">
             <Terminal className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wider">
+              <h1 className="text-[18px] font-semibold tracking-tight text-[var(--text-primary)]">
                 运行日志审计控制台
-              </h2>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 font-bold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>实时捕获</span>
+              </h1>
+              <span className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--border-normal)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />
+                <span>{autoRefresh ? '自动轮询' : '手动刷新'}</span>
               </span>
             </div>
             <p className="text-[11px] text-[var(--text-tertiary)] font-mono">
-              全屏 APM 观测流水线 · {logs.length} 条审计记录就绪 · 支持 JSON 深度结构化分析
+              审计事件 · 当前已加载 {logs.length} 条 · 支持筛选、追踪和详情查看
             </p>
           </div>
         </div>
@@ -313,7 +313,7 @@ export const RuntimeLogsView: React.FC = () => {
             }`}
             title="每 5 秒自动拉取最新事件日志"
           >
-            <Activity className={`w-3.5 h-3.5 ${autoRefresh ? 'animate-spin' : ''}`} />
+            <Activity className="h-3.5 w-3.5" />
             <span>自动刷新: {autoRefresh ? '开启' : '关闭'}</span>
           </button>
 
@@ -357,7 +357,7 @@ export const RuntimeLogsView: React.FC = () => {
         {/* 左侧：搜索框与筛选器 */}
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
           {/* 全文关键字搜索 */}
-          <div className="relative w-64 md:w-80">
+          <div className="relative w-full min-w-[190px] max-w-[360px] flex-1">
             <Search className="w-3.5 h-3.5 text-[var(--text-tertiary)] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
