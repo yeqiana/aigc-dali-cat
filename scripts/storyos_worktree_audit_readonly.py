@@ -15,7 +15,7 @@ def parse_worktrees(raw: str) -> list[dict]:
     """Parse git worktree list --porcelain without losing detached/locked flags."""
     result: list[dict] = []
     current: dict = {}
-    for line in (raw + "\n").splitlines():
+    for line in (raw + "\n\n").splitlines():
         if not line:
             if current.get("path"):
                 result.append(current)
@@ -48,7 +48,7 @@ def classify(
     reasons: list[str] = []
     candidate = True
     path = str(entry.get("path") or "")
-    if not path or path.casefold() == primary_path.casefold():
+    if not path or Path(path).resolve(strict=False) == Path(primary_path).resolve(strict=False):
         reasons.append("primary_or_invalid_worktree")
         candidate = False
     if entry.get("locked") or entry.get("prunable"):
