@@ -162,7 +162,10 @@ def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
         "driver_state": driver.get("driver_state") if episode else None,
         "creative_story_recovery": {
             "status": creative_recovery.get("status"),
+            "contract_status": creative_recovery.get("contract_status"),
+            "review_path_present": creative_recovery.get("review_path_present"),
             "model_success_receipt_count": creative_recovery.get("model_success_receipt_count"),
+            "model_success_receipt_reuse_verified": False,
             "model_success_is_story_lock": False,
             "model_generation_required": None,
         } if episode else None,
