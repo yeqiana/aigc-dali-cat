@@ -40,6 +40,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 import secrets
 import shutil
 import socket
@@ -744,8 +745,20 @@ def codex_version(codex: Path, timeout: int = VERSION_PROBE_TIMEOUT_SECONDS) -> 
         return None
     if cp.returncode != 0:
         return None
-    text = (cp.stdout or "").strip().splitlines()
-    return text[0].strip() if text else None
+    # Native Codex may print a benign cleanup/sandbox warning to stderr
+    # before its --version banner. stderr is intentionally merged with stdout;
+    # treating only line 1 as the version made StoryOS reject an otherwise
+    # healthy CLI and blocked the independent Concept Ambition critic.
+    # Accept exactly one full-line version banner; never parse a version
+    # embedded inside arbitrary output or a conflicting pair of banners.
+    banners = {
+        line.strip() for line in (cp.stdout or "").splitlines()
+        if re.fullmatch(
+            r"(?:codex-cli|codex)\s+\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?",
+            line.strip(),
+        )
+    }
+    return next(iter(banners)) if len(banners) == 1 else None
 
 
 # ---------------------------------------------------------------------------
