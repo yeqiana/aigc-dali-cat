@@ -1,18 +1,20 @@
 """Opt-in real MySQL two-OS-process Episode identity integration test.
 
-Runs ONLY against the dedicated localhost:33417 test container, creates a
+Runs ONLY against explicitly whitelisted localhost test containers, creates a
 random schema and destroys it; never loads runtime.env or touches production.
 """
 import os,sys,json,uuid,time,datetime,tempfile,subprocess
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/"episodes"/"_system"),str(ROOT)]
-PORT=33417
+ALLOWED_TARGETS={"storyos-test-only-mysql-authority":33417,"storyos-ci-ephemeral":33317}
+TARGET=os.environ.get("STORYOS_ATOMIC_TEST_CONTAINER")
+if TARGET not in ALLOWED_TARGETS:
+ raise RuntimeError("TEST_ONLY_CONTAINER_NOT_ACKNOWLEDGED")
+PORT=ALLOWED_TARGETS[TARGET]
 
 def connection(schema=None):
  import pymysql
- if os.environ.get("STORYOS_ATOMIC_TEST_CONTAINER")!="storyos-test-only-mysql-authority":
-  raise RuntimeError("TEST_ONLY_CONTAINER_NOT_ACKNOWLEDGED")
  if not os.environ.get("STORYOS_ATOMIC_TEST_PASSWORD"):
   raise RuntimeError("TEST_PASSWORD_REQUIRED")
  return pymysql.connect(host="127.0.0.1",port=PORT,user="root",
@@ -55,8 +57,9 @@ def child(schema,base,title,action):
                    "name":ep.name,"exists":ep.is_dir()},ensure_ascii=False),flush=True)
 
 def launch(schema,base,title,action):
- return subprocess.Popen([sys.executable,str(Path(__file__).resolve()),
-   "--child",schema,str(base),title,action],cwd=ROOT,env=dict(os.environ),
+ return subprocess.Popen([sys.executable,str(ROOT/"scripts"/"ci_storyos_python.py"),
+   str(Path(__file__).resolve()),"--child",schema,str(base),title,action],
+   cwd=ROOT,env=dict(os.environ),
    stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,encoding="utf-8",errors="replace")
 
 def result(proc,expected=0):

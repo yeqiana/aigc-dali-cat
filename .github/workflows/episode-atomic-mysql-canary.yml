@@ -1,0 +1,46 @@
+name: Episode Atomic MySQL Canary
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/episode-atomic-mysql-canary.yml"
+      - "episodes/_system/story_creator.py"
+      - "episodes/_system/episode_state_persistence.py"
+      - "platform/repository/mysql/mysql_connection.py"
+      - "platform/repository/mysql/mysql_episode_repository.py"
+      - "tests/integration/storyos_atomic_mysql_two_processes.py"
+      - "tests/system/test_storyos_episode_number_claim.py"
+      - "tests/system/test_storyos_mysql_number_claim_contract.py"
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-mysql-two-process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci_ephemeral_${{ github.run_id }}_${{ github.run_attempt }}
+        ports:
+          - "33317:3306"
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+    env:
+      PYTHONUTF8: "1"
+      STORYOS_ATOMIC_TEST_CONTAINER: storyos-ci-ephemeral
+      STORYOS_ATOMIC_TEST_PASSWORD: ci_ephemeral_${{ github.run_id }}_${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install isolated runtime dependencies
+        run: python -m pip install -r episodes/_system/requirements.txt
+      - name: Validate two OS processes and durable MySQL claims
+        run: python scripts/ci_storyos_python.py tests/integration/storyos_atomic_mysql_two_processes.py

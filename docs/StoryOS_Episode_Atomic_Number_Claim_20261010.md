@@ -26,3 +26,9 @@
 ## 真实 MySQL 双进程验收脚本（不自动运行）
 
 tests/integration/storyos_atomic_mysql_two_processes.py 需要专用 MySQL 测试容器的凭据以环境变量 STORYOS_ATOMIC_TEST_PASSWORD 注入，并要求 STORYOS_ATOMIC_TEST_CONTAINER=storyos-test-only-mysql-authority。脚本只连接 127.0.0.1:33417，在随机命名的 STORYOS_ISO_EPCLAIM_* 数据库中执行两个真实操作系统进程的并发创建、崩溃保号、重启与重复主键拒绝验证，finally 删除专用临时数据库。脚本不得读取正式 runtime.env，不接受正式 MySQL 端口，也不调用模型。CI 不自动运行它，必须由有测试容器授权的操作者显式提供独立测试凭据。
+
+## 无需本地凭据的 GitHub CI 双进程验收
+
+.github/workflows/episode-atomic-mysql-canary.yml 使用 GitHub 托管 Ubuntu Runner 启动一次性 mysql:8.0 服务，固定隔离回环端口 33317，并只设置该 CI 实例的临时测试口令。测试脚本严格白名单允许 storyos-ci-ephemeral 目标，不需要任何本机 Docker inspect、生产 runtime.env 或其他用户凭据。
+
+CI 真实执行两个独立 Python 进程同时申请新 Episode，检查旧 05 永久保留、06/07 唯一分配、08 占号后进程异常、09 下次不复用、ACTIVE/ABANDONED 行及 State 记录一致，并直接验证 MySQL PRIMARY KEY 拒绝重复存储 UID。finally 删除随机生成的临时数据库。CI 验收成功后仍需人工确认新代码不会干预正在进行的付费生产，再决定合并主线。
