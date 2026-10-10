@@ -67,6 +67,7 @@ def assess(version: str, profiles: dict) -> dict:
 def inspect(episode: Path | None = None) -> dict:
     # Keep model authority in MySQL when an Episode binding exists.
     import codex_cli_contract
+    import codex_user_runner
     import model_policy
     import model_policy_persistence
 
@@ -81,11 +82,22 @@ def inspect(episode: Path | None = None) -> dict:
         if bound is not None:
             policy = bound
             source = "MYSQL_EPISODE_MODEL_POLICY"
-    cli = codex_cli_contract.resolve()
-    result = assess(cli.version, policy["profiles"])
+    # The interactive-user Runner can have a different PATH and binary than
+    # the service process. Its reported version owns bridged model dispatch.
+    if codex_user_runner.bridge_required():
+        health = codex_user_runner.runner_health()
+        if health.get("status") != "ok" or health.get("codex_available") is not True:
+            raise RuntimeError("USER_RUNNER_CODEX_VERSION_UNVERIFIED")
+        version = str(health.get("codex_version") or "")
+        resolution = "INTERACTIVE_USER_RUNNER"
+    else:
+        cli = codex_cli_contract.resolve()
+        version = cli.version
+        resolution = cli.resolution
+    result = assess(version, policy["profiles"])
     result["policy_source"] = source
     result["policy_sha256"] = policy.get("policy_sha256")
-    result["cli_resolution"] = cli.resolution
+    result["cli_resolution"] = resolution
     # Never expose local installation paths, usernames or credentials.
     return result
 
