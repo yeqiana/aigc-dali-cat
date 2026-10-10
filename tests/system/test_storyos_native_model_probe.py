@@ -51,6 +51,15 @@ def test_unauthorized_probe_never_imports_or_dispatches_model(monkeypatch, capsy
     assert data["model_calls"] == 0
 
 
+def test_model_probe_task_type_is_accepted_by_existing_user_runner():
+    import sys
+    system = ROOT / "episodes" / "_system"
+    if str(system) not in sys.path:
+        sys.path.insert(0, str(system))
+    import codex_user_runner
+    assert probe.PROBE_TASK_TYPE in codex_user_runner.ALLOWED_TASK_TYPES
+
+
 def test_command_uses_explicit_model_native_cli_and_read_only_ephemeral_session():
     args = probe.command("gpt-6-luna", "high", launcher=["codex"])
     assert args[0:3] == ["codex", "exec", "--skip-git-repo-check"]
