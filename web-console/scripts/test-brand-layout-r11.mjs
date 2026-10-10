@@ -14,7 +14,7 @@ const dir=path.resolve('../.storyos-tmp/ui-qa/r11');fs.mkdirSync(dir,{recursive:
 const html=fs.readFileSync('index.html','utf8');
 assert.ok(html.includes('<title>StoryOS</title>'));
 const icon=await fetch(new URL('/favicon.svg?v=2',url));assert.equal(icon.status,200);assert.ok((await icon.text()).includes('M42 18H28'));
-const cases=[{name:'library',menu:'作品与项目',title:'作品与项目',width:1440},{name:'agents',menu:'Agents',title:'Agents',width:1366},{name:'logs',menu:'审计日志',title:'运行日志审计控制台',width:1440},{name:'settings',menu:'系统设置',title:'系统设置',width:1366}];
+const cases=[{name:'library',menu:'作品与项目',title:'作品与项目',width:1440},{name:'agents',menu:'Agents',title:'Agents',width:1366},{name:'logs',menu:'审计日志',title:'审计日志',width:1440},{name:'settings',menu:'系统设置',title:'系统设置',width:1366}];
 try{
  for(const c of cases){
   const script=[
