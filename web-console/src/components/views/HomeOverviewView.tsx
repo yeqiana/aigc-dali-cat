@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Folder, Plus, RefreshCw,
 import { Episode, NavigationTab, ProjectItem } from '../../types';
 import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
 import { isHistoricalEpisodeIndex } from '../../data/storyosEpisodeLoader';
+import {useLocalApprovedMedia} from '../../api/localApprovedMedia';
 
 interface Props {
   episodes: Episode[];
@@ -19,6 +20,8 @@ const STAGES: Record<string, string> = {
 const percentage = (ep: Episode) => ep.totalFrames > 0 ? Math.min(100, Math.round(ep.completedFrames / ep.totalFrames * 100)) : 0;
 
 export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelectEpisode, onNewStory, onNavigate }) => {
+  const {findEpisode}=useLocalApprovedMedia();
+  const coverFor=(ep:Episode)=>findEpisode(ep.title,ep.code)?.frames[0]?.url || (ep.coverImage && !ep.coverImage.startsWith('data:image/svg+xml') ? ep.coverImage : '');
   const [query, setQuery] = useState('');
   const [storyPage,setStoryPage] = useState(1);
   const [runtimePage,setRuntimePage] = useState(1);
@@ -104,7 +107,7 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
             {filtered.length === 0 && <p className="py-10 text-center text-[13px] text-[var(--text-tertiary)]">没有符合条件的故事。可以清除搜索后继续查看。</p>}
             {filtered.slice((storyPage-1)*storyPageSize,storyPage*storyPageSize).map(ep => <button key={ep.id} type="button" onClick={() => onSelectEpisode(ep)}
               aria-label={`打开故事 ${ep.title}`} className="os-data-row group w-full min-w-0 flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 border-[var(--border-subtle)] text-left">
-              <div className="flex h-12 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[4px] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">{ep.coverImage && !ep.coverImage.startsWith("data:image/svg+xml") ? <img alt="" loading="lazy" src={ep.coverImage} className="h-full w-full object-cover" /> : <Folder size={16} className="text-[var(--text-tertiary)]" />}</div>
+              <div className="flex h-12 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[4px] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">{coverFor(ep) ? <img alt="" loading="lazy" src={coverFor(ep)} className="h-full w-full object-cover" /> : <Folder size={16} className="text-[var(--text-tertiary)]" />}</div>
               <div className="min-w-0 flex-1"><div className="truncate text-[14px] font-semibold leading-5">{ep.title}</div><div className="mt-1 truncate text-[12px] text-[var(--text-secondary)]">{STAGES[ep.currentStage] ?? ep.currentStage} · {ep.completedFrames}/{ep.totalFrames} 帧</div></div>
               <div className="hidden sm:block w-24 shrink-0"><div className="h-1 rounded-full bg-[var(--border-normal)]"><div className="h-full rounded-full bg-[#58A6FF]" style={{width: `${percentage(ep)}%`}}/></div><div className="mt-1 text-right text-[11px] tabular-nums text-[var(--text-tertiary)]">{percentage(ep)}%</div></div>
               <ArrowRight size={15} className="shrink-0 text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)]"/>
