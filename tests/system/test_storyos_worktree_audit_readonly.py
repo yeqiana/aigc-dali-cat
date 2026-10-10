@@ -36,6 +36,19 @@ class WorktreeAuditContractTests(unittest.TestCase):
         self.assertTrue(entries[1]["locked"])
         self.assertNotIn("branch", entries[1])
 
+    def test_final_porcelain_record_without_trailing_blank_line(self):
+        raw = "worktree /repo/.worktrees/wt\\nHEAD " + "a" * 40 + "\\nbranch refs/heads/feature\\n"
+        self.assertEqual(len(parse_worktrees(raw)), 1)
+
+    def test_primary_path_normalization_cannot_bypass_protection(self):
+        import os
+        if os.name != "nt":
+            self.skipTest("Windows mixed-separator protection")
+        entry = {**self.entry, "path": "D:/StoryOS/worktree"}
+        protected = self.classify(entry=entry, primary_path=r"D:\\StoryOS\\worktree")
+        self.assertEqual(protected["classification"], "PROTECTED")
+        self.assertFalse(protected["safe_to_delete"])
+
     def test_only_clean_merged_named_worktree_is_manual_review_candidate(self):
         record = self.classify()
         self.assertEqual(record["classification"], "MANUAL_REVIEW_CANDIDATE")
