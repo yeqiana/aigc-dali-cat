@@ -33,6 +33,7 @@ import { STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosManifestSnapshot';
 import { StoryRunDetailView } from './StoryRunDetailView';
 import { RuntimeAuthorityPanel } from './RuntimeAuthorityPanel';
 import { ExclusiveReadGate } from '../../api/exclusiveReadGate';
+import { summarizeRuntimeCoverage } from '../../api/runtimeCoverage';
 import type { RuntimeStatusSummary } from '../../api/platformApi';
 
 interface ProductionMonitorViewProps {
@@ -47,6 +48,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   // 历史运行快照，仅用于展示，不代表当前实时运行状态
   const [runs, setRuns] = useState<StoryRunItem[]>(REAL_STORY_RUNS);
   const [runtimeRows, setRuntimeRows] = useState<RuntimeStatusSummary[]>([]);
+  const [runtimeCoverage, setRuntimeCoverage] = useState(summarizeRuntimeCoverage(0, null, false));
 
   // 过滤状态
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -82,6 +84,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
       // 不将平台阶段数据按标题合并进历史 Story Run；两种证据各自独立展示。
       setRuntimeRows(data.items ?? []);
+      setRuntimeCoverage(summarizeRuntimeCoverage((data.items ?? []).length, data.total, Boolean(data.has_more), data.errors ?? []));
       if (isManual) {
         onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
@@ -90,6 +93,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       console.error('Failed to fetch runtime statuses:', err);
       setApiState('offline');
       setRuntimeRows([]);
+      setRuntimeCoverage(summarizeRuntimeCoverage(0, null, false));
       setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
       if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
@@ -278,7 +282,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       </div>
 
       <p role="status" className="text-[11px] text-[var(--text-tertiary)]">平台阶段摘要与下方历史工作区 Run 快照分开呈现。历史运行状态、心跳与帧数并非实时。暂停/重试尚未接入。</p>
-      <RuntimeAuthorityPanel items={runtimeRows} dataState={apiState} lastSync={lastSync}/>
+      <RuntimeAuthorityPanel items={runtimeRows} coverage={runtimeCoverage} dataState={apiState} lastSync={lastSync}/>
 
       <div role="status" className="flex items-center justify-between gap-3 rounded-[5px] border border-[var(--border-normal)] px-3 py-2 text-[11px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
       <p className="text-[12px] font-semibold text-[var(--text-primary)] pt-2">历史工作区运行快照（非实时）</p>
