@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {useLocalApprovedMedia} from '../../api/localApprovedMedia';
 import {
   ArrowLeft,
   Play,
@@ -60,6 +61,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
   onShowToast,
   onUpdateRun
 }) => {
+  const {findEpisode}=useLocalApprovedMedia();
+  const archiveCode=run.id.match(/^run-(\d{2}-\d{2})(?:$|-)/)?.[1];
+  const approved=findEpisode(run.storyName,archiveCode);
+  const approvedUrl=(frameNo:number)=>approved?.frames.find(x=>x.frame===frameNo)?.url;
   // 默认进入「概览」Tab
   const [activeTab, setActiveTab] = useState<DetailTabKey>('overview');
 
@@ -205,6 +210,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
   // 选中的 Stage
   const currentSelectedStage = run.pipelineStages.find(s => s.key === selectedStageKey) || run.pipelineStages[0];
+  const selectedPreview=selectedFrame&&(hasVerifiedPreview(selectedFrame.thumbnail) ? selectedFrame.thumbnail : approvedUrl(selectedFrame.frameNo));
 
   return (
     <div className="flex h-full min-w-0 flex-col overflow-hidden bg-[var(--bg-app)] font-sans text-[var(--text-primary)]">
@@ -436,6 +442,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                 {/* 20 帧网格 (点击卡片在右侧直接展示 Frame Drawer) */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">
                   {run.frames.map((f) => {
+                    const framePreview = hasVerifiedPreview(f.thumbnail) ? f.thumbnail : approvedUrl(f.frameNo);
                     const isPassed = f.status === 'PASSED';
                     const isGen = f.status === 'GENERATING';
                     const isRetry = f.status === 'RETRYING';
@@ -448,7 +455,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                         key={f.frameNo}
                         type="button"
                         onClick={() => setSelectedFrame(f)}
-                        className={`p-1.5 rounded-[4px] border text-left flex flex-col justify-between ${hasVerifiedPreview(f.thumbnail)?'aspect-[4/5]':'min-h-[96px]'} transition-colors cursor-pointer relative overflow-hidden group ${
+                        className={`p-1.5 rounded-[4px] border text-left flex flex-col justify-between ${framePreview?'aspect-[4/5]':'min-h-[96px]'} transition-colors cursor-pointer relative overflow-hidden group ${
                           isSelected ? 'ring-1 ring-[#4C8DFF] border-[#4C8DFF]' : ''
                         } ${
                           isPassed
@@ -475,14 +482,15 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                         </div>
 
                         {/* 缩略图预览 */}
-                        {hasVerifiedPreview(f.thumbnail) ? (
+                        {framePreview ? (
                           <img
-                            src={f.thumbnail}
-                            alt={f.frameCode}
+                            src={framePreview}
+                            alt={hasVerifiedPreview(f.thumbnail)?f.frameCode:'本地已批准 Frame '+f.frameNo}
                             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-90 transition-opacity"
                           />
                         ) : <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-[var(--text-tertiary)]"><ImageOff size={18}/><span className="text-[11px]">无原图</span></div>}
 
+                        {framePreview && !hasVerifiedPreview(f.thumbnail) && <span className="absolute left-1.5 bottom-7 z-10 rounded bg-black/70 px-1 py-0.5 text-[10px] text-white">已批准素材</span>}
                         {/* 底部业务状态文本 (绝不靠颜色猜) */}
                         <div className="mt-auto z-10 bg-[#0B0D10]/90 px-1 py-0.5 rounded-[2px] text-[10px] font-mono truncate text-center font-medium">
                           {getFrameBottomLabel(f)}
@@ -838,18 +846,18 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               {/* ===================== [上半部分：人看的信息] ===================== */}
               <div className="space-y-3">
                 {/* 最终大图展示 */}
-                {hasVerifiedPreview(selectedFrame.thumbnail) ? (
+                {selectedPreview ? (
                   <div className="rounded-[4px] overflow-hidden border border-[#232830] relative group aspect-[4/5] bg-[#0B0D10]">
                     <img
-                      src={selectedFrame.thumbnail}
-                      alt={selectedFrame.frameCode}
+                      src={selectedPreview || ''}
+                      alt={hasVerifiedPreview(selectedFrame.thumbnail)?selectedFrame.frameCode:'已批准作品图片 '+selectedFrame.frameNo}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-3 text-[11px] text-[#A7AFBA] flex justify-between items-center">
-                      <span className="font-sans font-medium text-[#F1F3F5]">渲染原图</span>
+                      <span className="font-sans font-medium text-[#F1F3F5]">{hasVerifiedPreview(selectedFrame.thumbnail)?'历史 Run 存档图':'本地已批准作品素材 · 非该 Run 证据'}</span>
                       <button
                         type="button"
-                        onClick={() => setImageModalUrl(selectedFrame.thumbnail || null)}
+                        onClick={() => setImageModalUrl(selectedPreview || null)}
                         className="px-2 py-1 rounded-[3px] bg-[#0B0D10]/80 hover:bg-[#1C2128] hover:text-white border border-[#2D333D] transition-colors text-[10px] flex items-center gap-1 cursor-pointer"
                       >
                         <Maximize2 className="w-3 h-3" />
@@ -1085,7 +1093,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
-                    onClick={() => setImageModalUrl(selectedFrame.thumbnail || null)}
+                    onClick={() => setImageModalUrl(selectedPreview || null)}
                     className="h-[32px] rounded-[4px] bg-[#171B21] border border-[#2D333D] hover:bg-[#1C2128] text-[#C9D1D9] hover:text-[#F1F3F5] transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <Eye className="w-3.5 h-3.5" />
