@@ -122,7 +122,7 @@ def probe(episode: Path, role: str, *, env: dict[str, str]) -> dict:
     completed = codex_user_runner.run_model_codex(
         cmd, input=text, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         text=True, encoding="utf-8", errors="replace", check=False,
-        timeout=90, cwd=ROOT, task_type="model_probe", env=env,
+        timeout=90, cwd=ROOT, task_type="smoke", env=env,
     )
     return evaluate_result(
         completed=completed, expected=marker, model=model, role=role,
