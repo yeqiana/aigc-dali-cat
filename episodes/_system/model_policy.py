@@ -85,11 +85,19 @@ def resolve_candidate(role: str, candidate_index: int, episode: str | Path | Non
 
 
 def next_fallback(role: str, failure_class: str, episode: str | Path | None = None) -> dict | None:
-    """Return the first policy-owned fallback only for recognized availability failures."""
+    """Return only an explicitly policy-owned fallback for availability failures.
+
+    A primary-only (e.g. Luna text/critic) profile has no legal fallback.
+    Unavailability must remain a blocked Provider outcome, never an IndexError
+    or an implicit switch to the machine's default Codex model.
+    """
     if str(failure_class or "").strip().upper() not in _FALLBACK_FAILURES:
         return None
-    resolved = resolve_candidate(role, 1, episode)
-    return resolved
+    selected = resolve(role, episode)
+    fallbacks = selected.get("fallback_models") or []
+    if not fallbacks:
+        return None
+    return resolve_candidate(role, 1, episode)
 
 
 def _resolve_bound_profile(profile_name: str, episode: str | Path | None) -> dict:
