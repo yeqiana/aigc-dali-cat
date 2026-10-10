@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AlertCircle, ArrowRight, GitBranch, RefreshCw } from 'lucide-react';
 import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
 import { WorkflowDetailPanel } from './WorkflowDetailPanel';
@@ -14,36 +14,65 @@ export const WorkflowWorkspaceView: React.FC = () => {
   const [total,setTotal] = useState<number | null>(null);
   const [filter,setFilter] = useState('ALL');
   const [selected,setSelected] = useState<RuntimeStatusSummary | null>(null);
+  const generation = useRef(0);
+  const pagingInFlight = useRef(false);
+  const nextOffset = useRef(0);
   useEffect(() => {
     let active=true;
+    const requestId = ++generation.current;
+    pagingInFlight.current = false;
+    nextOffset.current = 0;
     setLoading(true);
     platformApi.runtimeStatuses(100,0).then(data => {
-      if(!active)return;
+      if(!active || requestId !== generation.current)return;
       setItems(data.items ?? []);
+      nextOffset.current = (data.items ?? []).length;
+      setSelected(null);
       setHasMore(Boolean(data.has_more));
       setTotal(typeof data.total === 'number' ? data.total : null);
       setError(data.errors?.length ? '部分状态数据读取失败，以下仅展示成功返回的阶段投影。' : null);
     }).catch(() => {
-      if(!active)return;
+      if(!active || requestId !== generation.current)return;
       setItems([]);
       setHasMore(false);
       setTotal(null);
       setError('无法连接 Platform API，暂不能读取生产阶段。');
-    }).finally(() => {if(active)setLoading(false)});
-    return () => {active=false};
+    }).finally(() => {if(active && requestId === generation.current)setLoading(false)});
+    return () => {active=false;generation.current += 1;pagingInFlight.current=false};
   },[reload]);
   const filtered=items.filter(x => filter==='ALL' || x.production_stage===filter);
   const loadNext = async () => {
-    if (!hasMore || loadingMore || loading) return;
+    if (!hasMore || pagingInFlight.current || loading) return;
+    const requestId = generation.current;
+    const offset = nextOffset.current;
+    pagingInFlight.current = true;
     setLoadingMore(true);
     try {
-      const data = await platformApi.runtimeStatuses(100, items.length);
-      setItems(current => [...current, ...data.items]);
-      setHasMore(Boolean(data.has_more) && data.items.length > 0);
+      const data = await platformApi.runtimeStatuses(100, offset);
+      if (requestId !== generation.current) return;
+      const page = Array.isArray(data.items) ? data.items : [];
+      nextOffset.current = offset + page.length;
+      setItems(current => {
+        // 服务端数据可能跨页重复；按明确身份去重，不影响后续 offset 计算。
+        const ids = new Set(current.map(x => x.episode_id || x.episode_ref).filter(Boolean));
+        return [...current, ...page.filter(x => {
+          const id = x.episode_id || x.episode_ref;
+          if (!id || ids.has(id)) return false;
+          ids.add(id);
+          return true;
+        })];
+      });
+      setHasMore(Boolean(data.has_more) && page.length > 0);
+      if (typeof data.total === 'number') setTotal(data.total);
       if (data.errors?.length) setError('后续分页返回部分错误，列表可能不完整。');
     } catch {
-      setError('加载更多阶段记录失败，已保留此前成功读取的列表。');
-    } finally { setLoadingMore(false); }
+      if (requestId === generation.current) setError('加载更多阶段记录失败，已保留此前成功读取的列表。可重试加载。');
+    } finally {
+      if (requestId === generation.current) {
+        pagingInFlight.current = false;
+        setLoadingMore(false);
+      }
+    }
   };
   return <div className="mx-auto max-w-[1200px] space-y-7 pb-16 text-[var(--text-primary)]">
     <header className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] pb-5">
