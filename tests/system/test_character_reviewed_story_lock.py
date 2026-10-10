@@ -33,7 +33,8 @@ def case(tmp_path, monkeypatch):
     state = [deepcopy(initial)]
     saves = []
     monkeypatch.setattr(character_contract, "load", lambda _: deepcopy(state[0]))
-    def save(_, candidate):
+    def save(_, candidate, *, expected_sha256=None):
+        assert expected_sha256 is not None
         state[0] = deepcopy(candidate)
         saves.append(deepcopy(candidate))
         return candidate
