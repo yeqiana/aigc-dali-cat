@@ -119,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                     <Folder size={15} className="shrink-0 text-[var(--text-tertiary)]"/>
                     <span className="truncate">{project.name}</span><span className="ml-auto text-[11px] text-[var(--text-tertiary)]">{children.length}</span>
                   </button>
-                  <button type="button" onClick={() => setProjectMenu(projectMenu === project.id ? null : project.id)} aria-label={`管理项目 ${project.name}`} className="px-1 text-[var(--text-tertiary)] opacity-0 focus:opacity-100 group-hover:opacity-100"><MoreHorizontal size={15}/></button>
+                  <button type="button" onClick={() => setProjectMenu(projectMenu === project.id ? null : project.id)} aria-label={`管理项目 ${project.name}`} className="px-1 text-[var(--text-tertiary)] opacity-60 focus:opacity-100 group-hover:opacity-100"><MoreHorizontal size={15}/></button>
                 </div>
                 {projectMenu === project.id && <div className="ml-3 mb-1 flex flex-wrap gap-2 px-2 py-2 text-[11px] border-l border-[var(--border-normal)]">
                   <button type="button" onClick={() => openModal('story', project)} className="text-[#58A6FF]">新增故事</button>

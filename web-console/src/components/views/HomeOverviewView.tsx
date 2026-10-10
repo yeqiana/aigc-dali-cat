@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Folder, Plus, SlidersHorizontal } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Folder, Plus, Search, SlidersHorizontal } from 'lucide-react';
 import { Episode, NavigationTab, ProjectItem } from '../../types';
 
 interface Props {
@@ -16,6 +16,7 @@ const STAGES: Record<string, string> = {
 const percentage = (ep: Episode) => ep.totalFrames > 0 ? Math.min(100, Math.round(ep.completedFrames / ep.totalFrames * 100)) : 0;
 
 export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelectEpisode, onNewStory, onNavigate }) => {
+  const [query, setQuery] = useState('');
   const attention = useMemo(() => episodes.flatMap(ep => {
     const blocked = ep.preflightChecks?.filter(item => item.status === 'blocking') ?? [];
     const failed = ep.frameReviews?.filter(item => item.verdict === 'FAIL') ?? [];
@@ -23,6 +24,7 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
   }), [episodes]);
   const published = episodes.filter(ep => ['PUBLISHED', 'POST_MORTEM'].includes(ep.currentStage)).length;
   const pending = episodes.length - published;
+  const filtered = episodes.filter(ep => (ep.title + ' ' + ep.code + ' ' + ep.genre).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   return (
     <div id="storyos-home-overview" className="mx-auto max-w-[1220px] space-y-8 pb-16 text-[var(--text-primary)]">
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--border-subtle)] pb-6">
@@ -48,13 +50,14 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px]">
         <section className="min-w-0">
           <div className="mb-3 flex items-center justify-between">
-            <div><h2 className="text-[16px] font-semibold">继续制作</h2><p className="mt-1 text-[12px] text-[var(--text-tertiary)]">基于当前工作区的作品记录</p></div>
+            <div><h2 className="text-[16px] font-semibold">继续制作</h2><p className="mt-1 text-[12px] text-[var(--text-tertiary)]">工作区作品快照 · 新建草稿仅保存在本机</p></div>
             <button type="button" onClick={() => onNavigate('episodes')} className="flex items-center gap-1 text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">全部作品 <ArrowRight size={14}/></button>
           </div>
+          <label className="relative block mb-3"><Search size={15} aria-hidden="true" className="absolute left-3 top-2.5 text-[var(--text-tertiary)]"/><input aria-label="搜索作品" value={query} onChange={e => setQuery(e.target.value)} placeholder="搜索故事或编号" className="h-9 w-full rounded-[5px] border border-[var(--border-normal)] bg-[var(--bg-surface)] pl-9 pr-3 text-[12px] outline-[#58A6FF] placeholder:text-[var(--text-tertiary)]"/></label>
           <div className="border-y border-[var(--border-subtle)]">
-            {episodes.length === 0 && <p className="py-10 text-center text-[13px] text-[var(--text-tertiary)]">暂无故事。创建第一部作品后，它会显示在这里。</p>}
-            {episodes.slice(0, 8).map(ep => <button key={ep.id} type="button" onClick={() => onSelectEpisode(ep)}
-              className="group w-full min-w-0 flex items-center gap-4 py-3 px-2 border-b last:border-b-0 border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-left">
+            {filtered.length === 0 && <p className="py-10 text-center text-[13px] text-[var(--text-tertiary)]">没有符合条件的故事。可以清除搜索后继续查看。</p>}
+            {filtered.slice(0, 8).map(ep => <button key={ep.id} type="button" onClick={() => onSelectEpisode(ep)}
+              aria-label={`打开故事 ${ep.title}`} className="group w-full min-w-0 flex items-center gap-4 py-3 px-2 border-b last:border-b-0 border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-left">
               <div className="h-12 w-10 shrink-0 overflow-hidden rounded-[4px] bg-[var(--bg-elevated)]">{ep.coverImage && <img alt="" loading="lazy" src={ep.coverImage} className="h-full w-full object-cover" />}</div>
               <div className="min-w-0 flex-1"><div className="truncate font-medium text-[13px]">{ep.title}</div><div className="mt-1 truncate text-[12px] text-[var(--text-tertiary)]">{STAGES[ep.currentStage] ?? ep.currentStage} · {ep.completedFrames}/{ep.totalFrames} 帧</div></div>
               <div className="hidden sm:block w-24 shrink-0"><div className="h-1 rounded-full bg-[var(--border-normal)]"><div className="h-full rounded-full bg-[#58A6FF]" style={{width: `${percentage(ep)}%`}}/></div><div className="mt-1 text-right text-[11px] tabular-nums text-[var(--text-tertiary)]">{percentage(ep)}%</div></div>
