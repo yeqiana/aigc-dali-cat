@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Folder, Plus, Search, SlidersHorizontal } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Folder, Plus, RefreshCw, Search, SlidersHorizontal } from 'lucide-react';
 import { Episode, NavigationTab, ProjectItem } from '../../types';
+import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
 
 interface Props {
   episodes: Episode[];
@@ -17,6 +18,27 @@ const percentage = (ep: Episode) => ep.totalFrames > 0 ? Math.min(100, Math.roun
 
 export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelectEpisode, onNewStory, onNavigate }) => {
   const [query, setQuery] = useState('');
+  const [runtime, setRuntime] = useState<RuntimeStatusSummary[]>([]);
+  const [runtimeStatus, setRuntimeStatus] = useState<'loading' | 'available' | 'partial' | 'offline'>('loading');
+  const [runtimeTotal, setRuntimeTotal] = useState<number | null>(null);
+  const [runtimeRefresh, setRuntimeRefresh] = useState(0);
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    setRuntimeStatus('loading');
+    platformApi.runtimeStatuses(20, 0).then(data => {
+      if (!mounted) return;
+      setRuntime(data.items ?? []);
+      setRuntimeTotal(Number.isFinite(data.total) ? data.total : null);
+      setRuntimeStatus(data.errors?.length ? 'partial' : 'available');
+      setFetchedAt(new Date().toLocaleTimeString('zh-CN', {hour12:false}));
+    }).catch(() => {
+      if (!mounted) return;
+      setRuntime([]); setRuntimeTotal(null); setRuntimeStatus('offline'); setFetchedAt(null);
+    });
+    return () => { mounted = false; };
+  }, [runtimeRefresh]);
+
   const attention = useMemo(() => episodes.flatMap(ep => {
     const blocked = ep.preflightChecks?.filter(item => item.status === 'blocking') ?? [];
     const failed = ep.frameReviews?.filter(item => item.verdict === 'FAIL') ?? [];
@@ -46,6 +68,19 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
           <div className={`mt-2 text-[28px] leading-[32px] tabular-nums font-semibold ${m.label === '需关注' && m.value > 0 ? 'text-[var(--danger)]' : ''}`}>{m.value}</div>
           <div className="mt-1 text-[11px] text-[var(--text-tertiary)]">{m.note}</div>
         </div>)}
+      </section>
+      <section aria-label="平台生产阶段摘要" className="border-y border-[var(--border-subtle)] py-4 space-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div><h2 className="text-[14px] font-semibold">平台生产阶段</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">Platform API 阶段摘要；不包含实时 Worker、队列或心跳信息。</p></div>
+          <button type="button" onClick={() => setRuntimeRefresh(v => v + 1)} disabled={runtimeStatus === 'loading'} className="h-8 px-3 flex items-center gap-2 border border-[var(--border-normal)] rounded-[5px] text-[12px] disabled:opacity-50"><RefreshCw size={14}/> 刷新</button>
+        </div>
+        {runtimeStatus === 'loading' ? <p role="status" className="text-[12px] text-[var(--text-secondary)]">正在读取权威阶段摘要…</p> : runtimeStatus === 'offline' ? <p role="alert" className="text-[12px] text-[var(--warning)]">Platform API 未连接。下方仅展示本地工作区快照。</p> : <>
+          {runtimeStatus === 'partial' && <p role="alert" className="text-[12px] text-[var(--warning)]">接口报告部分错误，以下记录可能不完整。</p>}
+          <p className="text-[12px] text-[var(--text-secondary)]">已载入 {runtime.length}{runtimeTotal !== null ? ' / ' + runtimeTotal : ''} 条 · 读取时间 {fetchedAt || '未知'} · 不代表全部实时运行状态</p>
+          <div className="grid md:grid-cols-2 gap-x-6">{runtime.slice(0, 4).map((item, i) => <div key={item.episode_id + ':' + i} className="flex items-center justify-between gap-3 py-2 border-b border-[var(--border-subtle)] text-[12px]"><span className="truncate" title={item.title || item.episode_ref || item.episode_id}>{item.title || item.episode_ref || item.episode_id || '未命名作品'}</span><span className="shrink-0 text-[var(--text-tertiary)]">{stageLabel(item.production_stage || 'NO_STATE')}</span></div>)}</div>
+          {runtime.length === 0 && <p className="text-[12px] text-[var(--text-tertiary)]">接口已响应，但没有阶段记录。</p>}
+          <button type="button" onClick={() => onNavigate('pipeline')} className="flex items-center gap-1 text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">查看完整工作流 <ArrowRight size={14}/></button>
+        </>}
       </section>
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_300px]">
         <section className="min-w-0">
