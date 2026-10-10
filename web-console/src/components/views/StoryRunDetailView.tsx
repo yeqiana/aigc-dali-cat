@@ -63,10 +63,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
   const [activeTab, setActiveTab] = useState<DetailTabKey>('overview');
 
   // 默认打开 Frame 09（方便展示异常排错诊断）或 Frame 08（展示 PASSED 态）
-  const [selectedFrame, setSelectedFrame] = useState<FrameDetailItem | null>(() => {
-    const f09 = run.frames.find(f => f.frameNo === 9);
-    return f09 || run.frames[0] || null;
-  });
+  const [selectedFrame, setSelectedFrame] = useState<FrameDetailItem | null>(null);
 
   const [selectedStageKey, setSelectedStageKey] = useState<StoryRunStage>(run.currentStage);
   const [promptExpanded, setPromptExpanded] = useState(false);
@@ -109,7 +106,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
       case 'RUNNING':
         return (
           <div className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[#4C8DFF]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4C8DFF] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4C8DFF]" />
             <span>运行中</span>
           </div>
         );
@@ -130,7 +127,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
       case 'RETRYING':
         return (
           <div className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[#D28B26]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D28B26] animate-spin" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D28B26]" />
             <span>自动重试中</span>
           </div>
         );
@@ -192,7 +189,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
       case 'PASSED':
         return frame.duration || 'PASSED';
       case 'GENERATING':
-        return frame.currentSubAction ? `IMAGE_GEN / ${frame.duration || '14s'}` : `Generating ${frame.duration || '14s'}`;
+        return frame.currentSubAction ? `IMAGE_GEN / ${frame.duration || '时长未提供'}` : `Generating ${frame.duration || '时长未提供'}`;
       case 'RETRYING':
         return `RETRY ${frame.attempt.replace(/\s+/g, '')}`;
       case 'QUEUED':
@@ -255,27 +252,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               <Download className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">导出</span>
             </button>
-            <button
-              type="button"
-              onClick={() => onShowToast('暂无已授权暂停/恢复 API，未改变运行状态。')}
-              className={`px-2.5 py-1 rounded-[4px] border text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
-                run.status === 'RUNNING'
-                  ? 'bg-[#C9A227]/10 border-[#C9A227]/30 text-[#C9A227] hover:bg-[#C9A227]/20'
-                  : 'bg-[#3FB950]/10 border-[#3FB950]/30 text-[#3FB950] hover:bg-[#3FB950]/20'
-              }`}
-            >
-              {run.status === 'RUNNING' ? (
-                <>
-                  <Pause className="w-3.5 h-3.5" />
-                  <span>暂停</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5" />
-                  <span>恢复</span>
-                </>
-              )}
-            </button>
+            <span className="border border-[var(--border-normal)] px-2.5 py-1 text-[11px] text-[var(--text-tertiary)]" title="历史 Run 仅支持只读检视；暂停/恢复需要授权 Runtime API">只读 · 不可暂停/恢复</span>
           </div>
         </div>
 
@@ -343,16 +320,16 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               <div className="h-[44px] px-4 rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between gap-4 text-xs font-mono">
                 <div className="flex items-center gap-5 truncate">
                   <div className="flex items-center gap-2">
-                    <span className="text-[var(--text-tertiary)]">加权进度</span>
-                    <span className="font-semibold text-[var(--text-primary)]">{run.progressPercent}%</span>
+                    <span className="text-[var(--text-tertiary)]">通过帧率</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{run.totalFrames > 0 ? Math.round(run.frames.filter(f => f.status === 'PASSED').length / run.totalFrames * 100) : 0}%</span>
                     <div className="w-20 h-1.5 rounded-[2px] bg-[var(--bg-workspace)] overflow-hidden border border-[var(--border-subtle)]">
-                      <div className="h-full bg-[#4C8DFF] rounded-[2px]" style={{ width: `${run.progressPercent}%` }} />
+                      <div className="h-full bg-[#4C8DFF] rounded-[2px]" style={{ width: `${run.totalFrames > 0 ? Math.round(run.frames.filter(f => f.status === 'PASSED').length / run.totalFrames * 100) : 0}%` }} />
                     </div>
                   </div>
                   <div className="h-3 w-px bg-[var(--border-subtle)]" />
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[var(--text-tertiary)]">分镜完成:</span>
-                    <span className="text-[var(--text-primary)] font-semibold">{run.completedFrames}/{run.totalFrames} 帧</span>
+                    <span className="text-[var(--text-tertiary)]">审核通过:</span>
+                    <span className="text-[var(--text-primary)] font-semibold">{run.frames.filter(f => f.status === 'PASSED').length}/{run.totalFrames} 帧</span>
                   </div>
                   <div className="h-3 w-px bg-[var(--border-subtle)]" />
                   <div className="hidden sm:flex items-center gap-1.5 truncate">
@@ -361,7 +338,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   </div>
                   <div className="h-3 w-px bg-[var(--border-subtle)]" />
                   <div className="hidden md:flex items-center gap-1.5 truncate">
-                    <span className="text-[var(--text-tertiary)]">承载节点:</span>
+                    <span className="text-[var(--text-tertiary)]">记录节点:</span>
                     <span className="text-[var(--text-secondary)]">{run.runtimeEnv?.workerId || '未提供'}</span>
                   </div>
                 </div>
@@ -667,6 +644,8 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onShowToast('此处未提供可验证的下载链接，未发起下载。')}
+                        aria-label="下载产物（当前不可用）"
+                        title="下载产物（当前不可用）"
                         className="p-1 hover:text-[#F1F3F5] text-[#737D8A] rounded-[4px] hover:bg-[#1C2128] cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
@@ -845,6 +824,8 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedFrame(null)}
+                aria-label="关闭分镜详情"
+                title="关闭分镜详情"
                 className="p-1 hover:text-[#F1F3F5] rounded-[4px] hover:bg-[#1C2128] cursor-pointer text-[#737D8A]"
               >
                 <X className="w-4 h-4" />
