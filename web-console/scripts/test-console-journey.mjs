@@ -1,8 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
-import { pathToFileURL } from 'node:url';
+import { spawn, spawnSync } from 'node:child_process';
 
 // 离线 Chromium 测试。主动封禁 fetch 以验证无后端时各业务页面不伪造在线状态。
 const dist = path.resolve('dist');
@@ -11,6 +10,21 @@ const chrome = process.env.CHROME_PATH || 'C:\\Program Files\\Google\\Chrome\\Ap
 assert.ok(fs.existsSync(chrome), '需要本机 Chrome 或环境变量 CHROME_PATH');
 const out = path.resolve('../.storyos-tmp/ui-qa');
 fs.mkdirSync(out, {recursive:true});
+
+const server = spawn(process.execPath, ['scripts/test-static-server.mjs', dist], {
+  stdio: ['ignore', 'pipe', 'pipe']
+});
+const port = await new Promise((resolve, reject) => {
+  let text = '';
+  const timer = setTimeout(() => reject(new Error('临时 HTTP 服务启动超时')), 12000);
+  server.stdout.on('data', chunk => {
+    text += chunk.toString();
+    const found = text.match(/READY (\d+)/);
+    if(found) {clearTimeout(timer);resolve(Number(found[1]));}
+  });
+  server.on('error', error => {clearTimeout(timer);reject(error);});
+  server.on('exit', code => {clearTimeout(timer);reject(new Error('临时 HTTP 服务提前退出: '+code));});
+});
 const scenarios=[
   {name:'home',nav:null,expected:'Platform API 未连接'},
   {name:'monitor',nav:'生产监控',expected:'无法连接 Platform API'},
@@ -19,6 +33,7 @@ const scenarios=[
   {name:'story',nav:'故事制作',expected:'制作与审核记录'}
 ];
 const network="window.fetch=async()=>{throw new Error('test offline: no backend access')};";
+try {
 for(const scenario of scenarios){
   const payload=JSON.stringify(scenario);
   const code=[
@@ -52,7 +67,7 @@ for(const scenario of scenarios){
     '--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
     '--disable-web-security','--allow-file-access-from-files','--virtual-time-budget=45000',
     '--window-size=1440,900','--user-data-dir='+path.join(out,'r5-qa-'+scenario.name),
-    '--dump-dom',pathToFileURL(file).href
+    '--dump-dom','http://127.0.0.1:'+port+'/qa-r5-'+scenario.name+'.html'
   ],{encoding:'utf8',timeout:70000,maxBuffer:4000000});
   const marker=(run.stdout||'').match(/data-console-qa="([^"]+)"/)?.[1]||'missing';
   if(marker!=='pass'){
@@ -62,4 +77,5 @@ for(const scenario of scenarios){
   }
   console.log('PASS 离线页面 '+scenario.name);
 }
-console.log('StoryOS 浏览器离线真实 DOM 验收 5/5');
+console.log('StoryOS 本地 HTTP 浏览器离线 DOM 验收 5/5');
+} finally { server.kill(); }

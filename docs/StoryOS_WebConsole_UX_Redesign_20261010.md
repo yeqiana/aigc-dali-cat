@@ -105,3 +105,29 @@ S1 负责 App、Sidebar、Home；S2 负责 ProductionMonitorView / RunDetail；S
 - 平台真实 API 启动与 Contract E2E；请求取消状态在全部 UI 页面上明确体现。
 - 大型离线证据静态模块按故事拆分/分页/按需抓取，降低初始总传输和解析耗时。
 - 监控轮询自动化竞态回归及详情抽屉无障碍/键盘使用验收。
+
+## 第五轮四槽改造与集成验收（2026-10-10）
+
+### 独立任务、代码和提交
+- 基线：417ba247；槽 1：a9d298d1，增加真正监听 127.0.0.1 随机端口的 PlatformApiHttpServer 回归，用 ReadOnlyFixtureService 注入受控内存数据。绝不执行 build_default_controllers，不连接 MySQL/Redis。
+- 槽 2：07bbfc27，将 storyosRealData.ts 的历史 manifest / run / episode / agent 拆分成独立模块。App 仅消费 Episode 模块，懒加载的监控组件消费 Run 模块；保留原 re-export 供兼容，阻止首页预加载 Run 包。
+- 槽 3：f510bf3c，抽取 ExclusiveReadGate，监控使用明确代际锁管理请求；Node 单元测试覆盖重叠、释放、卸载、旧回调和新请求。
+- 槽 4：77ba0354，新增覆盖工作台、生产监控、工作流、Agents、故事制作 5 页的离线 DOM 冒烟脚本。集成精修将测试资源从 file:// 切换到临时 HTTP 静态服务器，避免异步模块在 file:// 下间歇停留在 Suspense。
+
+### 最终性能证据（Vite production build）
+- 主入口 JS：301377 B（<350000 B 预算）。
+- 历史 Episode 包：567773 B（gzip 约 57.44 KB）；历史 Run 包：376164 B（gzip 约 33.99 KB）。上一轮 943922 B 混合证据包（gzip 约 90.81 KB）拆分后，首页 HTML 不再预加载独立的历史 Run 包。
+- 仅凭文件分离不可推断真实网络耗时、缓存命中率或传输成本；总体 JS 内容并没有同步减少。Episode 包仍超过 Vite 的 500KB 警告阈值，需要继续按作品切分或后端分页。
+
+### 集成测试事实
+- 四个隔离 Worktree 各自提交中文 Git 描述，合并到 feature/storyos-webconsole-design-shell-20261010；cherry-pick 没有冲突。
+- 独立 frontend lint/build 全部通过；集成版 tsc 与 Vite build --base=./ 通过；node scripts/check-chunks.mjs 通过。
+- npm run test:api（7/7），node scripts/test-monitor-gate.mjs（五类检查），node scripts/test-workflow-smoke.mjs（分页/断网 2/2）通过。
+- Python unittest tests/platform/test_webconsole_live_http_readonly.py 在临时 HTTP Socket 上执行 6/6，通过 GET health/statuses/status、404、503、400 协议；这是隔离后端真实 HTTP 栈 + 测试数据，不是正式 DB/Platform 环境 E2E。
+- Chrome 五页面离线回归最终在 HTTP 静态测试服务器下通过 5/5。初次 file:// 测试异步 Agents 组件曾出现等待失败，本轮未将其伪装为业务成功，改为真实 HTTP 文件加载后复测通过。
+- 真实 Platform API 的 http://127.0.0.1:8080/healthz 再次测试仍不可达，因此正式 MySQL/Redis 数据与生产执行链路完全未宣称通过。
+
+### 后续建议
+- 在由用户明确指定的安全验证环境启动 Platform API，并将前端代理定向到该环境完成真实读端 E2E；未经隔离切勿自行连接生产库。
+- 将历史 Episode 大包继续改成按作品懒加载，配合长期使用的端到端回归；组件加载时必须如实显示来源与未知状态。
+- 增加端到端可访问性、浏览器资源失败注入以及监控请求取消的集成测试，保持前端无未授权生产写操作。

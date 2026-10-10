@@ -8,7 +8,11 @@
     "build": "vite build",
     "preview": "vite preview --port=3100 --host=0.0.0.0",
     "lint": "tsc --noEmit",
-    "test:api": "node scripts/test-http-client.mjs"
+    "test:api": "node scripts/test-http-client.mjs",
+    "test:monitor": "node scripts/test-monitor-gate.mjs",
+    "test:workflow": "node scripts/test-workflow-smoke.mjs",
+    "test:console": "node scripts/test-console-journey.mjs",
+    "test:bundles": "node scripts/check-chunks.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",
