@@ -29,6 +29,7 @@ import {
 import { StoryRunItem, FrameDetailItem, StoryRunStatus, StoryRunStage } from '../../types';
 import { platformApi } from '../../api/platformApi';
 import { REAL_STORY_RUNS } from '../../data/storyosRunSnapshots';
+import { isHistoricalRunIndex, loadHistoricalRunDetail } from '../../data/storyosRunLoader';
 import { STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosManifestSnapshot';
 import { StoryRunDetailView } from './StoryRunDetailView';
 import { RuntimeAuthorityPanel } from './RuntimeAuthorityPanel';
@@ -70,6 +71,23 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
 
   // 选中的 Story Run 详情视图
   const [selectedRunForDetail, setSelectedRunForDetail] = useState<StoryRunItem | null>(null);
+  const [pendingRunId, setPendingRunId] = useState<string | null>(null);
+  const [runLoadError, setRunLoadError] = useState<string | null>(null);
+  const runLoadGeneration = useRef(0);
+  const selectRun = async (run: StoryRunItem) => {
+    if (!isHistoricalRunIndex(run)) { setSelectedRunForDetail(run);return; }
+    const generation = ++runLoadGeneration.current;
+    setPendingRunId(run.id);setRunLoadError(null);
+    try {
+      const detail = await loadHistoricalRunDetail(run.id);
+      if (generation !== runLoadGeneration.current) return;
+      if (detail.id !== run.id) throw new Error('Run 详情身份不匹配');
+      setRuns(previous => previous.map(entry => entry.id === run.id ? detail : entry));
+      setSelectedRunForDetail(detail);
+    } catch(error) {
+      if (generation === runLoadGeneration.current) setRunLoadError(error instanceof Error?error.message:'历史 Run 加载失败');
+    } finally {if (generation === runLoadGeneration.current) setPendingRunId(null);}
+  };
 
   // 从真实平台接口同步 canonical stage 投影；丰富的帧/证据详情继续来自工作区生成投影。
   const loadLatestStatuses = async (isManual = false) => {
@@ -501,6 +519,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
           <div className="flex items-center gap-2 text-[#A7AFBA] font-medium">
             <span>Story 调度主表</span>
             <span className="text-[#737D8A] font-mono text-[11px]">({filteredRuns.length} 个实例)</span>
+            {pendingRunId && <span role="status" className="text-[11px] text-[var(--text-secondary)]">正在按需读取历史 Run 详情…</span>}
+            {runLoadError && <span role="alert" className="text-[11px] text-[var(--warning)]">历史详情读取失败：{runLoadError}；请重新点击记录重试。</span>}
           </div>
         </div>
 
@@ -539,7 +559,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                           ? 'bg-[#1A1F26]'
                           : 'hover:bg-[#171B21]'
                       }`}
-                      onClick={() => setSelectedRunForDetail(run)}
+                      onClick={() => void selectRun(run)}
                     >
                       {/* 序号与选中指示条 */}
                       <td className="px-3 text-center text-[#737D8A] font-mono text-[11px] relative whitespace-nowrap">
@@ -618,7 +638,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                       <td className="px-3 text-right space-x-1 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
-                          onClick={() => setSelectedRunForDetail(run)}
+                          onClick={() => void selectRun(run)}
                           className="h-[24px] px-2 rounded-[3px] bg-[#171B21] border border-[#2D333D] text-[#F1F3F5] hover:bg-[#1C2128] font-mono text-[11px] cursor-pointer font-medium transition-colors"
                         >
                           详情
