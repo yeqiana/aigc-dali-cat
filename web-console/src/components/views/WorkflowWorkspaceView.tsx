@@ -78,19 +78,22 @@ export const WorkflowWorkspaceView: React.FC = () => {
       }
     }
   };
-  return <div id="storyos-workflow-workspace" className="w-full min-w-0 space-y-5 pb-6 text-[var(--text-primary)]">
+  return <div id="storyos-workflow-workspace" className="w-full min-w-0 space-y-4 pb-6 text-[var(--text-primary)]">
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-4">
       <div><h1 className="os-page-heading">生产流程</h1><p className="mt-1 text-[12px] text-[var(--text-secondary)]">标准阶段顺序与作品所处阶段 · 只读投影</p></div>
       <Button onClick={()=>setReload(v=>v+1)} disabled={loading} icon={<RefreshCw size={15}/>}>刷新</Button>
     </header>
-    <section aria-label="七阶段流程" className="space-y-2">
-      <h2 className="text-[13px] font-semibold">标准生产阶段</h2>
-      <div className="overflow-x-auto border-b border-[var(--border-subtle)] pb-3"><div className="min-w-[890px] py-1.5"><Steps size="small" current={-1} responsive={false} items={STAGE_ORDER.map(stage=>({title:stageLabel(stage),status:'wait' as const}))}/></div></div>
-      <p className="text-[12px] text-[var(--text-secondary)]">流程图仅说明顺序，不代表节点已完成，也不能点击跳过门禁。</p>
-    </section>
+    <details className="group border-b border-[var(--border-subtle)] pb-3" aria-label="七阶段流程">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-1 text-[13px] font-semibold text-[var(--text-primary)]">
+        <span>标准七阶段 <span className="ml-2 text-[12px] font-normal text-[var(--text-tertiary)]">参考流程 · 非可点击执行步骤</span></span>
+        <span className="text-[12px] font-normal text-[var(--info)] group-open:hidden">展开流程</span><span className="hidden text-[12px] font-normal text-[var(--info)] group-open:inline">收起流程</span>
+      </summary>
+      <div className="mt-3 overflow-x-auto"><div className="min-w-[890px] py-1.5"><Steps size="small" current={-1} responsive={false} items={STAGE_ORDER.map(stage=>({title:stageLabel(stage),status:'wait' as const}))}/></div></div>
+      <p className="mt-2 text-[12px] text-[var(--text-secondary)]">仅表示阶段定义，不代表已有运行记录通过门禁。</p>
+    </details>
     <section className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="os-section-heading">各作品所处阶段</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">已载入 {items.length}{total!==null?' / '+total:''} 条阶段记录{hasMore?' · 尚有服务端数据未读取':''}</p></div>
-      <Select aria-label="筛选阶段" value={filter} onChange={v=>{setFilter(v);setPage(1);}} className="w-[170px]" options={[{value:'ALL',label:'全部阶段'},...STAGE_ORDER.map(value=>({value,label:stageLabel(value)}))]}/>
+      <Select aria-label="筛选阶段" value={filter} onChange={v=>{setFilter(v);setPage(1);}} className="w-[170px] shrink-0" options={[{value:'ALL',label:'全部阶段'},...STAGE_ORDER.map(value=>({value,label:stageLabel(value)}))]}/>
       </div>
       {error&&<p role="alert" className="flex items-center gap-2 border-l-2 border-[var(--warning)] py-2 pl-3 text-[12px] text-[var(--warning)]"><AlertCircle size={15}/>{error}</p>}
       <Table<RuntimeStatusSummary> size="small" rowKey={x=>x.episode_id||x.episode_ref||x.title||'unknown'}

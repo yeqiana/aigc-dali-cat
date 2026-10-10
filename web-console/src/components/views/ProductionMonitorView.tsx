@@ -358,7 +358,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       {apiState !== 'ok' && <div role="status" className="flex flex-wrap items-center justify-between gap-2 border-l-2 border-[var(--warning)] px-3 py-2 text-[12px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>}
       <p className="os-section-heading pt-3">历史工作区运行快照（非实时）</p>
       {/* ======================= 1. Operational Status Bar ======================= */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border-subtle)] px-2 py-3 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-2 py-2.5 text-xs">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[11px] text-[var(--text-tertiary)]">全部</span>
@@ -426,25 +426,11 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
           </div>
         </div>
 
-        {/* 右侧指标 */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[var(--border-subtle)] pt-3 text-xs text-[var(--text-secondary)] lg:border-l lg:border-t-0 lg:pl-5 lg:pt-0">
-          <div className="flex items-center gap-1">
-            <span className="text-[var(--text-tertiary)]">并发:</span>
-            <span className="text-[var(--text-tertiary)] font-medium">未提供</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-[var(--text-tertiary)]">快照等待:</span>
-            <span className="text-[var(--warning)] font-medium">{metrics.queueWaiting}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-[var(--text-tertiary)]">健康:</span>
-            <span className="text-[var(--text-tertiary)] font-medium">未验证</span>
-          </div>
-        </div>
+
       </div>
 
       {/* ======================= 2. Toolbar ======================= */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-2 py-2 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-2 py-3 text-xs">
         <div className="flex flex-1 flex-wrap items-center gap-2 min-w-[260px]">
           {/* 搜索输入框 */}
           <div className="relative flex-1 min-w-[160px] max-w-xs">
@@ -454,7 +440,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
               placeholder="搜索剧集 / 任务 ID..."
-              className="h-9 w-full rounded-[8px] border border-[var(--border-normal)] bg-[var(--bg-app)] pl-8 pr-3 text-[12px] text-[var(--text-primary)] outline-none focus:border-[var(--focus)] placeholder:text-[var(--text-tertiary)]"
+              className="h-9 w-full rounded-[5px] border border-[var(--border-normal)] bg-[var(--bg-app)] pl-8 pr-3 text-[12px] text-[var(--text-primary)] outline-none focus:border-[var(--focus)] placeholder:text-[var(--text-tertiary)]"
             />
           </div>
 
@@ -463,7 +449,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-[28px] bg-[var(--bg-workspace)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-[4px] px-2 text-xs outline-hidden cursor-pointer"
+              className="h-9 bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] rounded-[5px] px-3 text-[12px] outline-hidden cursor-pointer"
             >
               <option value="all">全部状态</option>
               <option value="RUNNING">运行中</option>
@@ -553,20 +539,6 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
           ]}
         />
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] px-3 py-3"><span className="text-[11px] text-[var(--text-tertiary)]">历史快照 · 匹配 {filteredRuns.length} 条</span><Pagination size="small" current={safePage} pageSize={pageSize} total={filteredRuns.length} showSizeChanger pageSizeOptions={["10","20","50","100"]} showTotal={n=>`共 ${n} 条`} onChange={(p,s)=>{setPage(p);setPageSize(s);}} /></div>
-      </div>
-
-      {/* 底部轻量运行状态栏 */}
-      <div className="h-[32px] px-3 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] flex items-center justify-between text-[11px] font-mono text-[var(--text-tertiary)]">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-[var(--success)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)]" />
-            <span>本地运行证据快照（非在线状态）</span>
-          </span>
-          <span>·</span>
-          <span>实际槽位以 Runner 为准</span>
-          <span>·</span>
-          <span>{metrics.queueWaiting} 条快照等待记录</span>
-        </div>
       </div>
 
       {/* 极简详情抽屉 (不繁琐、无冗余AI堆砌) */}

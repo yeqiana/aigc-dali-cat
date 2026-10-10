@@ -31,7 +31,7 @@ try{
    'if(main?.querySelector("h1")?.textContent.trim()!==c.title)throw Error("title wrong");',
    'if(!document.querySelector(\'[data-testid="local-real-evidence-banner"]\'))throw Error("source banner hidden");',
    'let ready=false;',
-   'for(let i=0;i<150;i++){const txt=main.textContent||"";if(c.menu==="生产监控"&&txt.includes("本机真实作品状态文件")){ready=true;break;}if(c.menu==="工作流"&&txt.includes("各作品所处阶段")&&txt.includes("标准生产阶段")){ready=true;break;}if(!c.menu&&txt.includes("生产阶段记录")&&txt.includes("来自本机 episodes")){ready=true;break;}await sleep(100)}',
+   'for(let i=0;i<150;i++){const txt=main.textContent||"";if(c.menu==="生产监控"&&txt.includes("本机真实作品状态文件")){ready=true;break;}if(c.menu==="工作流"&&txt.includes("各作品所处阶段")&&txt.includes("标准七阶段")){ready=true;break;}if(!c.menu&&txt.includes("生产阶段记录")&&txt.includes("来自本机 episodes")){ready=true;break;}await sleep(100)}',
    'if(!ready)throw Error("page data not rendered");',
    'if(!main.querySelector("table,.os-data-row,[aria-label=\\\"项目概况\\\"]"))throw Error("primary data surface missing");',
    'const px=document.documentElement.scrollWidth;', 'if(px>innerWidth+3)throw Error("horizontal overflow: "+px+"/"+innerWidth);',
