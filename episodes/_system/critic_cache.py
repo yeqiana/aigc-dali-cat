@@ -55,6 +55,18 @@ def get(ep: Path, key: str) -> dict | None:
 def put(ep: Path, *, critic_type: str, contract_version: str, inputs: dict, evidence_path: str, evidence_sha256: str, passed: bool) -> str:
     data = read_cache(ep)
     key = make_key(critic_type, contract_version, inputs)
+    previous = data["entries"].get(key)
+    # Re-validating an identical, already indexed decision must not rewrite
+    # the whole cache or change its timestamp. This is a diagnostic cache,
+    # never a substitute for the authoritative SHA-bound review evidence.
+    if (isinstance(previous, dict)
+            and previous.get("evidence_path") == evidence_path
+            and previous.get("evidence_sha256") == evidence_sha256
+            and previous.get("passed") is bool(passed)
+            and previous.get("critic_type") == critic_type
+            and previous.get("contract_version") == contract_version
+            and previous.get("inputs") == inputs):
+        return key
     data["entries"][key] = {
         "critic_type": critic_type,
         "contract_version": contract_version,

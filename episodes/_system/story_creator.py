@@ -75,6 +75,18 @@ def _standalone_episode_path(root: Path, title: str) -> Path:
             numbers.append(int(match.group(1)))
             if match.group(2) == slug:
                 matches.append(child)
+    # A deleted Episode directory is NOT a released business identity. In
+    # MySQL/dual mode, historical namespaces (including retired Episodes)
+    # still own their numbers and must never be reused for new production.
+    # A failed MySQL authority read raises in mysql mode: no JSON fallback.
+    if episode_state_persistence.authority_mode() != "json":
+        for namespace in episode_state_persistence.list_episode_namespaces():
+            parts = str(namespace).replace("\\", "/").split("/")
+            if len(parts) != 2 or parts[0] != DEFAULT_STANDALONE_SERIES:
+                continue
+            numbered = re.match(r"^(\d{2})_.+$", parts[1])
+            if numbered:
+                numbers.append(int(numbered.group(1)))
     if len(matches) > 1:
         raise RuntimeError(f"duplicate canonical standalone Episode title: {title}")
     if matches:

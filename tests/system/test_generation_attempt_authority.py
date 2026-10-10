@@ -273,10 +273,13 @@ class GenerationAttemptAuthorityMySqlTests(unittest.TestCase):
         connection.execute("UPDATE TB_GENERATION_ATTEMPT SET LEASE_EXPIRES_AT=UTC_TIMESTAMP(6)-INTERVAL 1 SECOND WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=1",
                            (post["episode_id"], post["logical_asset_key"]))
         connection.close()
-        second = self._reserve()
-        self.assertEqual(second["attempt_index"], 2)
+        with self.assertRaisesRegex(
+                authority.AttemptDenied,
+                "GENERATION_ATTEMPT_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED"):
+            self._reserve()
         self.assertEqual(authority.load_asset_state(self.ep, self.key)["attempts_consumed"], 1)
-        authority.release_pre_dispatch(self.ep, second, second["fencing_token"], "test cleanup")
+        self.assertIsNone(authority.load_asset_state(self.ep, self.key)["active_attempt_index"])
+        self.assertEqual(authority.load_attempt(self.ep, self.key, 1)["status"], "OUTCOME_UNKNOWN")
 
     def test_duplicate_dispatch_terminal_idempotency_and_shared_scope_key(self):
         visual = authority.frame_key(self.ep, "frame-03")

@@ -36,7 +36,7 @@
 - `AGENTS.md`：Codex 自动入口与仓库协作规则。
 - `SKILL.md`：Story OS 执行协议。
 - `standards/制作规范_正式版.md`：唯一创作规范权威。
-- `meta/episode-state.json`：唯一机器阶段事实源。
+- `episode_state_persistence`：唯一阶段读取/更新入口；`mysql` 模式以 MySQL 为阶段权威，不回退本地 JSON；`dual` 优先 MySQL 并按兼容规则回退；`json` 模式使用 `meta/episode-state.json`。
 - `meta/story-gates.json`：门禁证据，不保存 stage，不得成为第二状态机。
 
 
@@ -75,7 +75,7 @@
 ## Runtime DAG / Resume / Quota
 
 - 新篇有 `meta/runtime-request.json` 且 `runtime.execution_mode=dag` 时，优先由 `runtime_dag.py` 分段调度，不再默认启动单个全程大 Codex supervisor。
-- Runtime DAG 不是第二状态机；每个 Step 最终仍必须通过 canonical `episode-state.json` + validate/machine/evidence gates。
+- Runtime DAG 不是第二状态机；每个 Step 最终必须通过 `episode_state_persistence` 当前配置的 canonical 阶段权威，以及 validate/machine/evidence gates。
 - 中断恢复先验证已经到达的目标阶段；证据有效则 REUSED，不为“保险”重做昂贵 Step。
 - 图片 worker pool 只复用 Python 进程/模块，不复用跨帧 Codex 对话上下文。
 - Quota observability 仅记录真实日志计数或用户明确提供的 `/status` 百分比，不允许推测 Plus 剩余额度。
@@ -177,11 +177,11 @@ Visual Lock 不再只看三张“风格图”：先 baseline，随后 worst cond
 
 ## Episodes 机器状态与发布清单
 
-> 当前 Story OS：`episode-state.json` 仍是唯一阶段事实源；`story-gates.json` 只记录故事/视觉/字幕/锁图门禁证据，不得保存或覆盖 stage。
+> 当前 Story OS：阶段读取与更新必须走 `episode_state_persistence`；MySQL 模式由数据库提供阶段权威，`episode-state.json` 仅在允许的模式下作为文件状态；`story-gates.json` 仍只记录门禁证据，不得保存或覆盖 stage。
 
 1. 新建具体剧集时，按 [`episodes/_system/README.md`](episodes/_system/README.md) 初始化 `meta/episode-state.json`、`meta/release-manifest.json` 与 `meta/story-gates.json`；历史剧集不批量伪造状态，只在重新进入制作/发布/复盘时迁移。
 2. 机器状态固定为：`IDEA_LOCKED → STORYBOARD_LOCKED → VISUAL_CALIBRATED → PRODUCTION_PASSED → PUBLISH_READY → PUBLISHED → DATA_REVIEWED`。
-3. `episode-state.json` 是阶段事实源；README 的状态文案与其冲突时必须修 README，不得反过来只改机器状态来迁就旧文案。
+3. 阶段权威由 `episode_state_persistence` 的当前存储模式决定；README 文案冲突时修 README，不得为迎合旧文案绕过持久化接口或直接覆盖数据库/JSON。
 4. 正向推进必须使用 `episodes/_system/episode_state.py transition`，只能相邻前进。脚本会先用 `validate_episode.py --target` 验收目标门禁，失败时不得手工越级修改 JSON。
 5. `release-manifest.json` 只记录实际发布版本事实，不替代分镜、制作规范或数据报告；路径统一使用仓库根目录相对路径。
 6. `PUBLISH_READY` 前必须完成制作门禁与九项传播卡，并写明 `publish_decision=go`；`conditional/not_recommended` 若仍发布必须填写 `decision_note`。
@@ -242,7 +242,7 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现�
 执行链：
 `Raw Request → Intent Resolver → immutable Runtime Request → Request Router → Workflow DAG → Tool/Model Execution → Trace/Evidence`
 
-- `meta/episode-state.json` 仍是唯一阶段状态源。
+- 阶段状态由 `episode_state_persistence` 的配置权威持有；`meta/episode-state.json` 在 MySQL 模式下不是可回退的阶段源。
 - `meta/runtime-route.json` 只记录路由决策，不是第二状态机。
 - `meta/runtime/trace-events.jsonl` 只记录执行事实，不授予 PASS。
 - 当前 GPT-Image-2 桌面通道不假设 exact RAW canvas；记录真实 RAW 尺寸与 Provider Receipt，再由 NP01 安全 Normalize。
@@ -260,7 +260,7 @@ Codex 若未收到用户明确画风/质感指令，必须先解析 `M00 / 现�
 - Batch Transport 失败自动回退现有 single-frame worker。
 - Deviation >= 80 且 Criticality >= 80 才允许 High×High 紧急单帧返修。
 - 其他内容失败等待 Batch 原始生成完成后进入 Repair Arbiter。
-- Batch / Trace / Receipt 都是 Evidence，不改变 `meta/episode-state.json` 唯一阶段权威。
+- Batch / Trace / Receipt 都是 Evidence，不改变 `episode_state_persistence` 所选择的唯一阶段权威。
 <!-- STORY_OS_V240_BATCH_RUNTIME_END -->
 
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_BEGIN -->
