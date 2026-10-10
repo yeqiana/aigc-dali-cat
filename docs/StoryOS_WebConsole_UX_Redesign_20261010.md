@@ -30,3 +30,15 @@ S1 负责 App、Sidebar、Home；S2 负责 ProductionMonitorView / RunDetail；S
 - 所有前端阶段、审核、生成操作不得无 API 情况下更改权威状态。
 - UI 不因装饰卡片、渐变或胶囊色块损害可扫描性。
 - 原有用户项目、历史记录不得因视觉改版被删除。
+
+## 2026-10-10 实施与验证记录
+- 四个独立 Worktree 完成各自限定文件，并已 cherry-pick 到 `feature/storyos-webconsole-design-shell-20261010` 作为待评审集成分支。最终集成提交为 `700c87f7`（后续可有文档提交）。未触碰主工作树的生产状态和未提交变更。
+- `npm run lint` (`tsc --noEmit`) 通过；`npm run build` (`vite build`) 通过。构建存在打包 chunk 超过 500KB 的非阻塞警告，后续建议延迟加载大型监控视图。
+- Chrome headless 使用相对资源构建（`vite build --base=./`）对静态入口分别在 1366×900、1440×900、1920×900 验证首页，截图保存于当前集成工作树忽略目录 `.storyos-tmp/ui-qa/storyos-overview-{1366,1440,1920}.png`。页面可渲染，导航、主体列表、关注区无明显水平溢出。**该检查是截图级静态冒烟，不等于用户交互自动化测试。**
+- Vite preview 在当前 Runner 宿主启动时出现 `listen EACCES`（3100/3112），未执行真实 Platform API 联机端到端浏览器验收。Agents API 当前无已知权威列表契约，断连时显示能力未接通；流程与监控对无受控写 API 的操作禁用或提示未执行。
+- Runner 当前不支持 WebCodex `coding_agent_runs`，而本机原生 `codex login status` 未登录。四槽改动由 WebCodex 直接在四个 Worktree 中完成，不能声称同时启动四个自主 Coding Agents。
+
+## 待后续验收
+1. API 可用环境下逐页点击、搜索/筛选、弹窗键盘、错误/加载/空态，以及单个 Story 的完整业务流程。
+2. 审核和生成等受控写入 API 打通后，以真实后端回执恢复操作并补充 E2E，不得恢复前端自写的假成功。
+3. 评估按路由进行代码拆包优化，完成 1366/1440/1920 下的生产监控、作品页、Agent 页截图审查。
