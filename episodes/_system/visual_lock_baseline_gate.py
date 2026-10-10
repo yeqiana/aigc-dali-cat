@@ -52,6 +52,28 @@ def baseline_plan(ep):
     return row
 def baseline_frame(ep):return int(baseline_plan(ep)["frame"])
 
+def _revision_baseline_binding(ep):
+    """Return the current Revision's frozen baseline inputs, if any."""
+    plan_path=Path(ep)/"meta/visual-lock-plan.json"
+    if not plan_path.is_file():return None
+    plan=read_json(plan_path)
+    revision_id=str(plan.get("production_revision_id") or "").strip()
+    if not revision_id:return None
+    row=next((r for r in (plan.get("items") or [])
+              if r.get("role")=="ordinary_baseline"),None)
+    if not isinstance(row,dict) or row.get("production_revision_id")!=revision_id:
+        raise ValueError("BASELINE_REVISION_PLAN_BINDING_MISSING")
+    bound={key:row.get(key) for key in
+           ("production_revision_id","input_sha256","prompt_sha256")}
+    if any(not isinstance(value,str) or len(value)!=64
+           for key,value in bound.items() if key!="production_revision_id"):
+        raise ValueError("BASELINE_REVISION_PLAN_SHA_MISSING")
+    return bound
+
+def _review_matches_revision(review, binding):
+    return all(str(review.get(key) or "")==str(value or "")
+               for key,value in binding.items())
+
 def generated_baseline(ep):
     ep=Path(ep).resolve();frame=baseline_frame(ep);q=scheduler_core.load_queue(ep)
     rows=[x for x in (q.get("items") or []) if int(x.get("frame") or -1)==frame and x.get("scope") in {"visual_lock","repair","baseline_candidate"} and x.get("status")=="generated" and x.get("output_path")]
@@ -61,9 +83,24 @@ def generated_baseline(ep):
 
 def prepare_review(ep,force=False):
     ep=Path(ep).resolve();p=ep/REL
-    if p.is_file() and not force:return read_json(p)
+    binding=_revision_baseline_binding(ep)
+    if p.is_file():
+        previous=read_json(p)
+        if not force and (binding is None or _review_matches_revision(previous,binding)):
+            return previous
+        if binding and not _review_matches_revision(previous,binding):
+            # Never silently discard the old Revision/legacy actual-pixel review.
+            original=p.read_bytes();digest=hashlib.sha256(original).hexdigest()
+            archive=ep/"meta/runtime/review-exports"/f"visual-lock-baseline-review-{digest[:16]}.json"
+            archive.parent.mkdir(parents=True,exist_ok=True)
+            try:
+                with archive.open("xb") as handle:handle.write(original)
+            except FileExistsError:
+                if archive.read_bytes()!=original:
+                    raise ValueError("BASELINE_HISTORY_ARCHIVE_COLLISION")
     src=generated_baseline(ep);cv=character_visual_contract.load(ep) or {};primary=[str(x) for x in (cv.get("primary_cast_ids") or [])]
     d={"schema_version":1,"status":"DRAFT","decision":"PENDING","created_at":now(),"role":"ordinary_baseline",**src,
+       **(binding or {}),
        "reviewer_scope":"delegated_pixel_review","checks":{k:"PENDING" for k in CHECKS},
        "face_boxes":[{"character_id":cid,"x":None,"y":None,"w":None,"h":None} for cid in primary],
        "note":"Inspect actual pixels. Face boxes are normalized 0..1 and derive crops only."}
@@ -94,6 +131,12 @@ def validate_review(ep):
     d=read_json(p);e=[]
     if d.get("schema_version")!=1:e.append("baseline review schema_version must be 1")
     if d.get("decision")!="PASS":e.append("baseline review decision must be PASS")
+    try:
+        binding=_revision_baseline_binding(ep)
+        if binding and not _review_matches_revision(d,binding):
+            e.append("BASELINE_REVIEW_REVISION_BINDING_MISSING_OR_STALE")
+    except Exception as exc:
+        e.append(str(exc))
     try:src=generated_baseline(ep)
     except Exception as exc:return [str(exc)]
     for k in ("frame","asset_path","sha256"):
@@ -271,6 +314,24 @@ def approved(ep):
     except Exception:
         return False
     if validate_review(ep):return False
+    try:
+        binding=_revision_baseline_binding(ep)
+        if binding:
+            # A new Revision's Pending baseline can never inherit legacy PASS.
+            # The fresh review and the current calibration row must both bind
+            # the same immutable Revision input and actual pixel SHA.
+            gates=read_json(ep/"meta/story-gates.json")
+            rows=(((gates.get("visual") or {}).get("calibration") or {}).get("items") or [])
+            item=next((r for r in rows if isinstance(r,dict)
+                       and r.get("role")=="ordinary_baseline"),None)
+            review=read_json(ep/REL)
+            if (not item or item.get("decision")!="passed"
+                    or not _review_matches_revision(item,binding)
+                    or item.get("asset_path")!=review.get("asset_path")
+                    or item.get("sha256")!=review.get("sha256")):
+                return False
+    except Exception:
+        return False
     if character_visual_contract.pixel_master_required(ep):return not character_visual_contract.validate_pixel_master(ep,allow_provisional=True)
     return True
 
