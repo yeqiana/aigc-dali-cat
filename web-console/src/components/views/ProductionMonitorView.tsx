@@ -113,44 +113,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return () => clearInterval(interval);
   }, [refreshInterval]);
 
-  // 动态指标计算 (真实数据派生)
+  // 仅显示现有证据快照可证实的数量；不推测 Worker、GPU 或平台健康度。
   const metrics = {
-    totalStories: runs.length,
-    runningStories: runs.filter(r => r.status === 'RUNNING').length,
-    waitingStories: runs.filter(r => r.status === 'WAITING').length,
-    blockedStories: runs.filter(r => r.status === 'BLOCKED').length,
-    failedStories: runs.filter(r => r.status === 'FAILED').length,
-    todayCompletedStories: runs.filter(r => r.status === 'COMPLETED').length,
-    activeWorkers: [
-      { id: 'Codex-01', status: 'running', storyName: '09-05 婚礼前夜', currentFrame: 'Frame15' },
-      { id: 'Codex-02', status: 'running', storyName: '09-04 瓶中世界', currentFrame: 'Frame08' },
-      { id: 'Codex-03', status: 'running', storyName: '10-01 鳌太线·热汤', currentFrame: 'Frame04' },
-      { id: 'Codex-04', status: 'running', storyName: '10-02 玻璃另一边的手', currentFrame: 'Frame11' },
-    ],
-    queueStats: {
-      totalWaiting: runs.filter(r => r.status === 'WAITING').length + 6,
-      generating: runs.filter(r => r.status === 'RUNNING').length,
-      queued: 6,
-      retrying: runs.filter(r => r.status === 'RETRYING').length,
-      other: 0,
-    },
-    exceptionStats: {
-      manualActionRequired: runs.filter(r => r.status === 'BLOCKED').length,
-      autoRecovering: runs.filter(r => r.status === 'RETRYING').length,
-    },
-    recentEvents: [
-      { time: '11:10', story: '09-05 婚礼前夜', text: 'Release Preflight PASS · 发布决策 GO', type: 'success' },
-      { time: '10:50', story: '09-05 婚礼前夜', text: '20 帧逐帧语义审核完成', type: 'success' },
-      { time: '10:45', story: '09-04 瓶中世界', text: 'Visual Lock 4 帧全 PASS 准入', type: 'start' },
-      { time: '10:22', story: '09-05 婚礼前夜', text: 'Frame 01 Worker 重试成功', type: 'retry' },
-    ],
-    runtimeHealth: {
-      engine: `StoryOS ${STORY_OS_PLATFORM_MANIFEST.platform_version || '2.6.1'}`,
-      mysql: '正常 (store_mode=JSONL+MySQL)',
-      imageApi: '正常 (gpt-image-2 isolated)',
-      workerStatus: '4 / 4 Active',
-      queueTotal: runs.reduce((acc, r) => acc + (r.status === 'WAITING' ? 1 : 0), 0) + 4
-    }
+    queueWaiting: runs.filter(r => r.status === 'WAITING').length,
   };
 
   // 筛选逻辑
@@ -175,46 +140,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return true;
   });
 
-  // 操作处理：暂停 / 恢复 / 重试
-  const handleTogglePause = (runId: string) => {
-    setRuns((prev) =>
-      prev.map((r) => {
-        if (r.runId === runId) {
-          const isPaused = r.status === 'WAITING' && r.waitingReason === '用户手动暂停';
-          const nextStatus: StoryRunStatus = isPaused ? 'RUNNING' : 'WAITING';
-          const nextReason = isPaused ? undefined : '用户手动暂停';
-          onShowToast(`${r.storyName} ${isPaused ? '已恢复生产' : '已暂停任务'}`);
-          return {
-            ...r,
-            status: nextStatus,
-            waitingReason: nextReason,
-            lastHeartbeatAgo: '刚刚',
-          };
-        }
-        return r;
-      })
-    );
-  };
-
-  const handleRetryRun = (runId: string) => {
-    setRuns((prev) =>
-      prev.map((r) => {
-        if (r.runId === runId) {
-          onShowToast(`${r.storyName} 异常重试已触发`);
-          return {
-            ...r,
-            status: 'RUNNING',
-            exceptionSummary: '-',
-            exceptionType: 'none',
-            currentAction: '重新调度生成 Frame',
-            lastHeartbeatAgo: '刚刚',
-          };
-        }
-        return r;
-      })
-    );
-  };
-
+  // 本端没有已验证的暂停/恢复/重试写入契约；严禁前端自改 status 并声称成功。
   const handleResetFilter = () => {
     setSearchKeyword('');
     setStatusFilter('all');
@@ -355,6 +281,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         </div>
       </div>
 
+      <p role="status" className="text-[11px] text-[var(--text-tertiary)]">阶段字段从 Platform API 同步；运行、心跳、帧数等字段来自工作区快照，不能作为实时调度依据。当前未开放暂停、恢复、重试接口。</p>
+
       {/* ======================= 1. Operational Status Bar ======================= */}
       <div className="h-[48px] px-3 bg-[#13161B] border border-[#232830] rounded-[6px] flex items-center justify-between overflow-x-auto text-xs font-mono">
         <div className="flex items-center gap-4 shrink-0">
@@ -428,15 +356,15 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         <div className="flex items-center gap-3 pl-4 border-l border-[#232830] text-xs text-[#A7AFBA] shrink-0">
           <div className="flex items-center gap-1">
             <span className="text-[#737D8A]">并发:</span>
-            <span className="text-[#4C8DFF] font-medium">4/4</span>
+            <span className="text-[var(--text-tertiary)] font-medium">未提供</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[#737D8A]">队列:</span>
-            <span className="text-[#D29922] font-medium">{metrics.runtimeHealth.queueTotal}</span>
+            <span className="text-[#D29922] font-medium">{metrics.queueWaiting}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[#737D8A]">健康:</span>
-            <span className="text-[#3FB950] font-medium">100%</span>
+            <span className="text-[var(--text-tertiary)] font-medium">未验证</span>
           </div>
         </div>
       </div>
@@ -649,8 +577,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {run.status === 'RUNNING' && (
                           <button
                             type="button"
-                            onClick={() => handleTogglePause(run.runId)}
-                            className="h-[24px] px-2 rounded-[3px] bg-transparent border border-transparent hover:border-[#232830] hover:bg-[#171B21] text-[#A7AFBA] hover:text-[#F1F3F5] font-mono text-[11px] cursor-pointer transition-colors"
+                            disabled title="当前仅供查看；暂停/恢复需要受控 Runtime API"
+                            className="h-[24px] px-2 rounded-[3px] opacity-45 cursor-not-allowed bg-transparent border border-transparent hover:border-[#232830] hover:bg-[#171B21] text-[#A7AFBA] hover:text-[#F1F3F5] font-mono text-[11px] cursor-pointer transition-colors"
                           >
                             暂停
                           </button>
@@ -659,7 +587,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {run.status === 'WAITING' && run.waitingReason === '用户手动暂停' && (
                           <button
                             type="button"
-                            onClick={() => handleTogglePause(run.runId)}
+                            disabled title="当前仅供查看；暂停/恢复需要受控 Runtime API"
                             className="h-[24px] px-2 rounded-[3px] bg-[#3FB950]/10 border border-[#3FB950]/30 text-[#3FB950] hover:bg-[#3FB950]/20 font-mono text-[11px] cursor-pointer transition-colors"
                           >
                             恢复
@@ -669,7 +597,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {run.status === 'BLOCKED' && (
                           <button
                             type="button"
-                            onClick={() => handleRetryRun(run.runId)}
+                            disabled title="当前仅供查看；重试需要受控 Runtime API"
                             className="h-[24px] px-2 rounded-[3px] bg-[#F85149]/10 text-[#F85149] border border-[#F85149]/30 hover:bg-[#F85149]/20 font-mono text-[11px] cursor-pointer font-medium transition-colors"
                           >
                             重试
@@ -690,12 +618,12 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-[#3FB950]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950]" />
-            <span>GPU 调度正常</span>
+            <span>工作区只读证据投影</span>
           </span>
           <span>·</span>
-          <span>4/4 槽位</span>
+          <span>实际槽位以 Runner 为准</span>
           <span>·</span>
-          <span>{metrics.queueStats.totalWaiting} 待调度</span>
+          <span>{metrics.queueWaiting} 待调度</span>
         </div>
       </div>
 
