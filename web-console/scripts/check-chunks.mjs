@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const dist=path.resolve('dist/assets');const files=fs.readdirSync(dist);
+const entry=files.find(f=>/^index-.*\.js$/.test(f));
+assert.ok(entry);const size=fs.statSync(path.join(dist,entry)).size;
+assert.ok(size<350000,'主入口超过 350KB: '+size);
+const details=files.filter(f=>/^episodeDetail\d\d-.*\.js$/.test(f));
+assert.equal(details.length,11,'必须有 11 个单作品懒加载 JS 模块');
+assert.ok(details.every(f=>fs.statSync(path.join(dist,f)).size<100000),'单作品历史证据模块必须小于 100KB');
+const source=fs.readFileSync('dist/index.html','utf8');
+assert.ok(!/episodeDetail\d\d-.*\.js/.test(source),'首页 HTML 不应预加载全部历史详情');
+console.log('PASS 11/11 详情分包按需加载；入口 '+size+' B；最大详情 '+Math.max(...details.map(f=>fs.statSync(path.join(dist,f)).size))+' B');

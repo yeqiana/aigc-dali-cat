@@ -60,7 +60,9 @@ export async function platformRequest<T>(path: string, options: HttpRequestOptio
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const relayAbort = () => controller.abort();
-  signal?.addEventListener('abort', relayAbort);
+  signal?.addEventListener('abort', relayAbort, { once: true });
+  // AbortSignal 若在调用之前已取消，不可等待下一次事件才同步。
+  if (signal?.aborted) controller.abort();
   try {
     const response = await fetch(buildUrl(path), {
       method,
@@ -70,6 +72,9 @@ export async function platformRequest<T>(path: string, options: HttpRequestOptio
     });
     let parsed: unknown = null;
     const raw = await response.text();
+    if (!raw && response.ok) {
+      throw new PlatformApiError('INVALID_RESPONSE', 'Platform API 返回空响应，未包含约定的 JSON 数据', response.status);
+    }
     if (raw) {
       try {
         parsed = JSON.parse(raw);
@@ -86,6 +91,7 @@ export async function platformRequest<T>(path: string, options: HttpRequestOptio
   } catch (error) {
     if (error instanceof PlatformApiError) throw error;
     if ((error as Error)?.name === 'AbortError') {
+      if (signal?.aborted) throw new PlatformApiError('CANCELLED', '请求已取消', 0);
       throw new PlatformApiError('TIMEOUT', 'Platform API 请求超时', 0);
     }
     throw new PlatformApiError('NETWORK_ERROR', (error as Error)?.message || 'Platform API 网络请求失败', 0);

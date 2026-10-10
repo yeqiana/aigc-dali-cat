@@ -1,0 +1,99 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { AlertCircle, ArrowRight, GitBranch, RefreshCw } from 'lucide-react';
+import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
+import { WorkflowDetailPanel } from './WorkflowDetailPanel';
+
+const STAGE_ORDER = ['IDEA_LOCKED','STORYBOARD_LOCKED','VISUAL_CALIBRATED','PRODUCTION_PASSED','PUBLISH_READY','PUBLISHED','DATA_REVIEWED'];
+export const WorkflowWorkspaceView: React.FC = () => {
+  const [items,setItems] = useState<RuntimeStatusSummary[]>([]);
+  const [loading,setLoading] = useState(true);
+  const [error,setError] = useState<string | null>(null);
+  const [reload,setReload] = useState(0);
+  const [hasMore,setHasMore] = useState(false);
+  const [loadingMore,setLoadingMore] = useState(false);
+  const [total,setTotal] = useState<number | null>(null);
+  const [filter,setFilter] = useState('ALL');
+  const [selected,setSelected] = useState<RuntimeStatusSummary | null>(null);
+  const generation = useRef(0);
+  const pagingInFlight = useRef(false);
+  const nextOffset = useRef(0);
+  useEffect(() => {
+    let active=true;
+    const requestId = ++generation.current;
+    pagingInFlight.current = false;
+    nextOffset.current = 0;
+    setLoading(true);
+    platformApi.runtimeStatuses(100,0).then(data => {
+      if(!active || requestId !== generation.current)return;
+      setItems(data.items ?? []);
+      nextOffset.current = (data.items ?? []).length;
+      setSelected(null);
+      setHasMore(Boolean(data.has_more));
+      setTotal(typeof data.total === 'number' ? data.total : null);
+      setError(data.errors?.length ? '部分状态数据读取失败，以下仅展示成功返回的阶段投影。' : null);
+    }).catch(() => {
+      if(!active || requestId !== generation.current)return;
+      setItems([]);
+      setHasMore(false);
+      setTotal(null);
+      setError('无法连接 Platform API，暂不能读取生产阶段。');
+    }).finally(() => {if(active && requestId === generation.current)setLoading(false)});
+    return () => {active=false;generation.current += 1;pagingInFlight.current=false};
+  },[reload]);
+  const filtered=items.filter(x => filter==='ALL' || x.production_stage===filter);
+  const loadNext = async () => {
+    if (!hasMore || pagingInFlight.current || loading) return;
+    const requestId = generation.current;
+    const offset = nextOffset.current;
+    pagingInFlight.current = true;
+    setLoadingMore(true);
+    try {
+      const data = await platformApi.runtimeStatuses(100, offset);
+      if (requestId !== generation.current) return;
+      const page = Array.isArray(data.items) ? data.items : [];
+      nextOffset.current = offset + page.length;
+      setItems(current => {
+        // 服务端数据可能跨页重复；按明确身份去重，不影响后续 offset 计算。
+        const ids = new Set(current.map(x => x.episode_id || x.episode_ref).filter(Boolean));
+        return [...current, ...page.filter(x => {
+          const id = x.episode_id || x.episode_ref;
+          if (!id || ids.has(id)) return false;
+          ids.add(id);
+          return true;
+        })];
+      });
+      setHasMore(Boolean(data.has_more) && page.length > 0);
+      if (typeof data.total === 'number') setTotal(data.total);
+      if (data.errors?.length) setError('后续分页返回部分错误，列表可能不完整。');
+    } catch {
+      if (requestId === generation.current) setError('加载更多阶段记录失败，已保留此前成功读取的列表。可重试加载。');
+    } finally {
+      if (requestId === generation.current) {
+        pagingInFlight.current = false;
+        setLoadingMore(false);
+      }
+    }
+  };
+  return <div className="mx-auto max-w-[1200px] space-y-7 pb-16 text-[var(--text-primary)]">
+    <header className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] pb-5">
+      <div><p className="mb-2 text-[12px] text-[var(--text-tertiary)]">StoryOS / Workflow</p><h1 className="text-[20px] font-semibold">生产流程</h1><p className="mt-2 text-[13px] text-[var(--text-secondary)]">查看 canonical 生产阶段，不在前端点击跳过门禁。</p></div>
+      <button type="button" onClick={()=>setReload(v=>v+1)} disabled={loading} className="flex items-center gap-2 h-9 px-3 border border-[var(--border-normal)] rounded-[5px] text-[12px] disabled:opacity-50"><RefreshCw size={15}/>刷新</button>
+    </header>
+    <section><h2 className="mb-4 text-[14px] font-semibold">标准生产阶段</h2><div className="flex flex-wrap items-center gap-2">
+      {STAGE_ORDER.map((stage,i) => <React.Fragment key={stage}>{i>0 && <ArrowRight size={14} className="text-[var(--text-tertiary)]"/>}<span className="border border-[var(--border-normal)] px-3 py-2 rounded-[5px] text-[12px] bg-[var(--bg-surface)]">{stageLabel(stage)}</span></React.Fragment>)}
+    </div><p className="mt-3 text-[11px] text-[var(--text-tertiary)]">此处仅解释执行顺序；节点不是可点击的阶段推进操作。</p></section>
+    <section className="space-y-3">
+      <div className="flex items-center justify-between gap-3"><h2 className="text-[14px] font-semibold">各作品所处阶段</h2><select aria-label="筛选阶段" value={filter} onChange={e=>setFilter(e.target.value)} className="h-9 border border-[var(--border-normal)] rounded-[5px] px-3 bg-[var(--bg-surface)] text-[12px]"><option value="ALL">所有阶段</option>{STAGE_ORDER.map(x=><option key={x} value={x}>{stageLabel(x)}</option>)}</select></div>
+      {error && <p role="alert" className="flex items-center gap-2 border border-[var(--border-normal)] rounded-[5px] p-3 text-[12px] text-[var(--warning)]"><AlertCircle size={16}/>{error}</p>}
+      {loading ? <div role="status" className="p-8 text-center text-[var(--text-tertiary)] text-[13px]">正在读取权威阶段…</div>
+      : filtered.length===0 ? <div className="p-8 border-y border-[var(--border-subtle)] text-center text-[13px] text-[var(--text-tertiary)]">暂无可展示的阶段记录。</div>
+      : <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">{filtered.map((x,i)=><div key={x.episode_id||i} className="flex items-start gap-4 py-3">
+        <GitBranch size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]"/><div className="min-w-0 flex-1"><p className="text-[13px] font-medium truncate">{x.title || x.episode_ref || x.episode_id}</p><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来源：{x.state_source || '未提供'} · {x.updated_at || x.observed_at || '更新时间未知'}</p></div>
+        <span className="shrink-0 text-[12px] text-[var(--text-secondary)]">{stageLabel(x.production_stage || 'NO_STATE')}</span><button type="button" onClick={() => setSelected(x)} aria-label={'查看阶段详情：' + (x.title || x.episode_ref || x.episode_id)} className="shrink-0 h-8 px-3 rounded-[5px] border border-[var(--border-normal)] text-[12px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">详情</button>
+      </div>)}</div>}
+    </section>
+    {selected && <WorkflowDetailPanel selected={selected} onClose={() => setSelected(null)} />}
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] pt-3"><span className="text-[12px] text-[var(--text-tertiary)]">已载入 {items.length}{total !== null ? ' / ' + total : ''} 条权威阶段摘要{hasMore ? ' · 尚有更多' : ''}</span>{hasMore && <button type="button" disabled={loadingMore} onClick={loadNext} className="h-9 px-3 border border-[var(--border-normal)] rounded-[5px] text-[12px] hover:bg-[var(--bg-hover)] disabled:opacity-50">{loadingMore ? '载入中…' : '加载更多'}</button>}</div>
+    <p className="text-[11px] leading-5 text-[var(--text-tertiary)]">/runtime/statuses 仅提供阶段 summary；执行动作、Queue、Worker、质量门禁的实时值需按作品查询详细证据，不能根据阶段推断。</p>
+  </div>;
+};

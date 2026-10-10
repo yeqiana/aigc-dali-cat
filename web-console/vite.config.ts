@@ -20,7 +20,21 @@ const platformProxy = {
 
 export default defineConfig(() => {
   return {
+    // Portable build assets must load both from the hosted console and the
+    // isolated file:// browser QA used by offline production evidence tests.
+    base: './',
     plugins: [react(), tailwindcss()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            // 历史 Run 大包只随监控模块加载；Episode 证据与 Registry 分别独立。
+            const normalized = id.replace(/\\/g, '/');
+            if (normalized.includes('/src/data/storyosRunSnapshots.ts')) return 'historical-runs';
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

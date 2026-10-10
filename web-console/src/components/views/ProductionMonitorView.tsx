@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Play,
   Pause,
@@ -28,8 +28,13 @@ import {
 } from 'lucide-react';
 import { StoryRunItem, FrameDetailItem, StoryRunStatus, StoryRunStage } from '../../types';
 import { platformApi } from '../../api/platformApi';
-import { REAL_STORY_RUNS, STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosRealData';
+import { REAL_STORY_RUNS } from '../../data/storyosRunSnapshots';
+import { STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosManifestSnapshot';
 import { StoryRunDetailView } from './StoryRunDetailView';
+import { RuntimeAuthorityPanel } from './RuntimeAuthorityPanel';
+import { ExclusiveReadGate } from '../../api/exclusiveReadGate';
+import { summarizeRuntimeCoverage } from '../../api/runtimeCoverage';
+import type { RuntimeStatusSummary } from '../../api/platformApi';
 
 interface ProductionMonitorViewProps {
   onSelectStoryRun?: (run: StoryRunItem) => void;
@@ -40,8 +45,14 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   onSelectStoryRun,
   onShowToast,
 }) => {
-  // 权威生产运行数据状态 (Zero Mock)
+  // 历史运行快照，仅用于展示，不代表当前实时运行状态
   const [runs, setRuns] = useState<StoryRunItem[]>(REAL_STORY_RUNS);
+  const [runtimeRows, setRuntimeRows] = useState<RuntimeStatusSummary[]>([]);
+  const runtimeRowsRef = useRef<RuntimeStatusSummary[]>([]);
+  const runtimeOffsetRef = useRef(0);
+  const [runtimeHasMore, setRuntimeHasMore] = useState(false);
+  const [runtimeLoadingMore, setRuntimeLoadingMore] = useState(false);
+  const [runtimeCoverage, setRuntimeCoverage] = useState(summarizeRuntimeCoverage(0, null, false));
 
   // 过滤状态
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -50,61 +61,102 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   const [onlyException, setOnlyException] = useState(false);
 
   // 自动刷新机制 (仅增量刷新数据，不触发整页 reload)
-  const [refreshInterval, setRefreshInterval] = useState<number>(5);
+  const [refreshInterval, setRefreshInterval] = useState<number>(15);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [apiState, setApiState] = useState<'loading' | 'ok' | 'partial' | 'offline'>('loading');
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const requestGate = useRef(new ExclusiveReadGate());
+  const [apiWarning, setApiWarning] = useState<string | null>(null);
 
   // 选中的 Story Run 详情视图
   const [selectedRunForDetail, setSelectedRunForDetail] = useState<StoryRunItem | null>(null);
 
   // 从真实平台接口同步 canonical stage 投影；丰富的帧/证据详情继续来自工作区生成投影。
   const loadLatestStatuses = async (isManual = false) => {
+    // 用户展开多页时暂停后台首屏轮询，以免 15 秒后把已加载的下一页静默清空。
+    // 手动刷新明确恢复到第一页，并重新读取最新摘要。
+    if (!isManual && runtimeOffsetRef.current > 100) return;
+    // 同一页面只允许一个阶段查询在途；旧请求不能覆盖刷新后的数据。
+    const generation = requestGate.current.begin();
+    if (generation === null) {
+      if (isManual) onShowToast('正在读取阶段摘要，请稍候');
+      return;
+    }
     try {
       setIsRefreshing(true);
       const data = await platformApi.runtimeStatuses(100, 0);
-      if (data.items.length > 0) {
-        const stageMap: Record<string, StoryRunStage> = {
-          IDEA_LOCKED: 'CREATE',
-          STORYBOARD_LOCKED: 'STORYBOARD',
-          VISUAL_CALIBRATED: 'VISUAL_LOCK',
-          PRODUCTION_PASSED: 'PRODUCTION',
-          PUBLISH_READY: 'PUBLISH',
-          PUBLISHED: 'COMPLETED',
-          DATA_REVIEWED: 'COMPLETED',
-        };
-        setRuns((current) =>
-          current.map((run) => {
-            const row = data.items.find((item) =>
-              item.episode_id === run.runId ||
-              item.business_episode_id === run.runId ||
-              item.title === run.storyName ||
-              item.episode_ref === run.storyName
-            );
-            if (!row) return run;
-            const stageLabel = row.production_stage || run.stageLabel;
-            return {
-              ...run,
-              storyName: row.title || run.storyName,
-              stageLabel,
-              currentStage: stageMap[stageLabel] || run.currentStage,
-            };
-          })
-        );
-      }
+      if (!requestGate.current.isCurrent(generation)) return;
+      setApiState(data.errors?.length ? 'partial' : 'ok');
+      setApiWarning(data.errors?.length ? 'Platform API 返回部分错误，请勿据此推断未返回的故事状态。' : null);
+      setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
+      // 不将平台阶段数据按标题合并进历史 Story Run；两种证据各自独立展示。
+      runtimeRowsRef.current = data.items ?? [];
+      runtimeOffsetRef.current = (data.items ?? []).length;
+      setRuntimeRows(runtimeRowsRef.current);
+      setRuntimeHasMore(Boolean(data.has_more));
+      setRuntimeCoverage(summarizeRuntimeCoverage(runtimeRowsRef.current.length, data.total, Boolean(data.has_more), data.errors ?? []));
       if (isManual) {
-        onShowToast('已同步最新 canonical stage 投影');
+        onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
     } catch (err) {
+      if (!requestGate.current.isCurrent(generation)) return;
       console.error('Failed to fetch runtime statuses:', err);
+      setApiState('offline');
+      runtimeRowsRef.current = [];
+      runtimeOffsetRef.current = 0;
+      setRuntimeRows([]);
+      setRuntimeHasMore(false);
+      setRuntimeCoverage(summarizeRuntimeCoverage(0, null, false));
+      setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
+      if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
-      setTimeout(() => setIsRefreshing(false), 300);
+      if (requestGate.current.finish(generation)) setIsRefreshing(false);
+    }
+  };
+
+  // 只读分页。复用同一代际锁，确保手动刷新、轮询、下一页互不覆盖。
+  const loadNextRuntimePage = async () => {
+    if (!runtimeHasMore) return;
+    const generation = requestGate.current.begin();
+    if (generation === null) return;
+    const offset = runtimeOffsetRef.current;
+    setRuntimeLoadingMore(true);
+    try {
+      const data = await platformApi.runtimeStatuses(100, offset);
+      if (!requestGate.current.isCurrent(generation)) return;
+      const page = data.items ?? [];
+      const existing = new Set(runtimeRowsRef.current.map(r => r.episode_id || r.episode_ref).filter(Boolean));
+      const next = [...runtimeRowsRef.current];
+      for (const record of page) {
+        const key = record.episode_id || record.episode_ref;
+        if (key && existing.has(key)) continue;
+        if (key) existing.add(key);
+        next.push(record);
+      }
+      runtimeRowsRef.current = next;
+      runtimeOffsetRef.current = offset + page.length;
+      const hasMore = Boolean(data.has_more) && page.length > 0;
+      setRuntimeHasMore(hasMore);
+      setRuntimeRows(next);
+      setRuntimeCoverage(summarizeRuntimeCoverage(next.length, data.total, hasMore, data.errors ?? []));
+      setApiState(data.errors?.length ? 'partial' : 'ok');
+      if (data.errors?.length) onShowToast('下一页返回部分错误，阶段记录可能不完整');
+    } catch {
+      if (requestGate.current.isCurrent(generation)) onShowToast('下一页读取失败，已保留成功加载的记录');
+    } finally {
+      if (requestGate.current.finish(generation)) setRuntimeLoadingMore(false);
     }
   };
 
   useEffect(() => {
     loadLatestStatuses();
+    return () => {
+      // 组件卸载/StrictMode 重新挂载时废弃当前结果，不更新已卸载页面。
+      requestGate.current.invalidate();
+    };
   }, []);
 
-  // 自动增量刷新
+  // 自动刷新不会和手动刷新并发，也不会在卸载后覆盖较新请求
   useEffect(() => {
     if (refreshInterval <= 0) return;
     const interval = setInterval(() => {
@@ -113,44 +165,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return () => clearInterval(interval);
   }, [refreshInterval]);
 
-  // 动态指标计算 (真实数据派生)
+  // 仅显示现有证据快照可证实的数量；不推测 Worker、GPU 或平台健康度。
   const metrics = {
-    totalStories: runs.length,
-    runningStories: runs.filter(r => r.status === 'RUNNING').length,
-    waitingStories: runs.filter(r => r.status === 'WAITING').length,
-    blockedStories: runs.filter(r => r.status === 'BLOCKED').length,
-    failedStories: runs.filter(r => r.status === 'FAILED').length,
-    todayCompletedStories: runs.filter(r => r.status === 'COMPLETED').length,
-    activeWorkers: [
-      { id: 'Codex-01', status: 'running', storyName: '09-05 婚礼前夜', currentFrame: 'Frame15' },
-      { id: 'Codex-02', status: 'running', storyName: '09-04 瓶中世界', currentFrame: 'Frame08' },
-      { id: 'Codex-03', status: 'running', storyName: '10-01 鳌太线·热汤', currentFrame: 'Frame04' },
-      { id: 'Codex-04', status: 'running', storyName: '10-02 玻璃另一边的手', currentFrame: 'Frame11' },
-    ],
-    queueStats: {
-      totalWaiting: runs.filter(r => r.status === 'WAITING').length + 6,
-      generating: runs.filter(r => r.status === 'RUNNING').length,
-      queued: 6,
-      retrying: runs.filter(r => r.status === 'RETRYING').length,
-      other: 0,
-    },
-    exceptionStats: {
-      manualActionRequired: runs.filter(r => r.status === 'BLOCKED').length,
-      autoRecovering: runs.filter(r => r.status === 'RETRYING').length,
-    },
-    recentEvents: [
-      { time: '11:10', story: '09-05 婚礼前夜', text: 'Release Preflight PASS · 发布决策 GO', type: 'success' },
-      { time: '10:50', story: '09-05 婚礼前夜', text: '20 帧逐帧语义审核完成', type: 'success' },
-      { time: '10:45', story: '09-04 瓶中世界', text: 'Visual Lock 4 帧全 PASS 准入', type: 'start' },
-      { time: '10:22', story: '09-05 婚礼前夜', text: 'Frame 01 Worker 重试成功', type: 'retry' },
-    ],
-    runtimeHealth: {
-      engine: `StoryOS ${STORY_OS_PLATFORM_MANIFEST.platform_version || '2.6.1'}`,
-      mysql: '正常 (store_mode=JSONL+MySQL)',
-      imageApi: '正常 (gpt-image-2 isolated)',
-      workerStatus: '4 / 4 Active',
-      queueTotal: runs.reduce((acc, r) => acc + (r.status === 'WAITING' ? 1 : 0), 0) + 4
-    }
+    queueWaiting: runs.filter(r => r.status === 'WAITING').length,
   };
 
   // 筛选逻辑
@@ -168,53 +185,14 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       return false;
     }
     if (onlyException) {
-      if (run.status !== 'BLOCKED' && run.status !== 'FAILED' && run.status !== 'RETRYING' && run.exceptionType === 'none') {
+      if (!['BLOCKED', 'FAILED', 'RETRYING'].includes(run.status) && run.exceptionType !== 'manual' && run.exceptionType !== 'auto_retry') {
         return false;
       }
     }
     return true;
   });
 
-  // 操作处理：暂停 / 恢复 / 重试
-  const handleTogglePause = (runId: string) => {
-    setRuns((prev) =>
-      prev.map((r) => {
-        if (r.runId === runId) {
-          const isPaused = r.status === 'WAITING' && r.waitingReason === '用户手动暂停';
-          const nextStatus: StoryRunStatus = isPaused ? 'RUNNING' : 'WAITING';
-          const nextReason = isPaused ? undefined : '用户手动暂停';
-          onShowToast(`${r.storyName} ${isPaused ? '已恢复生产' : '已暂停任务'}`);
-          return {
-            ...r,
-            status: nextStatus,
-            waitingReason: nextReason,
-            lastHeartbeatAgo: '刚刚',
-          };
-        }
-        return r;
-      })
-    );
-  };
-
-  const handleRetryRun = (runId: string) => {
-    setRuns((prev) =>
-      prev.map((r) => {
-        if (r.runId === runId) {
-          onShowToast(`${r.storyName} 异常重试已触发`);
-          return {
-            ...r,
-            status: 'RUNNING',
-            exceptionSummary: '-',
-            exceptionType: 'none',
-            currentAction: '重新调度生成 Frame',
-            lastHeartbeatAgo: '刚刚',
-          };
-        }
-        return r;
-      })
-    );
-  };
-
+  // 本端没有已验证的暂停/恢复/重试写入契约；严禁前端自改 status 并声称成功。
   const handleResetFilter = () => {
     setSearchKeyword('');
     setStatusFilter('all');
@@ -231,13 +209,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return { label: '严重积压', color: 'text-[#F85149]', bg: 'bg-[#F85149]/10' };
   };
 
-  // Heartbeat 心跳状态规则：<15s 正常, 15–30s 弱提示, 30–120s 心跳延迟(黄), >120s 疑似失联(红)
-  const getHeartbeatStatus = (seconds: number) => {
-    if (seconds < 15) return { color: 'text-[#3FB950]', dot: 'bg-[#3FB950]', label: '正常' };
-    if (seconds <= 30) return { color: 'text-[#A7AFBA]', dot: 'bg-[#737D8A]', label: '弱提示' };
-    if (seconds <= 120) return { color: 'text-[#D29922]', dot: 'bg-[#D29922]', label: '心跳延迟' };
-    return { color: 'text-[#F85149]', dot: 'bg-[#F85149]', label: '疑似失联' };
-  };
+  // 本地快照的相对心跳文本并非在线探活结果，不可根据旧秒数显示实时健康。
+  const getHeartbeatStatus = (_seconds: number) => ({ color: 'text-[#737D8A]', dot: 'bg-[#737D8A]', label: '历史快照（未验证当前心跳）' });
 
   // 如果点击查看了某个具体的 Story Run，无缝展示高阶独立全量详情页（尸解仙排障与流水线）
   if (selectedRunForDetail) {
@@ -355,6 +328,11 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         </div>
       </div>
 
+      <p role="status" className="text-[11px] text-[var(--text-tertiary)]">平台阶段摘要与下方历史工作区 Run 快照分开呈现。历史运行状态、心跳与帧数并非实时。暂停/重试尚未接入。</p>
+      <RuntimeAuthorityPanel items={runtimeRows} coverage={runtimeCoverage} hasMore={runtimeHasMore} loadingMore={runtimeLoadingMore} onLoadMore={loadNextRuntimePage} dataState={apiState} lastSync={lastSync}/>
+
+      <div role="status" className="flex items-center justify-between gap-3 rounded-[5px] border border-[var(--border-normal)] px-3 py-2 text-[11px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
+      <p className="text-[12px] font-semibold text-[var(--text-primary)] pt-2">历史工作区运行快照（非实时）</p>
       {/* ======================= 1. Operational Status Bar ======================= */}
       <div className="h-[48px] px-3 bg-[#13161B] border border-[#232830] rounded-[6px] flex items-center justify-between overflow-x-auto text-xs font-mono">
         <div className="flex items-center gap-4 shrink-0">
@@ -428,15 +406,15 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         <div className="flex items-center gap-3 pl-4 border-l border-[#232830] text-xs text-[#A7AFBA] shrink-0">
           <div className="flex items-center gap-1">
             <span className="text-[#737D8A]">并发:</span>
-            <span className="text-[#4C8DFF] font-medium">4/4</span>
+            <span className="text-[var(--text-tertiary)] font-medium">未提供</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-[#737D8A]">队列:</span>
-            <span className="text-[#D29922] font-medium">{metrics.runtimeHealth.queueTotal}</span>
+            <span className="text-[#737D8A]">快照等待:</span>
+            <span className="text-[#D29922] font-medium">{metrics.queueWaiting}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[#737D8A]">健康:</span>
-            <span className="text-[#3FB950] font-medium">100%</span>
+            <span className="text-[var(--text-tertiary)] font-medium">未验证</span>
           </div>
         </div>
       </div>
@@ -480,13 +458,13 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
               className="h-[28px] bg-[#0F1115] border border-[#232830] text-[#F1F3F5] rounded-[4px] px-2 text-xs outline-hidden cursor-pointer"
             >
               <option value="all">全部阶段</option>
-              <option value="IDEA_LOCK">创意锁定</option>
-              <option value="STORYBOARD_LOCK">分镜锁定</option>
-              <option value="VISUAL_CALIBRATE">视觉校准</option>
-              <option value="PROD_APPROVED">生产通过</option>
-              <option value="READY_TO_PUBLISH">待发布</option>
-              <option value="PUBLISHED">已发布</option>
-              <option value="POST_MORTEM">数据复盘</option>
+              <option value="CREATE">创意</option>
+              <option value="STORYBOARD">分镜</option>
+              <option value="VISUAL_LOCK">视觉锁定</option>
+              <option value="PRODUCTION">生产</option>
+              <option value="PUBLISH">发布</option>
+              <option value="COMPLETED">已完成</option>
+
             </select>
           </div>
 
@@ -621,7 +599,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                       <td className="px-3 font-mono text-[11px] whitespace-nowrap">
                         <span className={`inline-flex items-center gap-1.5 ${hb.color}`} title={`心跳规则: ${hb.label}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${hb.dot}`} />
-                          <span>{run.lastHeartbeatAgo}</span>
+                          <span title="历史工作区快照，非实时探活">快照 {run.lastHeartbeatAgo}</span>
                         </span>
                       </td>
 
@@ -649,8 +627,8 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {run.status === 'RUNNING' && (
                           <button
                             type="button"
-                            onClick={() => handleTogglePause(run.runId)}
-                            className="h-[24px] px-2 rounded-[3px] bg-transparent border border-transparent hover:border-[#232830] hover:bg-[#171B21] text-[#A7AFBA] hover:text-[#F1F3F5] font-mono text-[11px] cursor-pointer transition-colors"
+                            disabled title="当前仅供查看；暂停/恢复需要受控 Runtime API"
+                            className="h-[24px] px-2 rounded-[3px] opacity-45 cursor-not-allowed bg-transparent border border-transparent hover:border-[#232830] hover:bg-[#171B21] text-[#A7AFBA] hover:text-[#F1F3F5] font-mono text-[11px] cursor-pointer transition-colors"
                           >
                             暂停
                           </button>
@@ -659,7 +637,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {run.status === 'WAITING' && run.waitingReason === '用户手动暂停' && (
                           <button
                             type="button"
-                            onClick={() => handleTogglePause(run.runId)}
+                            disabled title="当前仅供查看；暂停/恢复需要受控 Runtime API"
                             className="h-[24px] px-2 rounded-[3px] bg-[#3FB950]/10 border border-[#3FB950]/30 text-[#3FB950] hover:bg-[#3FB950]/20 font-mono text-[11px] cursor-pointer transition-colors"
                           >
                             恢复
@@ -669,7 +647,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {run.status === 'BLOCKED' && (
                           <button
                             type="button"
-                            onClick={() => handleRetryRun(run.runId)}
+                            disabled title="当前仅供查看；重试需要受控 Runtime API"
                             className="h-[24px] px-2 rounded-[3px] bg-[#F85149]/10 text-[#F85149] border border-[#F85149]/30 hover:bg-[#F85149]/20 font-mono text-[11px] cursor-pointer font-medium transition-colors"
                           >
                             重试
@@ -690,12 +668,12 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-[#3FB950]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950]" />
-            <span>GPU 调度正常</span>
+            <span>本地运行证据快照（非在线状态）</span>
           </span>
           <span>·</span>
-          <span>4/4 槽位</span>
+          <span>实际槽位以 Runner 为准</span>
           <span>·</span>
-          <span>{metrics.queueStats.totalWaiting} 待调度</span>
+          <span>{metrics.queueWaiting} 条快照等待记录</span>
         </div>
       </div>
 

@@ -173,120 +173,15 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
     setTimeout(() => setCopiedText(null), 2000);
   };
 
-  // 执行 Frame 状态变更高危操作
+  // Run Detail 只读：不允许本地修改 Frame / Run 的权威状态。
   const executeDangerousAction = () => {
     if (!confirmAction) return;
-    const { type, frame } = confirmAction;
-
-    if (type === 'REGENERATE') {
-      onShowToast(`已为 ${frame.frameCode} 触发重新生成 (Attempt 重置)`);
-      if (onUpdateRun) {
-        const updatedFrames = run.frames.map(f => {
-          if (f.frameNo === frame.frameNo) {
-            return {
-              ...f,
-              status: 'GENERATING' as const,
-              currentSubAction: 'IMAGE_GENERATION',
-              attempt: '2 / 3',
-              duration: '1s 正在渲染',
-              lastError: undefined,
-              failureStage: undefined
-            };
-          }
-          return f;
-        });
-        const newRun = { ...run, frames: updatedFrames };
-        onUpdateRun(newRun);
-        setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
-      }
-    } else if (type === 'SKIP') {
-      onShowToast(`已跳过 ${frame.frameCode} 并写入占位插槽`);
-      if (onUpdateRun) {
-        const updatedFrames = run.frames.map(f => {
-          if (f.frameNo === frame.frameNo) {
-            return {
-              ...f,
-              status: 'PASSED' as const,
-              duration: '已跳过 (占位)',
-              lastError: undefined
-            };
-          }
-          return f;
-        });
-        const newRun = {
-          ...run,
-          frames: updatedFrames,
-          completedFrames: Math.min(run.totalFrames, run.completedFrames + 1)
-        };
-        onUpdateRun(newRun);
-        setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
-      }
-    } else if (type === 'FORCE_PASS') {
-      onShowToast(`已强制将 ${frame.frameCode} 标记为 PASSED`);
-      if (onUpdateRun) {
-        const updatedFrames = run.frames.map(f => {
-          if (f.frameNo === frame.frameNo) {
-            return {
-              ...f,
-              status: 'PASSED' as const,
-              duration: '强制放行',
-              lastError: undefined
-            };
-          }
-          return f;
-        });
-        const newRun = {
-          ...run,
-          frames: updatedFrames,
-          completedFrames: Math.min(run.totalFrames, run.completedFrames + 1)
-        };
-        onUpdateRun(newRun);
-        setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
-      }
-    } else if (type === 'CANCEL') {
-      onShowToast(`已取消 ${frame.frameCode} 的当前渲染任务`);
-      if (onUpdateRun) {
-        const updatedFrames = run.frames.map(f => {
-          if (f.frameNo === frame.frameNo) {
-            return {
-              ...f,
-              status: 'QUEUED' as const,
-              currentSubAction: undefined,
-              duration: '等待调度'
-            };
-          }
-          return f;
-        });
-        const newRun = { ...run, frames: updatedFrames };
-        onUpdateRun(newRun);
-        setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
-      }
-    }
-
+    onShowToast('当前无受控执行接口，未执行任何状态变更。');
     setConfirmAction(null);
   };
 
-  // 立即重试当前 Frame（如 Frame 09）
-  const handleImmediateRetry = (frame: FrameDetailItem) => {
-    onShowToast(`已立即为 ${frame.frameCode} 派发重试请求`);
-    if (onUpdateRun) {
-      const updatedFrames = run.frames.map(f => {
-        if (f.frameNo === frame.frameNo) {
-          return {
-            ...f,
-            status: 'GENERATING' as const,
-            currentSubAction: 'IMAGE_GENERATION',
-            attempt: '2 / 3 (重试中)',
-            duration: '2s 渲染中',
-            nextRetryInSeconds: undefined
-          };
-        }
-        return f;
-      });
-      const newRun = { ...run, frames: updatedFrames };
-      onUpdateRun(newRun);
-      setSelectedFrame(updatedFrames.find(f => f.frameNo === frame.frameNo) || null);
-    }
+  const handleImmediateRetry = (_frame: FrameDetailItem) => {
+    onShowToast('重试需要受控 Runtime API，当前未派发任何任务。');
   };
 
   // 过滤后的日志
@@ -361,7 +256,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
             <button
               type="button"
-              onClick={() => onShowToast('已导出当前 Run 生产审计报告 (JSON)')}
+              onClick={() => onShowToast('审计报告导出接口尚未接入，未生成或下载文件。')}
               className="px-2 py-1 rounded-[4px] bg-[var(--bg-hover)] border border-[var(--border-normal)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-xs font-mono flex items-center gap-1 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
@@ -369,7 +264,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => onShowToast(run.status === 'RUNNING' ? '已向集群下发暂停信号' : '已恢复生产调度')}
+              onClick={() => onShowToast('暂无已授权暂停/恢复 API，未改变运行状态。')}
               className={`px-2.5 py-1 rounded-[4px] border text-xs font-mono font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
                 run.status === 'RUNNING'
                   ? 'bg-[#C9A227]/10 border-[#C9A227]/30 text-[#C9A227] hover:bg-[#C9A227]/20'
@@ -777,7 +672,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       </div>
                       <button
                         type="button"
-                        onClick={() => onShowToast(`正在下载产物: ${art.name}`)}
+                        onClick={() => onShowToast('此处未提供可验证的下载链接，未发起下载。')}
                         className="p-1 hover:text-[#F1F3F5] text-[#737D8A] rounded-[4px] hover:bg-[#1C2128] cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
@@ -1058,7 +953,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                       <span className="text-[#737D8A]">Artifact:</span>
                       <button
                         type="button"
-                        onClick={() => onShowToast(`正在下载产物: ${selectedFrame.artifactName}`)}
+                        onClick={() => onShowToast('此处未提供可验证的下载链接，未发起下载。')}
                         className="text-[#3FB950] hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         <span>{selectedFrame.artifactName}</span>
@@ -1223,7 +1118,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setConfirmAction({ type: 'REGENERATE', frame: selectedFrame })}
+                    onClick={() => onShowToast('当前仅供查看；该操作需要受控 Runtime API。')}
                     className="h-[32px] rounded-[4px] bg-[#4C8DFF] text-white font-medium hover:bg-[#4C8DFF]/90 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -1261,7 +1156,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setConfirmAction({ type: 'CANCEL', frame: selectedFrame })}
+                    onClick={() => onShowToast('当前仅供查看；该操作需要受控 Runtime API。')}
                     className="h-[32px] rounded-[4px] bg-[#E05252]/15 border border-[#E05252]/40 text-[#E05252] hover:bg-[#E05252]/25 transition-colors text-xs font-mono cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -1284,7 +1179,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setConfirmAction({ type: 'SKIP', frame: selectedFrame })}
+                    onClick={() => onShowToast('当前仅供查看；该操作需要受控 Runtime API。')}
                     className="h-[32px] rounded-[4px] bg-[#171B21] border border-[#2D333D] hover:bg-[#1C2128] text-[#C9D1D9] hover:text-[#F1F3F5] transition-colors text-xs font-mono cursor-pointer"
                   >
                     停止并跳过
@@ -1317,7 +1212,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setConfirmAction({ type: 'FORCE_PASS', frame: selectedFrame })}
+                    onClick={() => onShowToast('当前仅供查看；该操作需要受控 Runtime API。')}
                     className="h-[32px] rounded-[4px] bg-[#3FB950]/15 border border-[#3FB950]/40 text-[#3FB950] hover:bg-[#3FB950]/25 transition-colors text-xs font-mono cursor-pointer"
                   >
                     强制通过
@@ -1325,7 +1220,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setConfirmAction({ type: 'SKIP', frame: selectedFrame })}
+                    onClick={() => onShowToast('当前仅供查看；该操作需要受控 Runtime API。')}
                     className="h-[32px] rounded-[4px] bg-[#171B21] border border-[#2D333D] hover:bg-[#1C2128] text-[#C9D1D9] hover:text-[#F1F3F5] transition-colors text-xs font-mono cursor-pointer"
                   >
                     跳过此帧
@@ -1347,7 +1242,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
 
                   <button
                     type="button"
-                    onClick={() => setConfirmAction({ type: 'CANCEL', frame: selectedFrame })}
+                    onClick={() => onShowToast('当前仅供查看；该操作需要受控 Runtime API。')}
                     className="h-[32px] rounded-[4px] bg-[#171B21] border border-[#2D333D] hover:bg-[#1C2128] text-[#C9D1D9] hover:text-[#F1F3F5] transition-colors text-xs font-mono cursor-pointer"
                   >
                     取消排队
@@ -1388,10 +1283,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             </div>
 
             <p className="text-xs text-[#A7AFBA] leading-relaxed font-sans">
-              {confirmAction.type === 'REGENERATE' && '重新生成将覆盖当前分镜的产物图，并重新向推理引擎发起出图任务。'}
-              {confirmAction.type === 'SKIP' && '跳过该帧将写入系统预设占位，并推进流水线至下一个分镜。后续可在分镜审核中单独补发。'}
-              {confirmAction.type === 'FORCE_PASS' && '强制放行将跳过机器一致性质检，并直接标记该帧为 PASSED 状态。'}
-              {confirmAction.type === 'CANCEL' && '取消本次渲染将立即中断 Worker 端的生成管线，并将任务回退至排队态。'}
+              {confirmAction.type === 'REGENERATE' && '当前未开放受控重生成接口；本页面不会直接生成或覆盖产物。'}
+              {confirmAction.type === 'SKIP' && '当前未开放受控跳过接口；本页面不会更改分镜阶段。'}
+              {confirmAction.type === 'FORCE_PASS' && '当前未开放受控审核接口；本页面不会跳过任何门禁。'}
+              {confirmAction.type === 'CANCEL' && '当前未开放受控取消接口；本页面不会中断 Worker。'}
             </p>
 
             <div className="flex justify-end gap-2 pt-1 font-mono text-xs">
