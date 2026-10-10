@@ -20,11 +20,11 @@ const PAGE_NAMES: Partial<Record<NavigationTab,string>> = {
 export const HeaderBar: React.FC<HeaderBarProps> = ({ activeEpisode, allEpisodes, onSelectEpisode, onToggleContextPanel, contextPanelOpen, currentTab='overview' }) => {
   const [open,setOpen] = useState(false);
   const showEpisode = currentTab === 'workbench';
-  return <header className="relative z-20 flex h-[52px] shrink-0 items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] px-5 text-[12px] text-[var(--text-secondary)]">
+  return <header className="relative z-20 flex h-12 shrink-0 items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] px-5 text-[12px] text-[var(--text-secondary)]">
     <div className="flex items-center gap-2 min-w-0">
-      <span className="hidden sm:inline font-medium text-[var(--text-tertiary)]">工作空间</span>
+      <span className="hidden sm:inline font-medium text-[var(--text-tertiary)]">StoryOS</span>
       <span className="hidden sm:inline text-[var(--border-strong)]">/</span>
-      {!showEpisode ? <span className="text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">{PAGE_NAMES[currentTab] || '工作区'}</span> :
+      {!showEpisode ? <span className="truncate text-[14px] font-semibold tracking-tight text-[var(--text-primary)]">{PAGE_NAMES[currentTab] || '工作区'}</span> :
         <div className="relative min-w-0">
           <button type="button" onClick={()=>setOpen(!open)} aria-expanded={open} aria-label="选择故事" className="flex items-center gap-2 min-w-0 rounded-[4px] px-2 py-1 hover:bg-[var(--bg-hover)]">
             <span className="max-w-[260px] truncate font-semibold text-[var(--text-primary)]">{activeEpisode.title}</span><ChevronDown size={14}/>
@@ -35,8 +35,8 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({ activeEpisode, allEpisodes
         </div>}
       {showEpisode && <span className="hidden lg:block text-[11px] tabular-nums text-[var(--text-tertiary)]">{activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧</span>}
     </div>
-    <div className="flex items-center gap-3 shrink-0">
-      {import.meta.env.VITE_STORYOS_LOCAL_EVIDENCE_MODE === 'true' && <span role="status" data-testid="local-real-evidence-banner" title="本机真实作品状态文件；只读快照，非 MySQL 权威运行状态，不代表在线任务" className="inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]"/>本机真实作品状态文件 · 只读</span>}
+    <div className="flex shrink-0 items-center gap-2">
+      {import.meta.env.VITE_STORYOS_LOCAL_EVIDENCE_MODE === 'true' && <span role="status" data-testid="local-real-evidence-banner" title="本机真实作品状态文件；只读快照，非 MySQL 权威运行状态，不代表在线任务" className="inline-flex items-center gap-2 border-l-2 border-[var(--warning)] px-2 py-1 text-[11px] font-medium text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]"/>本机文件 · 只读</span>}
       {showEpisode && <button type="button" onClick={onToggleContextPanel} title={contextPanelOpen?'收起详情':'打开详情'} aria-label="切换详情面板" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[4px]"><PanelRight size={16}/></button>}
     </div>
   </header>;
