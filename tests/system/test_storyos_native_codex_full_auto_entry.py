@@ -106,6 +106,10 @@ def _proofs(status="ATTEMPT_HISTORY_READ_ONLY", driver="NEVER_STARTED",
         if script.endswith("storyos_episode_stage_readonly.py"):
             return 0, {"status": "STAGE_ELIGIBLE", "stage": "STORYBOARD_LOCKED",
                        "source": "mysql"}
+        if script.endswith("storyos_creative_recovery_readonly.py"):
+            return 0, {"status": "REVIEW_EVIDENCE_NOT_YET_CREATED",
+                       "model_success_receipt_count": 0,
+                       "model_generation_required": None}
         if script.endswith("storyos_attempt_readonly_preflight.py"):
             return (0 if status == "ATTEMPT_HISTORY_READ_ONLY" else 2), {
                 "status": status,

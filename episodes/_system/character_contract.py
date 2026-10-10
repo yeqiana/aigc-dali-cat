@@ -42,7 +42,7 @@ def load(ep):
     )
 
 
-def save(ep,data):
+def save(ep,data,*,expected_sha256=None):
     ep=Path(ep).resolve()
     episode_contract_persistence.save(
         ep,
@@ -50,6 +50,7 @@ def save(ep,data):
         REL,
         data,
         status=str(data.get("status") or "ACTIVE"),
+        expected_sha256=expected_sha256,
     )
     return data
 
@@ -440,7 +441,7 @@ def reviewed_story_lock(ep, review_file):
     # writer Episode rule still governs concurrent production ownership.
     if authority_sha256(ep)!=expected:
         raise ValueError("CHARACTER_AUTHORITY_CHANGED_BEFORE_SAVE")
-    save(ep,updated)
+    save(ep,updated,expected_sha256=expected)
     return {"status":"LOCKED","committed":True,"authority_sha256":authority_sha256(ep),
             "story_sha256":digest}
 
