@@ -269,9 +269,33 @@ def validate_payload(data: dict, *, story_sha: str, storyboard_sha: str, version
         and provenance.get("previous_rubric_sha256") != provenance.get("current_rubric_sha256")
         and provenance.get("subtitle_source_sha256") == data.get("subtitle_source_sha256")
     )
-    if attempt not in {1, 2} and not (continuation or source_revision or symbolic_remediation or paired_caption):
+    # A normal photo-text source correction after Critic #2 is a NEW
+    # user-directed review epoch. Never overwrite #2 or borrow the legacy
+    # documentary policy-continuation (#3-#6) identities.
+    photo_text_repair = (
+        attempt == 7
+        and provenance.get("direct_user_continuation_review") is True
+        and provenance.get("review_scope") == "PHOTO_TEXT_SOURCE_REPAIR_AFTER_FAIL"
+        and provenance.get("review_epoch") == 6
+        and provenance.get("epoch_attempt") == 1
+        and all(isinstance(provenance.get(k), str)
+                and len(provenance[k]) == 64
+                and all(ch in "0123456789abcdef" for ch in provenance[k].lower())
+                for k in ("previous_review_sha256", "previous_storyboard_sha256",
+                          "current_rubric_sha256", "subtitle_source_sha256"))
+        and provenance.get("previous_storyboard_sha256") != storyboard_sha
+        and provenance.get("subtitle_source_sha256") == data.get("subtitle_source_sha256")
+    )
+    if attempt not in {1, 2} and not (
+        continuation or source_revision or symbolic_remediation or paired_caption
+        or photo_text_repair
+    ):
         errors.append("critic attempt must be 1 or 2 unless explicitly authorized policy continuation or SHA-bound source/caption revision")
-    revisions = {0, 1, 2, 3, 4, 5} if paired_caption else ({0, 1, 2, 3, 4} if symbolic_remediation else ({0, 1, 2, 3} if source_revision else ({0, 1, 2} if continuation else {0, 1})))
+    revisions = ({0, 1, 2, 3, 4, 5, 6} if photo_text_repair else
+                 {0, 1, 2, 3, 4, 5} if paired_caption else
+                 {0, 1, 2, 3, 4} if symbolic_remediation else
+                 {0, 1, 2, 3} if source_revision else
+                 {0, 1, 2} if continuation else {0, 1})
     if data.get("revision_count") not in revisions:
         errors.append("revision_count invalid for critic review scope")
     elif attempt in {1, 2, 3, 4, 5, 6} and data.get("revision_count") != attempt - 1:
@@ -894,10 +918,70 @@ def _authorize_paired_caption_revision(ep: Path, *, attempt: int) -> dict:
     return evidence
 
 
-def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None, direct_user_continuation: bool = False, prior_rubric_ref: str | None = None, direct_user_source_revision: bool = False, direct_user_symbolic_remediation: bool = False, direct_user_paired_caption: bool = False) -> int:
+def _authorize_photo_text_source_repair(ep: Path, *, attempt: int) -> dict:
+    """One SHA-bound new review after a real independent #2 content FAIL.
+
+    No attempt reset: the previous failed Review Authority and model log
+    remain immutable. This path cannot authorize a third review of the same
+    source, a failed CLI run, or a documentary policy override.
+    """
+    if attempt != 7 or _locked_documentary_rubric(ep):
+        raise RuntimeError("photo-text source repair is only attempt=7 for non-documentary episodes")
+    target = ep / "meta/runtime/story-review-photo-text-source-repair-a7.json"
+    if target.exists():
+        raise RuntimeError("photo-text repair #7 already authorized; no redispatch")
+    prior = load_review(ep)
+    if (not isinstance(prior, dict)
+            or (prior.get("critic_provenance") or {}).get("attempt") != 2
+            or (prior.get("summary") or {}).get("passed") is not False
+            or set(prior.get("issue_codes") or []) !=
+            {"DELETE_FRAME_TEST_FAIL", "AUTHORITATIVE_SUBTITLES_MISSING"}):
+        raise RuntimeError("requires real failed independent review #2 with exact remediation issues")
+    story, board = story_paths(ep)
+    source_sha = sha256_file(story)
+    board_sha = sha256_file(board)
+    if (source_sha != prior.get("story_sha256")
+            or board_sha == prior.get("storyboard_sha256")):
+        raise RuntimeError("story must remain unchanged, storyboard must materially change")
+    captions = ep / "docs/subtitles.yaml"
+    if not captions.is_file():
+        raise RuntimeError("repaired authoritative subtitles missing")
+    from text_audit import parse_simple_subtitles_yaml
+    parsed = parse_simple_subtitles_yaml(captions)
+    total = int((read_json(ep / "meta/release-manifest.json").get("release") or {}).get("body_frame_count") or 0)
+    if total < 1 or sorted(parsed.get("frames") or {}) != list(range(1, total + 1)):
+        raise RuntimeError("repaired captions must match every real storyboard frame")
+    previous_sha = review_authority_sha256(ep)
+    if not previous_sha:
+        raise RuntimeError("immutable previous Review Authority SHA missing")
+    binding = {
+        "schema": "storyos.story_critic_photo_text_repair.v1",
+        "authorization": "direct_user_continuation",
+        "review_scope": "PHOTO_TEXT_SOURCE_REPAIR_AFTER_FAIL",
+        "global_review_attempt": 7,
+        "review_epoch": 6,
+        "epoch_attempt": 1,
+        "previous_review_sha256": previous_sha,
+        "previous_storyboard_sha256": prior["storyboard_sha256"],
+        "previous_review_attempt": 2,
+        "previous_issue_codes": list(prior["issue_codes"]),
+        "story_sha256": source_sha,
+        "storyboard_sha256": board_sha,
+        "subtitle_source_sha256": sha256_file(captions),
+        "current_rubric_sha256": _review_rubric_digest(
+            Path(__file__).read_text(encoding="utf-8-sig")
+        ),
+        "reason": "Source-and-subtitle repair for real independent review #2 content FAIL",
+    }
+    target.parent.mkdir(parents=True, exist_ok=True)
+    write_json(target, binding)
+    return binding
+
+
+def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | None = None, direct_user_continuation: bool = False, prior_rubric_ref: str | None = None, direct_user_source_revision: bool = False, direct_user_symbolic_remediation: bool = False, direct_user_paired_caption: bool = False, direct_user_photo_text_repair: bool = False) -> int:
     if timeout is None:
         timeout = runtime_timeout_policy.seconds("review_critic")
-    if attempt not in {1, 2} and not (attempt == 3 and direct_user_continuation) and not (attempt == 4 and direct_user_source_revision) and not (attempt == 5 and direct_user_symbolic_remediation) and not (attempt == 6 and direct_user_paired_caption):
+    if attempt not in {1, 2} and not (attempt == 3 and direct_user_continuation) and not (attempt == 4 and direct_user_source_revision) and not (attempt == 5 and direct_user_symbolic_remediation) and not (attempt == 6 and direct_user_paired_caption) and not (attempt == 7 and direct_user_photo_text_repair):
         raise RuntimeError("attempts above 2 require explicit direct-user, SHA-bound continuation")
     if direct_user_continuation and (attempt != 3 or direct_user_source_revision):
         raise RuntimeError("policy continuation is only attempt 3")
@@ -907,11 +991,17 @@ def run_critic(ep: Path, *, attempt: int, codex_raw: str | None, timeout: int | 
         raise RuntimeError("symbolic remediation is only attempt 5")
     if direct_user_paired_caption and (attempt != 6 or direct_user_continuation or direct_user_source_revision or direct_user_symbolic_remediation):
         raise RuntimeError("paired caption continuation is only attempt 6")
+    if direct_user_photo_text_repair and (
+        attempt != 7 or direct_user_continuation or direct_user_source_revision
+        or direct_user_symbolic_remediation or direct_user_paired_caption
+    ):
+        raise RuntimeError("photo-text source repair is only attempt 7")
     continuation = (_authorize_policy_continuation(ep, attempt=attempt, prior_rubric_ref=prior_rubric_ref)
                     if direct_user_continuation else _authorize_source_revision(ep, attempt=attempt)
                     if direct_user_source_revision else _authorize_symbolic_remediation(ep, attempt=attempt)
                     if direct_user_symbolic_remediation else _authorize_paired_caption_revision(ep, attempt=attempt)
-                    if direct_user_paired_caption else None)
+                    if direct_user_paired_caption else _authorize_photo_text_source_repair(ep, attempt=attempt)
+                    if direct_user_photo_text_repair else None)
     story, storyboard = story_paths(ep)
     before_story = sha256_file(story)
     before_board = sha256_file(storyboard)
@@ -1099,6 +1189,7 @@ def main() -> int:
     p.add_argument("--direct-user-source-revision", action="store_true")
     p.add_argument("--direct-user-symbolic-remediation", action="store_true")
     p.add_argument("--direct-user-paired-caption", action="store_true")
+    p.add_argument("--direct-user-photo-text-repair", action="store_true")
     p.add_argument("--prior-rubric-ref")
     p = sub.add_parser("finalize-review")
     p.add_argument("episode_dir")
@@ -1126,7 +1217,8 @@ def main() -> int:
                               prior_rubric_ref=args.prior_rubric_ref,
                               direct_user_source_revision=args.direct_user_source_revision,
                               direct_user_symbolic_remediation=args.direct_user_symbolic_remediation,
-                              direct_user_paired_caption=args.direct_user_paired_caption)
+                              direct_user_paired_caption=args.direct_user_paired_caption,
+                              direct_user_photo_text_repair=args.direct_user_photo_text_repair)
         except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             print("STORY SEMANTIC REVIEW ERROR:", exc)
             return 3
