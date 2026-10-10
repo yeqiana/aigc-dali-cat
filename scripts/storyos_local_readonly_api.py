@@ -10,6 +10,13 @@ import hashlib
 import json
 from pathlib import Path
 from urllib.parse import urlsplit
+import sys
+
+# 直接通过 Python 路径启动脚本时，让项目内 platform.api 优先于同名 stdlib module。
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 
 from platform.api.controllers import RuntimeStatusApiController
 from platform.api.http_server import PlatformApiDispatcher, PlatformApiRequestHandler, build_http_server
@@ -127,7 +134,7 @@ class LocalReadOnlyHandler(PlatformApiRequestHandler):
 def main() -> None:
     parser = argparse.ArgumentParser(description="StoryOS 本机状态文件只读 API，绝不启动 Runtime 或连接数据库")
     parser.add_argument("--workspace-root", required=True)
-    parser.add_argument("--port", type=int, default=18081)
+    parser.add_argument("--port", type=int, default=19117)
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("port must be in 1024..65535")

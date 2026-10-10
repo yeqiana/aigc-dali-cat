@@ -10,7 +10,7 @@ const web=path.resolve(root,'web-console');
 const gitDir=execFileSync('git',['rev-parse','--path-format=absolute','--git-common-dir'],{cwd:root,encoding:'utf8'}).trim();
 const dataRoot=path.resolve(process.env.STORYOS_LOCAL_DATA_ROOT||path.dirname(gitDir));
 if(!fs.existsSync(path.join(dataRoot,'episodes')))throw Error('真实工作区缺少 episodes 目录');
-const apiPort=Number(process.env.STORYOS_LOCAL_EVIDENCE_PORT || 18081);
+const apiPort=Number(process.env.STORYOS_LOCAL_EVIDENCE_PORT || 19117);
 const webPort=Number(process.env.STORYOS_LOCAL_CONSOLE_PORT || 3100);
 if(!Number.isInteger(apiPort)||!Number.isInteger(webPort)||apiPort<1024||webPort<1024||apiPort>65535||webPort>65535||apiPort===webPort)throw Error('Invalid local ports');
 const python=process.env.STORYOS_PYTHON|| (process.platform==='win32'
@@ -51,7 +51,7 @@ async function main(){
  console.log('本机真实状态文件只读：仅 127.0.0.1，读取用户主工作区 episodes；不启动生产 Runtime 或数据库');
  start(python,[path.resolve(root,'scripts','storyos_local_readonly_api.py'),'--workspace-root',dataRoot,'--port',String(apiPort)],root);
  await poll('http://127.0.0.1:'+apiPort+'/healthz',async r=>(await r.json()).code==='OK');
- const viteEnv={...process.env,VITE_PLATFORM_API_URL:'http://127.0.0.1:'+apiPort,VITE_STORYOS_LOCAL_EVIDENCE_MODE:'true'};
+ const viteEnv={...process.env,STORYOS_PLATFORM_PROXY_TARGET:'http://127.0.0.1:'+apiPort,VITE_PLATFORM_API_URL:'',VITE_STORYOS_LOCAL_EVIDENCE_MODE:'true'};
  start(process.execPath,[vite,'--host','127.0.0.1','--port',String(webPort),'--strictPort'],web,viteEnv);
  await poll('http://127.0.0.1:'+webPort+'/',async r=>(await r.text()).includes('id="root"'));
  await poll('http://127.0.0.1:'+webPort+'/api/v1/runtime/statuses?limit=1&offset=0',async r=>{

@@ -23,9 +23,9 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMor
     return () => { active = false; };
   }, [ref]);
   const text = (value?: string | number | boolean | null) => value === null || value === undefined || value === '' ? '未提供' : String(value);
-  return <section aria-label="平台权威阶段摘要" className="rounded-[6px] border border-[var(--border-normal)] bg-[var(--bg-surface)] text-[12px] text-[var(--text-primary)]">
+  return <section aria-label="只读状态记录及数据来源" className="rounded-[6px] border border-[var(--border-normal)] bg-[var(--bg-surface)] text-[12px] text-[var(--text-primary)]">
     <div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-[var(--border-subtle)]">
-      <div><h2 className="text-[14px] font-semibold">平台阶段证据</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来自当前配置的只读状态 API；本机文件模式是磁盘证据，不代表在线 Runtime。</p></div>
+      <div><h2 className="text-[14px] font-semibold">{items.some(item => item.state_source === 'local_workspace_episode_state_file') ? '本机作品状态文件记录' : '平台阶段证据'}</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来自当前配置的只读状态 API；本机文件模式是磁盘证据，不代表在线 Runtime。</p></div>
       <span className="shrink-0 text-[11px] text-[var(--text-tertiary)]">{lastSync ? '读取于 ' + lastSync : '未获取成功'}</span>
     </div>
     {items.some(item => item.state_source === 'local_workspace_episode_state_file') && <p role="status" className="px-4 py-2 text-[var(--warning)] font-medium">本机真实作品状态文件：只读磁盘记录，不是实时调度、Worker 心跳或 MySQL 权威状态。</p>}
@@ -34,7 +34,7 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMor
     : dataState === 'offline' ? <p role="alert" className="px-4 py-5 text-[var(--warning)]">无法连接 Platform API；本区不展示历史数据冒充在线状态。</p>
     : <>
       {dataState === 'partial' && <p role="alert" className="px-4 pt-3 text-[var(--warning)]">接口报告部分失败，阶段列表可能不完整。</p>}
-      <p className="px-4 py-2 text-[11px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条权威阶段摘要{coverage.incomplete ? '（尚未加载全部）' : ''}{items.length > 100 ? ' · 多页浏览时暂停自动刷新，手动刷新可重新同步' : ''}</p>
+      <p className="px-4 py-2 text-[11px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条只读阶段记录{coverage.incomplete ? '（尚未加载全部）' : ''}{items.length > 100 ? ' · 多页浏览时暂停自动刷新，手动刷新可重新同步' : ''}</p>
       {coverage.warning && <p role="status" className="px-4 pb-3 text-[11px] text-[var(--warning)]">{coverage.warning}</p>}
       {items.length === 0 && <p className="px-4 py-5 text-[var(--text-tertiary)]">接口已响应，但没有可显示的阶段摘要。</p>}
       <div className="divide-y divide-[var(--border-subtle)]">{items.slice(0, visibleCount).map((item, i) =>

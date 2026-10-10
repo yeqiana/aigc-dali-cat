@@ -6,7 +6,7 @@ StoryOS 的 React + TypeScript 前端生产控制台。默认入口是高密度 
 
 - Web Console 只通过 `VITE_PLATFORM_API_URL` / Vite 同源代理访问 StoryOS Platform API，不直接调用 Gemini 或其他模型 SDK。
 - 前端不得直接推进 Episode stage；正式阶段以 StoryOS canonical state transition 为准。
-- `src/data/storyosRealData.ts` 是从当前工作区 canonical evidence 生成的只读投影；生成器不复制生产像素资产到 `web-console/public`。
+- `src/data/storyosRealData.ts` 是历史工作区证据索引，不是实时 Runtime 权威数据；本地真实文件只读模式从主工作区 `episodes/**/meta/episode-state.json` 读取当前磁盘记录，未读取到的心跳/Worker/执行动作必须保持未知。生成器不复制生产像素资产到 `web-console/public`。
 - WebCodex 是 Workspace Provider，不是 Episode Authority。
 
 ## 本地运行
@@ -27,6 +27,18 @@ VITE_PLATFORM_API_URL=http://127.0.0.1:<platform-port>
 ```
 
 未设置 `VITE_PLATFORM_API_URL` 时，Vite dev/preview 代理默认转发到 `http://127.0.0.1:8080`。
+
+### 使用主工作区的真实作品状态（安全只读）
+
+在 `web-console` 下执行：
+
+```bash
+npm run dev:local:real
+```
+
+然后打开 `http://127.0.0.1:3100/`。它只在本机启动 Vite 和一个 **127.0.0.1:19117** 的只读 Python 文件 API，从当前 Git 主工作区的 `episodes` 读取现存作品阶段记录。只允许 `GET /healthz`、`GET /api/v1/runtime/statuses` 和 `GET /api/v1/runtime/status`；不连接 MySQL/Redis、不启动图片模型。主工作区位置默认由 Git common-dir 推导，可用 `STORYOS_LOCAL_DATA_ROOT` 显式覆盖。
+
+该模式的数据源为 `local_workspace_episode_state_file`：是真实磁盘记录，**不是 MySQL 权威实时调度态**。页面有来源提示；需要真正的 MySQL Runtime 联调时应单独审计配置和只读权限。`npm run dev:local:fixture` 仍可用于隔离内存数据测试。
 
 ## 校验
 

@@ -21,8 +21,10 @@
     "test:readonly-probe": "node scripts/test-platform-probe.mjs",
     "test:monitor-pages": "node scripts/test-monitor-pagination-browser.mjs",
     "dev:local:fixture": "node scripts/launch-local-console.mjs",
+    "dev:local:real": "node scripts/launch-local-real-console.mjs",
     "test:runs": "node scripts/test-run-equivalence.mjs",
-    "test:local-browser": "node scripts/test-local-live-browser.mjs"
+    "test:local-browser": "node scripts/test-local-live-browser.mjs",
+    "test:local-real": "node scripts/test-local-real-browser.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",
