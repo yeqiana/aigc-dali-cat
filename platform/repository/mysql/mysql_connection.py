@@ -138,6 +138,40 @@ class MySqlConnection:
             return {key: to_naive_utc(value) for key, value in params.items()}
         return params
 
+    @contextmanager
+    def advisory_lock(self, name: str, *, timeout_seconds: int = 15):
+        """Hold a server-side named lock on ONE borrowed physical connection.
+
+        Lock ownership belongs to a MySQL session, never a pooled-connection
+        wrapper. Do not return that physical connection to the pool before
+        releasing the lock. Failure or timeout fails closed.
+        """
+        if getattr(self._local, "transaction_connection", None) is not None:
+            raise RuntimeError("EPISODE_CLAIM_LOCK_IN_TRANSACTION")
+        if not name or len(name) > 64 or not (0 <= timeout_seconds <= 30):
+            raise ValueError("invalid named lock arguments")
+        with self._borrow() as physical:
+            physical.ping(reconnect=True)
+            with physical.cursor() as cursor:
+                cursor.execute("SELECT GET_LOCK(%s, %s) AS ACQUIRED", (name, timeout_seconds))
+                result = cursor.fetchone()
+            value = (result.get("ACQUIRED") if isinstance(result, dict)
+                     else (result[0] if result else None))
+            if value != 1:
+                raise RuntimeError("EPISODE_ID_ALLOCATION_LOCK_UNAVAILABLE")
+            try:
+                yield
+            finally:
+                # No reconnect here: a dead session must not be treated as
+                # successful release of the session that owned the lock.
+                with physical.cursor() as cursor:
+                    cursor.execute("SELECT RELEASE_LOCK(%s) AS RELEASED", (name,))
+                    result = cursor.fetchone()
+                value = (result.get("RELEASED") if isinstance(result, dict)
+                         else (result[0] if result else None))
+                if value != 1:
+                    raise RuntimeError("EPISODE_ID_ALLOCATION_LOCK_LOST")
+
     # ---- 查询接口 ----
 
     def close(self) -> None:

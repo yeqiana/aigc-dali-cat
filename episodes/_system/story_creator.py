@@ -115,6 +115,7 @@ def ensure_episode_core_documents(
     *,
     profile_id: str | None = None,
     frame_count: int = 20,
+    reserved_storage_id: str | None = None,
 ) -> dict:
     """Ensure canonical state/manifest/story-gates exist without overwriting valid facts.
 
@@ -136,6 +137,10 @@ def ensure_episode_core_documents(
         note="一句话入口创建 Episode；后续阶段只由 canonical state transition 推进",
         strict=True,
     )
+    if reserved_storage_id is not None:
+        # Claim row and initialized state MUST use the SAME primary key.
+        # Otherwise ABANDONED + ACTIVE duplicate records would be created.
+        state["storage_episode_id"] = reserved_storage_id
     if profile_id:
         resolved = resolve_profile(profile_id, episode=episode, story_root=root)
         source = Path(resolved["source"])
@@ -200,7 +205,7 @@ def ensure_episode_core_documents(
     }
 
 
-def create_episode(
+def _create_episode_impl(
     root: Path,
     title: str,
     visual_profile: str | None = None,
@@ -210,6 +215,8 @@ def create_episode(
     episode_context: dict | None = None,
     audience_expectation: dict | None = None,
     runtime_request_text: str | None = None,
+    _episode_override: Path | None = None,
+    _reserved_storage_id: str | None = None,
 ) -> Path:
     """Create an Episode skeleton and its Visual Lock draft.
 
@@ -224,7 +231,7 @@ def create_episode(
     re-selected and never overwritten.
     """
     root = Path(root)
-    episode = resolve_episode_path(root, title)
+    episode = _episode_override if _episode_override is not None else resolve_episode_path(root, title)
     existing_lock, existing_source = read_visual_lock(episode)
 
     if existing_lock is not None:
@@ -278,6 +285,7 @@ def create_episode(
         episode,
         title,
         profile_id=effective_profile_id,
+        reserved_storage_id=_reserved_storage_id,
     )
     world_identity_contract.ensure_visual_profile_override(episode, effective_profile_id)
 
@@ -347,3 +355,60 @@ def create_episode(
             )
 
     return episode
+
+
+
+def create_episode(
+    root: Path,
+    title: str,
+    visual_profile: str | None = None,
+    *,
+    story_intent: dict | None = None,
+    selector_input: dict | None = None,
+    episode_context: dict | None = None,
+    audience_expectation: dict | None = None,
+    runtime_request_text: str | None = None,
+) -> Path:
+    """Bootstrap using an atomic, crash-durable MySQL business ID claim.
+
+    Read-only resolve_episode_path remains pure. The claim is committed before
+    image/model/StoryOS writes, so a crash cannot release the 00-XX identity.
+    JSON-mode legacy callers retain their original bootstrap semantics.
+    """
+    root = Path(root)
+    args = dict(
+        story_intent=story_intent, selector_input=selector_input,
+        episode_context=episode_context,
+        audience_expectation=audience_expectation,
+        runtime_request_text=runtime_request_text,
+    )
+    if episode_state_persistence.authority_mode() == "json":
+        return _create_episode_impl(root, title, visual_profile, **args)
+
+    reserved_storage_id = None
+    with episode_state_persistence.serialized_standalone_numbering(
+        DEFAULT_STANDALONE_SERIES
+    ):
+        episode = resolve_episode_path(root, title)
+        # Existing/legacy episodes may be resumed without a new reservation,
+        # but they are never permitted to take a different business number.
+        if not episode.is_dir():
+            canonical_parent = (
+                root / "episodes" / DEFAULT_STANDALONE_SERIES
+            ).resolve()
+            if episode.parent.resolve() != canonical_parent:
+                raise RuntimeError("EPISODE_CLAIM_NONCANONICAL_PATH")
+            business_id, series_id = _canonical_identity_for_path(
+                root, episode, title
+            )
+            if not re.fullmatch(r"00-\d{2}", business_id):
+                raise RuntimeError("EPISODE_CLAIM_INVALID_ID")
+            reserved_storage_id = episode_state_persistence.reserve_standalone_number(
+                episode, business_id, title, series_id
+            )
+    # The durable claim remains visible to concurrent creators after unlock.
+    # Even a crash here leaves the number unavailable for reassignment.
+    return _create_episode_impl(
+        root, title, visual_profile, _episode_override=episode,
+        _reserved_storage_id=reserved_storage_id, **args
+    )

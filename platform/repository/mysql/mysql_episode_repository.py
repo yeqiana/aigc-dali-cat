@@ -15,6 +15,21 @@ ON DUPLICATE KEY UPDATE
     DISPOSITION=VALUES(DISPOSITION)
 """.strip()
 
+_BUSINESS_ID_CLAIMS_SQL = """
+SELECT EPISODE_ID, EPISODE_NAMESPACE, DISPOSITION
+FROM TB_EPISODE
+WHERE BUSINESS_EPISODE_ID=%s
+FOR UPDATE
+""".strip()
+
+_INSERT_NUMBER_CLAIM_SQL = """
+INSERT INTO TB_EPISODE (
+    EPISODE_ID, BUSINESS_EPISODE_ID, EPISODE_NAMESPACE, SERIES_ID,
+    TITLE, TOOL_VERSION, DISPOSITION
+) VALUES (%s,%s,%s,%s,%s,%s,'ABANDONED')
+""".strip()
+
+
 _GET_SQL = """
 SELECT EPISODE_ID, BUSINESS_EPISODE_ID, EPISODE_NAMESPACE, SERIES_ID,
        TITLE, TOOL_VERSION, DISPOSITION, UPDATE_TIME
@@ -89,6 +104,34 @@ class MySqlEpisodeRepository:
                 record.get("disposition") or "ACTIVE",
             ),
         )
+
+    def reserve_standalone_number(self, record: dict) -> None:
+        """Durably occupy a business number before creating any files.
+
+        Caller must hold the series MySQL advisory lock AND a transaction.
+        ABANDONED means incomplete bootstrap and remains reserved on crash;
+        canonical bootstrap upserts it into ACTIVE only after initialization.
+        This is an INSERT (never an UPSERT): collisions fail closed.
+        """
+        required = ("episode_id", "business_episode_id", "episode_namespace",
+                    "series_id", "title")
+        if any(not record.get(key) for key in required):
+            raise ValueError("incomplete Episode identity claim")
+        prior = self.connection.query_all(
+            _BUSINESS_ID_CLAIMS_SQL, (record["business_episode_id"],)
+        )
+        if prior:
+            raise RuntimeError("EPISODE_BUSINESS_NUMBER_ALREADY_CLAIMED")
+        affected = self.connection.execute(
+            _INSERT_NUMBER_CLAIM_SQL,
+            (
+                record["episode_id"], record["business_episode_id"],
+                record["episode_namespace"], record["series_id"],
+                record["title"], record.get("tool_version"),
+            ),
+        )
+        if affected != 1:
+            raise RuntimeError("EPISODE_NUMBER_CLAIM_NOT_PERSISTED")
 
     def get(self, episode_id: str) -> dict | None:
         return self._decode(self.connection.query_one(_GET_SQL, (episode_id,)))

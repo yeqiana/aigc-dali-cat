@@ -4,6 +4,7 @@ import hashlib
 import json
 import sys
 from copy import deepcopy
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
@@ -90,6 +91,57 @@ def list_episode_namespaces() -> list[str]:
         if mode == "mysql":
             raise
         return []
+
+
+@contextmanager
+def serialized_standalone_numbering(series_id: str):
+    """Cross-process MySQL number allocation lock; never fall back to JSON.
+
+    The lock remains held through the durable ABANDONED claim, not through
+    expensive story generation. Other workers see the claim on their next scan.
+    """
+    mode = _mode()
+    if mode == "json":
+        yield
+        return
+    if mode not in {"mysql", "dual"}:
+        raise RuntimeError("UNSUPPORTED_EPISODE_AUTHORITY_MODE")
+    connection, _episodes, _states = _repositories()
+    lock_name = "storyos:epnum:" + hashlib.sha256(
+        (DATABASE_NAME + ":" + series_id).encode("utf-8")
+    ).hexdigest()[:32]
+    with connection.advisory_lock(lock_name, timeout_seconds=15):
+        yield
+
+
+def standalone_claim_storage_id(series_id: str, business_id: str) -> str:
+    """Stable primary-key claim shared by all paths using one business number."""
+    material = f"storyos:business-claim:v1|{series_id.casefold()}|{business_id.casefold()}"
+    return "EPU_" + hashlib.sha256(material.encode("utf-8")).hexdigest()[:40]
+
+
+def reserve_standalone_number(ep: Path, business_id: str, title: str, series_id: str) -> str:
+    """Permanent MySQL reservation made BEFORE any Episode filesystem writes.
+
+    Must be called under serialized_standalone_numbering. A failed bootstrap
+    leaves an ABANDONED reservation, intentionally preventing ID recycling.
+    """
+    if _mode() == "json":
+        return
+    connection, episodes, _states = _repositories()
+    record = {
+        # The unique TB_EPISODE primary key must be identical even if two
+        # concurrent writers somehow lose their advisory locks and choose
+        # *different paths* carrying the SAME 00-XX business number.
+        "episode_id": standalone_claim_storage_id(series_id, business_id),
+        "business_episode_id": business_id,
+        "episode_namespace": episode_namespace(ep),
+        "series_id": series_id,
+        "title": title,
+    }
+    with connection.transaction():
+        episodes.reserve_standalone_number(record)
+    return record["episode_id"]
 
 
 def _history_mode(previous: str | None, current: str) -> str | None:
