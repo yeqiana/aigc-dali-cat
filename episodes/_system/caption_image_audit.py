@@ -353,20 +353,17 @@ def _record_chunk_results(
             "critic_provenance": data.get("critic_provenance"),
         }
         reviewed += 1
-        current_ratio = subtitle_layout.current_frame_y_ratio(ep, key)
-        if (
-            cycle == 1
-            and supported
-            and not unobstructed
-            and ratio is not None
-            and used < subtitle_layout.MAX_AUTO_PLACEMENT_REPAIRS_PER_FRAME
-            and (current_ratio is None or abs(current_ratio - ratio) > 0.005)
-            and reason
-        ):
-            repairs[key] = {
-                "y_ratio": ratio,
-                "reason": "actual-pixel subtitle obstruction: " + reason[:420],
-            }
+        # The current layout report is only needed for a genuine first-cycle
+        # placement repair. Successful frames must not re-read the same report.
+        if (cycle == 1 and supported and not unobstructed and ratio is not None
+                and used < subtitle_layout.MAX_AUTO_PLACEMENT_REPAIRS_PER_FRAME
+                and reason):
+            current_ratio = subtitle_layout.current_frame_y_ratio(ep, key)
+            if current_ratio is None or abs(current_ratio - ratio) > 0.005:
+                repairs[key] = {
+                    "y_ratio": ratio,
+                    "reason": "actual-pixel subtitle obstruction: " + reason[:420],
+                }
     return reviewed, repairs
 
 def ensure(ep: Path, codex_raw: str | None = None, timeout: int | None = None) -> tuple[bool, dict]:
