@@ -83,15 +83,8 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
     frame: FrameDetailItem;
   } | null>(null);
 
-  // 心跳判定函数
-  const getHeartbeatStatus = (seconds: number) => {
-    if (seconds < 15) return { color: 'text-emerald-400', dot: 'bg-emerald-400', label: '正常' };
-    if (seconds <= 30) return { color: 'text-zinc-300', dot: 'bg-zinc-400', label: '弱提示' };
-    if (seconds <= 120) return { color: 'text-amber-400', dot: 'bg-amber-400', label: '心跳延迟' };
-    return { color: 'text-red-400', dot: 'bg-red-400', label: '疑似失联' };
-  };
-
-  const hb = getHeartbeatStatus(run.heartbeatSeconds);
+  // 历史 Run 快照不包含经过验证的在线 Worker 心跳。
+  const hb = {color:'text-[var(--text-tertiary)]',dot:'bg-[var(--text-tertiary)]',label:'心跳未验证'};
 
   // 监听 Escape 键，安全级联关闭大图预览、二次确认弹窗或 Frame 抽屉
   useEffect(() => {
@@ -216,14 +209,14 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
   const currentSelectedStage = run.pipelineStages.find(s => s.key === selectedStageKey) || run.pipelineStages[0];
 
   return (
-    <div className="flex flex-col h-full bg-[#0B0D10] text-[#F1F3F5] overflow-hidden select-none font-sans">
+    <div className="flex h-full min-w-0 flex-col overflow-hidden bg-[var(--bg-app)] font-sans text-[var(--text-primary)]">
       {/* ========================================================================= */}
       {/* 1. 顶部 Header 强化与精简化 (极简两行紧凑布局) */}
       {/* ========================================================================= */}
       <div className="bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] px-5 py-2.5 shrink-0 flex flex-col gap-2">
         {/* 第一行：导航返回、剧目名称、状态与操作按钮 */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2.5">
             <button
               type="button"
               onClick={onBack}
@@ -233,7 +226,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               <span>返回列表</span>
             </button>
             <div className="h-3.5 w-px bg-[var(--border-subtle)] shrink-0" />
-            <div className="flex items-baseline gap-2 min-w-0">
+            <div className="flex min-w-0 flex-wrap items-baseline gap-2">
               <h1 className="text-base font-bold text-[var(--text-primary)] truncate font-sans">
                 {run.storyName}
               </h1>
@@ -244,13 +237,13 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
             {getRunStatusBadge(run.status)}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2">
             {/* 耗时与心跳 */}
             <div className="hidden sm:flex items-center gap-3 text-xs font-mono text-[var(--text-secondary)] mr-2">
-              <span>耗时: <strong className="text-[var(--text-primary)]">{run.duration}</strong></span>
+              <span>快照耗时: <strong className="text-[var(--text-primary)]">{run.duration}</strong></span>
               <span className={`flex items-center gap-1 font-medium ${hb.color}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${hb.dot}`} />
-                {run.lastHeartbeatAgo}
+                心跳未验证
               </span>
             </div>
 
@@ -334,17 +327,18 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
         </div>
       </div>
 
+      <p role="status" className="border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] px-5 py-2 text-[11px] leading-5 text-[var(--text-secondary)]">历史工作区 Run 快照 · 心跳、Worker 与阶段仅为保存时记录，不代表当前在线调度。暂停/恢复尚无授权 API。</p>
       {/* ========================================================================= */}
       {/* 2. 主体工作区 + 独立右侧 Frame Drawer */}
       {/* ========================================================================= */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
         {/* 左侧主要内容面板 */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="min-w-0 flex-1 space-y-4 overflow-y-auto p-4">
           {/* ========================================================================= */}
           {/* Tab 1: 概览 (Overview) —— 简化后的紧凑生产矩阵 */}
           {/* ========================================================================= */}
           {activeTab === 'overview' && (
-            <div className="space-y-4 max-w-6xl">
+            <div className="mx-auto max-w-[1360px] space-y-4">
               {/* 1.1 精简单行生产指标摘要栏 */}
               <div className="h-[44px] px-4 rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between gap-4 text-xs font-mono">
                 <div className="flex items-center gap-5 truncate">
@@ -368,7 +362,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <div className="h-3 w-px bg-[var(--border-subtle)]" />
                   <div className="hidden md:flex items-center gap-1.5 truncate">
                     <span className="text-[var(--text-tertiary)]">承载节点:</span>
-                    <span className="text-[var(--text-secondary)]">{run.runtimeEnv?.workerId || 'Worker-01'}</span>
+                    <span className="text-[var(--text-secondary)]">{run.runtimeEnv?.workerId || '未提供'}</span>
                   </div>
                 </div>
 
@@ -382,10 +376,10 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                 <div className="flex items-center justify-between text-xs font-mono">
                   <div className="text-[11px] font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
-                    <span>流水线阶段 (Pipeline)</span>
+                    <span>流水线阶段</span>
                   </div>
                   <span className="text-[10px] text-[var(--text-tertiary)]">
-                    已完成 {run.pipelineStages.filter(s => s.status === 'completed').length} / 8 阶段
+                    已完成 {run.pipelineStages.filter(s => s.status === 'completed').length} / {run.pipelineStages.length} 阶段
                   </span>
                 </div>
 
@@ -433,7 +427,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <div>
                     <h2 className="text-xs font-bold text-[#F1F3F5] uppercase tracking-wider font-mono flex items-center gap-2">
                       <Flame className="w-3.5 h-3.5 text-[#F1F3F5]" />
-                      <span>FRAME PRODUCTION (01 - 20)</span>
+                      <span>分镜生产记录</span>
                     </h2>
                     <p className="text-[11px] text-[#737D8A] mt-0.5 font-mono">
                       点击任意卡片在右侧呼出该分镜深度诊断抽屉
@@ -444,19 +438,19 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                   <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono text-[#A7AFBA]">
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950]" />
-                      <span>PASSED (14)</span>
+                      <span>通过（{run.frames.filter(f => f.status === 'PASSED').length}）</span>
                     </span>
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#4C8DFF] animate-pulse" />
-                      <span>RUNNING (1)</span>
+                      <span>生成中（{run.frames.filter(f => f.status === 'GENERATING').length}）</span>
                     </span>
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#D28B26]" />
-                      <span>RETRYING (1)</span>
+                      <span>重试（{run.frames.filter(f => f.status === 'RETRYING').length}）</span>
                     </span>
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#C9A227]" />
-                      <span>QUEUED (4)</span>
+                      <span>排队（{run.frames.filter(f => f.status === 'QUEUED').length}）</span>
                     </span>
                   </div>
                 </div>
