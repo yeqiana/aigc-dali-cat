@@ -8,10 +8,10 @@
 cd D:/workspace/YeQianWorkSpace/yeqian/storyOS
 
 # 只读检查真实 MySQL、CODEX_MANAGED 全链路、Attempt 和 Driver
-python scripts/storyos_codex_managed.py plan "episodes/00_独立篇/05_五十亩山地之后"
+python scripts/storyos_codex_managed.py plan "episodes/00_独立篇/06_五十亩山地之后"
 
 # 只有 plan = READY_TO_START 才能正式自动运行这个 Episode
-python scripts/storyos_codex_managed.py run "episodes/00_独立篇/05_五十亩山地之后" --ack-real-production
+python scripts/storyos_codex_managed.py run "episodes/00_独立篇/06_五十亩山地之后" --ack-real-production
 
 # 从一句话创作一个全新作品并自动推进到图文 PUBLISH_READY
 python scripts/storyos_codex_managed.py create "新作品的故事题材和创作要求" --title "新作品" --ack-real-production
@@ -30,9 +30,9 @@ python scripts/storyos_codex_managed.py create "新作品的故事题材和创�
 - 对既有 Episode，额外通过 MySQL `episode_state_persistence` 做只读阶段准入：`PUBLISH_READY` / `PUBLISHED` / `DATA_REVIEWED` 表示作品已到发布准备或后续阶段，不再提示可新开一次付费生产；终止 disposition、未知状态或 MySQL 阶段权威无法读取一律阻断。生产入口不会用 `episode-state.json` 替代 MySQL 权威。
 - 成功后的生命周期是故事→分镜→PREIMAGE→人物/环境/帧合同→四层 Visual Lock→批量出图→逐帧审核→字幕图文渲染→发布资产冻结→`PUBLISH_READY`，**不执行视频生产**。
 
-## 当前五十亩山地之后仍需解决的真实阻断
+## 历史 00-05 阻断留档（不得套用至全新 00-06）
 
-Revision `PR_abbda13531e89cf2_0001_b955598a317fad91` 在 `VISUAL_LOCK_PENDING`；Frame 01 已完成当前版实际像素审图，但 Frame 05/06/24 未形成正式四层 Visual Admission。Frame 06/24 旧 OpenCodex Attempt 1 是 `OUTCOME_UNKNOWN`，Provider 成功/失败均没有足够的终态证据。因而目前 `plan` 应返回 BLOCKED，不能为了追求全自动删除历史记录或强制消耗 Attempt 2。需要先完成合法的运营裁决/对账闭环，再让同一个全自动入口继续。
+以下是已经废弃的旧 `00-05` 生产历史，仅为故障追溯，不是新 `00-06` 的正式状态。`00-06` 必须重新以本机 MySQL 和只读 `plan` 验证，不允许复用旧 `00-05` 的 Attempt、Revision 或媒体。\n\nRevision `PR_abbda13531e89cf2_0001_b955598a317fad91` 在 `VISUAL_LOCK_PENDING`；Frame 01 已完成当前版实际像素审图，但 Frame 05/06/24 未形成正式四层 Visual Admission。Frame 06/24 旧 OpenCodex Attempt 1 是 `OUTCOME_UNKNOWN`，Provider 成功/失败均没有足够的终态证据。因而目前 `plan` 应返回 BLOCKED，不能为了追求全自动删除历史记录或强制消耗 Attempt 2。需要先完成合法的运营裁决/对账闭环，再让同一个全自动入口继续。
 
 ## 测试
 
