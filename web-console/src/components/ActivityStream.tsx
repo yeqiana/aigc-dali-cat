@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AlertCircle, CheckCircle2, ChevronDown, ChevronRight, Clock3, Image as ImageIcon, ShieldAlert } from 'lucide-react';
 import { Episode } from '../types';
+import {useLocalApprovedMedia} from '../api/localApprovedMedia';
 
 interface ActivityStreamProps {
   activeEpisode: Episode;
@@ -14,6 +15,9 @@ const hasVerifiedPreview=(url?:string)=>Boolean(url && !url.startsWith('data:ima
 const verdictColor: Record<string,string> = { PASS: 'text-[var(--success)]', WARN: 'text-[var(--warning)]', FAIL: 'text-[var(--danger)]' };
 export const ActivityStream: React.FC<ActivityStreamProps> = ({ activeEpisode }) => {
   const [expanded, setExpanded] = useState(false);
+  const [showAllApproved,setShowAllApproved]=useState(false);
+  const {findEpisode}=useLocalApprovedMedia();
+  const approved=findEpisode(activeEpisode.title,activeEpisode.code);
   const reviews = activeEpisode.frameReviews ?? [];
   const batch = activeEpisode.currentBatch;
   const warnings = reviews.filter(x => x.verdict !== 'PASS');
@@ -23,6 +27,21 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({ activeEpisode })
       <div><h2 className="text-[14px] font-semibold">制作与审核记录</h2><p className="mt-1 text-[12px] text-[var(--text-tertiary)]">来自当前作品的工作区证据，不代表实时执行日志。</p></div>
       <span className="text-[11px] text-[var(--text-tertiary)]">只读视图 · 写入接口未接入</span>
     </header>
+    {approved?.frames.length ? <section className="space-y-3 border-y border-[var(--border-subtle)] py-4" aria-label="已批准作品素材">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div><h3 className="os-section-heading">已批准作品素材 <span className="ml-1 text-[12px] font-normal text-[var(--text-secondary)]">{approved.frames.length} 张</span></h3>
+          <p className="mt-1 text-[12px] text-[var(--text-tertiary)]">直接读取本地 media/approved · 只读展示；不代表本批次刚刚生成</p></div>
+        {approved.frames.length>10&&<button type="button" aria-expanded={showAllApproved} onClick={()=>setShowAllApproved(v=>!v)} className="os-action">
+          {showAllApproved?'收起图片':'查看全部图片'}
+        </button>}
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-10">
+        {(showAllApproved?approved.frames:approved.frames.slice(0,10)).map(frame=><a key={frame.frame} href={frame.url} target="_blank" rel="noopener noreferrer" title={'查看已批准 Frame '+frame.frame} className="group min-w-0 overflow-hidden rounded-[5px] border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:border-[var(--info)]">
+          <div className="aspect-[4/5] overflow-hidden bg-[var(--bg-elevated)]"><img loading="lazy" src={frame.url} alt={'已批准第 '+frame.frame+' 帧'} onError={event=>{event.currentTarget.style.display='none';}} className="h-full w-full object-cover transition-opacity group-hover:opacity-90"/></div>
+          <div className="flex items-center justify-between px-2 py-1.5 text-[12px]"><span className="font-medium">Frame {String(frame.frame).padStart(2,'0')}</span><span className="text-[var(--text-tertiary)]">已批准</span></div>
+        </a>)}
+      </div>
+    </section> : null}
     <div className="border border-[var(--border-subtle)] rounded-[6px] bg-[var(--bg-surface)]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-subtle)]">
         <div><p className="text-[13px] font-medium">当前批次</p><p className="mt-1 text-[12px] text-[var(--text-tertiary)]">{batch?.batchName || '暂无批次证据'}</p></div>
