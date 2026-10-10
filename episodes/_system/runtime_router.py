@@ -52,6 +52,11 @@ def image_execution_runtime() -> tuple[str, str]:
 
 
 def text_review_runtime() -> tuple[str, str]:
+    # Whole-chain CODEX_MANAGED owns Story/PREIMAGE and review as well as
+    # image execution. A WORK-only text route would silently require a
+    # WebCodex/Product host even when the user explicitly selected pure Codex.
+    if production_mode.resolve(_CONFIG)['effective_mode'] == 'CODEX_MANAGED':
+        return 'CODEX', 'production.mode=CODEX_MANAGED'
     configured = str(storyos_config.get_path(_CONFIG, 'runtime.review.text.runtime') or 'WORK').strip().upper()
     if configured not in {'WORK'}:
         raise ValueError(f'invalid runtime.review.text.runtime: {configured!r}')
@@ -80,6 +85,10 @@ def vision_review_runtime() -> tuple[str, str]:
 
 
 def governance_review_runtime() -> tuple[str, str]:
+    # Do not give WORK governance ownership of a native Codex-managed run.
+    # Governance evidence/locks stay authoritative; only executor changes.
+    if production_mode.resolve(_CONFIG)['effective_mode'] == 'CODEX_MANAGED':
+        return 'CODEX', 'production.mode=CODEX_MANAGED'
     configured = str(storyos_config.get_path(_CONFIG, 'runtime.review.governance.runtime') or 'WORK').strip().upper()
     if configured not in {'WORK'}:
         raise ValueError(f'invalid runtime.review.governance.runtime: {configured!r}')
