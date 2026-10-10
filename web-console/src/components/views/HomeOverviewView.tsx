@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, CheckCircle2, CircleAlert, Clock3, Folder, Plus, RefreshCw, Search, SlidersHorizontal } from 'lucide-react';
 import { Episode, NavigationTab, ProjectItem } from '../../types';
 import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
+import { isHistoricalEpisodeIndex } from '../../data/storyosEpisodeLoader';
 
 interface Props {
   episodes: Episode[];
@@ -39,6 +40,7 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
     return () => { mounted = false; };
   }, [runtimeRefresh]);
 
+  const unloadedCount = episodes.filter(isHistoricalEpisodeIndex).length;
   const attention = useMemo(() => episodes.flatMap(ep => {
     const blocked = ep.preflightChecks?.filter(item => item.status === 'blocking') ?? [];
     const failed = ep.frameReviews?.filter(item => item.verdict === 'FAIL') ?? [];
@@ -62,10 +64,10 @@ export const HomeOverviewView: React.FC<Props> = ({ episodes, projects, onSelect
           { label: '项目', value: projects.length, note: '当前工作区' },
           { label: '故事', value: episodes.length, note: '已收录' },
           { label: '待继续', value: pending, note: '未进入已发布阶段' },
-          { label: '需关注', value: attention.length, note: '有明确审核阻塞证据' }
+          { label: '需关注', value: unloadedCount ? '—' : attention.length, note: unloadedCount ? '历史审核证据按需读取，无法统计全量' : '有明确审核阻塞证据' }
         ].map((m, i) => <div key={m.label} className={`px-4 py-1 ${i > 0 ? 'border-l border-[var(--border-subtle)]' : ''}`}>
           <div className="text-[12px] text-[var(--text-tertiary)]">{m.label}</div>
-          <div className={`mt-2 text-[28px] leading-[32px] tabular-nums font-semibold ${m.label === '需关注' && m.value > 0 ? 'text-[var(--danger)]' : ''}`}>{m.value}</div>
+          <div className={`mt-2 text-[28px] leading-[32px] tabular-nums font-semibold ${m.label === '需关注' && typeof m.value === 'number' && m.value > 0 ? 'text-[var(--danger)]' : ''}`}>{m.value}</div>
           <div className="mt-1 text-[11px] text-[var(--text-tertiary)]">{m.note}</div>
         </div>)}
       </section>

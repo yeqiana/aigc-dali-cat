@@ -1,12 +1,22 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
-const old=spawnSync('git',['show','26d18691:web-console/src/data/storyosEpisodeSnapshots.ts'],{encoding:'utf8'});
-assert.equal(old.status,0);
-function decode(text){const marker=': Episode[] =';const i=text.indexOf(marker);assert.ok(i>=0);return JSON.parse(text.slice(i+marker.length).trim().replace(/;\s*$/,''));}
-const original=decode(old.stdout);
-const rows=[1,2,3].flatMap(n=>decode(fs.readFileSync('src/data/storyosEpisodePart'+n+'.ts','utf8')));
-assert.equal(rows.length,original.length);
-assert.deepEqual(rows,original,'必须完整保留历史证据字段和原顺序');
-assert.equal(new Set(rows.map(x=>x.id)).size,rows.length);
-console.log('PASS 历史 Episode 11/11 数据完整且顺序一致');
+import {spawnSync} from 'node:child_process';
+function parseData(text,marker) { const pos=text.indexOf(marker);assert.ok(pos>=0,marker);return JSON.parse(text.slice(pos+marker.length).trim().replace(/;\s*$/,'').replace(/\s+as unknown as Episode\[\]\s*$/,'')); }
+const originals=[];
+for(let n=1;n<=3;n++){
+ const result=spawnSync('git',['show','b4063a1c:web-console/src/data/storyosEpisodePart'+n+'.ts'],{encoding:'utf8'});
+ assert.equal(result.status,0);
+ originals.push(...parseData(result.stdout,': Episode[] ='));
+}
+const details=[];
+for(let n=1;n<=11;n++){
+ const text=fs.readFileSync('src/data/episodeDetail'+String(n).padStart(2,'0')+'.ts','utf8');
+ details.push(parseData(text,': Episode ='));
+}
+assert.deepEqual(details, originals, '单作品详情必须完整保留 11 部历史作品所有字段与顺序');
+const index=parseData(fs.readFileSync('src/data/storyosEpisodeSnapshots.ts','utf8'),': Episode[] =');
+assert.equal(index.length,11);
+assert.deepEqual(index.map(r=>r.id), details.map(r=>r.id));
+assert.ok(index.every(r=>r.__indexOnly===true&&r.runtimeRequest.sourceBadge==='示例数据'));
+assert.ok(index.every(r=>r.frameReviews.length===0&&r.storyboardBeats.length===0));
+console.log('PASS 11 部完整历史作品详情与基线一致，首屏仅包含轻量目录');

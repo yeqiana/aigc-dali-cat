@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
@@ -18,6 +18,7 @@ const RuntimeLogsView = React.lazy(() => import('./components/views/RuntimeLogsV
 const SettingsView = React.lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
 
 import { REAL_EPISODES } from './data/storyosEpisodeSnapshots';
+import { isHistoricalEpisodeIndex, loadHistoricalEpisodeDetail } from './data/storyosEpisodeLoader';
 import { platformApi } from './api/platformApi';
 import { Episode, NavigationTab, ProductionStage, ThemeMode, ProjectItem } from './types';
 
@@ -75,6 +76,28 @@ export default function App() {
   }, [episodes]);
   const [activeEpisode, setActiveEpisode] = useState<Episode>(REAL_EPISODES[0]);
   const [currentTab, setCurrentTab] = useState<NavigationTab>('overview');
+  const [detailError, setDetailError] = useState<string | null>(null);
+  const [detailRetry, setDetailRetry] = useState(0);
+  const detailGeneration = useRef(0);
+  // 目录索引不包含真实审核/分镜证据，进入制作台才按 Episode 身份加载详情。
+  useEffect(() => {
+    if (currentTab !== 'workbench' || !isHistoricalEpisodeIndex(activeEpisode)) {
+      setDetailError(null);
+      return;
+    }
+    const episodeId = activeEpisode.id;
+    const generation = ++detailGeneration.current;
+    setDetailError(null);
+    loadHistoricalEpisodeDetail(episodeId).then(detail => {
+      if (detailGeneration.current !== generation) return;
+      if (detail.id !== episodeId) throw new Error('作品详情与目录身份不一致');
+      setEpisodes(previous => previous.map(ep => ep.id === episodeId ? detail : ep));
+      setActiveEpisode(previous => previous.id === episodeId ? detail : previous);
+    }).catch(error => {
+      if (detailGeneration.current === generation) setDetailError(error instanceof Error ? error.message : '历史证据未能加载');
+    });
+    return () => { ++detailGeneration.current; };
+  }, [currentTab, activeEpisode.id, activeEpisode.runtimeRequest.sourceBadge, detailRetry]);
   const [isGeneratingBatch] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [contextPanelOpen, setContextPanelOpen] = useState(true);
@@ -415,6 +438,14 @@ export default function App() {
           {/* 核心工作流：呼吸感单主轴 */}
           {currentTab === 'workbench' && (
             <div className="max-w-3xl mx-auto space-y-3">
+              {isHistoricalEpisodeIndex(activeEpisode) ? (
+                <section role={detailError ? 'alert' : 'status'} className="border border-[var(--border-normal)] p-5 text-[13px] text-[var(--text-secondary)]">
+                  {detailError ? <>
+                    <p>历史作品详细证据加载失败：{detailError}。不能据此判断审核或阶段结果。</p>
+                    <button type="button" className="mt-3 text-[var(--text-primary)] underline" onClick={() => setDetailRetry(n => n + 1)}>重新加载该作品</button>
+                  </> : <p>正在按需加载《{activeEpisode.title}》的历史分镜和审核证据…</p>}
+                </section>
+              ) : <>
               <StoryNextAction episode={activeEpisode} onOpenWorkflow={() => setCurrentTab('pipeline')} />
               {/* 单行极简流水线微型指示器（支持真实点击切换生产阶段） */}
               <StatusFlowBanner
@@ -439,13 +470,14 @@ export default function App() {
                 onReviewAction={handleReviewAction}
                 onShowToast={showToast}
               />
+              </>}
             </div>
           )}
           </Suspense>
         </main>
 
         {/* 3. 悬浮极简输入坞（纯黑底白字） */}
-        {currentTab === 'workbench' && (
+        {currentTab === 'workbench' && !isHistoricalEpisodeIndex(activeEpisode) && (
           <CommandDock
             onSendMessage={handleCommandSubmit}
             isLoading={isGeneratingBatch}
@@ -454,7 +486,7 @@ export default function App() {
       </div>
 
       {/* 4. 纯净右侧上下文与资产账本栏 (日志与大盘下自动让出全屏) */}
-      {contextPanelOpen && currentTab === 'workbench' && (
+      {contextPanelOpen && currentTab === 'workbench' && !isHistoricalEpisodeIndex(activeEpisode) && (
         <ContextPanel
           activeEpisode={activeEpisode}
           onClose={() => setContextPanelOpen(false)}
