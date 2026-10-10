@@ -104,6 +104,34 @@ def _ensure_state(connection, episode_id: str, key: str, legacy_consumed: int = 
     return row
 
 
+def _previous_attempt_denial(connection, episode_id: str, key: str,
+                             attempts_consumed: int) -> str | None:
+    """Refuse a new dispatch while the latest consumed attempt is unresolved.
+
+    Scheduler and Driver preflights are useful UX gates, but this final check
+    belongs beside the MySQL reservation mutex so direct callers cannot turn an
+    expired DISPATCH_COMMITTED attempt into a second provider call.  A terminal
+    receipt reconciliation must first move UNKNOWN to a verified terminal
+    result; this helper never edits attempt history or grants retry authority.
+    """
+    index = int(attempts_consumed or 0)
+    if index <= 0:
+        return None
+    row = connection.query_one(
+        "SELECT STATUS FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s "
+        "AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s FOR UPDATE",
+        (episode_id, key, index),
+    )
+    if not row:
+        return "GENERATION_ATTEMPT_PREVIOUS_HISTORY_MISSING"
+    status = str(row.get("STATUS") or "")
+    if status == "OUTCOME_UNKNOWN":
+        return "GENERATION_ATTEMPT_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED"
+    if status not in {"SUCCEEDED", "FAILED_AFTER_DISPATCH"}:
+        return "GENERATION_ATTEMPT_PREVIOUS_STATUS_UNRECONCILED"
+    return None
+
+
 def _expire_active(connection, episode_id: str, key: str, state: dict, ep: Path) -> dict:
     index = state.get("ACTIVE_ATTEMPT_INDEX")
     if index is None:
@@ -190,46 +218,59 @@ def _reserve_impl(ep: str | Path, logical_asset_key: str, generation_context: di
                 raise AttemptDenied(str(exc)) from exc
             state = _expire_active(connection, episode_id, key, state, ep)
             consumed = int(state.get("ATTEMPTS_CONSUMED") or 0)
-            if consumed >= MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET:
-                raise AttemptDenied("GENERATION_ATTEMPT_BUDGET_EXHAUSTED", f"consumed={consumed}")
-            index = consumed + 1
-            fencing = int(state.get("FENCING_COUNTER") or 0) + 1
-            generation_key = stable_generation_key(episode_id, key, index)
-            old = connection.query_one(
-                "SELECT STATUS FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s FOR UPDATE",
-                (episode_id, key, index),
-            )
-            if old and str(old.get("STATUS")) not in {"RELEASED_PRE_DISPATCH"}:
-                raise AttemptDenied("GENERATION_ATTEMPT_ALREADY_ACTIVE", f"generation_key={generation_key}")
-            digest = hashlib.sha256(token.encode("ascii")).hexdigest()
-            payload = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-            if old:
-                connection.execute(
-                    "UPDATE TB_GENERATION_ATTEMPT SET GENERATION_KEY=%s, LEASE_TOKEN=%s, FENCING_TOKEN=%s, STATUS='RESERVED', "
-                    "REQUESTED_AT=%s, RESERVED_AT=%s, LEASE_EXPIRES_AT=%s, DISPATCH_COMMITTED_AT=NULL, GENERATION_OBSERVED_AT=NULL, "
-                    "TERMINAL_AT=NULL, MODEL_ROLE=%s, MODEL_POLICY_SHA256=%s, CONTROLLER_MODEL=%s, PAYLOAD_MODEL=%s, PAYLOAD_QUALITY=%s, "
-                    "PROVIDER=%s, FAILURE_CLASS=NULL, RESULT_REF=NULL, CONTEXT=%s "
-                    "WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s",
-                    (generation_key, digest, fencing, now, now, expires, context.get("model_role"), context.get("model_policy_sha256"),
-                     context.get("controller_model"), context.get("payload_model"), context.get("payload_quality"), context.get("provider"),
-                     payload, episode_id, key, index),
-                )
+            # Defer denial until after the transaction commits. In particular,
+            # _expire_active() may have just persisted DISPATCH_COMMITTED ->
+            # OUTCOME_UNKNOWN; rolling that back would erase the evidence while
+            # still returning a blocked dispatch.
+            history_denial = _previous_attempt_denial(connection, episode_id, key, consumed)
+            budget_denial = consumed >= MAX_REAL_IMAGE_GENERATION_ATTEMPTS_PER_ASSET
+            if history_denial:
+                lease = None
+            elif budget_denial:
+                lease = None
             else:
-                connection.execute(
-                    "INSERT INTO TB_GENERATION_ATTEMPT (EPISODE_ID, LOGICAL_ASSET_KEY, ATTEMPT_INDEX, GENERATION_KEY, LEASE_TOKEN, FENCING_TOKEN, "
-                    "STATUS, REQUESTED_AT, RESERVED_AT, LEASE_EXPIRES_AT, MODEL_ROLE, MODEL_POLICY_SHA256, CONTROLLER_MODEL, PAYLOAD_MODEL, "
-                    "PAYLOAD_QUALITY, PROVIDER, CONTEXT) VALUES (%s,%s,%s,%s,%s,%s,'RESERVED',%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                    (episode_id, key, index, generation_key, digest, fencing, now, now, expires, context.get("model_role"),
-                     context.get("model_policy_sha256"), context.get("controller_model"), context.get("payload_model"),
-                     context.get("payload_quality"), context.get("provider"), payload),
+                index = consumed + 1
+                fencing = int(state.get("FENCING_COUNTER") or 0) + 1
+                generation_key = stable_generation_key(episode_id, key, index)
+                old = connection.query_one(
+                    "SELECT STATUS FROM TB_GENERATION_ATTEMPT WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s FOR UPDATE",
+                    (episode_id, key, index),
                 )
-            connection.execute(
-                "UPDATE TB_GENERATION_ASSET_STATE SET ACTIVE_ATTEMPT_INDEX=%s,FENCING_COUNTER=%s WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s",
-                (index, fencing, episode_id, key),
-            )
-        lease = {"episode_id": episode_id, "logical_asset_key": key, "attempt_index": index,
-                 "generation_key": generation_key, "lease_token": token, "lease_token_hash": digest,
-                 "fencing_token": fencing, "lease_expires_at": _iso(expires), "generation_context": context}
+                if old and str(old.get("STATUS")) not in {"RELEASED_PRE_DISPATCH"}:
+                    raise AttemptDenied("GENERATION_ATTEMPT_ALREADY_ACTIVE", f"generation_key={generation_key}")
+                digest = hashlib.sha256(token.encode("ascii")).hexdigest()
+                payload = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                if old:
+                    connection.execute(
+                        "UPDATE TB_GENERATION_ATTEMPT SET GENERATION_KEY=%s, LEASE_TOKEN=%s, FENCING_TOKEN=%s, STATUS='RESERVED', "
+                        "REQUESTED_AT=%s, RESERVED_AT=%s, LEASE_EXPIRES_AT=%s, DISPATCH_COMMITTED_AT=NULL, GENERATION_OBSERVED_AT=NULL, "
+                        "TERMINAL_AT=NULL, MODEL_ROLE=%s, MODEL_POLICY_SHA256=%s, CONTROLLER_MODEL=%s, PAYLOAD_MODEL=%s, PAYLOAD_QUALITY=%s, "
+                        "PROVIDER=%s, FAILURE_CLASS=NULL, RESULT_REF=NULL, CONTEXT=%s "
+                        "WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s AND ATTEMPT_INDEX=%s",
+                        (generation_key, digest, fencing, now, now, expires, context.get("model_role"), context.get("model_policy_sha256"),
+                         context.get("controller_model"), context.get("payload_model"), context.get("payload_quality"), context.get("provider"),
+                         payload, episode_id, key, index),
+                    )
+                else:
+                    connection.execute(
+                        "INSERT INTO TB_GENERATION_ATTEMPT (EPISODE_ID, LOGICAL_ASSET_KEY, ATTEMPT_INDEX, GENERATION_KEY, LEASE_TOKEN, FENCING_TOKEN, "
+                        "STATUS, REQUESTED_AT, RESERVED_AT, LEASE_EXPIRES_AT, MODEL_ROLE, MODEL_POLICY_SHA256, CONTROLLER_MODEL, PAYLOAD_MODEL, "
+                        "PAYLOAD_QUALITY, PROVIDER, CONTEXT) VALUES (%s,%s,%s,%s,%s,%s,'RESERVED',%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                        (episode_id, key, index, generation_key, digest, fencing, now, now, expires, context.get("model_role"),
+                         context.get("model_policy_sha256"), context.get("controller_model"), context.get("payload_model"),
+                         context.get("payload_quality"), context.get("provider"), payload),
+                    )
+                connection.execute(
+                    "UPDATE TB_GENERATION_ASSET_STATE SET ACTIVE_ATTEMPT_INDEX=%s,FENCING_COUNTER=%s WHERE EPISODE_ID=%s AND LOGICAL_ASSET_KEY=%s",
+                    (index, fencing, episode_id, key),
+                )
+                lease = {"episode_id": episode_id, "logical_asset_key": key, "attempt_index": index,
+                         "generation_key": generation_key, "lease_token": token, "lease_token_hash": digest,
+                         "fencing_token": fencing, "lease_expires_at": _iso(expires), "generation_context": context}
+        if history_denial:
+            raise AttemptDenied(history_denial)
+        if budget_denial:
+            raise AttemptDenied("GENERATION_ATTEMPT_BUDGET_EXHAUSTED", f"consumed={consumed}")
         _telemetry(ep, "ATTEMPT_RESERVED", lease, attempt_consumed=False)
         return lease
     except AttemptDenied as exc:

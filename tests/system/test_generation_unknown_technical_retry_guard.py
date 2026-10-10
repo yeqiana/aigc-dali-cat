@@ -10,6 +10,7 @@ if str(SYSTEM) not in sys.path:
 
 import image_scheduler
 import next_action
+import generation_attempt_authority
 
 
 def _item():
@@ -104,3 +105,33 @@ def test_failure_before_first_attempt_is_not_counted_as_repeat():
     assert allowed is True
     reader.assert_not_called()
     assert reason == "shared_generation_attempt_budget_available"
+
+
+class _PriorAttemptConnection:
+    def __init__(self, status):
+        self.status = status
+        self.calls = []
+
+    def query_one(self, sql, params):
+        self.calls.append((sql, params))
+        return {"STATUS": self.status} if self.status is not None else None
+
+
+def test_mysql_attempt_authority_blocks_next_reservation_after_unknown():
+    connection = _PriorAttemptConnection("OUTCOME_UNKNOWN")
+    reason = generation_attempt_authority._previous_attempt_denial(
+        connection, "episode", "episode/frame-06", 1)
+    assert reason == "GENERATION_ATTEMPT_OUTCOME_UNKNOWN_RECONCILIATION_REQUIRED"
+    assert "FOR UPDATE" in connection.calls[0][0]
+
+
+def test_mysql_attempt_authority_allows_only_verified_terminal_history():
+    for status in ("SUCCEEDED", "FAILED_AFTER_DISPATCH"):
+        assert generation_attempt_authority._previous_attempt_denial(
+            _PriorAttemptConnection(status), "episode", "episode/frame-01", 1) is None
+    assert generation_attempt_authority._previous_attempt_denial(
+        _PriorAttemptConnection(None), "episode", "episode/frame-01", 1
+    ) == "GENERATION_ATTEMPT_PREVIOUS_HISTORY_MISSING"
+    assert generation_attempt_authority._previous_attempt_denial(
+        _PriorAttemptConnection("DISPATCH_COMMITTED"), "episode", "episode/frame-01", 1
+    ) == "GENERATION_ATTEMPT_PREVIOUS_STATUS_UNRECONCILED"
