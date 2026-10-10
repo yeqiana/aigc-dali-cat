@@ -39,6 +39,9 @@ def test_success_receipt_not_mistaken_for_story_lock(episode):
     assert result["status"] == "MODEL_SUCCEEDED_BUT_STORY_REVIEW_MISSING"
     assert result["model_success_receipt_count"] == 1
     assert result["model_generation_required"] is None
+    assert result["model_success_receipt_reuse_verified"] is False
+    assert result["contract_status"] == "DRAFT"
+    assert result["review_path_present"] is False
     assert result["model_success_is_story_lock"] is False
     assert result["read_only"] is True
     assert result["sql_writes"] == 0
