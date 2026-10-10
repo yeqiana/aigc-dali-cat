@@ -177,6 +177,7 @@ def persist(
     *,
     status: str = "ACTIVE",
     source_sha256: str | None = None,
+    expected_sha256: str | None = None,
 ) -> dict:
     ep = Path(ep).resolve()
     mode = _mode()
@@ -186,7 +187,7 @@ def persist(
         raise ValueError("episode contract payload must be object")
     _connection, repository = _repository()
     ref = _externalize(ep, contract_type, payload)
-    saved = repository.save_version({
+    record = {
         "episode_id": episode_identity.storage_episode_id(ep),
         "contract_type": _safe_type(contract_type),
         "status": str(status),
@@ -194,7 +195,9 @@ def persist(
         "source_sha256": source_sha256,
         "payload": payload,
         "payload_ref": ref,
-    })
+    }
+    saved = (repository.save_version_if_latest(record, expected_sha256=expected_sha256)
+             if expected_sha256 is not None else repository.save_version(record))
     invalidate(ep, contract_type)
     return {
         "mode": mode,
@@ -283,6 +286,7 @@ def save(
     *,
     status: str = "ACTIVE",
     source_sha256: str | None = None,
+    expected_sha256: str | None = None,
 ) -> dict:
     ep = Path(ep).resolve()
     mode = _mode()
@@ -292,6 +296,7 @@ def save(
         payload,
         status=status,
         source_sha256=source_sha256,
+        expected_sha256=expected_sha256,
     )
     path = ep / Path(legacy_rel)
     if mode != "mysql":
