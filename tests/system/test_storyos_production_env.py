@@ -61,3 +61,60 @@ def test_launcher_refuses_untrusted_script_path_and_unsupported_keys(tmp_path):
     with pytest.raises(ValueError, match="unsupported runtime env key"):
         launcher.prepare_command("episodes/_system/frame_contract.py", [],
                                  runtime_env=fixture, environ={})
+
+
+
+def test_native_codex_child_reloads_canonical_mysql_over_stale_runner_env(tmp_path):
+    """The user Runner may have been started against a retired 00-05 database."""
+    fixture = tmp_path / "runtime.env"
+    fixture.write_text(
+        "STORYOS_MYSQL_HOST=127.0.0.1\n"
+        "STORYOS_MYSQL_PORT=3307\n"
+        "STORYOS_MYSQL_DB=STORY_OS_RUNTIME\n"
+        "STORYOS_MYSQL_USER=canonical\n"
+        "STORYOS_MYSQL_PWD=canonical-secret\n"
+        "STORYOS_EPISODE_META_STORE_MODE=mysql\n",
+        encoding="utf-8",
+    )
+    cmd, env = launcher.prepare_command(
+        "episodes/_system/episode_state.py", ["show", "episodes/test"],
+        runtime_env=fixture,
+        environ={
+            "STORY_OS_PRODUCTION_MODE": "CODEX_MANAGED",
+            "STORY_OS_IMAGE_EXECUTOR": "CODEX",
+            "STORYOS_MYSQL_HOST": "retired.production",
+            "STORYOS_MYSQL_PORT": "3306",
+            "STORYOS_MYSQL_DB": "OLD_STORY_OS",
+            "STORYOS_MYSQL_USER": "previous-user",
+            "STORYOS_MYSQL_PWD": "old-secret",
+            "STORYOS_EPISODE_META_STORE_MODE": "json",
+            "OPENAI_BASE_URL": "http://localhost:10100",
+            "STORY_OS_OPENCODEX_URL": "http://localhost:10100",
+            "OPENAI_API_KEY": "must-not-ride-along",
+        },
+    )
+    assert cmd[2:] == ["show", "episodes/test"]
+    assert env["STORYOS_MYSQL_HOST"] == "127.0.0.1"
+    assert env["STORYOS_MYSQL_PORT"] == "3307"
+    assert env["STORYOS_MYSQL_DB"] == "STORY_OS_RUNTIME"
+    assert env["STORYOS_MYSQL_PWD"] == "canonical-secret"
+    assert env["STORYOS_EPISODE_META_STORE_MODE"] == "mysql"
+    assert env["STORY_OS_PRODUCTION_MODE"] == "CODEX_MANAGED"
+    assert env["STORY_OS_IMAGE_EXECUTOR"] == "CODEX"
+    assert "OPENAI_BASE_URL" not in env
+    assert "STORY_OS_OPENCODEX_URL" not in env
+    assert "OPENAI_API_KEY" not in env
+
+
+def test_native_codex_child_never_uses_inherited_mysql_when_runtime_env_incomplete(tmp_path):
+    fixture = tmp_path / "runtime.env"
+    fixture.write_text("STORYOS_MYSQL_PORT=3307\nSTORYOS_MYSQL_DB=STORY_OS_RUNTIME\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="STORYOS_RUNTIME_DB_CONFIG_INCOMPLETE"):
+        launcher.prepare_command(
+            "episodes/_system/episode_state.py", [],
+            runtime_env=fixture,
+            environ={"STORY_OS_PRODUCTION_MODE": "CODEX_MANAGED",
+                     "STORYOS_MYSQL_HOST": "retired.production",
+                     "STORYOS_MYSQL_PORT": "3306",
+                     "STORYOS_MYSQL_DB": "OLD_STORY_OS"},
+        )
