@@ -63,7 +63,11 @@ def inspect_revision_schema(connection) -> dict:
             (DATABASE_NAME, CONSTRAINT),
         ) or []
         clause = str((rows[0] if rows else {}).get("CHECK_CLAUSE") or "").upper()
-        ready_check = all(f"'{state}'" in clause for state in REQUIRED_STATES)
+        # MySQL 8.0 information_schema can quote literal values as
+        # _utf8mb4\\'READY\\' rather than _utf8mb4'READY'. Both represent
+        # the same CHECK; normalize only escaped quote characters.
+        normalized = clause.replace("\\\\'", "'").replace("\\'", "'")
+        ready_check = all(f"'{state}'" in normalized for state in REQUIRED_STATES)
     ready = all(revision_tables.values()) and all(dependencies.values()) and ready_check
     return {
         "status": "READY_FOR_FURTHER_ADMISSION" if ready else "BLOCKED",
