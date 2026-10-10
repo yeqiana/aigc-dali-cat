@@ -446,6 +446,121 @@ def reviewed_story_lock(ep, review_file):
             "story_sha256":digest}
 
 
+
+def source_revision_lock(ep, review_file):
+    """CAS-bind a materially repaired Story to an existing frozen Character Contract.
+
+    Only a real failed independent Story Review #7 may enter this one-time
+    revision epoch. Prior contract/review versions remain immutable in MySQL.
+    A model output, a filename or a hand-edited PASS is never authority.
+    """
+    from copy import deepcopy
+    import episode_state_persistence
+    import story_review
+
+    ep = Path(ep).resolve()
+    if (episode_state_persistence.load(ep) or {}).get("current_state") != "IDEA_LOCKED":
+        raise ValueError("CHARACTER_SOURCE_REVISION_STAGE_NOT_IDEA_LOCKED")
+    candidate = (ep / Path(review_file)).resolve()
+    if (not candidate.is_relative_to(ep) or candidate.suffix.lower() != ".json"
+            or not candidate.is_file() or candidate.stat().st_size > 65536):
+        raise ValueError("CHARACTER_SOURCE_REVISION_ATTESTATION_INVALID")
+    data = story_json.read_json(candidate)
+    if not isinstance(data, dict) or data.get("schema_version") != 1:
+        raise ValueError("CHARACTER_SOURCE_REVISION_SCHEMA_INVALID")
+    current = load(ep)
+    if not isinstance(current, dict) or current.get("status") != "LOCKED":
+        raise ValueError("CHARACTER_SOURCE_REVISION_REQUIRES_EXISTING_LOCK")
+    if current.get("source_revision") is not None:
+        raise ValueError("CHARACTER_SOURCE_REVISION_ALREADY_USED")
+    expected = authority_sha256(ep)
+    if data.get("previous_contract_authority_sha256") != expected:
+        raise ValueError("CHARACTER_SOURCE_REVISION_CONTRACT_SHA_DRIFT")
+    prior = story_review.load_review(ep)
+    if (not isinstance(prior, dict)
+            or (prior.get("critic_provenance") or {}).get("attempt") != 7
+            or (prior.get("summary") or {}).get("passed") is not False
+            or set(prior.get("issue_codes") or ()) != {
+                "STORY_COMPREHENSION_FAIL", "CAUSAL_CHAIN_BROKEN", "CLIMAX_PAYOFF_WEAK"
+            }):
+        raise ValueError("CHARACTER_SOURCE_REVISION_PRIOR_REVIEW_NOT_ELIGIBLE")
+    prior_review_sha = story_review.review_authority_sha256(ep)
+    old_story_sha = (current.get("final_story_review") or {}).get("story_sha256")
+    if (not prior_review_sha
+            or data.get("previous_review_authority_sha256") != prior_review_sha
+            or data.get("previous_story_sha256") != old_story_sha
+            or prior.get("story_sha256") != old_story_sha):
+        raise ValueError("CHARACTER_SOURCE_REVISION_PREVIOUS_EVIDENCE_DRIFT")
+
+    story_path = ep / "docs/story.md"
+    board_path = ep / "docs/storyboard.md"
+    subtitle_path = ep / "docs/subtitles.yaml"
+    if not all(p.is_file() for p in (story_path, board_path, subtitle_path)):
+        raise ValueError("CHARACTER_SOURCE_REVISION_INPUTS_MISSING")
+    new_story_sha = hashlib.sha256(story_path.read_bytes()).hexdigest()
+    new_board_sha = hashlib.sha256(board_path.read_bytes()).hexdigest()
+    subtitle_sha = hashlib.sha256(subtitle_path.read_bytes()).hexdigest()
+    if (new_story_sha == old_story_sha
+            or new_board_sha == prior.get("storyboard_sha256")
+            or data.get("story_sha256") != new_story_sha
+            or data.get("storyboard_sha256") != new_board_sha
+            or data.get("subtitle_sha256") != subtitle_sha):
+        raise ValueError("CHARACTER_SOURCE_REVISION_SOURCE_SHA_NOT_REPAIRED")
+    text = story_path.read_text(encoding="utf-8-sig")
+    for member in ((current.get("cast") or {}).get("members") or []):
+        name = str(member.get("name") or "").strip()
+        if name and name not in text:
+            raise ValueError("CHARACTER_SOURCE_REVISION_CAST_IDENTITY_DRIFT")
+    review = data.get("no_anomaly_test")
+    if (not isinstance(review, dict) or review.get("pass") is not True
+            or len(str(review.get("ordinary_day_plan") or "").strip()) < 10
+            or len(str(review.get("review_reason") or "").strip()) < 20
+            or review.get("story_sha256") != new_story_sha):
+        raise ValueError("CHARACTER_SOURCE_REVISION_ORDINARY_DAY_EVIDENCE_INVALID")
+    marker = ep / "meta/runtime/character-story-source-revision-a8.json"
+    if marker.exists():
+        raise ValueError("CHARACTER_SOURCE_REVISION_ALREADY_AUTHORIZED")
+    attestation_sha = hashlib.sha256(candidate.read_bytes()).hexdigest()
+    updated = deepcopy(current)
+    updated["no_anomaly_test"] = {
+        **(updated.get("no_anomaly_test") or {}),
+        "pass": True,
+        "ordinary_day_plan": str(review["ordinary_day_plan"]).strip(),
+        "rechecked_against_final_story": True,
+    }
+    updated["final_story_review"] = {
+        "source": "sha_bound_character_story_source_revision",
+        "story_path": "docs/story.md",
+        "story_sha256": new_story_sha,
+        "review_source_sha256": attestation_sha,
+        "review_reason": str(review["review_reason"]).strip(),
+        "previous_story_sha256": old_story_sha,
+    }
+    binding = {
+        "schema_version": 1, "scope": "CHARACTER_STORY_SOURCE_REPAIR_AFTER_FAILED_A7",
+        "previous_contract_authority_sha256": expected,
+        "previous_review_authority_sha256": prior_review_sha,
+        "previous_story_sha256": old_story_sha,
+        "story_sha256": new_story_sha,
+        "storyboard_sha256": new_board_sha,
+        "subtitle_sha256": subtitle_sha,
+        "attestation_sha256": attestation_sha,
+    }
+    updated["source_revision"] = binding
+    failures = validate(ep, require_locked=True, candidate=updated)
+    if failures:
+        raise ValueError("CHARACTER_SOURCE_REVISION_CONTRACT_INVALID: " + "; ".join(failures[:5]))
+    if authority_sha256(ep) != expected or story_review.review_authority_sha256(ep) != prior_review_sha:
+        raise ValueError("CHARACTER_SOURCE_REVISION_CONCURRENT_AUTHORITY_CHANGE")
+    # MySQL contract repository appends a new immutable version under CAS.
+    # The binding lives in that authoritative payload even if projection fails.
+    save(ep, updated, expected_sha256=expected)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    story_json.write_json(marker, binding)
+    return {"status": "LOCKED_REVISED", "story_sha256": new_story_sha,
+            "authority_sha256": authority_sha256(ep),
+            "source_revision": binding}
+
 def lock(ep):
     ep=Path(ep).resolve()
     data=prepare(ep)
@@ -477,6 +592,7 @@ def main():
     p=sub.add_parser("validate");p.add_argument("episode_dir");p.add_argument("--require-locked",action="store_true")
     p=sub.add_parser("show");p.add_argument("episode_dir");p.add_argument("--with-sha",action="store_true")
     p=sub.add_parser("review-lock");p.add_argument("episode_dir");p.add_argument("--review",required=True)
+    p=sub.add_parser("source-revision-lock");p.add_argument("episode_dir");p.add_argument("--review",required=True)
     sub.add_parser("self-test")
     a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
@@ -485,6 +601,11 @@ def main():
         print(json.dumps(prepare(ep,a.force),ensure_ascii=False,indent=2));return 0
     if a.cmd=="lock":
         print(json.dumps(lock(ep),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="source-revision-lock":
+        try: result=source_revision_lock(ep,a.review)
+        except (ValueError,OSError) as exc:
+            print("CHARACTER SOURCE REVISION BLOCKED:",str(exc));return 2
+        print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     if a.cmd=="review-lock":
         try:result=reviewed_story_lock(ep,a.review)
         except (ValueError,OSError) as exc:
