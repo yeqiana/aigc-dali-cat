@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, ArrowRight, GitBranch, RefreshCw } from 'lucide-react';
 import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
+import { WorkflowDetailPanel } from './WorkflowDetailPanel';
 
 const STAGE_ORDER = ['IDEA_LOCKED','STORYBOARD_LOCKED','VISUAL_CALIBRATED','PRODUCTION_PASSED','PUBLISH_READY','PUBLISHED','DATA_REVIEWED'];
 export const WorkflowWorkspaceView: React.FC = () => {
@@ -12,6 +13,7 @@ export const WorkflowWorkspaceView: React.FC = () => {
   const [loadingMore,setLoadingMore] = useState(false);
   const [total,setTotal] = useState<number | null>(null);
   const [filter,setFilter] = useState('ALL');
+  const [selected,setSelected] = useState<RuntimeStatusSummary | null>(null);
   useEffect(() => {
     let active=true;
     setLoading(true);
@@ -58,9 +60,10 @@ export const WorkflowWorkspaceView: React.FC = () => {
       : filtered.length===0 ? <div className="p-8 border-y border-[var(--border-subtle)] text-center text-[13px] text-[var(--text-tertiary)]">暂无可展示的阶段记录。</div>
       : <div className="divide-y divide-[var(--border-subtle)] border-y border-[var(--border-subtle)]">{filtered.map((x,i)=><div key={x.episode_id||i} className="flex items-start gap-4 py-3">
         <GitBranch size={16} className="mt-0.5 shrink-0 text-[var(--text-tertiary)]"/><div className="min-w-0 flex-1"><p className="text-[13px] font-medium truncate">{x.title || x.episode_ref || x.episode_id}</p><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来源：{x.state_source || '未提供'} · {x.updated_at || x.observed_at || '更新时间未知'}</p></div>
-        <span className="shrink-0 text-[12px] text-[var(--text-secondary)]">{stageLabel(x.production_stage || 'NO_STATE')}</span>
+        <span className="shrink-0 text-[12px] text-[var(--text-secondary)]">{stageLabel(x.production_stage || 'NO_STATE')}</span><button type="button" onClick={() => setSelected(x)} aria-label={'查看阶段详情：' + (x.title || x.episode_ref || x.episode_id)} className="shrink-0 h-8 px-3 rounded-[5px] border border-[var(--border-normal)] text-[12px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">详情</button>
       </div>)}</div>}
     </section>
+    {selected && <WorkflowDetailPanel selected={selected} onClose={() => setSelected(null)} />}
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] pt-3"><span className="text-[12px] text-[var(--text-tertiary)]">已载入 {items.length}{total !== null ? ' / ' + total : ''} 条权威阶段摘要{hasMore ? ' · 尚有更多' : ''}</span>{hasMore && <button type="button" disabled={loadingMore} onClick={loadNext} className="h-9 px-3 border border-[var(--border-normal)] rounded-[5px] text-[12px] hover:bg-[var(--bg-hover)] disabled:opacity-50">{loadingMore ? '载入中…' : '加载更多'}</button>}</div>
     <p className="text-[11px] leading-5 text-[var(--text-tertiary)]">/runtime/statuses 仅提供阶段 summary；执行动作、Queue、Worker、质量门禁的实时值需按作品查询详细证据，不能根据阶段推断。</p>
   </div>;

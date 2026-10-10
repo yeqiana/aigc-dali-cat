@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, Bot, Database, Link2, RefreshCw, ShieldCheck } from 'lucide-react';
 import { platformApi } from '../../api/platformApi';
+import { MemorySearchPanel } from './MemorySearchPanel';
 
 type AgentSummary = { id: string; name: string; description: string; status: string; tools: string[] };
 const asText = (value: unknown): string => typeof value === 'string' ? value : '';
@@ -54,6 +55,7 @@ export const AgentWorkspaceView: React.FC = () => {
       <div className="min-w-0"><h3 className="text-[13px] font-semibold truncate">{agent.name}</h3><p className="mt-1 text-[12px] text-[var(--text-secondary)]">{agent.description || '暂无描述'}</p><p className="mt-2 text-[11px] text-[var(--text-tertiary)]">{agent.tools.length ? `已披露工具：${agent.tools.join('、')}` : '未披露工具清单'}</p></div>
       <span className="shrink-0 text-[11px] text-[var(--text-tertiary)]">{agent.status || '状态未提供'}</span>
     </div>)}</div>}
+    <MemorySearchPanel />
     <footer className="flex items-start gap-2 text-[11px] text-[var(--text-tertiary)]"><ShieldCheck size={15} className="shrink-0"/> 此页为只读能力视图。创建、启动、停止 Agent 需要独立授权的后端契约，不会在前端模拟执行。</footer>
   </div>;
 };
