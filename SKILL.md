@@ -2,7 +2,7 @@
 
 > 这是 `aigc-dali-cat/story` 的 Agent 执行入口，不是第二套创作规范。
 > **创作规则冲突时，以 `standards/制作规范_正式版.md` 为唯一权威。**
-> **机器阶段冲突时，以 `meta/episode-state.json` 为唯一状态事实源。**
+> **机器阶段冲突时，以 `episode_state_persistence` 当前存储模式选定的阶段权威为准；MySQL 模式不得回退本地 JSON。**
 
 ## V2.6.1 Product Runtime First
 
@@ -104,7 +104,7 @@ Golden Path：`选题/去同质化 → Story Lock → 真实性卡/连续性锚�
 **Release 是 image-first 合同。** Canonical 最终产物是封面、正文 publish 图片、字幕/文案与 SHA-bound evidence；当前 Story OS 不包含视频导出能力，`PUBLISH_READY` 不要求也不依赖 MP4、FFmpeg 或任何视频编码。
 
 - 创作规则唯一权威仍是 `standards/制作规范_正式版.md`。
-- 阶段唯一事实源仍是 `meta/episode-state.json`。
+- 阶段权威由 `episode_state_persistence` 根据 `mysql` / `dual` / `json` 模式决定，不得在 MySQL 模式直接读取本地状态 JSON 作为替代。
 - `AUTHORITY_INDEX.json / story-gates / production-ledger / frame-reviews / FINAL_CHECKLIST` 都只是路由或证据，不得成为第二状态机。
 - 不要默认通读整个 `standards/`；按 `standards/AUTHORITY_INDEX.json` 只读取当前任务需要的 active 细则。
 <!-- STORY_OS_V1_6_GOLDEN_PATH_END -->
@@ -117,7 +117,7 @@ Golden Path：`选题/去同质化 → Story Lock → 真实性卡/连续性锚�
 
 ```text
 meta/
-├── episode-state.json       # 唯一阶段状态源
+├── episode-state.json       # json 模式状态源；mysql 模式下不是阶段权威
 ├── release-manifest.json    # 最终发布版本事实
 ├── story-gates.json         # 故事/视觉/字幕/锁图/机器证据配置，不保存阶段
 ├── production-ledger.json   # 逐帧生产事务，不保存阶段
@@ -463,7 +463,7 @@ Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLO
 执行链：
 `Raw Request → Intent Resolver → immutable Runtime Request → Request Router → Workflow DAG → Tool/Model Execution → Trace/Evidence`
 
-- `meta/episode-state.json` 仍是唯一阶段状态源。
+- 阶段状态由 `episode_state_persistence` 的配置权威持有；`meta/episode-state.json` 在 MySQL 模式下不是可回退的阶段源。
 - `meta/runtime-route.json` 只记录路由决策，不是第二状态机。
 - `meta/runtime/trace-events.jsonl` 只记录执行事实，不授予 PASS。
 - 当前 GPT-Image-2 桌面通道不假设 exact RAW canvas；记录真实 RAW 尺寸与 Provider Receipt，再由 NP01 安全 Normalize。
@@ -481,7 +481,7 @@ Full-auto pipeline: `worker → deterministic postflight → COMPLETE|PAUSED|BLO
 - Batch Transport 失败自动回退现有 single-frame worker。
 - Deviation >= 80 且 Criticality >= 80 才允许 High×High 紧急单帧返修。
 - 其他内容失败等待 Batch 原始生成完成后进入 Repair Arbiter。
-- Batch / Trace / Receipt 都是 Evidence，不改变 `meta/episode-state.json` 唯一阶段权威。
+- Batch / Trace / Receipt 都是 Evidence，不改变 `episode_state_persistence` 所选择的唯一阶段权威。
 <!-- STORY_OS_V240_BATCH_RUNTIME_END -->
 
 <!-- STORY_OS_V241_IMAGE_PROVIDER_RUNTIME_BEGIN -->

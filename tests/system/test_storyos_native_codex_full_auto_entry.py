@@ -94,6 +94,9 @@ def _proofs(status="ATTEMPT_HISTORY_READ_ONLY", driver="NEVER_STARTED",
             return (0 if schema == "READY_FOR_FURTHER_ADMISSION" else 2), {
                 "status": schema, "reason": "SCHEMA_PRESENT_REQUIRES_VISUAL_LOCK_AND_AUTHORITY"
             }
+        if script.endswith("storyos_episode_stage_readonly.py"):
+            return 0, {"status": "STAGE_ELIGIBLE", "stage": "STORYBOARD_LOCKED",
+                       "source": "mysql"}
         if script.endswith("storyos_attempt_readonly_preflight.py"):
             return (0 if status == "ATTEMPT_HISTORY_READ_ONLY" else 2), {
                 "status": status,
@@ -145,6 +148,23 @@ def test_preflight_fail_closed_on_ambiguous_owner_schema_or_executor(
     ))
     result = native.preflight(_test_env(), episode=native.ROOT / "episodes")
     assert result["status"] == "BLOCKED"
+
+
+
+
+def test_finished_episode_is_blocked_before_paid_model_calls(monkeypatch):
+    base_probe = _proofs()
+    def probe(env, script, args, **kwargs):
+        if script.endswith("storyos_episode_stage_readonly.py"):
+            return 2, {"status": "ALREADY_PUBLISH_READY", "stage": "PUBLISH_READY",
+                       "source": "mysql"}
+        return base_probe(env, script, args, **kwargs)
+    monkeypatch.setattr(native, "_probe", probe)
+    result = native.preflight(_test_env(), episode=native.ROOT / "episodes")
+    assert result["status"] == "BLOCKED"
+    assert "EPISODE_STAGE_NOT_ELIGIBLE_FOR_PRODUCTION" in result["blockers"]
+    assert result["episode_stage"]["current_state"] == "PUBLISH_READY"
+    assert result["production_authorization"] is False
 
 
 def test_full_auto_command_uses_canonical_storyos_only():

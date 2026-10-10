@@ -27,6 +27,7 @@ python scripts/storyos_codex_managed.py create "新作品的故事题材和创�
 - **不是另一套编排器**：统一调用 `story_os.py run --full-auto --resume` 或 `story_os.py create --full-auto`，Runtime DAG、Scheduler、MySQL Review/Attempt Authority、Producer Gateway 和单 Episode 生产锁依然拥有唯一执行权。
 - 防止数据库串线：剔除用户会话继承的 `STORYOS_MYSQL_*` 覆盖，重新读取 ignored `.storyos/runtime-launcher/runtime.env`。同时去掉继承的 OpenAI 兼容端点/API Key 覆盖，避免绕到 OpenCodex。
 - 任何 `OUTCOME_UNKNOWN` / 活动 Attempt / 无法证实的正式 schema / 非原生执行路由 / 非空闲 Driver：禁止启动。历史成功图不得绕过 Provider 终态、Revision 输入绑定、真实像素审图、Visual Lock/Review 或 2 次共享 Attempt 硬上限。
+- 对既有 Episode，额外通过 MySQL `episode_state_persistence` 做只读阶段准入：`PUBLISH_READY` / `PUBLISHED` / `DATA_REVIEWED` 表示作品已到发布准备或后续阶段，不再提示可新开一次付费生产；终止 disposition、未知状态或 MySQL 阶段权威无法读取一律阻断。生产入口不会用 `episode-state.json` 替代 MySQL 权威。
 - 成功后的生命周期是故事→分镜→PREIMAGE→人物/环境/帧合同→四层 Visual Lock→批量出图→逐帧审核→字幕图文渲染→发布资产冻结→`PUBLISH_READY`，**不执行视频生产**。
 
 ## 当前五十亩山地之后仍需解决的真实阻断
