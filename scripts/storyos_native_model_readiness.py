@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -82,14 +83,24 @@ def inspect(episode: Path | None = None) -> dict:
         if bound is not None:
             policy = bound
             source = "MYSQL_EPISODE_MODEL_POLICY"
-    # The interactive-user Runner can have a different PATH and binary than
-    # the service process. Its reported version owns bridged model dispatch.
+    # The interactive-user Runner may remain alive across an in-place Codex
+    # CLI upgrade. The health endpoint reports its STARTUP version, which can
+    # be stale even when the actual executable already satisfies the model
+    # policy. Probe the exact runner-owned executable live, without a model
+    # call, rather than blocking production on a stale startup snapshot.
     if codex_user_runner.bridge_required():
         health = codex_user_runner.runner_health()
         if health.get("status") != "ok" or health.get("codex_available") is not True:
             raise RuntimeError("USER_RUNNER_CODEX_VERSION_UNVERIFIED")
-        version = str(health.get("codex_version") or "")
-        resolution = "INTERACTIVE_USER_RUNNER"
+        check = codex_user_runner.run_codex(
+            ["codex", "--version"], stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, text=True, encoding="utf-8",
+            errors="replace", timeout=30, cwd=ROOT, task_type="smoke",
+        )
+        version = str(check.stdout or "").strip()
+        if check.returncode != 0 or not VERSION.fullmatch(version):
+            raise RuntimeError("USER_RUNNER_LIVE_CODEX_VERSION_UNVERIFIED")
+        resolution = "INTERACTIVE_USER_RUNNER_LIVE"
     else:
         cli = codex_cli_contract.resolve()
         version = cli.version
