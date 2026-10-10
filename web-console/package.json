@@ -19,7 +19,10 @@
     "test:accessibility": "node scripts/test-console-accessibility.mjs",
     "test:lazy-browser": "node scripts/test-episode-lazy-browser.mjs",
     "test:readonly-probe": "node scripts/test-platform-probe.mjs",
-    "test:monitor-pages": "node scripts/test-monitor-pagination-browser.mjs"
+    "test:monitor-pages": "node scripts/test-monitor-pagination-browser.mjs",
+    "dev:local:fixture": "node scripts/launch-local-console.mjs",
+    "test:runs": "node scripts/test-run-equivalence.mjs",
+    "test:local-browser": "node scripts/test-local-live-browser.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",
