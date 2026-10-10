@@ -13,6 +13,20 @@
 
 外部 UI Skill 只作为参考知识；吸收来源和边界记录在 `skills/storyos-ui-design/references/external-skills.md`。
 
+<!-- STORY_OS_MULTI_EPISODE_PERMANENT_CONTRACT_BEGIN -->
+## 多作品并行生产（永久正式能力）
+
+- StoryOS 必须允许**多个不同 Episode 同时执行正式生产**；不得把系统永久改回单 Episode 全局串行。每个 Episode 保持自己的 Driver Owner、队列、Review Authority、MySQL Generation Attempt 和发布状态，严禁跨 Episode 互相改写。
+- 同一 Episode 只允许一个正式 Owner/Writer；多 Worktree 并不意味着可以为同一 Episode 多开生产 Driver。
+- 同一台机器、同一个 Git Common Directory 下，所有正式图片 Provider 派发**合计最多 5 张在途图片**，不是每部作品各 5 张。单帧、Codex 逻辑批量、原生 n 图片批量与直接 CLI 入口必须全部共用 `global_image_capacity.image_permits`，正式 Gateway 也必须受保护。
+- 必须先获得共享容量名额，再预留或消费新的 Generation Attempt；容量繁忙、权限错误、共享锁不可用不能被解释为真实 Provider 失败，不能因此自动重试、退款、覆盖 UNKNOWN 或绕开原有预算。
+- 新模型/新 Provider/新运行时加入 StoryOS 时，必须继续走统一受控的图片 Provider Gateway 或等效共享容量守卫，并更新 `tests/system/test_multi_episode_global_image_capacity.py` 相关回归。禁止恢复 OpenCodex 代理或图片转视频流程。
+- 多 Episode 启动只可复用 canonical `runtime_driver`，通过 `scripts/storyos_multi_episode.py` 显式启动（需要 `--ack-real-production`）；计划和状态查询不得调用付费模型。Episode 自身的 PREIMAGE、Visual Lock、Revision、Review、Release 等门禁不得因并发能力而跳过。
+- 当前保障范围是**单机、同一 Git 仓库的跨进程/Worktree**；跨主机或独立 Git 克隆在具备 MySQL/Redis 分布式租约与 fencing 验收前不得并发正式生图。共享硬上限不等于严格跨 Episode 公平调度，公平配额和真实双 Episode Canary 仍需独立验收。
+- 详细设计、只读容量诊断和运维入口见 `docs/StoryOS_多Episode共享图片容量与并发边界_20261009.md`；本规则为仓库协作与防回退边界，**不是绕过任何生产门禁的授权**。
+<!-- STORY_OS_MULTI_EPISODE_PERMANENT_CONTRACT_END -->
+
+
 ## Story OS 当前执行入口
 
 涉及 `story` 分支的选题、分镜、出图、字幕、审核、发布、复盘任务，Codex 必须先读取仓库根目录 `START_HERE.md`，再读取 `SKILL.md`。
