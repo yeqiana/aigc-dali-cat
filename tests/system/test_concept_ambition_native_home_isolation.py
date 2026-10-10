@@ -25,6 +25,7 @@ def test_concept_critic_uses_isolated_user_home_without_bypassing_review(tmp_pat
     command = ["codex", "exec", "--json", "-"]
     dispatched = []
 
+    monkeypatch.setattr(concept, "ROOT", tmp_path)
     monkeypatch.setattr(concept, "required", lambda _ep: True)
     monkeypatch.setattr(concept, "validate_candidates", lambda _data: [])
     monkeypatch.setattr(concept, "sha256_file", lambda _path: "a" * 64)
