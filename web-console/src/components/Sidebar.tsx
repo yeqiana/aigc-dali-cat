@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Activity, Bell, Bot, ChevronDown, ChevronRight, Clapperboard, FileClock, Folder, GitBranch, LayoutDashboard, Moon, Plus, Search, Settings, Sun, X, MoreHorizontal } from 'lucide-react';
 import { Episode, NavigationTab, ProjectItem } from '../types';
+import { StoryOSMark } from './StoryOSMark';
 
 interface SidebarProps {
   currentTab: NavigationTab;
@@ -81,8 +82,8 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
     <aside aria-label="主导航" className="flex h-full w-[240px] shrink-0 flex-col border-r border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[13px]">
       <div className="h-[60px] flex items-center justify-between px-4 border-b border-[var(--border-subtle)]">
         <button onClick={() => onSelectTab('overview')} className="text-left flex items-center gap-3 text-[var(--text-primary)] font-semibold tracking-tight" type="button" aria-label="返回 StoryOS 工作台">
-          <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-[#376fe2] text-white text-[16px] font-bold shadow-[0_5px_18px_rgba(45,95,214,.25)]">S</span>
-          <span className="flex flex-col"><span className="text-[15px] leading-5">StoryOS</span><span className="text-[10px] font-normal tracking-[.09em] text-[var(--text-tertiary)]">CREATOR STUDIO</span></span>
+          <StoryOSMark size={36}/>
+          <span className="text-[15px] leading-5">StoryOS</span>
         </button>
         <div className="flex items-center gap-1">
           <button type="button" onClick={onOpenSearch} className="p-1.5 rounded-[4px] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]" title="搜索 Ctrl+K" aria-label="搜索"><Search size={16}/></button>
@@ -105,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         <section aria-label="项目列表" className="pt-3 border-t border-[var(--border-subtle)]">
           <div className="flex items-center justify-between px-2 pb-2">
             <button type="button" onClick={() => setProjectsOpen(!projectsOpen)} className="flex items-center gap-1 text-[11px] font-semibold tracking-wide text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
-              {projectsOpen ? <ChevronDown size={13}/> : <ChevronRight size={13}/>} 项目 <span className="font-normal">{projects.length}</span>
+              {projectsOpen ? <ChevronDown size={13}/> : <ChevronRight size={13}/>} 项目空间 <span className="font-normal">{projects.length}</span>
             </button>
             <button type="button" onClick={() => openModal('project')} aria-label="新建项目" title="新建项目" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"><Plus size={15}/></button>
           </div>
