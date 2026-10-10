@@ -37,12 +37,12 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMor
     : dataState === 'offline' ? <p role="alert" className="px-4 py-5 text-[var(--warning)]">无法连接 Platform API；本区不展示历史数据冒充在线状态。</p>
     : <>
       {dataState === 'partial' && <p role="alert" className="px-4 pt-3 text-[var(--warning)]">接口报告部分失败，阶段列表可能不完整。</p>}
-      <p className="px-4 py-2 text-[11px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条只读阶段记录{coverage.incomplete ? '（尚未加载全部）' : ''}{items.length > 100 ? ' · 多页浏览时暂停自动刷新，手动刷新可重新同步' : ''}</p>
+      <p className="px-4 py-2 text-[12px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条只读阶段记录{coverage.incomplete ? '（尚未加载全部）' : ''}{items.length > 100 ? ' · 多页浏览时暂停自动刷新，手动刷新可重新同步' : ''}</p>
       {coverage.warning && <p role="status" className="px-4 pb-3 text-[11px] text-[var(--warning)]">{coverage.warning}</p>}
       {items.length === 0 && <p className="px-4 py-5 text-[var(--text-tertiary)]">接口已响应，但没有可显示的阶段摘要。</p>}
       <div className="divide-y divide-[var(--border-subtle)]">{items.slice((safePage-1)*pageSize,safePage*pageSize).map((item, i) =>
         <button type="button" aria-label={'查看权威阶段：' + (item.title || item.episode_ref || item.episode_id)} key={(item.episode_id || item.episode_ref || String(i)) + ':' + i}
-          onClick={() => setSelected(item)} className="os-data-row flex w-full items-center justify-between gap-3 px-5 py-3 text-left focus-visible:outline-2 focus-visible:outline-[var(--focus)]">
+          onClick={() => setSelected(item)} className="os-data-row flex min-h-[44px] w-full items-center justify-between gap-3 px-4 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-[var(--focus)]">
           <span className="min-w-0 truncate font-medium" title={item.title || item.episode_ref || item.episode_id}>{item.title || item.episode_ref || item.episode_id || '未知作品'}</span>
           <span className="ml-auto shrink-0 text-[var(--text-secondary)]">{stageLabel(item.production_stage || 'NO_STATE')}</span><ChevronRight size={14} className="shrink-0 text-[var(--text-tertiary)]"/>
         </button>)}</div>

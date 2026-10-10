@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {Pagination} from 'antd';
+import {Button,Pagination,Progress,Table} from 'antd';
 import {
   Play,
   Pause,
@@ -316,7 +316,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   };
 
   return (
-    <div id="storyos-production-monitor-view" className="w-full min-w-0 space-y-3 pb-5 font-sans text-[var(--text-primary)]">
+    <div id="storyos-production-monitor-view" className="w-full min-w-0 space-y-4 pb-5 font-sans text-[var(--text-primary)]">
       {/* 顶部标题与控制栏 (UI Baseline v1: 弱装饰、扁平、简洁) */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
         <div className="flex flex-col items-start gap-1">
@@ -353,10 +353,10 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         </div>
       </div>
 
-      <p role="status" className="os-source-info px-4 py-3 text-[12px] leading-5">状态数据与历史工作区 Run 快照分开呈现；历史运行状态、心跳和帧数并非实时。暂停与重试尚未接入。</p>
+      <p role="status" className="flex items-start gap-2 border-l-2 border-[var(--info)] py-1.5 pl-3 text-[12px] leading-5 text-[var(--text-secondary)]">状态数据与历史工作区 Run 快照分开呈现；历史运行状态、心跳和帧数并非实时。暂停与重试尚未接入。</p>
       <RuntimeAuthorityPanel items={runtimeRows} coverage={runtimeCoverage} hasMore={runtimeHasMore} loadingMore={runtimeLoadingMore} onLoadMore={loadNextRuntimePage} dataState={apiState} lastSync={lastSync}/>
 
-      <div role="status" className="os-source-info flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-[12px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
+      <div role="status" className="flex flex-wrap items-center justify-between gap-2 border-y border-[var(--border-subtle)] px-2 py-2 text-[12px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
       <p className="os-section-heading pt-3">历史工作区运行快照（非实时）</p>
       {/* ======================= 1. Operational Status Bar ======================= */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border-subtle)] px-2 py-3 text-xs">
@@ -521,173 +521,38 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       </div>
 
       {/* ======================= 3. Data Table (Core: Header 36px, Row 44px, Cell X 12px, Cell Y 8px) ======================= */}
-      <div className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[6px] overflow-hidden">
-        <div className="h-[36px] px-3 bg-[var(--bg-workspace)] border-b border-[var(--border-subtle)] flex items-center justify-between text-xs">
+      <div className="overflow-hidden rounded-[6px] border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+        <div className="flex min-h-10 items-center justify-between border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 text-[13px]">
           <div className="flex items-center gap-2 text-[var(--text-secondary)] font-medium">
-            <span>Story 调度主表</span>
-            <span className="text-[var(--text-tertiary)] font-mono text-[11px]">({filteredRuns.length} 个实例)</span>
+            <span>历史 Run 列表</span>
+            <span className="text-[var(--text-tertiary)] text-[12px]">({filteredRuns.length} 个实例)</span>
             {pendingRunId && <span role="status" className="text-[11px] text-[var(--text-secondary)]">正在按需读取历史 Run 详情…</span>}
             {runLoadError && <span role="alert" className="text-[11px] text-[var(--warning)]">历史详情读取失败：{runLoadError}；请重新点击记录重试。</span>}
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="h-[36px] border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[var(--text-tertiary)] font-mono text-[11px] uppercase tracking-wider font-medium">
-                <th className="px-3 w-10 text-center whitespace-nowrap">#</th>
-                <th className="px-3 whitespace-nowrap">剧集名称</th>
-                <th className="px-3 whitespace-nowrap">阶段</th>
-                <th className="px-3 whitespace-nowrap">状态</th>
-                <th className="px-3 w-32 whitespace-nowrap">进度</th>
-                <th className="px-3 whitespace-nowrap">帧数</th>
-                <th className="px-3 whitespace-nowrap">耗时</th>
-                <th className="px-3 whitespace-nowrap">心跳</th>
-                <th className="px-3 whitespace-nowrap">异常摘要</th>
-                <th className="px-3 text-right whitespace-nowrap">操作</th>
-              </tr>
-            </thead>
-            <tbody className="font-sans text-xs">
-              {filteredRuns.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="py-12 text-center text-[var(--text-tertiary)] font-mono">
-                    未检索到符合条件的 Story 生产实例
-                  </td>
-                </tr>
-              ) : (
-                pagedRuns.map((run, index) => {
-                  const hb = getHeartbeatStatus(run.heartbeatSeconds);
-                  const isSelected = selectedRunForDetail?.id === run.id;
-                  return (
-                    <tr
-                      key={run.id}
-                      className={`h-[40px] border-b border-[var(--border-subtle)] transition-colors group cursor-pointer relative ${
-                        isSelected
-                          ? 'bg-[#1A1F26]'
-                          : 'hover:bg-[var(--bg-elevated)]'
-                      }`}
-                      onClick={() => void selectRun(run)}
-                    >
-                      {/* 序号与选中指示条 */}
-                      <td className="px-3 text-center text-[var(--text-tertiary)] font-mono text-[11px] relative whitespace-nowrap">
-                        {isSelected && (
-                          <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--info)]" />
-                        )}
-                        {(safePage - 1) * pageSize + index + 1}
-                      </td>
-
-                      {/* 剧集名称 (不换行，超出截断并进详情) */}
-                      <td className="px-3 font-medium text-[var(--text-primary)] whitespace-nowrap">
-                        <span className="text-[13px] font-medium text-[var(--text-primary)] tracking-tight truncate max-w-[180px] inline-block align-middle">
-                          {run.storyName}
-                        </span>
-                      </td>
-
-                      {/* 当前阶段 */}
-                      <td className="px-3 whitespace-nowrap">
-                        {getStageBadge(run.currentStage, run.stageLabel)}
-                      </td>
-
-                      {/* 状态 Badge */}
-                      <td className="px-3 whitespace-nowrap">
-                        {getStatusBadge(run)}
-                      </td>
-
-                      {/* 总进度 */}
-                      <td className="px-3 whitespace-nowrap">
-                        <div className="flex items-center gap-2 min-w-[100px]">
-                          <div className="w-16 h-[3px] rounded-[2px] bg-[var(--border-subtle)] overflow-hidden shrink-0">
-                            <div
-                              className={`h-full rounded-[2px] transition-all duration-300 ${
-                                run.status === 'BLOCKED'
-                                   ? 'bg-[var(--danger)]'
-                                   : run.progressPercent === 100
-                                   ? 'bg-[var(--success)]'
-                                   : 'bg-[var(--info)]'
-                              }`}
-                              style={{ width: `${run.progressPercent}%` }}
-                            />
-                          </div>
-                          <span className="font-mono text-[11px] text-[var(--text-primary)] font-semibold">{run.progressPercent}%</span>
-                        </div>
-                      </td>
-
-                      {/* Frame 进度 */}
-                      <td className="px-3 font-mono text-xs text-[var(--text-secondary)] whitespace-nowrap">
-                        <span className="text-[var(--text-primary)]">{run.completedFrames}</span>/{run.totalFrames}
-                      </td>
-
-                      {/* 耗时 */}
-                      <td className="px-3 font-mono text-[var(--text-secondary)] text-[11px] whitespace-nowrap">
-                        {run.duration}
-                      </td>
-
-                      {/* 心跳监控 */}
-                      <td className="px-3 font-mono text-[11px] whitespace-nowrap">
-                        <span className={`inline-flex items-center gap-1.5 ${hb.color}`} title={`心跳规则: ${hb.label}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${hb.dot}`} />
-                          <span title="历史工作区快照，非实时探活">快照 {run.lastHeartbeatAgo}</span>
-                        </span>
-                      </td>
-
-                      {/* 异常摘要 (单行不换行，截断进详情) */}
-                      <td className="px-3 font-mono text-[11px] whitespace-nowrap">
-                        {run.exceptionSummary !== '-' ? (
-                          <span className="text-[var(--danger)] font-medium bg-[var(--danger)]/10 px-1.5 py-0.5 rounded-[3px] border border-[var(--danger)]/20 truncate max-w-[120px] inline-block align-middle" title={run.exceptionSummary}>
-                            {run.exceptionSummary}
-                          </span>
-                        ) : (
-                          <span className="text-[var(--text-disabled)]">-</span>
-                        )}
-                      </td>
-
-                      {/* 操作栏 */}
-                      <td className="px-3 text-right space-x-1 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          onClick={() => void selectRun(run)}
-                          className="h-[24px] px-2 rounded-[3px] bg-[var(--bg-elevated)] border border-[#2D333D] text-[var(--text-primary)] hover:bg-[#1C2128] font-mono text-[11px] cursor-pointer font-medium transition-colors"
-                        >
-                          详情
-                        </button>
-
-                        {run.status === 'RUNNING' && (
-                          <button
-                            type="button"
-                            disabled title="当前仅供查看；暂停/恢复需要受控 Runtime API"
-                            className="h-[24px] px-2 rounded-[3px] opacity-45 cursor-not-allowed bg-transparent border border-transparent hover:border-[var(--border-subtle)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-mono text-[11px] cursor-pointer transition-colors"
-                          >
-                            暂停
-                          </button>
-                        )}
-
-                        {run.status === 'WAITING' && run.waitingReason === '用户手动暂停' && (
-                          <button
-                            type="button"
-                            disabled title="当前仅供查看；暂停/恢复需要受控 Runtime API"
-                            className="h-[24px] px-2 rounded-[3px] bg-[var(--success)]/10 border border-[var(--success)]/30 text-[var(--success)] hover:bg-[var(--success)]/20 font-mono text-[11px] cursor-pointer transition-colors"
-                          >
-                            恢复
-                          </button>
-                        )}
-
-                        {run.status === 'BLOCKED' && (
-                          <button
-                            type="button"
-                            disabled title="当前仅供查看；重试需要受控 Runtime API"
-                            className="h-[24px] px-2 rounded-[3px] bg-[var(--danger)]/10 text-[var(--danger)] border border-[var(--danger)]/30 hover:bg-[var(--danger)]/20 font-mono text-[11px] cursor-pointer font-medium transition-colors"
-                          >
-                            重试
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table<StoryRunItem>
+          rowKey="id"
+          size="small"
+          className="storyos-monitor-grid"
+          scroll={{x:1050}}
+          dataSource={pagedRuns}
+          onRow={run=>({onClick:()=>void selectRun(run),className:'cursor-pointer'})}
+          pagination={false}
+          locale={{emptyText:'暂无符合筛选条件的历史运行记录'}}
+          columns={[
+            {title:'#',key:'index',width:52,align:'center',render:(_,run)=>((safePage-1)*pageSize+pagedRuns.indexOf(run)+1)},
+            {title:'作品',dataIndex:'storyName',key:'name',width:240,render:(value:string)=><span title={value} className="block max-w-[240px] truncate text-[13px] font-semibold text-[var(--text-primary)]">{value}</span>},
+            {title:'生产阶段',dataIndex:'stageLabel',key:'stage',width:135,render:(_:unknown,run)=>getStageBadge(run.currentStage,run.stageLabel)},
+            {title:'状态',key:'status',width:162,render:(_,run)=>getStatusBadge(run)},
+            {title:'完成率',key:'progress',width:126,render:(_,run)=><span className="flex items-center gap-2 text-[12px] tabular-nums"><Progress size="small" percent={run.progressPercent} strokeColor={run.status==='BLOCKED'?'var(--danger)':'var(--info)'} trailColor="var(--border-normal)" showInfo={false} className="!m-0 !w-16"/>{run.progressPercent}%</span>},
+            {title:'帧数',key:'frames',width:98,render:(_,run)=><span className="tabular-nums text-[12px] text-[var(--text-secondary)]">{run.completedFrames}/{run.totalFrames}</span>},
+            {title:'耗时',dataIndex:'duration',key:'duration',width:95,render:(v:string)=><span className="text-[12px] text-[var(--text-secondary)]">{v||'未知'}</span>},
+            {title:'心跳来源',key:'heartbeat',width:170,render:()=> <span className="text-[12px] text-[var(--text-tertiary)]">历史快照 · 未验证</span>},
+            {title:'异常摘要',key:'exception',width:160,ellipsis:true,render:(_,run)=>run.exceptionSummary==='-'?<span className="text-[var(--text-disabled)]">—</span>:<span title={run.exceptionSummary} className="text-[12px] font-medium text-[var(--danger)]">{run.exceptionSummary}</span>},
+            {title:'操作',key:'action',width:84,align:'right',render:(_,run)=><Button type="link" size="small" onClick={e=>{e.stopPropagation();void selectRun(run);}}>查看详情</Button>}
+          ]}
+        />
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] px-3 py-3"><span className="text-[11px] text-[var(--text-tertiary)]">历史快照 · 匹配 {filteredRuns.length} 条</span><Pagination size="small" current={safePage} pageSize={pageSize} total={filteredRuns.length} showSizeChanger pageSizeOptions={["10","20","50","100"]} showTotal={n=>`共 ${n} 条`} onChange={(p,s)=>{setPage(p);setPageSize(s);}} /></div>
       </div>
 
