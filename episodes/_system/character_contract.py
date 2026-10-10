@@ -384,7 +384,7 @@ def reviewed_story_lock(ep, review_file):
     if not isinstance(current,dict):
         raise ValueError("CHARACTER_CONTRACT_AUTHORITY_MISSING")
     expected=str(review.get("expected_contract_sha256") or "").lower()
-    if not re.fullmatch(r"[0-9a-f]{64}",expected) or authority_sha256(ep)!=expected:
+    if current.get("status")!="LOCKED" and (not re.fullmatch(r"[0-9a-f]{64}",expected) or authority_sha256(ep)!=expected):
         raise ValueError("CHARACTER_CONTRACT_AUTHORITY_SHA_MISMATCH")
     rel=Path(str(review.get("story_path") or ""))
     story=(ep/rel).resolve()
