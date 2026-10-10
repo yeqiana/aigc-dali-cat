@@ -25,7 +25,8 @@
     "test:runs": "node scripts/test-run-equivalence.mjs",
     "test:local-browser": "node scripts/test-local-live-browser.mjs",
     "test:local-real": "node scripts/test-local-real-browser.mjs",
-    "test:visual-ux": "node scripts/test-ux-r10-browser.mjs"
+    "test:visual-ux": "node scripts/test-ux-r10-browser.mjs",
+    "test:brand-layout": "node scripts/test-brand-layout-r11.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",

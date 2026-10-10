@@ -409,7 +409,7 @@ export default function App() {
 
           {/* 剧集库视图 */}
           {currentTab === 'episodes' && (
-            <div className="max-w-4xl mx-auto">
+            <div className="w-full">
               <SeriesLibraryView
                 episodes={episodes}
                 activeEpisode={activeEpisode}

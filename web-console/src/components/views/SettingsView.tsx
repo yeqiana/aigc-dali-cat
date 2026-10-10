@@ -96,6 +96,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       )}
 
+      <header className="border-b border-[var(--border-subtle)] pb-3">
+        <h1 className="text-[22px] font-semibold tracking-tight">系统设置</h1>
+        <p className="mt-1 text-[12px] text-[var(--text-secondary)]">外观偏好和工作区管线配置</p>
+      </header>
       {/* 顶部标签切换：外观参数 与 管线参数 */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
         <div className="flex items-center gap-2">
@@ -226,68 +230,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </button>
             </div>
 
-            {/* Code Diff Preview (代码差异对比预览组件) */}
-            <div className="rounded-xl border border-[#27272a] bg-[#0c0c0e] font-mono text-[11px] overflow-hidden">
-              <div className="grid grid-cols-2 divide-x divide-[#222226]">
-                {/* 左列：红底差异 */}
-                <div className="p-2 space-y-0.5 text-zinc-300 select-text">
-                  <div className="flex items-center gap-2 text-zinc-500">
-                    <span className="w-4 text-right">1</span>
-                    <span><span className="text-[#a78bfa]">const</span> <span className="text-blue-400">themePreview</span>: <span className="text-emerald-400">ThemeConfig</span> = {'{'}</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#ef4444]/15 border-l-2 border-[#ef4444] px-1 py-0.2 text-red-200">
-                    <span className="w-4 text-right text-red-400">2</span>
-                    <span>  <span className="text-amber-300">surface</span>: <span className="text-emerald-300">"sidebar"</span>,</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#ef4444]/15 border-l-2 border-[#ef4444] px-1 py-0.2 text-red-200">
-                    <span className="w-4 text-right text-red-400">3</span>
-                    <span>  <span className="text-amber-300">accent</span>: <span className="text-emerald-300">"#2563eb"</span>,</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#ef4444]/15 border-l-2 border-[#ef4444] px-1 py-0.2 text-red-200">
-                    <span className="w-4 text-right text-red-400">4</span>
-                    <span>  <span className="text-amber-300">contrast</span>: <span className="text-sky-400">42</span>,</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-zinc-500">
-                    <span className="w-4 text-right">5</span>
-                    <span>{'};'}</span>
-                  </div>
-                </div>
-
-                {/* 右列：绿底差异 */}
-                <div className="p-2 space-y-0.5 text-zinc-300 select-text">
-                  <div className="flex items-center gap-2 text-zinc-500">
-                    <span className="w-4 text-right">1</span>
-                    <span><span className="text-[#a78bfa]">const</span> <span className="text-blue-400">themePreview</span>: <span className="text-emerald-400">ThemeConfig</span> = {'{'}</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#10b981]/15 border-l-2 border-[#10b981] px-1 py-0.2 text-emerald-200">
-                    <span className="w-4 text-right text-emerald-400">2</span>
-                    <span>  <span className="text-amber-300">surface</span>: <span className="text-emerald-300">"sidebar-elevated"</span>,</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#10b981]/15 border-l-2 border-[#10b981] px-1 py-0.2 text-emerald-200">
-                    <span className="w-4 text-right text-emerald-400">3</span>
-                    <span>  <span className="text-amber-300">accent</span>: <span className="text-emerald-300">"#0ea5e9"</span>,</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-[#10b981]/15 border-l-2 border-[#10b981] px-1 py-0.2 text-emerald-200">
-                    <span className="w-4 text-right text-emerald-400">4</span>
-                    <span>  <span className="text-amber-300">contrast</span>: <span className="text-sky-400">{contrastValue}</span>,</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-zinc-500">
-                    <span className="w-4 text-right">5</span>
-                    <span>{'};'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 底部微型滚动箭头指示 */}
-              <div className="px-2 py-1 bg-[#101013] border-t border-[#1f1f23] flex items-center justify-between text-zinc-600">
-                <div className="flex items-center gap-1">
-                  <ChevronLeft className="w-3 h-3 hover:text-zinc-400 cursor-pointer" />
-                </div>
-                <div className="flex items-center gap-1">
-                  <ChevronRight className="w-3 h-3 hover:text-zinc-400 cursor-pointer" />
-                </div>
-              </div>
-            </div>
+            <p className="border-b border-[var(--border-subtle)] pb-3 text-[12px] text-[var(--text-secondary)]">选择界面主题；下方调整的是当前工作区的外观偏好。</p>
 
             {/* 深色主题参数卡片 (Codex 风格圆角面板) */}
             <div className="bg-[#141416] border border-[#27272a] rounded-2xl p-4 divide-y divide-[#222226] text-xs">
@@ -449,6 +392,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     setTranslucentSidebar(!translucentSidebar);
                     showToast(translucentSidebar ? '已关闭半透明侧边栏' : '已启用半透明侧边栏');
                   }}
+                  aria-label="半透明侧边栏"
+                  aria-pressed={translucentSidebar}
                   className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
                     translucentSidebar ? 'bg-[#2563eb] justify-end' : 'bg-[#27272a] justify-start'
                   }`}
@@ -498,6 +443,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                     setPointerCursor(!pointerCursor);
                     showToast(pointerCursor ? '已关闭指针光标' : '已开启指针光标');
                   }}
+                  aria-label="使用指针光标"
+                  aria-pressed={pointerCursor}
                   className={`w-11 h-6 rounded-full transition-colors p-0.5 flex items-center cursor-pointer ${
                     pointerCursor ? 'bg-[#2563eb] justify-end' : 'bg-[#27272a] justify-start'
                   }`}
