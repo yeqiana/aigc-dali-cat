@@ -89,7 +89,7 @@ const FormattedJsonViewer: React.FC<FormattedJsonViewerProps> = ({ data }) => {
               key={mode}
               type="button"
               onClick={() => setViewMode(mode)}
-              className={`px-2 py-0.5 rounded-[3px] text-[10px] font-mono transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded-[4px] text-[11px] font-medium transition-colors cursor-pointer ${
                 viewMode === mode
                   ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-bold border border-[var(--border-normal)]'
                   : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
@@ -271,21 +271,21 @@ export const RuntimeLogsView: React.FC = () => {
     <div id="runtime-logs-view" className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[var(--bg-app)] font-sans text-[var(--text-primary)]">
       {/* 1. 顶部全局工具栏与状态统计 (占满宽度) */}
       <div className="flex shrink-0 flex-col justify-between gap-3 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-4 lg:flex-row lg:items-center">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           <div className="text-[var(--text-tertiary)]">
             <Terminal className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-[18px] font-semibold tracking-tight text-[var(--text-primary)]">
+              <h1 className="os-page-heading">
                 运行日志审计控制台
               </h1>
-              <span className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--border-normal)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-secondary)]">
+              <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-[var(--border-normal)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-secondary)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />
                 <span>{autoRefresh ? '自动轮询' : '手动刷新'}</span>
               </span>
             </div>
-            <p className="text-[11px] text-[var(--text-tertiary)] font-mono">
+            <p className="mt-1 text-[12px] text-[var(--text-secondary)]">
               审计事件 · 当前已加载 {logs.length} 条 · 支持筛选、追踪和详情查看
             </p>
           </div>
@@ -344,7 +344,7 @@ export const RuntimeLogsView: React.FC = () => {
       </div>
 
       {/* 2. 多维组合筛选条 (Filter Bar) */}
-      <div className="shrink-0 p-2.5 lg:px-4 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] flex flex-wrap items-center justify-between gap-2.5 text-xs">
+      <div className="shrink-0 p-3 lg:px-5 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] flex flex-wrap items-center justify-between gap-2.5 text-xs">
         {/* 左侧：搜索框与筛选器 */}
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
           {/* 全文关键字搜索 */}
@@ -358,7 +358,7 @@ export const RuntimeLogsView: React.FC = () => {
                 setCurrentPage(1);
               }}
               placeholder="搜索 Trace ID、模块、消息或 JSON 字段..."
-              className="w-full pl-8 pr-7 py-1 rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] text-xs focus:outline-hidden focus:border-[#58A6FF] font-mono"
+              className="h-9 w-full pl-8 pr-7 rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] text-xs focus:outline-hidden focus:border-[#58A6FF] font-mono"
             />
             {searchQuery && (
               <button
@@ -373,14 +373,14 @@ export const RuntimeLogsView: React.FC = () => {
 
           {/* 模块选择下拉 */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-mono text-[var(--text-tertiary)] hidden sm:inline">模块:</span>
+            <span className="text-[12px] text-[var(--text-tertiary)] hidden sm:inline">模块:</span>
             <select
               value={filterModule}
               onChange={(e) => {
                 setFilterModule(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-2 py-1 rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] text-xs font-mono focus:outline-hidden focus:border-[#58A6FF]"
+              className="h-9 px-3 rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] text-xs font-mono focus:outline-hidden focus:border-[#58A6FF]"
             >
               <option value="ALL">全部微服务 / 模块</option>
               {availableModules.filter(m => m !== 'ALL').map(mod => (
@@ -390,7 +390,7 @@ export const RuntimeLogsView: React.FC = () => {
           </div>
 
           {/* 级别标签切换组 */}
-          <div className="flex items-center rounded-[4px] p-0.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+          <div className="flex items-center rounded-[6px] p-0.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             {(['ALL', 'ERROR', 'WARN', 'INFO', 'SUCCESS', 'DEBUG'] as const).map((lvl) => {
               const count = lvl === 'ALL'
                 ? logs.length

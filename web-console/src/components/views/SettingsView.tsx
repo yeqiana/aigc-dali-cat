@@ -8,16 +8,16 @@ interface SettingsViewProps{
  onThemeChange?:(theme:ThemeMode)=>void;
 }
 export const SettingsView:React.FC<SettingsViewProps>=({currentTheme='dark',onThemeChange})=>{
- return <section id="codex-appearance-settings-view" className="w-full min-w-0 space-y-4 pb-6 text-[var(--text-primary)]">
-  <header className="border-b border-[var(--border-subtle)] pb-3">
+ return <section id="codex-appearance-settings-view" className="w-full min-w-0 space-y-5 pb-6 text-[var(--text-primary)]">
+  <header className="border-b border-[var(--border-subtle)] pb-4">
    <h1 className="os-page-heading">系统设置</h1>
-   <p className="mt-1 text-[12px] text-[var(--text-secondary)]">仅展示能验证的工作区偏好与配置状态</p>
+   <p className="mt-1.5 text-[13px] text-[var(--text-secondary)]">仅展示能验证的工作区偏好与配置状态</p>
   </header>
   <Tabs size="small" defaultActiveKey="appearance" items={[
    {key:'appearance',label:<span className="inline-flex items-center gap-1.5"><Palette size={14}/>外观设置</span>,
-    children:<div className="space-y-4">
+    children:<div className="max-w-[1000px] space-y-5">
      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border-subtle)] py-3">
-      <div><h2 className="text-[13px] font-semibold">界面主题</h2><p className="mt-1 text-[12px] text-[var(--text-secondary)]">即时切换，沿用现有浏览器本地偏好</p></div>
+      <div><h2 className="os-section-heading">界面主题</h2><p className="mt-1 text-[13px] text-[var(--text-secondary)]">即时切换，沿用现有浏览器本地偏好</p></div>
       <Segmented aria-label="界面主题" value={currentTheme} onChange={value=>onThemeChange?.(value as ThemeMode)}
        options={[{value:'dark',label:'深色'},{value:'light',label:'浅色'},{value:'light-gradient',label:'浅色渐变'}]}/>
      </div>

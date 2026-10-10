@@ -22,7 +22,7 @@ export const MemorySearchPanel: React.FC = () => {
       setStatus('error');
     }
   };
-  return <section aria-label="Memory 经验检索" className="space-y-3 border-t border-[var(--border-subtle)] pt-5">
+  return <section aria-label="Memory 经验检索" className="space-y-4">
     <div className="flex items-center gap-2"><Database size={17} className="text-[var(--text-tertiary)]"/><h2 className="text-[14px] font-semibold">Memory 经验检索</h2></div>
     <p className="text-[12px] text-[var(--text-secondary)]">主动向现有 /api/v1/memory/search 提交检索词；这里只读，不创建、修改或删除记忆。</p>
     <form onSubmit={search} className="flex items-center gap-2">
