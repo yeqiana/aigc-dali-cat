@@ -25,8 +25,10 @@ export default defineConfig(() => {
       rollupOptions: {
         output: {
           manualChunks(id: string) {
-            // 作品证据与核心 UI 分包，不要让大量证据内容编入主入口。
-            if (id.includes('/src/data/storyosRealData.ts') || id.includes('\\src\\data\\storyosRealData.ts')) return 'workspace-evidence';
+            // 历史 Run 大包只随监控模块加载；Episode 证据与 Registry 分别独立。
+            const normalized = id.replace(/\\/g, '/');
+            if (normalized.includes('/src/data/storyosRunSnapshots.ts')) return 'historical-runs';
+            if (normalized.includes('/src/data/storyosEpisodeSnapshots.ts')) return 'historical-episodes';
           },
         },
       },

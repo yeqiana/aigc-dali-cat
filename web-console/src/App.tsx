@@ -17,7 +17,7 @@ const SeriesLibraryView = React.lazy(() => import('./components/views/SeriesLibr
 const RuntimeLogsView = React.lazy(() => import('./components/views/RuntimeLogsView').then(m => ({ default: m.RuntimeLogsView })));
 const SettingsView = React.lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
 
-import { REAL_EPISODES } from './data/storyosRealData';
+import { REAL_EPISODES } from './data/storyosEpisodeSnapshots';
 import { platformApi } from './api/platformApi';
 import { Episode, NavigationTab, ProductionStage, ThemeMode, ProjectItem } from './types';
 

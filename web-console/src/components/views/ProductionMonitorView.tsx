@@ -28,7 +28,8 @@ import {
 } from 'lucide-react';
 import { StoryRunItem, FrameDetailItem, StoryRunStatus, StoryRunStage } from '../../types';
 import { platformApi } from '../../api/platformApi';
-import { REAL_STORY_RUNS, STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosRealData';
+import { REAL_STORY_RUNS } from '../../data/storyosRunSnapshots';
+import { STORY_OS_PLATFORM_MANIFEST } from '../../data/storyosManifestSnapshot';
 import { StoryRunDetailView } from './StoryRunDetailView';
 import { RuntimeAuthorityPanel } from './RuntimeAuthorityPanel';
 import type { RuntimeStatusSummary } from '../../api/platformApi';
