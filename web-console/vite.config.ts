@@ -21,6 +21,16 @@ const platformProxy = {
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            // 作品证据与核心 UI 分包，不要让大量证据内容编入主入口。
+            if (id.includes('/src/data/storyosRealData.ts') || id.includes('\\src\\data\\storyosRealData.ts')) return 'workspace-evidence';
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
