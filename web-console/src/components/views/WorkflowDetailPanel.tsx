@@ -18,13 +18,13 @@ export const WorkflowDetailPanel: React.FC<Props> = ({selected, onClose}) => {
     return () => {active=false};
   },[episode]);
   const value = (data: string | number | boolean | null | undefined) => data == null || data === '' ? '未提供' : String(data);
-  return <section aria-label="工作流阶段详情" className="border border-[var(--border-normal)] rounded-[6px] p-4 space-y-3 bg-[var(--bg-surface)]">
+  return <section aria-label="工作流阶段详情" className="os-card space-y-4 p-5 md:p-6">
     <div className="flex gap-3 items-start justify-between">
-      <div className="min-w-0"><h3 className="text-[14px] font-semibold truncate">{selected.title || episode}</h3><p className="text-[11px] text-[var(--text-tertiary)] mt-1">权威 Runtime 详情查询（只读）</p></div>
+      <div className="min-w-0"><h3 className="os-section-heading truncate">{selected.title || episode}</h3><p className="text-[11px] text-[var(--text-tertiary)] mt-1">只读阶段详情（文件模式不能代表在线运行状态）</p></div>
       <button type="button" onClick={onClose} aria-label="关闭工作流详情" className="p-1.5 rounded hover:bg-[var(--bg-hover)]"><X size={16}/></button>
     </div>
     {status === 'loading' ? <p role="status" className="text-[12px] text-[var(--text-secondary)]">正在获取阶段详情…</p> : status === 'failed' ? <p role="alert" className="text-[12px] text-[var(--warning)]">详情接口不可用；只保留摘要，不推测运行状态。</p> :
-      <dl className="grid gap-3 sm:grid-cols-2">
+      <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {[
           ['正式阶段',stageLabel(detail?.production_stage || selected.production_stage || 'NO_STATE')],
           ['执行状态',value(detail?.execution_status)],
@@ -36,7 +36,7 @@ export const WorkflowDetailPanel: React.FC<Props> = ({selected, onClose}) => {
           ['心跳状态',value(detail?.heartbeat?.health)],
           ['通过帧',value(detail?.image_progress?.accepted_frames)],
           ['目标帧',value(detail?.image_progress?.expected_frames)]
-        ].map(([k,v]) => <div key={k}><dt className="text-[11px] text-[var(--text-tertiary)]">{k}</dt><dd className="mt-1 text-[12px] break-words">{v}</dd></div>)}
+        ].map(([k,v]) => <div key={k} className="rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-app)] p-3"><dt className="text-[11px] text-[var(--text-tertiary)]">{k}</dt><dd className="mt-2 break-words text-[13px] font-medium text-[var(--text-primary)]">{v}</dd></div>)}
       </dl>
     }
   </section>;
