@@ -420,7 +420,11 @@ def verify(ep: Path) -> list[str]:
         source_revision = data["critic_provenance"].get("review_scope") == "LOCKED_DOCUMENTARY_SOURCE_REVISION"
         symbolic_remediation = data["critic_provenance"].get("review_scope") == "LOCKED_DOCUMENTARY_SYMBOLIC_REMEDIATION"
         paired_caption = data["critic_provenance"].get("review_scope") == "LOCKED_PHOTO_TEXT_CAPTION_REVIEW"
-        evidence_path = Path(ep) / ("meta/runtime/story-review-paired-caption-a6.json" if paired_caption
+        photo_text_repair = data["critic_provenance"].get("review_scope") == "PHOTO_TEXT_SOURCE_REPAIR_AFTER_FAIL"
+        character_source_repair = data["critic_provenance"].get("review_scope") == "CHARACTER_STORY_SOURCE_REPAIR_AFTER_FAIL"
+        evidence_path = Path(ep) / ("meta/runtime/story-review-character-source-repair-a8.json" if character_source_repair
+                                    else "meta/runtime/story-review-photo-text-source-repair-a7.json" if photo_text_repair
+                                    else "meta/runtime/story-review-paired-caption-a6.json" if paired_caption
                                     else "meta/runtime/story-review-symbolic-remediation-a5.json" if symbolic_remediation
                                     else "meta/runtime/story-review-source-revision-a4.json" if source_revision
                                     else "meta/runtime/story-review-policy-continuation-a3.json")
@@ -435,11 +439,18 @@ def verify(ep: Path) -> list[str]:
                     or evidence.get("current_rubric_sha256") != provenance.get("current_rubric_sha256")
                     or evidence.get("story_sha256") != sha256_file(story)
                     or evidence.get("storyboard_sha256") != sha256_file(storyboard)
-                    or ((source_revision or symbolic_remediation) and evidence.get("previous_storyboard_sha256") != provenance.get("previous_storyboard_sha256"))
+                    or ((source_revision or symbolic_remediation or photo_text_repair or character_source_repair)
+                        and evidence.get("previous_storyboard_sha256") != provenance.get("previous_storyboard_sha256"))
+                    or (character_source_repair and evidence.get("previous_story_sha256") != provenance.get("previous_story_sha256"))
+                    or (character_source_repair and evidence.get("new_character_authority_sha256") != provenance.get("new_character_authority_sha256"))
+                    or (character_source_repair and evidence.get("character_attestation_sha256") != provenance.get("character_attestation_sha256"))
                     or ((symbolic_remediation or paired_caption) and evidence.get("previous_rubric_sha256") != provenance.get("previous_rubric_sha256"))
-                    or (paired_caption and evidence.get("subtitle_source_sha256") != provenance.get("subtitle_source_sha256"))
-                    or (paired_caption and not (ep / "docs/subtitles.yaml").is_file())
-                    or (paired_caption and evidence.get("subtitle_source_sha256") != sha256_file(ep / "docs/subtitles.yaml"))
+                    or ((paired_caption or photo_text_repair or character_source_repair)
+                        and evidence.get("subtitle_source_sha256") != provenance.get("subtitle_source_sha256"))
+                    or ((paired_caption or photo_text_repair or character_source_repair)
+                        and not (ep / "docs/subtitles.yaml").is_file())
+                    or ((paired_caption or photo_text_repair or character_source_repair)
+                        and evidence.get("subtitle_source_sha256") != sha256_file(ep / "docs/subtitles.yaml"))
                     or evidence.get("current_rubric_sha256") != _review_rubric_digest(Path(__file__).read_text(encoding="utf-8-sig"))):
                 errors.append("policy continuation authority or current rubric SHA mismatch")
         except (OSError, ValueError, KeyError, RuntimeError):
