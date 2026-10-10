@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {Button, Select, Steps, Table} from 'antd';
 import { AlertCircle, GitBranch, RefreshCw } from 'lucide-react';
 import { platformApi, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
 import { WorkflowDetailPanel } from './WorkflowDetailPanel';
@@ -13,6 +14,8 @@ export const WorkflowWorkspaceView: React.FC = () => {
   const [loadingMore,setLoadingMore] = useState(false);
   const [total,setTotal] = useState<number | null>(null);
   const [filter,setFilter] = useState('ALL');
+  const [page,setPage]=useState(1);
+  const [pageSize,setPageSize]=useState(15);
   const [selected,setSelected] = useState<RuntimeStatusSummary | null>(null);
   const generation = useRef(0);
   const pagingInFlight = useRef(false);
@@ -74,26 +77,34 @@ export const WorkflowWorkspaceView: React.FC = () => {
       }
     }
   };
-  return <div className="mx-auto max-w-[1440px] space-y-5 pb-16 text-[var(--text-primary)]">
-    <header className="os-card flex flex-wrap items-center justify-between gap-5 px-6 py-6 md:px-8">
-      <div><p className="mb-2 os-eyebrow">PRODUCTION WORKFLOW</p><h1 className="os-page-heading">生产流程</h1><p className="mt-2 text-[13px] leading-6 text-[var(--text-secondary)]">从创意锁定到发布复盘，一眼了解阶段顺序与每个作品的当前位置。只读，不绕过门禁。</p></div>
-      <button type="button" onClick={()=>setReload(v=>v+1)} disabled={loading} className="os-action disabled:opacity-50"><RefreshCw size={15}/>刷新</button>
+  return <div id="storyos-workflow-workspace" className="w-full min-w-0 space-y-4 pb-6 text-[var(--text-primary)]">
+    <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
+      <div><h1 className="os-page-heading">生产流程</h1><p className="mt-1 text-[12px] text-[var(--text-secondary)]">标准阶段顺序与作品所处阶段 · 只读投影</p></div>
+      <Button onClick={()=>setReload(v=>v+1)} disabled={loading} icon={<RefreshCw size={15}/>}>刷新</Button>
     </header>
-    <section className="os-card p-5 md:p-6"><div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="os-eyebrow mb-1">STAGE MAP</p><h2 className="os-section-heading">标准生产阶段</h2></div><span className="text-[11px] text-[var(--text-tertiary)]">共 7 个阶段 · 仅展示顺序</span></div><div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-7">
-      {STAGE_ORDER.map((stage,i) => <div key={stage} className="relative flex min-h-[80px] flex-col justify-between rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-app)] p-3"><span className="text-[11px] font-mono text-[var(--text-tertiary)]">{String(i + 1).padStart(2, '0')}</span><span className="flex items-center gap-2 text-[12px] font-semibold text-[var(--text-primary)]"><span className="flex h-5 w-5 items-center justify-center rounded-full border border-[var(--border-normal)] text-[var(--text-tertiary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--text-tertiary)]"/></span>{stageLabel(stage)}</span></div>)}
-    </div><p className="mt-4 text-[11px] text-[var(--text-tertiary)]">图示只解释阶段顺序；节点不是可点击的阶段推进操作。</p></section>
-    <section className="os-card space-y-4 p-5 md:p-6">
-      <div className="flex items-center justify-between gap-3"><div><p className="os-eyebrow mb-1">EPISODE STATUS</p><h2 className="os-section-heading">各作品所处阶段</h2></div><select aria-label="筛选阶段" value={filter} onChange={e=>setFilter(e.target.value)} className="h-9 rounded-[9px] border border-[var(--border-normal)] bg-[var(--bg-elevated)] px-3 text-[12px]"><option value="ALL">所有阶段</option>{STAGE_ORDER.map(x=><option key={x} value={x}>{stageLabel(x)}</option>)}</select></div>
-      {error && <p role="alert" className="flex items-center gap-2 border border-[var(--border-normal)] rounded-[5px] p-3 text-[12px] text-[var(--warning)]"><AlertCircle size={16}/>{error}</p>}
-      {loading ? <div role="status" className="p-8 text-center text-[var(--text-tertiary)] text-[13px]">正在读取权威阶段…</div>
-      : filtered.length===0 ? <div className="rounded-[10px] border border-dashed border-[var(--border-normal)] p-10 text-center text-[13px] text-[var(--text-tertiary)]">暂无可展示的阶段记录。</div>
-      : <div className="overflow-hidden rounded-[11px] border border-[var(--border-subtle)] divide-y divide-[var(--border-subtle)]">{filtered.map((x,i)=><div key={x.episode_id||i} className="os-data-row flex flex-wrap items-center gap-4 px-4 py-4 sm:flex-nowrap">
-        <GitBranch size={16} className="shrink-0 text-[var(--info)]"/><div className="min-w-0 flex-1"><p className="text-[13px] font-medium truncate">{x.title || x.episode_ref || x.episode_id}</p><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">来源：{x.state_source || '未提供'} · {x.updated_at || x.observed_at || '更新时间未知'}</p></div>
-        <span className="shrink-0 rounded-full border border-[var(--border-normal)] bg-[var(--bg-elevated)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)]">{stageLabel(x.production_stage || 'NO_STATE')}</span><button type="button" onClick={() => setSelected(x)} aria-label={'查看阶段详情：' + (x.title || x.episode_ref || x.episode_id)} className="os-action shrink-0 !h-8">详情</button>
-      </div>)}</div>}
+    <section aria-label="七阶段流程" className="space-y-2">
+      <h2 className="text-[13px] font-semibold">标准生产阶段</h2>
+      <div className="overflow-x-auto border-b border-[var(--border-subtle)] pb-3"><div className="min-w-[900px]"><Steps size="small" current={-1} responsive={false} items={STAGE_ORDER.map(stage=>({title:stageLabel(stage),status:'wait' as const}))}/></div></div>
+      <p className="text-[11px] text-[var(--text-tertiary)]">流程图仅说明顺序，不代表节点已完成，也不能点击跳过门禁。</p>
     </section>
-    {selected && <WorkflowDetailPanel selected={selected} onClose={() => setSelected(null)} />}
-    <div className="os-card flex flex-wrap items-center justify-between gap-3 px-5 py-4"><span className="text-[12px] text-[var(--text-tertiary)]">已载入 {items.length}{total !== null ? ' / ' + total : ''} 条权威阶段摘要{hasMore ? ' · 尚有更多' : ''}</span>{hasMore && <button type="button" disabled={loadingMore} onClick={loadNext} className="h-9 px-3 border border-[var(--border-normal)] rounded-[5px] text-[12px] hover:bg-[var(--bg-hover)] disabled:opacity-50">{loadingMore ? '载入中…' : '加载更多'}</button>}</div>
-    <p className="text-[11px] leading-5 text-[var(--text-tertiary)]">/runtime/statuses 仅提供阶段 summary；执行动作、Queue、Worker、质量门禁的实时值需按作品查询详细证据，不能根据阶段推断。</p>
+    <section className="min-w-0 space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-[14px] font-semibold">各作品所处阶段</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">已载入 {items.length}{total!==null?' / '+total:''} 条阶段记录{hasMore?' · 尚有服务端数据未读取':''}</p></div>
+      <Select aria-label="筛选阶段" value={filter} onChange={v=>{setFilter(v);setPage(1);}} className="w-[170px]" options={[{value:'ALL',label:'全部阶段'},...STAGE_ORDER.map(value=>({value,label:stageLabel(value)}))]}/>
+      </div>
+      {error&&<p role="alert" className="flex items-center gap-2 border-l-2 border-[var(--warning)] py-2 pl-3 text-[12px] text-[var(--warning)]"><AlertCircle size={15}/>{error}</p>}
+      <Table<RuntimeStatusSummary> size="small" rowKey={x=>x.episode_id||x.episode_ref||x.title||'unknown'}
+        loading={loading} dataSource={filtered} scroll={{x:780}}
+        locale={{emptyText:'暂无可展示的阶段记录'}}
+        columns={[
+          {title:'作品',key:'title',render:(_,x)=><div className="min-w-0"><div className="truncate text-[13px] font-medium">{x.title||x.episode_ref||x.episode_id||'未命名作品'}</div><div className="mt-1 truncate font-mono text-[11px] text-[var(--text-tertiary)]">{x.episode_ref||x.episode_id}</div></div>},
+          {title:'生产阶段',dataIndex:'production_stage',key:'stage',width:150,render:(v:string)=><span>{stageLabel(v||'NO_STATE')}</span>},
+          {title:'数据来源',dataIndex:'state_source',key:'source',width:215,ellipsis:true,render:(v:string)=><span className="text-[11px] text-[var(--text-secondary)]">{v||'未提供'}</span>},
+          {title:'更新时间',key:'updated',width:170,render:(_,x)=><span className="text-[11px] text-[var(--text-secondary)]">{x.updated_at||x.observed_at||'未知'}</span>},
+          {title:'操作',key:'action',width:90,render:(_,x)=><Button type="link" size="small" onClick={()=>setSelected(x)} aria-label={'查看阶段详情：'+(x.title||x.episode_ref||x.episode_id)}>详情</Button>}
+        ]}
+        pagination={{current:Math.min(page,Math.max(1,Math.ceil(filtered.length/pageSize))),pageSize,total:filtered.length,showSizeChanger:true,pageSizeOptions:['10','15','30','50'],showTotal:(n,range)=>`${range[0]}–${range[1]} / 已载入 ${n}`,onChange:(v,s)=>{setPage(v);setPageSize(s);}}}/>
+      {hasMore && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] pt-3 text-[12px] text-[var(--text-secondary)]"><span>继续加载的是下一批服务端记录，不等于翻页。</span><Button loading={loadingMore} disabled={loading||loadingMore} onClick={loadNext}>加载更多阶段记录</Button></div>}
+    </section>
+    {selected&&<WorkflowDetailPanel selected={selected} onClose={()=>setSelected(null)}/>}
   </div>;
 };
