@@ -8,6 +8,9 @@ export const WorkflowWorkspaceView: React.FC = () => {
   const [loading,setLoading] = useState(true);
   const [error,setError] = useState<string | null>(null);
   const [reload,setReload] = useState(0);
+  const [hasMore,setHasMore] = useState(false);
+  const [loadingMore,setLoadingMore] = useState(false);
+  const [total,setTotal] = useState<number | null>(null);
   const [filter,setFilter] = useState('ALL');
   useEffect(() => {
     let active=true;
@@ -15,15 +18,31 @@ export const WorkflowWorkspaceView: React.FC = () => {
     platformApi.runtimeStatuses(100,0).then(data => {
       if(!active)return;
       setItems(data.items ?? []);
+      setHasMore(Boolean(data.has_more));
+      setTotal(typeof data.total === 'number' ? data.total : null);
       setError(data.errors?.length ? '部分状态数据读取失败，以下仅展示成功返回的阶段投影。' : null);
     }).catch(() => {
       if(!active)return;
       setItems([]);
+      setHasMore(false);
+      setTotal(null);
       setError('无法连接 Platform API，暂不能读取生产阶段。');
     }).finally(() => {if(active)setLoading(false)});
     return () => {active=false};
   },[reload]);
   const filtered=items.filter(x => filter==='ALL' || x.production_stage===filter);
+  const loadNext = async () => {
+    if (!hasMore || loadingMore || loading) return;
+    setLoadingMore(true);
+    try {
+      const data = await platformApi.runtimeStatuses(100, items.length);
+      setItems(current => [...current, ...data.items]);
+      setHasMore(Boolean(data.has_more) && data.items.length > 0);
+      if (data.errors?.length) setError('后续分页返回部分错误，列表可能不完整。');
+    } catch {
+      setError('加载更多阶段记录失败，已保留此前成功读取的列表。');
+    } finally { setLoadingMore(false); }
+  };
   return <div className="mx-auto max-w-[1200px] space-y-7 pb-16 text-[var(--text-primary)]">
     <header className="flex items-start justify-between gap-3 border-b border-[var(--border-subtle)] pb-5">
       <div><p className="mb-2 text-[12px] text-[var(--text-tertiary)]">StoryOS / Workflow</p><h1 className="text-[20px] font-semibold">生产流程</h1><p className="mt-2 text-[13px] text-[var(--text-secondary)]">查看 canonical 生产阶段，不在前端点击跳过门禁。</p></div>
@@ -42,6 +61,7 @@ export const WorkflowWorkspaceView: React.FC = () => {
         <span className="shrink-0 text-[12px] text-[var(--text-secondary)]">{stageLabel(x.production_stage || 'NO_STATE')}</span>
       </div>)}</div>}
     </section>
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] pt-3"><span className="text-[12px] text-[var(--text-tertiary)]">已载入 {items.length}{total !== null ? ' / ' + total : ''} 条权威阶段摘要{hasMore ? ' · 尚有更多' : ''}</span>{hasMore && <button type="button" disabled={loadingMore} onClick={loadNext} className="h-9 px-3 border border-[var(--border-normal)] rounded-[5px] text-[12px] hover:bg-[var(--bg-hover)] disabled:opacity-50">{loadingMore ? '载入中…' : '加载更多'}</button>}</div>
     <p className="text-[11px] leading-5 text-[var(--text-tertiary)]">/runtime/statuses 仅提供阶段 summary；执行动作、Queue、Worker、质量门禁的实时值需按作品查询详细证据，不能根据阶段推断。</p>
   </div>;
 };

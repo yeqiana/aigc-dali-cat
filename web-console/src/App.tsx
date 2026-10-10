@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
@@ -8,13 +8,13 @@ import { CommandDock } from './components/CommandDock';
 import { ContextPanel } from './components/ContextPanel';
 
 // Views
-import { ProductionMonitorView } from './components/views/ProductionMonitorView';
+const ProductionMonitorView = React.lazy(() => import('./components/views/ProductionMonitorView').then(m => ({ default: m.ProductionMonitorView })));
 import { HomeOverviewView } from './components/views/HomeOverviewView';
-import { WorkflowWorkspaceView } from './components/views/WorkflowWorkspaceView';
-import { AgentWorkspaceView } from './components/views/AgentWorkspaceView';
-import { SeriesLibraryView } from './components/views/SeriesLibraryView';
-import { RuntimeLogsView } from './components/views/RuntimeLogsView';
-import { SettingsView } from './components/views/SettingsView';
+const WorkflowWorkspaceView = React.lazy(() => import('./components/views/WorkflowWorkspaceView').then(m => ({ default: m.WorkflowWorkspaceView })));
+const AgentWorkspaceView = React.lazy(() => import('./components/views/AgentWorkspaceView').then(m => ({ default: m.AgentWorkspaceView })));
+const SeriesLibraryView = React.lazy(() => import('./components/views/SeriesLibraryView').then(m => ({ default: m.SeriesLibraryView })));
+const RuntimeLogsView = React.lazy(() => import('./components/views/RuntimeLogsView').then(m => ({ default: m.RuntimeLogsView })));
+const SettingsView = React.lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
 
 import { REAL_EPISODES } from './data/storyosRealData';
 import { platformApi } from './api/platformApi';
@@ -55,7 +55,23 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
 ];
 
 export default function App() {
-  const [episodes, setEpisodes] = useState<Episode[]>(REAL_EPISODES);
+  const [episodes, setEpisodes] = useState<Episode[]>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('storyos_local_story_drafts_v1') || '[]');
+      if (!Array.isArray(saved)) return REAL_EPISODES;
+      const drafts = saved.filter((value: unknown): value is Episode => {
+        if (!value || typeof value !== 'object') return false;
+        const record = value as Partial<Episode>;
+        return typeof record.id === 'string' && /^ep-(home|proj)-/.test(record.id)
+          && typeof record.title === 'string' && Array.isArray(record.frameReviews)
+          && Array.isArray(record.preflightChecks) && Boolean(record.runtimeRequest);
+      });
+      return [...drafts, ...REAL_EPISODES];
+    } catch { return REAL_EPISODES; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('storyos_local_story_drafts_v1', JSON.stringify(episodes.filter(ep => /^ep-(home|proj)-/.test(ep.id)))); } catch { /* restricted local storage */ }
+  }, [episodes]);
   const [activeEpisode, setActiveEpisode] = useState<Episode>(REAL_EPISODES[0]);
   const [currentTab, setCurrentTab] = useState<NavigationTab>('overview');
   const [isGeneratingBatch] = useState(false);
@@ -127,17 +143,17 @@ export default function App() {
   const buildNewEpisode = (id: string, title: string, projectId?: string, initialSynopsis?: string): Episode => {
     return {
       id,
-      code: `C-${Math.floor(Math.random() * 90 + 10)}`,
+      code: 'LOCAL-' + id.slice(-8),
       title,
       projectId,
-      synopsis: initialSynopsis || `${title} - StoryOS 4:5 竖屏短剧创作，等待编剧与分镜配置。`,
-      logline: '日常与异常的边界徘徊，揭示隐秘冰冷的规则真相。',
-      genre: '短剧创作',
-      targetAudience: '悬疑短剧高完播人群',
-      totalFrames: 24,
+      synopsis: initialSynopsis || title + ' · 本地草稿，尚未提交生产 Runtime。',
+      logline: '尚未设置故事梗概',
+      genre: '未分类',
+      targetAudience: '未设置',
+      totalFrames: 0,
       completedFrames: 0,
       currentStage: 'IDEA_LOCK',
-      stageProgressPercent: 5,
+      stageProgressPercent: 0,
       coverImage: STORY_PLACEHOLDER_IMAGE,
       updatedAt: '刚刚',
       runtimeRequest: {
@@ -147,35 +163,24 @@ export default function App() {
         batchMode: '5 帧逻辑批次',
         maxConcurrentImages: 3,
         executionLayer: 'StoryOS Engine',
-        sourceBadge: '已连接生产内核',
+        sourceBadge: '待连接工作区',
       },
-      characters: activeEpisode?.characters || [],
-      visualLocks: activeEpisode?.visualLocks || [],
-      storyboardBeats: [
-        {
-          id: 'beat-01',
-          beatIndex: 1,
-          sceneName: '开场序幕',
-          act: '第一幕：建立日常',
-          shotType: '中景 4:5',
-          lighting: '自然柔光',
-          narration: '故事的开始总是在看似平常的黄昏...',
-          status: 'queued',
-        }
-      ],
+      characters: [],
+      visualLocks: [],
+      storyboardBeats: [],
       currentBatch: {
         batchId: 'batch-01',
         batchNumber: 1,
-        batchName: '开场序幕 01-05 帧初始批次',
-        targetFrames: '01-05',
-        totalImages: 5,
-        createdAt: '刚刚',
-        status: 'ready_for_review',
+        batchName: '未建立生产批次（本地草稿）',
+        targetFrames: '未分配',
+        totalImages: 0,
+        createdAt: '未创建',
+        status: 'processing',
         items: [],
       },
       frameReviews: [],
       preflightChecks: [],
-      performance: activeEpisode?.performance || REAL_EPISODES[0].performance,
+      performance: Object.fromEntries((['6h','24h','48h','7d'] as const).map(timeframe => [timeframe, { timeframe, label:'无统计记录', completionRate:'—', completionDelta:'—', views:'—', viewsDelta:'—', shareVelocity:'—', retentionSpikeBeat:'—', retentionDropBeat:'—', viralityIndex:'—', audienceSentiment:'—', trendData:[] }])) as Episode['performance'],
     };
   };
 
@@ -195,7 +200,7 @@ export default function App() {
     saveProjects(updatedProjects);
     setActiveEpisode(newEpisode);
     setCurrentTab('workbench');
-    showToast(`已在项目《${targetProject?.name || '项目'}》中创建《${storyTitle}》，已自动归入该项目`);
+    showToast('已在本机项目中保存故事草稿，尚未提交生产 Runtime');
   };
 
   // 2. 如果是从主页自己建的故事，自动归入项目同级的“最近故事”中
@@ -212,7 +217,7 @@ export default function App() {
     saveRecentStories(nextRecent);
     setActiveEpisode(newEpisode);
     setCurrentTab('workbench');
-    showToast(`已从主页自建故事《${storyTitle}》，已自动归入项目同级的「最近故事」`);
+    showToast('已在本机保存故事草稿，尚未提交生产 Runtime');
   };
 
   // 从最近故事移除
@@ -351,6 +356,7 @@ export default function App() {
             </div>
           )}
 
+          <Suspense fallback={<div role="status" className="py-10 text-center text-[13px] text-[var(--text-secondary)]">正在载入工作区…</div>}>
           {currentTab === 'overview' && <HomeOverviewView episodes={episodes} projects={projects} onSelectEpisode={(ep) => { setActiveEpisode(ep); setCurrentTab('workbench'); }} onNewStory={() => handleCreateStoryFromHome()} onNavigate={setCurrentTab} />}
 
           {/* 生产监控台主控页 (StoryOS 生产监控台 V1.0 - Dense Operations Console) */}
@@ -433,6 +439,7 @@ export default function App() {
               />
             </div>
           )}
+          </Suspense>
         </main>
 
         {/* 3. 悬浮极简输入坞（纯黑底白字） */}
