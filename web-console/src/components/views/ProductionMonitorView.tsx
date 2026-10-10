@@ -73,6 +73,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
 
   // 从真实平台接口同步 canonical stage 投影；丰富的帧/证据详情继续来自工作区生成投影。
   const loadLatestStatuses = async (isManual = false) => {
+    // 用户展开多页时暂停后台首屏轮询，以免 15 秒后把已加载的下一页静默清空。
+    // 手动刷新明确恢复到第一页，并重新读取最新摘要。
+    if (!isManual && runtimeOffsetRef.current > 100) return;
     // 同一页面只允许一个阶段查询在途；旧请求不能覆盖刷新后的数据。
     const generation = requestGate.current.begin();
     if (generation === null) {

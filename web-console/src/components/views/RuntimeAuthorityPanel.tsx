@@ -32,7 +32,7 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMor
     : dataState === 'offline' ? <p role="alert" className="px-4 py-5 text-[var(--warning)]">无法连接 Platform API；本区不展示历史数据冒充在线状态。</p>
     : <>
       {dataState === 'partial' && <p role="alert" className="px-4 pt-3 text-[var(--warning)]">接口报告部分失败，阶段列表可能不完整。</p>}
-      <p className="px-4 py-2 text-[11px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条权威阶段摘要{coverage.incomplete ? '（尚未加载全部）' : ''}</p>
+      <p className="px-4 py-2 text-[11px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条权威阶段摘要{coverage.incomplete ? '（尚未加载全部）' : ''}{items.length > 100 ? ' · 多页浏览时暂停自动刷新，手动刷新可重新同步' : ''}</p>
       {coverage.warning && <p role="status" className="px-4 pb-3 text-[11px] text-[var(--warning)]">{coverage.warning}</p>}
       {items.length === 0 && <p className="px-4 py-5 text-[var(--text-tertiary)]">接口已响应，但没有可显示的阶段摘要。</p>}
       <div className="divide-y divide-[var(--border-subtle)]">{items.slice(0, visibleCount).map((item, i) =>

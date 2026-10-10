@@ -16,7 +16,10 @@
     "test:episodes": "node scripts/test-episode-equivalence.mjs",
     "test:runtime-coverage": "node scripts/test-runtime-coverage.mjs",
     "test:api-browser": "node scripts/test-api-browser-integration.mjs",
-    "test:accessibility": "node scripts/test-console-accessibility.mjs"
+    "test:accessibility": "node scripts/test-console-accessibility.mjs",
+    "test:lazy-browser": "node scripts/test-episode-lazy-browser.mjs",
+    "test:readonly-probe": "node scripts/test-platform-probe.mjs",
+    "test:monitor-pages": "node scripts/test-monitor-pagination-browser.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",
