@@ -50,7 +50,16 @@ def _ready(base: Path, tag: str, process: subprocess.Popen) -> None:
         if (base / (tag+".ready")).is_file():
             return
         if process.poll() is not None:
-            raise AssertionError(f"worker {tag} exited early ({process.returncode})")
+            # The old test discarded stderr, hiding the reason why a Windows
+            # worker exited before acquiring its machine-global image slots.
+            # Read only after exit, so a crashed child cannot block CI.
+            diagnostic = (process.stderr.read(8192).decode("utf-8", errors="replace")
+                          if process.stderr else "")
+            diagnostic = diagnostic[-1800:]
+            raise AssertionError(
+                f"worker {tag} exited early ({process.returncode}); "
+                f"child_stderr_tail={diagnostic!r}"
+            )
         time.sleep(.03)
     raise AssertionError("worker never claimed global capacity")
 
