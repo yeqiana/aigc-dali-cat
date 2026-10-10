@@ -20,13 +20,15 @@ def _episode(tmp_path):
     return episode
 
 
-def test_publish_ready_stage_never_invites_fresh_production(tmp_path):
+def test_completed_stages_never_invite_fresh_production(tmp_path):
     ep = _episode(tmp_path)
-    result = stage_probe.inspect(str(ep), root=tmp_path,
-        state_loader=lambda path: (
-            {"current_state": "PUBLISH_READY", "disposition": "ACTIVE"}, "mysql"))
-    assert result["status"] == "ALREADY_PUBLISH_READY"
-    assert result["sql_writes"] == result["model_calls"] == 0
+    for terminal_stage in ("PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"):
+        result = stage_probe.inspect(str(ep), root=tmp_path,
+            state_loader=lambda path, stage=terminal_stage: (
+                {"current_state": stage, "disposition": "ACTIVE"}, "mysql"))
+        assert result["status"] == "ALREADY_PUBLISH_READY"
+        assert result["stage"] == terminal_stage
+        assert result["sql_writes"] == result["model_calls"] == 0
 
 
 def test_storyboard_locked_is_stage_eligible_but_not_production_authorized(tmp_path):

@@ -46,7 +46,9 @@ def inspect(raw: str, *, root: Path = ROOT, state_loader=None) -> dict:
         reason = None
         if disposition != "ACTIVE":
             status, reason = "BLOCKED", "EPISODE_DISPOSITION_NOT_ACTIVE"
-        elif stage == "PUBLISH_READY":
+        elif stage in {"PUBLISH_READY", "PUBLISHED", "DATA_REVIEWED"}:
+            # All stages at or beyond publish readiness are completed work.
+            # Full-auto creation/resume must never regenerate them.
             status = "ALREADY_PUBLISH_READY"
         elif stage not in canonical_stages():
             status, reason = "BLOCKED", "UNKNOWN_EPISODE_STAGE"
