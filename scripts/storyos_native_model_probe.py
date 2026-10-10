@@ -25,6 +25,7 @@ if str(ROOT / "scripts") not in sys.path:
 # A fixed, small allowlist avoids accidentally probing image payload or
 # arbitrary task roles. Both must use the Episode's model policy.
 ROLES = ("story.authoring", "critic.story")
+PROBE_TASK_TYPE = "smoke"  # Existing codex_user_runner ALLOWED_TASK_TYPES
 MAX_OUTPUT_BYTES = 1_048_576
 
 
@@ -122,7 +123,7 @@ def probe(episode: Path, role: str, *, env: dict[str, str]) -> dict:
     completed = codex_user_runner.run_model_codex(
         cmd, input=text, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
         text=True, encoding="utf-8", errors="replace", check=False,
-        timeout=90, cwd=ROOT, task_type="smoke", env=env,
+        timeout=90, cwd=ROOT, task_type=PROBE_TASK_TYPE, env=env,
     )
     return evaluate_result(
         completed=completed, expected=marker, model=model, role=role,
