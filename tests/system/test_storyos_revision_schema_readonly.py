@@ -77,3 +77,19 @@ def test_wrong_schema_or_case_mode_never_queries_other_database_tables():
         assert r["status"] == "BLOCKED"
         assert r["reason"] == "DATABASE_IDENTITY_OR_CASE_MODE_MISMATCH"
         assert len(c.queries) == 1
+
+
+def test_mysql_8_information_schema_escaped_quotes_are_recognized():
+    class EscapedCheck(FakeDB):
+        def query_all(self, sql, params=None):
+            if "information_schema.CHECK_CONSTRAINTS" in sql:
+                self.queries.append(sql)
+                return [{"CHECK_CLAUSE": "(`STATUS` in (" +
+                         ",".join("_utf8mb4\\\\'" + status + "\\\\'"
+                                  for status in module.REQUIRED_STATES) + "))"}]
+            return super().query_all(sql, params)
+
+    db = EscapedCheck()
+    result = module.inspect_revision_schema(db)
+    assert result["lifecycle_constraint_ready"]
+    assert result["status"] == "READY_FOR_FURTHER_ADMISSION"
