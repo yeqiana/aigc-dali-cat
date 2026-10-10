@@ -270,7 +270,7 @@ export const RuntimeLogsView: React.FC = () => {
   return (
     <div id="runtime-logs-view" className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-[var(--bg-app)] font-sans text-[var(--text-primary)]">
       {/* 1. 顶部全局工具栏与状态统计 (占满宽度) */}
-      <div className="flex shrink-0 flex-col justify-between gap-3 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-4 lg:flex-row lg:items-center">
+      <div className="flex shrink-0 flex-col justify-between gap-3 border-b border-[var(--border-subtle)] bg-[var(--bg-app)] px-4 py-3 lg:flex-row lg:items-center">
         <div className="flex items-center gap-3">
           <div className="text-[var(--text-tertiary)]">
             <Terminal className="w-4 h-4" />
@@ -278,7 +278,7 @@ export const RuntimeLogsView: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="os-page-heading">
-                运行日志审计控制台
+                审计日志
               </h1>
               <span className="inline-flex items-center gap-1.5 rounded-[5px] border border-[var(--border-normal)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-secondary)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />
@@ -358,7 +358,7 @@ export const RuntimeLogsView: React.FC = () => {
                 setCurrentPage(1);
               }}
               placeholder="搜索 Trace ID、模块、消息或 JSON 字段..."
-              className="h-9 w-full pl-8 pr-7 rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] text-xs focus:outline-hidden focus:border-[#58A6FF] font-mono"
+              className="h-9 w-full pl-8 pr-7 rounded-[5px] bg-[var(--bg-surface)] border border-[var(--border-normal)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] text-xs focus:outline-hidden focus:border-[#58A6FF] font-mono"
             />
             {searchQuery && (
               <button
@@ -390,7 +390,7 @@ export const RuntimeLogsView: React.FC = () => {
           </div>
 
           {/* 级别标签切换组 */}
-          <div className="flex items-center rounded-[6px] p-0.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
+          <div className="flex items-center rounded-[5px] p-0.5 bg-[var(--bg-surface)] border border-[var(--border-subtle)]">
             {(['ALL', 'ERROR', 'WARN', 'INFO', 'SUCCESS', 'DEBUG'] as const).map((lvl) => {
               const count = lvl === 'ALL'
                 ? logs.length
@@ -404,7 +404,7 @@ export const RuntimeLogsView: React.FC = () => {
                     setFilterLevel(lvl);
                     setCurrentPage(1);
                   }}
-                  className={`px-2 py-0.5 rounded-[3px] text-[10px] font-mono transition-colors cursor-pointer flex items-center gap-1 ${
+                  className={`px-2 py-0.5 rounded-[3px] text-[11px] font-medium transition-colors cursor-pointer flex items-center gap-1 ${
                     isSelected
                       ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-bold shadow-xs border border-[var(--border-normal)]'
                       : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
@@ -412,7 +412,7 @@ export const RuntimeLogsView: React.FC = () => {
                 >
                   <span>{lvl}</span>
                   {count > 0 && (
-                    <span className={`text-[9px] px-1 rounded-full ${
+                    <span className={`text-[10px] px-1 rounded ${
                       lvl === 'ERROR' ? 'bg-red-500/20 text-red-400' :
                       lvl === 'WARN' ? 'bg-amber-500/20 text-amber-400' :
                       lvl === 'SUCCESS' ? 'bg-emerald-500/20 text-emerald-400' :
