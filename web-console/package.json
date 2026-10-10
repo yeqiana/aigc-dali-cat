@@ -12,7 +12,11 @@
     "test:monitor": "node scripts/test-monitor-gate.mjs",
     "test:workflow": "node scripts/test-workflow-smoke.mjs",
     "test:console": "node scripts/test-console-journey.mjs",
-    "test:bundles": "node scripts/check-chunks.mjs"
+    "test:bundles": "node scripts/check-chunks.mjs",
+    "test:episodes": "node scripts/test-episode-equivalence.mjs",
+    "test:runtime-coverage": "node scripts/test-runtime-coverage.mjs",
+    "test:api-browser": "node scripts/test-api-browser-integration.mjs",
+    "test:accessibility": "node scripts/test-console-accessibility.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",

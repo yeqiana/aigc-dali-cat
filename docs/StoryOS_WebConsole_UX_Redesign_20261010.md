@@ -131,3 +131,25 @@ S1 负责 App、Sidebar、Home；S2 负责 ProductionMonitorView / RunDetail；S
 - 在由用户明确指定的安全验证环境启动 Platform API，并将前端代理定向到该环境完成真实读端 E2E；未经隔离切勿自行连接生产库。
 - 将历史 Episode 大包继续改成按作品懒加载，配合长期使用的端到端回归；组件加载时必须如实显示来源与未知状态。
 - 增加端到端可访问性、浏览器资源失败注入以及监控请求取消的集成测试，保持前端无未授权生产写操作。
+
+## 第六轮四槽并行与集成验收（2026-10-10）
+
+### 隔离槽位与提交
+- 基线 26d18691。槽 1：cabc32b4，将 11 部 Episode 历史证据拆成 4/4/3 三个独立构建模块（保持完整内容、身份和顺序）；测试用 git show 读取冻结基线做深度一致性比较。
+- 槽 2：fb815bb3，加入仅内存受控的 Python Platform API HTTP Fixture（127.0.0.1 临时端口）及真正通过本机浏览器 + Node 代理请求 Python API 的 E2E；从不调用 build_default_controllers，不连接正式数据库，也不执行写入。
+- 槽 3：499f96cf，生产监控的权威阶段摘要展示已读取 / 总数与分页不完整提示，并在 API 返回部分错误时显式警告。测试覆盖 5 类数据边界。
+- 槽 4：73b14420，Chrome 本地 HTTP 浏览器检查首页、生产监控、工作流 3 路由的准确标题、带名称按钮、导航可访问标签及 1366px 横向溢出。检测是基础冒烟，非 WCAG 完整审计。
+
+### 质量证据
+- 四个槽位各自 tsc --noEmit / Vite build 通过；后续合并到 feature/storyos-webconsole-design-shell-20261010。
+- Episode 单包从 567773 B 拆成三个约 208050 B / 201900 B / 157870 B。旧的大于 500KB 单包告警被解决；Run 包仍约 376164 B，主入口约 301KB。**三个 Episode 包仍被 App 同步引用，总初始传输并不因此显著减少**。
+- Episode 内容及先后次序 11/11 与基线一致；没有删除、改写、重新映射任何历史作品。
+- Browser + 隔离 Python Platform API 真 HTTP 联调 home/workflow 2/2（真实路由/信封/HTTP 请求；使用仅内存测试服务，不是正式生产后端）。
+- 权威阶段覆盖率单元测试五类边界通过，页面不再将前 100 条记录当作已读取全量数据。
+- Chrome 1366px 主视图基础可访问性检查 overview/monitor/workflow 3/3 独立通过。
+- 正式 127.0.0.1:8080/healthz 只读探测仍不可达；不宣称真实 MySQL/Redis 生产 E2E 通过。
+
+### 后续边界
+- 真正按单部 Episode 懒加载与服务端分页尚未实现。本轮通过的是静态分包体积预算和内容等价，不应宣称总传输量大幅下降。
+- API Fixture 的执行条件为 Python312 可用；若用户机器在其他目录，支持 STORYOS_PYTHON 环境变量。测试脚本使用 Node+Chrome 本地临时 HTTP 服务，退出关闭服务。
+- 真实 Platform API、受控写入权限、生产级稳定性与安全访问控制应在隔离部署环境下另行验收，不用测试 Fixture 替代。
