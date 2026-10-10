@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {Pagination} from 'antd';
 import {
   Play,
   Pause,
@@ -60,6 +61,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [stageFilter, setStageFilter] = useState<string>('all');
   const [onlyException, setOnlyException] = useState(false);
+  const [page,setPage] = useState(1);
+  const [pageSize,setPageSize] = useState(20);
+  useEffect(()=>setPage(1),[searchKeyword,statusFilter,stageFilter,onlyException]);
 
   // 自动刷新机制 (仅增量刷新数据，不触发整页 reload)
   const [refreshInterval, setRefreshInterval] = useState<number>(15);
@@ -210,6 +214,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
     return true;
   });
 
+  const safePage=Math.min(page,Math.max(1,Math.ceil(filteredRuns.length/pageSize)));
+  const pagedRuns=filteredRuns.slice((safePage-1)*pageSize,safePage*pageSize);
+
   // 本端没有已验证的暂停/恢复/重试写入契约；严禁前端自改 status 并声称成功。
   const handleResetFilter = () => {
     setSearchKeyword('');
@@ -309,9 +316,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   };
 
   return (
-    <div id="storyos-production-monitor-view" className="mx-auto max-w-[1500px] space-y-5 pb-16 font-sans text-[var(--text-primary)]">
+    <div id="storyos-production-monitor-view" className="w-full min-w-0 space-y-3 pb-5 font-sans text-[var(--text-primary)]">
       {/* 顶部标题与控制栏 (UI Baseline v1: 弱装饰、扁平、简洁) */}
-      <div className="os-card flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
         <div className="flex flex-col items-start gap-1">
           <h1 className="os-page-heading">
             生产监控
@@ -352,7 +359,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       <div role="status" className="os-source-info flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-[12px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
       <p className="os-section-heading pt-3">历史工作区运行快照（非实时）</p>
       {/* ======================= 1. Operational Status Bar ======================= */}
-      <div className="os-card flex flex-wrap items-center justify-between gap-4 px-5 py-4 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border-subtle)] px-2 py-3 text-xs">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[11px] text-[var(--text-tertiary)]">全部</span>
@@ -438,7 +445,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       </div>
 
       {/* ======================= 2. Toolbar ======================= */}
-      <div className="os-card flex min-h-[62px] flex-wrap items-center justify-between gap-3 px-4 py-3 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] px-2 py-2 text-xs">
         <div className="flex flex-1 flex-wrap items-center gap-2 min-w-[260px]">
           {/* 搜索输入框 */}
           <div className="relative flex-1 min-w-[160px] max-w-xs">
@@ -548,7 +555,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                   </td>
                 </tr>
               ) : (
-                filteredRuns.map((run, index) => {
+                pagedRuns.map((run, index) => {
                   const hb = getHeartbeatStatus(run.heartbeatSeconds);
                   const isSelected = selectedRunForDetail?.id === run.id;
                   return (
@@ -566,7 +573,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
                         {isSelected && (
                           <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[var(--info)]" />
                         )}
-                        {index + 1}
+                        {(safePage - 1) * pageSize + index + 1}
                       </td>
 
                       {/* 剧集名称 (不换行，超出截断并进详情) */}
@@ -681,6 +688,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
             </tbody>
           </table>
         </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] px-3 py-3"><span className="text-[11px] text-[var(--text-tertiary)]">历史快照 · 匹配 {filteredRuns.length} 条</span><Pagination size="small" current={safePage} pageSize={pageSize} total={filteredRuns.length} showSizeChanger pageSizeOptions={["10","20","50","100"]} showTotal={n=>`共 ${n} 条`} onChange={(p,s)=>{setPage(p);setPageSize(s);}} /></div>
       </div>
 
       {/* 底部轻量运行状态栏 */}
