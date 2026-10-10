@@ -329,7 +329,7 @@ export default function App() {
   );
 
   return (
-    <div id="storyos-workspace-root" className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased select-text">
+    <div id="storyos-workspace-root" className="flex h-dvh w-full min-w-0 overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased select-text">
       {import.meta.env.VITE_STORYOS_FIXTURE_MODE === 'true' && (
         <div role="status" data-testid="local-fixture-banner" className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none border border-[var(--warning)] bg-[var(--bg-elevated)] px-4 py-2 rounded-[5px] shadow-lg text-[12px] text-[var(--text-primary)]">
           本机隔离测试模式 · Platform API 仅使用内存样例数据 · 非真实生产状态
@@ -377,7 +377,7 @@ export default function App() {
         />
 
         {/* 消息与活动主轴 (日志视图占满屏幕全屏铺开) */}
-        <main className={`flex-1 ${currentTab === 'logs' ? 'p-0 overflow-hidden' : 'overflow-y-auto px-4 lg:px-5 py-4'} relative scrollbar-thin scrollbar-thumb-[var(--border-normal)] bg-[var(--bg-app)]`}>
+        <main className={`min-h-0 min-w-0 flex-1 ${currentTab === 'logs' ? 'p-0 overflow-hidden' : 'overflow-y-auto px-4 py-4 lg:px-5 xl:py-5 2xl:px-6'} relative scrollbar-thin scrollbar-thumb-[var(--border-normal)] bg-[var(--bg-app)]`}>
           {/* 轻量 Toast */}
           {toastMessage && (
             <div className="fixed top-12 right-6 z-50 bg-[var(--bg-elevated)] text-[var(--text-primary)] px-3.5 py-1.5 rounded-[6px] text-xs font-medium flex items-center gap-2 shadow-lg border border-[var(--border-normal)]">
@@ -443,7 +443,7 @@ export default function App() {
 
           {/* 核心工作流：呼吸感单主轴 */}
           {currentTab === 'workbench' && (
-            <div className="w-full min-w-0 space-y-4 pb-24">
+            <div className="w-full min-w-0 space-y-4 pb-8">
               {isHistoricalEpisodeIndex(activeEpisode) ? (
                 <section role={detailError ? 'alert' : 'status'} className="border border-[var(--border-normal)] p-5 text-[13px] text-[var(--text-secondary)]">
                   {detailError ? <>
