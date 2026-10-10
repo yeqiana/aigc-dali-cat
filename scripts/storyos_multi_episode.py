@@ -21,6 +21,7 @@ if str(SYSTEM) not in sys.path:
 
 import global_image_capacity
 import runtime_driver
+import runtime_router
 
 
 def validate_episodes(raw_episodes: list[str], *, root: Path | None = None) -> list[Path]:
@@ -64,6 +65,12 @@ def multi_status(episodes: list[Path], *, status_fn=None, snapshot_fn=None) -> d
 
 def start_episodes(episodes: list[Path], *, status_fn=None, start_fn=None) -> dict:
     """Fail closed on any ambiguous owner; never start the same Episode twice."""
+    # OS locks cover synchronous native Provider calls, not asynchronous
+    # PRODUCT_RUNTIME host requests. Never advertise a hard five-image cap for
+    # a multi-Episode launch unless the effective image executor is CODEX.
+    image_executor, _ = runtime_router.image_execution_runtime()
+    if image_executor != "CODEX":
+        raise ValueError("MULTI_EPISODE_NATIVE_CODEX_IMAGE_EXECUTOR_REQUIRED")
     status = status_fn if status_fn is not None else runtime_driver.status
     start = start_fn if start_fn is not None else runtime_driver.launch
     found = [(ep, str(status(ep).get("driver_state") or "UNKNOWN")) for ep in episodes]
