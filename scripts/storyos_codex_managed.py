@@ -1,0 +1,194 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Explicit native-Codex-only StoryOS full-auto entrypoint.
+
+This is an admission/transport wrapper, never a second production scheduler.
+`plan` is read-only. `run` and `create` require an explicit real-production
+acknowledgement and delegate to the existing canonical story_os.py workflow.
+Existing UNKNOWN Generation Attempts fail closed before any work starts.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+from phase9_runtime_launcher import RUNTIME_ENV_KEYS, load_runtime_env_file
+
+ROOT = Path(__file__).resolve().parents[1]
+RUNTIME_ENV = ROOT / ".storyos/runtime-launcher/runtime.env"
+SYSTEM = ROOT / "episodes/_system"
+EPISODES = ROOT / "episodes"
+DB_KEYS = ("STORYOS_MYSQL_HOST", "STORYOS_MYSQL_PORT",
+           "STORYOS_MYSQL_USER", "STORYOS_MYSQL_PWD", "STORYOS_MYSQL_DB")
+# A login-session native Codex execution must never inherit an OpenCodex
+# OpenAI-compatible endpoint or an unrelated API-key based provider.
+PROXY_OVERRIDE_KEYS = ("OPENAI_BASE_URL", "OPENAI_API_BASE",
+                       "CODEX_BASE_URL", "STORY_OS_OPENCODEX_URL",
+                       "OPENAI_API_KEY", "STORY_OS_WEBCODEX_AVAILABLE",
+                       "WEBCODEX_SERVICE_ROOT", "WEBCODEX_ENV_FILE")
+FORBIDDEN_MODE_KEYS = ("STORY_OS_RUNTIME", "STORY_OS_IMAGE_RUNTIME")
+
+
+def native_environment(*, source: dict[str, str] | None = None,
+                       runtime_env: Path = RUNTIME_ENV) -> dict[str, str]:
+    """Use the canonical ignored runtime.env, never the host's stale DB vars."""
+    if not runtime_env.is_file():
+        raise ValueError("NATIVE_CODEX_RUNTIME_ENV_MISSING")
+    env = dict(os.environ if source is None else source)
+    for key in RUNTIME_ENV_KEYS | set(PROXY_OVERRIDE_KEYS) | set(FORBIDDEN_MODE_KEYS):
+        env.pop(key, None)
+    env, _loaded = load_runtime_env_file(runtime_env, env)
+    if any(not env.get(key) for key in DB_KEYS):
+        raise ValueError("NATIVE_CODEX_RUNTIME_DB_IDENTITY_UNCONFIGURED")
+    # Explicit scope-local mode, not a global config rewrite. On Windows a
+    # foreground supervisor inherits this exact environment for all children.
+    env["STORY_OS_PRODUCTION_MODE"] = "CODEX_MANAGED"
+    env["STORY_OS_IMAGE_EXECUTOR"] = "CODEX"
+    env["PYTHONIOENCODING"] = "utf-8"
+    return env
+
+
+def canonical_episode(raw: str) -> Path:
+    ep = Path(raw)
+    ep = (ep if ep.is_absolute() else ROOT / ep).resolve()
+    if not ep.is_dir() or not ep.is_relative_to(EPISODES.resolve()):
+        raise ValueError("NATIVE_CODEX_EPISODE_PATH_INVALID")
+    return ep
+
+
+def _probe(env: dict[str, str], script: str, args: list[str],
+           *, timeout: int = 110) -> tuple[int, dict]:
+    """Execute a read-only canonical check, returning sanitized structured data."""
+    cmd = [sys.executable, str(ROOT / "scripts/storyos_production_env.py"),
+           script, *args]
+    try:
+        proc = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True,
+                              encoding="utf-8", errors="replace", text=True,
+                              check=False, timeout=timeout)
+        data = json.loads(proc.stdout)
+        return proc.returncode, data if isinstance(data, dict) else {}
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        # Never expose a DSN, raw subprocess output or credential.
+        return 2, {}
+
+
+def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
+    """Read-only gate. No owner acquisition, revision activation or model calls."""
+    blockers: list[str] = []
+    rc, caps = _probe(env, "episodes/_system/runtime_router.py", ["capabilities"])
+    mode_ok = (rc == 0 and caps.get("effective_production_mode") == "CODEX_MANAGED"
+               and caps.get("effective_runtime") == "CODEX"
+               and caps.get("image_execution_runtime") == "CODEX"
+               and caps.get("local_codex_spawn_allowed") is True
+               and caps.get("local_codex_image_spawn_allowed") is True
+               and caps.get("text_review_runtime") == "CODEX"
+               and caps.get("vision_review_runtime") == "CODEX"
+               and caps.get("governance_review_runtime") == "CODEX")
+    if not mode_ok:
+        blockers.append("NATIVE_CODEX_MODE_OR_EXECUTOR_UNAVAILABLE")
+    rc, health = _probe(env, "episodes/_system/codex_user_runner.py", ["health", "--json"])
+    native_ok = (rc == 0 and health.get("status") == "ok"
+                 and health.get("codex_available") is True
+                 and health.get("codex_auth_present") is True)
+    if not native_ok:
+        blockers.append("NATIVE_CODEX_AUTH_OR_USER_RUNNER_UNAVAILABLE")
+    rc, schema = _probe(env, "scripts/storyos_revision_schema_readonly.py", [])
+    if rc != 0 or schema.get("status") != "READY_FOR_FURTHER_ADMISSION":
+        blockers.append("PRODUCTION_MYSQL_REVISION_SCHEMA_UNVERIFIED")
+    attempts: dict = {}
+    driver: dict = {}
+    if episode is not None:
+        rel = episode.relative_to(ROOT).as_posix()
+        rc, attempts = _probe(env, "scripts/storyos_attempt_readonly_preflight.py",
+                              ["--episode", rel])
+        if rc != 0 or attempts.get("status") != "ATTEMPT_HISTORY_READ_ONLY":
+            # UNKNOWN is a terminal historical fact, NOT a retry permission.
+            blockers.append("GENERATION_ATTEMPT_AUTHORITY_RECONCILIATION_REQUIRED")
+        rc, driver = _probe(env, "episodes/_system/runtime_driver.py",
+                            ["status", rel, "--json"])
+        if rc != 0 or driver.get("driver_state") not in {"NEVER_STARTED", "EXITED"}:
+            blockers.append("EPISODE_DRIVER_OWNER_NOT_IDLE_OR_UNVERIFIED")
+    return {
+        "status": "READY_TO_START" if not blockers else "BLOCKED",
+        "scope": "NATIVE_CODEX_FULL_AUTO",
+        "production_mode": "CODEX_MANAGED",
+        "image_executor": "CODEX",
+        "orchestration": "CANONICAL_STORY_OS_DAG",
+        "episode": episode.relative_to(ROOT).as_posix() if episode else None,
+        "mysql": {
+            "host": "127.0.0.1" if env.get("STORYOS_MYSQL_HOST") in
+                    {"localhost", "127.0.0.1"} else "configured",
+            "port": int(env["STORYOS_MYSQL_PORT"]),
+            "schema_status": schema.get("status"),
+            "schema_reason": schema.get("reason"),
+        },
+        "codex": {"bridge_ok": native_ok, "mode_ok": mode_ok,
+                  "tool_generation_proven": False},
+        "attempt": {"status": attempts.get("status"),
+                    "outcome_unknown_assets": attempts.get("outcome_unknown_assets", []),
+                    "active_attempt_assets": attempts.get("active_attempt_assets", [])},
+        "driver_state": driver.get("driver_state") if episode else None,
+        "blockers": blockers,
+        "read_only": True,
+        "production_authorization": False,
+        "model_calls": 0,
+        "sql_writes": 0,
+    }
+
+
+def full_auto_command(args: argparse.Namespace, episode: Path | None) -> list[str]:
+    """Reuse StoryOS, not a shadow scheduler or a freeform Codex subprocess."""
+    cmd = [sys.executable, str(SYSTEM / "story_os.py")]
+    if args.command == "run":
+        cmd += ["run", str(episode), "--full-auto", "--resume"]
+    else:
+        cmd += ["create", args.request_text, "--full-auto"]
+        if args.title:
+            cmd += ["--title", args.title]
+        if args.visual_profile:
+            cmd += ["--visual-profile", args.visual_profile]
+    return cmd
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    for name in ("plan", "run"):
+        option = sub.add_parser(name)
+        option.add_argument("episode")
+        if name == "run":
+            option.add_argument("--ack-real-production", action="store_true")
+    create = sub.add_parser("create")
+    create.add_argument("request_text")
+    create.add_argument("--title")
+    create.add_argument("--visual-profile")
+    create.add_argument("--ack-real-production", action="store_true")
+    args = parser.parse_args(argv)
+    try:
+        episode = canonical_episode(args.episode) if args.command != "create" else None
+        env = native_environment()
+        state = preflight(env, episode=episode)
+        print(json.dumps(state, ensure_ascii=False, indent=2))
+        if args.command == "plan":
+            return 0 if state["status"] == "READY_TO_START" else 2
+        if not args.ack_real_production:
+            print("NATIVE_CODEX_REAL_PRODUCTION_ACK_REQUIRED", file=sys.stderr)
+            return 2
+        if state["status"] != "READY_TO_START":
+            print("NATIVE_CODEX_FULL_AUTO_BLOCKED_BY_AUTHORITY", file=sys.stderr)
+            return 3
+        return subprocess.call(full_auto_command(args, episode), cwd=ROOT, env=env)
+    except (ValueError, OSError) as exc:
+        # Print only fixed internal admission error codes, never credentials.
+        code = str(exc)
+        print(code if code.startswith("NATIVE_CODEX_") else "NATIVE_CODEX_PREFLIGHT_FAILED",
+              file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

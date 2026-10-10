@@ -1,0 +1,198 @@
+"""Hermetic entrypoint tests: no MySQL connections, provider calls, or child runs."""
+from __future__ import annotations
+
+import argparse
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+SPEC = importlib.util.spec_from_file_location(
+    "storyos_codex_managed", SCRIPTS / "storyos_codex_managed.py"
+)
+assert SPEC is not None and SPEC.loader is not None
+native = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(native)
+
+
+def _env_file(path: Path):
+    path.write_text(
+        "STORYOS_MYSQL_HOST=127.0.0.1\n"
+        "STORYOS_MYSQL_PORT=3307\n"
+        "STORYOS_MYSQL_USER=local_runner\n"
+        "STORYOS_MYSQL_PWD=secret-do-not-print\n"
+        "STORYOS_MYSQL_DB=STORY_OS_RUNTIME\n",
+        encoding="utf-8",
+    )
+
+
+def test_native_env_discards_stale_mysql_and_proxy_and_sets_scope(tmp_path):
+    path = tmp_path / "runtime.env"
+    _env_file(path)
+    env = native.native_environment(
+        source={
+            "STORYOS_MYSQL_HOST": "192.0.2.9", "STORYOS_MYSQL_PORT": "3306",
+            "STORYOS_MYSQL_DB": "WRONG",
+            "STORYOS_MYSQL_PWD": "wrong",
+            "STORY_OS_PRODUCTION_MODE": "COLLABORATIVE",
+            "STORY_OS_IMAGE_EXECUTOR": "PRODUCT_RUNTIME",
+            "STORY_OS_RUNTIME": "WORK",
+            "OPENAI_BASE_URL": "http://localhost:10100",
+            "OPENAI_API_KEY": "unsafe-key",
+            "PATH": "native-tools",
+        },
+        runtime_env=path,
+    )
+    assert env["STORYOS_MYSQL_HOST"] == "127.0.0.1"
+    assert env["STORYOS_MYSQL_PORT"] == "3307"
+    assert env["STORYOS_MYSQL_DB"] == "STORY_OS_RUNTIME"
+    assert env["STORYOS_MYSQL_PWD"] == "secret-do-not-print"
+    assert env["STORY_OS_PRODUCTION_MODE"] == "CODEX_MANAGED"
+    assert env["STORY_OS_IMAGE_EXECUTOR"] == "CODEX"
+    assert env["PATH"] == "native-tools"
+    assert "OPENAI_BASE_URL" not in env
+    assert "OPENAI_API_KEY" not in env
+    assert "STORY_OS_RUNTIME" not in env
+    assert "secret-do-not-print" not in json.dumps({"port": env["STORYOS_MYSQL_PORT"]})
+    assert "STORYOS_MYSQL_PWD" in native.DB_KEYS
+
+
+def test_native_env_fails_closed_when_missing(tmp_path):
+    with pytest.raises(ValueError, match="NATIVE_CODEX_RUNTIME_ENV_MISSING"):
+        native.native_environment(source={}, runtime_env=tmp_path / "missing.env")
+
+
+def test_canonical_episode_rejects_outside_and_missing(tmp_path):
+    with pytest.raises(ValueError, match="NATIVE_CODEX_EPISODE_PATH_INVALID"):
+        native.canonical_episode(str(tmp_path))
+
+
+def _proofs(status="ATTEMPT_HISTORY_READ_ONLY", driver="NEVER_STARTED",
+            schema="READY_FOR_FURTHER_ADMISSION", executor="CODEX"):
+    def probe(_env, script, args, **_kw):
+        if script.endswith("runtime_router.py"):
+            return 0, {
+                "effective_production_mode": "CODEX_MANAGED",
+                "effective_runtime": "CODEX",
+                "image_execution_runtime": executor,
+                "local_codex_spawn_allowed": True,
+                "local_codex_image_spawn_allowed": True,
+                "text_review_runtime": "CODEX",
+                "vision_review_runtime": "CODEX",
+                "governance_review_runtime": "CODEX",
+            }
+        if script.endswith("codex_user_runner.py"):
+            return 0, {"status": "ok", "codex_available": True, "codex_auth_present": True}
+        if script.endswith("storyos_revision_schema_readonly.py"):
+            return (0 if schema == "READY_FOR_FURTHER_ADMISSION" else 2), {
+                "status": schema, "reason": "SCHEMA_PRESENT_REQUIRES_VISUAL_LOCK_AND_AUTHORITY"
+            }
+        if script.endswith("storyos_attempt_readonly_preflight.py"):
+            return (0 if status == "ATTEMPT_HISTORY_READ_ONLY" else 2), {
+                "status": status,
+                "outcome_unknown_assets": (["episode/frame-06"] if "UNKNOWN" in status else []),
+                "active_attempt_assets": [],
+            }
+        if script.endswith("runtime_driver.py"):
+            return 0, {"driver_state": driver}
+        raise AssertionError(f"Unexpected probe {script}: {args}")
+    return probe
+
+
+def _test_env():
+    return {"STORYOS_MYSQL_HOST": "127.0.0.1", "STORYOS_MYSQL_PORT": "3307",
+            "STORYOS_MYSQL_DB": "STORY_OS_RUNTIME"}
+
+
+def test_preflight_new_idea_can_start_without_existing_episode(monkeypatch):
+    monkeypatch.setattr(native, "_probe", _proofs())
+    result = native.preflight(_test_env())
+    assert result["status"] == "READY_TO_START"
+    assert result["scope"] == "NATIVE_CODEX_FULL_AUTO"
+    assert result["codex"]["tool_generation_proven"] is False
+    assert result["model_calls"] == result["sql_writes"] == 0
+
+
+def test_preflight_blocks_unknown_and_never_authorizes_retry(monkeypatch):
+    monkeypatch.setattr(native, "_probe", _proofs(status="OUTCOME_UNKNOWN_BLOCKED"))
+    episode = native.ROOT / "episodes"
+    result = native.preflight(_test_env(), episode=episode)
+    assert result["status"] == "BLOCKED"
+    assert result["attempt"]["outcome_unknown_assets"] == ["episode/frame-06"]
+    assert "GENERATION_ATTEMPT_AUTHORITY_RECONCILIATION_REQUIRED" in result["blockers"]
+    assert result["production_authorization"] is False
+
+
+@pytest.mark.parametrize(
+    "driver,schema,executor",
+    [("RUNNING", "READY_FOR_FURTHER_ADMISSION", "CODEX"),
+     ("UNKNOWN", "READY_FOR_FURTHER_ADMISSION", "CODEX"),
+     ("NEVER_STARTED", "BLOCKED", "CODEX"),
+     ("NEVER_STARTED", "READY_FOR_FURTHER_ADMISSION", "PRODUCT_RUNTIME")],
+)
+def test_preflight_fail_closed_on_ambiguous_owner_schema_or_executor(
+    monkeypatch, driver, schema, executor
+):
+    monkeypatch.setattr(native, "_probe", _proofs(
+        driver=driver, schema=schema, executor=executor
+    ))
+    result = native.preflight(_test_env(), episode=native.ROOT / "episodes")
+    assert result["status"] == "BLOCKED"
+
+
+def test_full_auto_command_uses_canonical_storyos_only():
+    episode = native.ROOT / "episodes" / "example"
+    args = argparse.Namespace(command="run")
+    command = native.full_auto_command(args, episode)
+    assert command[1].endswith("episodes\\_system\\story_os.py") or command[1].endswith(
+        "episodes/_system/story_os.py"
+    )
+    assert command[2:] == ["run", str(episode), "--full-auto", "--resume"]
+    args = argparse.Namespace(command="create", request_text="A mystery",
+                              title="The Orchard", visual_profile=None)
+    assert native.full_auto_command(args, None)[2:] == [
+        "create", "A mystery", "--full-auto", "--title", "The Orchard"
+    ]
+
+
+def test_main_blocked_does_not_spawn_model_or_production(monkeypatch, capsys):
+    monkeypatch.setattr(native, "canonical_episode", lambda _name: native.ROOT / "episodes")
+    monkeypatch.setattr(native, "native_environment", lambda: _test_env())
+    monkeypatch.setattr(native, "_probe", _proofs(status="OUTCOME_UNKNOWN_BLOCKED"))
+    monkeypatch.setattr(native.subprocess, "call",
+                        lambda *_a, **_kw: pytest.fail("unexpected production subprocess"))
+    rc = native.main(["run", "placeholder", "--ack-real-production"])
+    assert rc == 3
+    assert "NATIVE_CODEX_FULL_AUTO_BLOCKED_BY_AUTHORITY" in capsys.readouterr().err
+
+
+def test_main_requires_real_production_ack(monkeypatch, capsys):
+    monkeypatch.setattr(native, "canonical_episode", lambda _name: native.ROOT / "episodes")
+    monkeypatch.setattr(native, "native_environment", lambda: _test_env())
+    monkeypatch.setattr(native, "_probe", _proofs())
+    monkeypatch.setattr(native.subprocess, "call",
+                        lambda *_a, **_kw: pytest.fail("unexpected production subprocess"))
+    assert native.main(["run", "placeholder"]) == 2
+    assert "ACK_REQUIRED" in capsys.readouterr().err
+
+
+def test_main_authorized_delegates_once_without_background_or_provider_calls(monkeypatch):
+    monkeypatch.setattr(native, "canonical_episode", lambda _name: native.ROOT / "episodes")
+    monkeypatch.setattr(native, "native_environment", lambda: _test_env())
+    monkeypatch.setattr(native, "_probe", _proofs())
+    calls = []
+    def fake_call(command, *, cwd, env):
+        calls.append((command, cwd, dict(env)))
+        return 0
+    monkeypatch.setattr(native.subprocess, "call", fake_call)
+    assert native.main(["run", "placeholder", "--ack-real-production"]) == 0
+    assert len(calls) == 1
+    assert calls[0][0][-2:] == ["--full-auto", "--resume"]
+    assert calls[0][1] == native.ROOT
