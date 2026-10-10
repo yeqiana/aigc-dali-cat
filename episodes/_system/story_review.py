@@ -974,6 +974,11 @@ no Markdown fences and no status summary. The parent process persists it.
         reasoning_effort="high",
         sandbox="workspace-write",
         log_path=log,
+        # A long-lived interactive Windows runner can have stale arg0 ACLs
+        # beneath ~/.codex; the independent Story critic must start in its
+        # own authenticated, runner-owned home like the Concept critic.
+        # Keep source SHA, review validation and immutable authority intact.
+        codex_home_mode="isolated",
     )
     if completed.returncode != 0:
         raise RuntimeError(f"isolated story critic failed rc={completed.returncode}; log={log}")
