@@ -78,26 +78,26 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const pickStory = (ep: Episode) => { onSelectEpisode(ep); onSelectTab('workbench'); };
 
   return (
-    <aside aria-label="主导航" className="flex h-full w-[224px] shrink-0 flex-col border-r border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[13px]">
-      <div className="h-12 flex items-center justify-between px-4 border-b border-[var(--border-subtle)]">
-        <button onClick={() => onSelectTab('overview')} className="text-left flex items-center gap-2 text-[var(--text-primary)] font-semibold tracking-tight" type="button" aria-label="返回 StoryOS 工作台">
-          <span className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[var(--border-normal)] bg-[var(--bg-elevated)] text-[#58A6FF] text-sm font-bold">S</span>
-          <span className="text-[15px]">StoryOS</span>
+    <aside aria-label="主导航" className="flex h-full w-[240px] shrink-0 flex-col border-r border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[13px]">
+      <div className="h-[60px] flex items-center justify-between px-4 border-b border-[var(--border-subtle)]">
+        <button onClick={() => onSelectTab('overview')} className="text-left flex items-center gap-3 text-[var(--text-primary)] font-semibold tracking-tight" type="button" aria-label="返回 StoryOS 工作台">
+          <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-[#376fe2] text-white text-[16px] font-bold shadow-[0_5px_18px_rgba(45,95,214,.25)]">S</span>
+          <span className="flex flex-col"><span className="text-[15px] leading-5">StoryOS</span><span className="text-[10px] font-normal tracking-[.09em] text-[var(--text-tertiary)]">CREATOR STUDIO</span></span>
         </button>
         <div className="flex items-center gap-1">
           <button type="button" onClick={onOpenSearch} className="p-1.5 rounded-[4px] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]" title="搜索 Ctrl+K" aria-label="搜索"><Search size={16}/></button>
           <button type="button" onClick={onOpenNotifications} className="relative p-1.5 rounded-[4px] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]" title="通知" aria-label="通知"><Bell size={16}/>{unreadCount > 0 && <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#58A6FF]" />}</button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-2 py-3 space-y-5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-4 space-y-6">
         <div className="px-1">
-          <button type="button" onClick={() => openModal('story')} className="w-full h-9 px-3 flex items-center justify-center gap-2 rounded-[6px] bg-[var(--text-primary)] text-[var(--bg-app)] font-semibold hover:opacity-90"><Plus size={16}/> 新建故事</button>
+          <button type="button" onClick={() => openModal('story')} className="os-action os-action-primary w-full !h-10 text-[13px]"><Plus size={16}/> 新建故事</button>
         </div>
-        <nav aria-label="主要页面" className="space-y-0.5">
+        <nav aria-label="主要页面" className="space-y-1"><p className="px-3 pb-2 os-eyebrow">工作空间</p>
           {nav.map(item => {
             const Icon = item.icon;
             return <button key={item.id} type="button" onClick={() => onSelectTab(item.id)} aria-current={currentTab === item.id ? 'page' : undefined}
-              className={`w-full h-9 flex items-center gap-3 px-3 rounded-[5px] text-left transition-colors ${currentTab === item.id ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-semibold' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}>
+              className={`relative w-full h-10 flex items-center gap-3 px-3 rounded-[9px] text-left transition-colors ${currentTab === item.id ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-semibold shadow-[inset_3px_0_0_var(--info)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}>
               <Icon size={16} aria-hidden="true"/><span>{item.label}</span>
             </button>;
           })}
@@ -141,7 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           {recentOpen && <div className="mt-2 space-y-0.5">{recents.map(ep => <button key={ep.id} type="button" onClick={() => pickStory(ep)} className="block w-full truncate rounded-[4px] px-3 py-1.5 text-left text-[12px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]">{ep.title}</button>)}</div>}
         </section>
       </div>
-      <div className="border-t border-[var(--border-subtle)] p-3 space-y-2">
+      <div className="border-t border-[var(--border-subtle)] p-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-[11px] text-[var(--text-tertiary)]">外观</span>
           <div className="flex rounded-[5px] border border-[var(--border-normal)] overflow-hidden">
