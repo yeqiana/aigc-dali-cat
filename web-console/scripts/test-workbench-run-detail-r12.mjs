@@ -27,7 +27,7 @@ try {
    ' let ready=false;for(let i=0;i<200;i++){const main=document.querySelector("main");const value=main?.textContent||"";if(value.includes("制作进展")&&value.includes("制作与审核记录")){ready=true;break}if(value.includes("历史作品详细证据加载失败")){ready=true;break}await sleep(100)}',
    ' if(!ready)throw Error("workbench did not settle");',
    '}else{',
-   ' let row;for(let i=0;i<200&&!row;i++){row=document.querySelector(\'#storyos-production-monitor-view table tbody tr[role="button"],#storyos-production-monitor-view table tbody tr[class*="cursor-pointer"]\');if(!row)await sleep(100)}',
+   ' let row;for(let i=0;i<200&&!row;i++){row=document.querySelector(\'.storyos-monitor-grid table tbody tr[class*="cursor-pointer"]\');if(!row)await sleep(100)}',
    ' if(!row)throw Error("run history table row missing");row.click();',
    ' let ready=false;for(let i=0;i<240;i++){const txt=document.querySelector("main")?.textContent||"";if(txt.includes("历史工作区 Run 快照")&&txt.includes("心跳未验证")){ready=true;break}await sleep(100)}',
    ' if(!ready)throw Error("history Run detail missing truthful notice");',

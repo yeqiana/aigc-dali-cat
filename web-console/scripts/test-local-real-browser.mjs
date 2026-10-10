@@ -38,7 +38,7 @@ const js=[
   'for(let i=0;i<100&&!button;i++){button=[...document.querySelectorAll(\'nav[aria-label="主要页面"] button\')].find(b=>b.textContent.trim()==="生产监控");if(!button)await wait(100);}',
   'if(!button)throw Error("monitor navigation");button.click();',
   'let label=false;',
-  'for(let i=0;i<200&&!label;i++){label=(document.querySelector("main")?.textContent||"").includes("本机真实作品状态文件");if(!label)await wait(100);}',
+  'for(let i=0;i<200&&!label;i++){label=(document.querySelector("main")?.textContent||"").includes("生产阶段记录文件");if(!label)await wait(100);}',
   'if(!label)throw Error("monitor source not labeled");',
   'document.body.dataset.realE2e="pass";',
   '}catch(e){document.body.dataset.realE2e="fail:"+e.message}})();'

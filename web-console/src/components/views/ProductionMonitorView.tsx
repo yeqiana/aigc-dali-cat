@@ -353,10 +353,9 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
         </div>
       </div>
 
-      <p role="status" className="flex items-start gap-2 border-l-2 border-[var(--info)] py-1.5 pl-3 text-[12px] leading-5 text-[var(--text-secondary)]">状态数据与历史工作区 Run 快照分开呈现；历史运行状态、心跳和帧数并非实时。暂停与重试尚未接入。</p>
       <RuntimeAuthorityPanel items={runtimeRows} coverage={runtimeCoverage} hasMore={runtimeHasMore} loadingMore={runtimeLoadingMore} onLoadMore={loadNextRuntimePage} dataState={apiState} lastSync={lastSync}/>
 
-      <div role="status" className="flex flex-wrap items-center justify-between gap-2 border-y border-[var(--border-subtle)] px-2 py-2 text-[12px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
+      {apiState !== 'ok' && <div role="status" className="flex flex-wrap items-center justify-between gap-2 border-l-2 border-[var(--warning)] px-3 py-2 text-[12px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>}
       <p className="os-section-heading pt-3">历史工作区运行快照（非实时）</p>
       {/* ======================= 1. Operational Status Bar ======================= */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border-subtle)] px-2 py-3 text-xs">
