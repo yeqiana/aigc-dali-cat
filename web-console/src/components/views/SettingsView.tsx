@@ -87,7 +87,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   return (
-    <div id="codex-appearance-settings-view" className="space-y-6 text-[var(--text-primary)] font-sans select-none pb-24">
+    <div id="codex-appearance-settings-view" className="mx-auto max-w-[1450px] space-y-5 pb-12 font-sans text-[var(--text-primary)]">
       {/* Toast 提示 */}
       {toastMessage && (
         <div className="fixed top-12 right-8 z-50 bg-[var(--text-primary)] text-[var(--bg-app)] px-4 py-2 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 animate-in fade-in">
@@ -97,7 +97,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       )}
 
       {/* 顶部标签切换：外观参数 与 管线参数 */}
-      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-subtle)] pb-3">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -109,7 +109,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             }`}
           >
             <Palette className="w-3.5 h-3.5" />
-            <span>外观参数 (Appearance)</span>
+            <span>外观设置</span>
           </button>
 
           <button
@@ -122,25 +122,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
-            <span>StoryOS 管线与并发设置</span>
+            <span>生产管线</span>
           </button>
         </div>
 
         <div className="text-[11px] font-mono text-[var(--text-tertiary)]">
-          StoryOS Settings v2.5
+          偏好设置 · 当前工作区
         </div>
       </div>
 
       {activeSubTab === 'appearance' ? (
-        <div className="space-y-8 max-w-3xl">
+        <div className="max-w-[1024px] space-y-6">
           {/* ===================== 1. 主题 (Theme) ===================== */}
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold text-white tracking-wide">
+            <h2 className="text-[14px] font-semibold text-[var(--text-primary)]">
               主题
             </h2>
 
             {/* 三大主题模式卡片 (深色 / 浅色 / 浅色渐变) */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {/* 1.1 深色模式 */}
               <button
                 type="button"
@@ -152,7 +152,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   themeMode === 'dark' ? 'text-white' : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <div className={`w-full aspect-[16/10] rounded-xl overflow-hidden border transition-all p-2 flex flex-col justify-end bg-[#181a20] ${
+                <div className={`w-full aspect-[16/10] max-h-[130px] rounded-[6px] overflow-hidden border transition-colors p-2 flex flex-col justify-end bg-[#181a20] ${
                   themeMode === 'dark'
                     ? 'border-blue-500 ring-2 ring-blue-500/20'
                     : 'border-[#2e2e2e] hover:border-[#444]'
