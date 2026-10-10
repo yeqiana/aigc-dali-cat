@@ -125,14 +125,18 @@ STEP_DIRECTIVES={
 "CREATIVE_STORY":"""
 TARGET: reach STORYBOARD_LOCKED and stop there.
 - honor the Runtime Request authority supplied by the owner API/capsule; do not assume an Episode JSON file exists.
-- BEFORE concept/story work, read meta/character-contract.json as the Character/Entry/Scene Story Build Input Contract.
+- BEFORE concept/story work, consume Execution Capsule character_contract as the authoritative Character/Entry/Scene input, or use `python episodes/_system/character_contract.py show "<episode>" --with-sha`. In mysql mode a legacy meta/character-contract.json file may be absent; do not invent an empty contract or write the JSON instead of the Authority.
 - Story OS 2.2.1 World Identity: read the effective default/override through `python episodes/_system/world_identity_contract.py show "<episode>"`. Default is Mainland China + ordinary Chinese young adults. Do not randomly introduce foreign characters/architecture/cultural context. If the Story explicitly specifies another country/culture, author meta/world-identity.json as an explicit override instead of fighting the default.
 - default protagonists are ordinary young people from the 2004-2010 or modern-2020s pools; first-person POV still requires a stable character anchor.
 - default 4-5 person groups must keep stable member IDs, ages, genders and clothing anchors.
 - prefer life-like entry motives: travel, return home, friends hangout, games/drinking, challenge, abandoned place, outdoor trip, casual work, research/expedition, accidental detour.
 - NEVER replace the protagonist with a repair worker, electrician, police officer, journalist, investigator, professional ghost hunter or another occupational tool invented to solve the anomaly.
 - casual work / research / expedition may explain why the young people arrived, but professional skill must not become the shortcut that solves the anomaly.
-- BEFORE STORYBOARD_LOCKED, update meta/character-contract.json to match the final Story, set status=LOCKED, recheck NO-ANOMALY TEST, and run character_contract.py validate --require-locked. Do not advance if it fails.
+- BEFORE STORYBOARD_LOCKED, save the actual final Story within this Episode, recheck its character/entry/ordinary-day logic with anomalies removed, and only attest PASS when grounded in the saved final text.
+- Read current contract and exact authority_sha256 with `python episodes/_system/character_contract.py show "<episode>" --with-sha`. Do not depend on meta/character-contract.json in mysql mode.
+- Author meta/character-story-review.json with schema_version=1, expected_contract_sha256 from the show command, story_path (relative to Episode and pointing to the actual saved final Story markdown), story_sha256 (SHA256 of that exact file), and no_anomaly_test with pass=true, ordinary_day_plan and a specific review_reason of at least 20 characters. If the final Story genuinely changes cast, entry or scene, include the full reviewed proposed_contract preserving its origin metadata. No empty or fabricated evidence.
+- Use `python episodes/_system/character_contract.py review-lock "<episode>" --review meta/character-story-review.json` to submit reviewed Story evidence through canonical Episode Contract storage; the Episode single-writer rule still applies. Then run `python episodes/_system/character_contract.py validate "<episode>" --require-locked`. Never update a legacy JSON as a stand-in for MySQL Authority, never execute ad hoc SQL, never skip the review gate.
+- Reuse already-successful Codex model receipts and existing final Story on recovery; if only the contract attestation is missing, complete that deterministic review/commit without calling the paid Story authoring model again.
 - auto_create: author the complete story yourself via recent5/account evidence -> 8-12 concepts -> Concept Ambition -> image-first propagation -> Story/Storyboard.
 - user_seed: preserve core intent but strengthen/rewrite mechanism, logic, escalation, climax and ending; never mechanically split the seed.
 - core_constraints: preserve every hard constraint.
