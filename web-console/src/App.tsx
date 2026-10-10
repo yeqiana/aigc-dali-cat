@@ -432,7 +432,7 @@ export default function App() {
 
           {/* 系统设置视图 */}
           {currentTab === 'settings' && (
-            <div className="max-w-4xl mx-auto">
+            <div className="mx-auto w-full max-w-[1050px]">
               <SettingsView
                 currentTheme={currentTheme}
                 onThemeChange={handleThemeChange}
@@ -442,7 +442,7 @@ export default function App() {
 
           {/* 核心工作流：呼吸感单主轴 */}
           {currentTab === 'workbench' && (
-            <div className="max-w-3xl mx-auto space-y-3">
+            <div className="mx-auto w-full max-w-[1100px] space-y-4 pb-24">
               {isHistoricalEpisodeIndex(activeEpisode) ? (
                 <section role={detailError ? 'alert' : 'status'} className="border border-[var(--border-normal)] p-5 text-[13px] text-[var(--text-secondary)]">
                   {detailError ? <>
@@ -506,7 +506,7 @@ export default function App() {
           onClick={() => setSearchModalOpen(false)}
         >
           <div
-            className="bg-[var(--bg-elevated)] border border-[var(--border-normal)] rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl text-[var(--text-primary)]"
+            className="w-full max-w-lg overflow-hidden rounded-[8px] border border-[var(--border-normal)] bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-3 border-b border-[var(--border-subtle)] flex items-center gap-2">

@@ -63,12 +63,12 @@ export const ContextPanel: React.FC<ContextPanelProps> = ({ activeEpisode, onClo
   };
 
   return (
-    <aside aria-label="当前故事证据检视" className="hidden xl:flex w-[288px] shrink-0 flex-col h-full border-l border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[var(--text-secondary)]">
-      <div className="flex h-12 shrink-0 items-center justify-between px-4 border-b border-[var(--border-subtle)]">
+    <aside aria-label="当前故事证据检视" className="hidden 2xl:flex w-[304px] shrink-0 flex-col h-full border-l border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[var(--text-secondary)]">
+      <div className="flex h-[60px] shrink-0 items-center justify-between px-4 border-b border-[var(--border-subtle)]">
         <h2 className="text-[13px] font-semibold text-[var(--text-primary)]">作品检视</h2>
         <button type="button" onClick={onClose} aria-label="关闭作品检视" title="关闭作品检视" className="p-1.5 hover:bg-[var(--bg-hover)] rounded-[4px]"><PanelRightClose size={16} /></button>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
         <div>
           <div className="text-[14px] font-semibold text-[var(--text-primary)] break-words">{activeEpisode.title}</div>
           <div className="mt-1 text-[11px] font-mono text-[var(--text-tertiary)]">{activeEpisode.code} · 更新于 {activeEpisode.updatedAt || '未知'}</div>
