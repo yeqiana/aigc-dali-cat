@@ -88,22 +88,22 @@ def test_cli_version_accepts_one_exact_banner_after_cleanup_warning(tmp_path: Pa
     fake.write_bytes(b"test-only")
     emitted = mock.Mock(
         returncode=0,
-        stdout="WARNING: unable to remove temporary directory (os error 5)\\n"
-               "codex-cli 0.162.1\\n",
+        stdout="WARNING: unable to remove temporary directory (os error 5)\n"
+               "codex-cli 0.162.1\n",
     )
     with mock.patch.object(codex_user_runner.subprocess, "run", return_value=emitted):
         assert codex_user_runner.codex_version(fake) == "codex-cli 0.162.1"
-    with mock.patch.object(codex_user_runner, "resolve_codex", return_value=(fake, "test")), \\
+    with mock.patch.object(codex_user_runner, "resolve_codex", return_value=(fake, "test")), \
          mock.patch.object(codex_user_runner.subprocess, "run", return_value=emitted):
         resolved = codex_cli_contract.resolve(fake)
     assert resolved.version_tuple == (0, 162, 1)
 
 
 @pytest.mark.parametrize("text,returncode", [
-    ("WARNING: temporary file cleanup failed\\n", 0),
-    ("WARNING: fake codex-cli 0.162.1\\n", 0),
-    ("codex-cli 0.162.1\\ncodex-cli 0.153.4\\n", 0),
-    ("codex-cli 0.162.1\\n", 1),
+    ("WARNING: temporary file cleanup failed\n", 0),
+    ("WARNING: fake codex-cli 0.162.1\n", 0),
+    ("codex-cli 0.162.1\ncodex-cli 0.153.4\n", 0),
+    ("codex-cli 0.162.1\n", 1),
 ])
 def test_cli_version_fails_closed_without_one_unambiguous_banner(
     tmp_path: Path, text: str, returncode: int
