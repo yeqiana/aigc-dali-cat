@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import {Pagination} from 'antd';
 import {
   Terminal,
   Trash2,
@@ -7,10 +8,6 @@ import {
   RefreshCw,
   Search,
   Filter,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   X,
   Copy,
   Clock,
@@ -251,12 +248,6 @@ export const RuntimeLogsView: React.FC = () => {
     return filteredLogs.slice(startIndex, startIndex + pageSize);
   }, [filteredLogs, safeCurrentPage, pageSize]);
 
-  // 分页切换
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
 
   // 复制全量日志
   const handleCopyLogs = () => {
@@ -665,76 +656,7 @@ export const RuntimeLogsView: React.FC = () => {
         )}
       </div>
 
-      {/* 5. 底部固定分页器 (Pagination Bar) */}
-      <div className="shrink-0 h-11 px-4 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] flex items-center justify-between text-xs font-mono text-[var(--text-secondary)]">
-        {/* 左侧：每页数量选择 */}
-        <div className="flex items-center gap-2">
-          <span>每页显示:</span>
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="px-2 py-0.5 rounded-[4px] bg-[var(--bg-elevated)] border border-[var(--border-normal)] text-[var(--text-primary)] text-xs font-mono focus:outline-hidden"
-          >
-            <option value={15}>15 条</option>
-            <option value={20}>20 条</option>
-            <option value={50}>50 条</option>
-            <option value={100}>100 条</option>
-          </select>
-          <span className="text-[var(--text-tertiary)] ml-2 hidden sm:inline">
-            显示 {totalItems === 0 ? 0 : (safeCurrentPage - 1) * pageSize + 1} - {Math.min(safeCurrentPage * pageSize, totalItems)} 条，共 {totalItems} 条
-          </span>
-        </div>
-
-        {/* 右侧：翻页导航按钮 */}
-        <div className="flex items-center gap-1.5">
-          <span className="mr-2 text-[var(--text-tertiary)]">
-            第 <span className="text-[var(--text-primary)] font-bold">{safeCurrentPage}</span> / {totalPages} 页
-          </span>
-
-          <button
-            type="button"
-            onClick={() => handlePageChange(1)}
-            disabled={safeCurrentPage <= 1}
-            className="p-1 rounded-[4px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-            title="首页"
-          >
-            <ChevronsLeft className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handlePageChange(safeCurrentPage - 1)}
-            disabled={safeCurrentPage <= 1}
-            className="p-1 rounded-[4px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-            title="上一页"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handlePageChange(safeCurrentPage + 1)}
-            disabled={safeCurrentPage >= totalPages}
-            className="p-1 rounded-[4px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-            title="下一页"
-          >
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handlePageChange(totalPages)}
-            disabled={safeCurrentPage >= totalPages}
-            className="p-1 rounded-[4px] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-            title="末页"
-          >
-            <ChevronsRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-2 text-[12px] text-[var(--text-secondary)]"><span>本次筛选结果：{totalItems} 条</span><Pagination size="small" current={safeCurrentPage} pageSize={pageSize} total={totalItems} showSizeChanger pageSizeOptions={["15","20","50","100"]} showTotal={(total,range)=>`${range[0]}–${range[1]} / ${total} 条`} onChange={(next,size)=>{setCurrentPage(next);setPageSize(size);}} /></div>
     </div>
   );
 };
