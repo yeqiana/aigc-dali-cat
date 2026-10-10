@@ -51,8 +51,12 @@ def shared_directory(repo_root: Path = ROOT) -> Path:
 def _lock_one(path: Path) -> int | None:
     fd = os.open(str(path), os.O_RDWR | os.O_CREAT, 0o600)
     try:
-        if os.fstat(fd).st_size == 0:
-            os.write(fd, b"\0")
+        # Do not initialize the first byte before obtaining its OS lock.
+        # On Windows, two fresh workers can both observe st_size == 0;
+        # whichever loses the locking race may then fail its os.write()
+        # against the other's exclusive byte-range lock. The C runtime
+        # supports locking a byte range beyond EOF, so zero-length files
+        # are valid and avoid that TOCTOU race altogether.
         os.lseek(fd, 0, os.SEEK_SET)
         if os.name == "nt":
             import msvcrt
