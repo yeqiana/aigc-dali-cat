@@ -3,9 +3,10 @@ import { ChevronRight, X } from 'lucide-react';
 import { platformApi, RuntimeStatusDetail, RuntimeStatusSummary, stageLabel } from '../../api/platformApi';
 import type { RuntimeCoverage } from '../../api/runtimeCoverage';
 
-interface Props { items: RuntimeStatusSummary[]; coverage: RuntimeCoverage; dataState: 'loading' | 'ok' | 'partial' | 'offline'; lastSync: string | null; }
-export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, dataState, lastSync }) => {
+interface Props { items: RuntimeStatusSummary[]; coverage: RuntimeCoverage; hasMore: boolean; loadingMore: boolean; onLoadMore: () => void; dataState: 'loading' | 'ok' | 'partial' | 'offline'; lastSync: string | null; }
+export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, hasMore, loadingMore, onLoadMore, dataState, lastSync }) => {
   const [selected, setSelected] = useState<RuntimeStatusSummary | null>(null);
+  const [visibleCount, setVisibleCount] = useState(8);
   const [detail, setDetail] = useState<RuntimeStatusDetail | null>(null);
   const [detailState, setDetailState] = useState<'loading' | 'available' | 'unavailable'>('loading');
   const ref = selected?.episode_ref || selected?.episode || selected?.business_episode_id || selected?.episode_id;
@@ -34,13 +35,13 @@ export const RuntimeAuthorityPanel: React.FC<Props> = ({ items, coverage, dataSt
       <p className="px-4 py-2 text-[11px] text-[var(--text-secondary)]">已读取 {coverage.loaded}{coverage.total !== null ? ' / ' + coverage.total : ''} 条权威阶段摘要{coverage.incomplete ? '（尚未加载全部）' : ''}</p>
       {coverage.warning && <p role="status" className="px-4 pb-3 text-[11px] text-[var(--warning)]">{coverage.warning}</p>}
       {items.length === 0 && <p className="px-4 py-5 text-[var(--text-tertiary)]">接口已响应，但没有可显示的阶段摘要。</p>}
-      <div className="divide-y divide-[var(--border-subtle)]">{items.slice(0, 8).map((item, i) =>
+      <div className="divide-y divide-[var(--border-subtle)]">{items.slice(0, visibleCount).map((item, i) =>
         <button type="button" aria-label={'查看权威阶段：' + (item.title || item.episode_ref || item.episode_id)} key={(item.episode_id || item.episode_ref || String(i)) + ':' + i}
           onClick={() => setSelected(item)} className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left hover:bg-[var(--bg-hover)] focus-visible:outline-2 focus-visible:outline-[#58A6FF]">
           <span className="min-w-0 truncate font-medium" title={item.title || item.episode_ref || item.episode_id}>{item.title || item.episode_ref || item.episode_id || '未知作品'}</span>
           <span className="ml-auto shrink-0 text-[var(--text-secondary)]">{stageLabel(item.production_stage || 'NO_STATE')}</span><ChevronRight size={14} className="shrink-0 text-[var(--text-tertiary)]"/>
         </button>)}</div>
-      {items.length > 8 && <p className="px-4 py-2 text-[11px] text-[var(--text-tertiary)]">仅预览前 8 条；完整列表请到工作流查看分页。</p>}
+      <div className="flex flex-wrap gap-2 items-center px-4 py-3"> {visibleCount < items.length && <button type="button" onClick={() => setVisibleCount(v => v + 20)} className="px-3 py-1.5 border border-[var(--border-normal)] rounded-[5px]">展开已读取记录</button>} {hasMore && <button type="button" disabled={loadingMore} onClick={onLoadMore} className="px-3 py-1.5 border border-[var(--border-normal)] rounded-[5px] disabled:opacity-50">{loadingMore ? '读取下一页…' : '从 Platform API 加载下一页'}</button>} <span className="text-[11px] text-[var(--text-tertiary)]">当前可见 {Math.min(visibleCount,items.length)} / 已读取 {items.length} 条</span></div>
     </>}
     {selected && <div className="border-t border-[var(--border-strong)] bg-[var(--bg-elevated)] px-4 py-4 space-y-3">
       <div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="text-[13px] font-semibold truncate">{selected.title || selected.episode_ref || selected.episode_id}</h3><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">阶段详情（权威 Runtime 只读查询）</p></div><button onClick={() => setSelected(null)} aria-label="关闭阶段详情" type="button" className="p-1.5 rounded hover:bg-[var(--bg-hover)]"><X size={16}/></button></div>

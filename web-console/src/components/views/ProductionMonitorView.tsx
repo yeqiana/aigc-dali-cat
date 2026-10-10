@@ -48,6 +48,10 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   // 历史运行快照，仅用于展示，不代表当前实时运行状态
   const [runs, setRuns] = useState<StoryRunItem[]>(REAL_STORY_RUNS);
   const [runtimeRows, setRuntimeRows] = useState<RuntimeStatusSummary[]>([]);
+  const runtimeRowsRef = useRef<RuntimeStatusSummary[]>([]);
+  const runtimeOffsetRef = useRef(0);
+  const [runtimeHasMore, setRuntimeHasMore] = useState(false);
+  const [runtimeLoadingMore, setRuntimeLoadingMore] = useState(false);
   const [runtimeCoverage, setRuntimeCoverage] = useState(summarizeRuntimeCoverage(0, null, false));
 
   // 过滤状态
@@ -83,8 +87,11 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       setApiWarning(data.errors?.length ? 'Platform API 返回部分错误，请勿据此推断未返回的故事状态。' : null);
       setLastSync(new Date().toLocaleTimeString('zh-CN',{hour12:false}));
       // 不将平台阶段数据按标题合并进历史 Story Run；两种证据各自独立展示。
-      setRuntimeRows(data.items ?? []);
-      setRuntimeCoverage(summarizeRuntimeCoverage((data.items ?? []).length, data.total, Boolean(data.has_more), data.errors ?? []));
+      runtimeRowsRef.current = data.items ?? [];
+      runtimeOffsetRef.current = (data.items ?? []).length;
+      setRuntimeRows(runtimeRowsRef.current);
+      setRuntimeHasMore(Boolean(data.has_more));
+      setRuntimeCoverage(summarizeRuntimeCoverage(runtimeRowsRef.current.length, data.total, Boolean(data.has_more), data.errors ?? []));
       if (isManual) {
         onShowToast(data.errors?.length ? '接口仅部分返回；未覆盖工作区快照' : '已读取最新阶段摘要，其他指标仍为工作区快照');
       }
@@ -92,12 +99,49 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       if (!requestGate.current.isCurrent(generation)) return;
       console.error('Failed to fetch runtime statuses:', err);
       setApiState('offline');
+      runtimeRowsRef.current = [];
+      runtimeOffsetRef.current = 0;
       setRuntimeRows([]);
+      setRuntimeHasMore(false);
       setRuntimeCoverage(summarizeRuntimeCoverage(0, null, false));
       setApiWarning('无法连接 Platform API。以下运行记录仅为本地工作区快照，不代表当前在线执行状态。');
       if (isManual) onShowToast('同步失败：无法连接 Platform API');
     } finally {
       if (requestGate.current.finish(generation)) setIsRefreshing(false);
+    }
+  };
+
+  // 只读分页。复用同一代际锁，确保手动刷新、轮询、下一页互不覆盖。
+  const loadNextRuntimePage = async () => {
+    if (!runtimeHasMore) return;
+    const generation = requestGate.current.begin();
+    if (generation === null) return;
+    const offset = runtimeOffsetRef.current;
+    setRuntimeLoadingMore(true);
+    try {
+      const data = await platformApi.runtimeStatuses(100, offset);
+      if (!requestGate.current.isCurrent(generation)) return;
+      const page = data.items ?? [];
+      const existing = new Set(runtimeRowsRef.current.map(r => r.episode_id || r.episode_ref).filter(Boolean));
+      const next = [...runtimeRowsRef.current];
+      for (const record of page) {
+        const key = record.episode_id || record.episode_ref;
+        if (key && existing.has(key)) continue;
+        if (key) existing.add(key);
+        next.push(record);
+      }
+      runtimeRowsRef.current = next;
+      runtimeOffsetRef.current = offset + page.length;
+      const hasMore = Boolean(data.has_more) && page.length > 0;
+      setRuntimeHasMore(hasMore);
+      setRuntimeRows(next);
+      setRuntimeCoverage(summarizeRuntimeCoverage(next.length, data.total, hasMore, data.errors ?? []));
+      setApiState(data.errors?.length ? 'partial' : 'ok');
+      if (data.errors?.length) onShowToast('下一页返回部分错误，阶段记录可能不完整');
+    } catch {
+      if (requestGate.current.isCurrent(generation)) onShowToast('下一页读取失败，已保留成功加载的记录');
+    } finally {
+      if (requestGate.current.finish(generation)) setRuntimeLoadingMore(false);
     }
   };
 
@@ -282,7 +326,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
       </div>
 
       <p role="status" className="text-[11px] text-[var(--text-tertiary)]">平台阶段摘要与下方历史工作区 Run 快照分开呈现。历史运行状态、心跳与帧数并非实时。暂停/重试尚未接入。</p>
-      <RuntimeAuthorityPanel items={runtimeRows} coverage={runtimeCoverage} dataState={apiState} lastSync={lastSync}/>
+      <RuntimeAuthorityPanel items={runtimeRows} coverage={runtimeCoverage} hasMore={runtimeHasMore} loadingMore={runtimeLoadingMore} onLoadMore={loadNextRuntimePage} dataState={apiState} lastSync={lastSync}/>
 
       <div role="status" className="flex items-center justify-between gap-3 rounded-[5px] border border-[var(--border-normal)] px-3 py-2 text-[11px] text-[var(--text-secondary)]"><span>{apiState === 'loading' ? '正在读取 Platform API 阶段摘要…' : apiState === 'ok' ? 'Platform API 阶段摘要已读取；其余运行指标仍来自本地快照' : apiWarning}</span><span className="shrink-0 text-[var(--text-tertiary)]">{lastSync ? `最近获取 ${lastSync}` : '未获得有效在线证据'}</span></div>
       <p className="text-[12px] font-semibold text-[var(--text-primary)] pt-2">历史工作区运行快照（非实时）</p>
