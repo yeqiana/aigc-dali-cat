@@ -17,17 +17,17 @@ const STAGES: Array<{key:ProductionStage;label:string}> = [
 ];
 export const StatusFlowBanner: React.FC<StatusFlowBannerProps> = ({currentStage,completedFrames,totalFrames,onOpenPipelineView}) => {
   const index = STAGES.findIndex(step => step.key === currentStage);
-  return <section className="border-b border-[var(--border-subtle)] pb-4 text-[var(--text-primary)]">
-    <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+  return <section className="border-b border-[var(--border-subtle)] pb-3 text-[var(--text-primary)]">
+    <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
       <div><h2 className="text-[14px] font-semibold">生产阶段</h2><p className="mt-1 text-[11px] text-[var(--text-tertiary)]">工作区阶段投影 · 正式阶段请以 Runtime API 为准；本页不可推进门禁</p></div>
       <button type="button" onClick={onOpenPipelineView} className="flex items-center gap-1 text-[12px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]">查看完整流程 <ArrowRight size={14}/></button>
     </div>
-    <ol className="flex items-start gap-1 overflow-x-auto py-1">
-      {STAGES.map((step,i)=><li key={step.key} className="flex min-w-[96px] flex-1 flex-col gap-2">
+    <ol className="flex items-start gap-2 overflow-x-auto py-1">
+      {STAGES.map((step,i)=><li key={step.key} className="flex min-w-[85px] flex-1 flex-col gap-1.5">
         <div className={`h-1.5 rounded-[3px] ${i===index?'bg-[#58A6FF]':i<index?'bg-[var(--success)]':'bg-[var(--border-normal)]'}`}/>
         <div className={`flex items-center gap-1.5 whitespace-nowrap text-[11px] ${i===index?'text-[var(--text-primary)] font-semibold':'text-[var(--text-tertiary)]'}`}>{i<index && <Check size={12} className="text-[var(--success)]"/>}{step.label}</div>
       </li>)}
     </ol>
-    <p className="mt-3 text-[12px] text-[var(--text-secondary)]">{index>=0 ? `当前阶段：${STAGES[index].label}` : '当前阶段未识别'}{typeof completedFrames==='number' && typeof totalFrames==='number' ? ` · ${completedFrames}/${totalFrames} 帧（工作区快照）` : ''}</p>
+    <p className="mt-2 text-[12px] text-[var(--text-secondary)]">{index>=0 ? `当前阶段：${STAGES[index].label}` : '当前阶段未识别'}{typeof completedFrames==='number' && typeof totalFrames==='number' ? ` · ${completedFrames}/${totalFrames} 帧（工作区快照）` : ''}</p>
   </section>;
 };
