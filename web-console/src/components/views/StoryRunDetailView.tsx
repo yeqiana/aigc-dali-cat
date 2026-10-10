@@ -356,7 +356,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
               </div>
 
               {/* 1.2 PIPELINE (8 Stages) 精简横向流水线步骤条 */}
-              <div className="p-3 rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2">
+              <div className="border-b border-[var(--border-subtle)] py-3 space-y-2">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <div className="text-[11px] font-bold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-1.5">
                     <Layers className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
@@ -368,7 +368,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                 </div>
 
                 {/* 横向步骤条 */}
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+                <div className="grid grid-cols-4 gap-1.5 md:grid-cols-8">
                   {run.pipelineStages.map((stage) => {
                     const isDone = stage.status === 'completed';
                     const isRunning = stage.status === 'running';
@@ -380,7 +380,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
                         key={stage.key}
                         type="button"
                         onClick={() => setSelectedStageKey(stage.key)}
-                        className={`px-2 py-1.5 rounded-[4px] border text-left flex flex-col justify-between transition-colors cursor-pointer text-xs font-mono ${
+                        className={`px-2 py-2 rounded-[4px] border text-left flex flex-col justify-between transition-colors cursor-pointer text-xs font-mono ${
                           isSelected ? 'ring-1 ring-[#4C8DFF] border-[#4C8DFF] bg-[var(--bg-selected)]' : ''
                         } ${
                           !isSelected && isDone
@@ -1297,7 +1297,7 @@ export const StoryRunDetailView: React.FC<StoryRunDetailViewProps> = ({
       {/* ========================================================================= */}
       {imageModalUrl && (
         <div
-          className="fixed inset-0 z-80 bg-black/90 flex items-center justify-center p-6 backdrop-blur-md"
+          className="fixed inset-0 z-80 bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
           onClick={() => setImageModalUrl(null)}
         >
           <div className="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center">
