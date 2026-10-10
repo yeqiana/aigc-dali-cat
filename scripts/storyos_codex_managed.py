@@ -115,12 +115,18 @@ def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
     attempts: dict = {}
     driver: dict = {}
     stage: dict = {}
+    creative_recovery: dict = {}
     if episode is not None:
         rc, stage = _probe(env, "scripts/storyos_episode_stage_readonly.py",
                            ["--episode", episode.relative_to(ROOT).as_posix()])
         if rc != 0 or stage.get("status") != "STAGE_ELIGIBLE":
             blockers.append("EPISODE_STAGE_NOT_ELIGIBLE_FOR_PRODUCTION")
         rel = episode.relative_to(ROOT).as_posix()
+        recovery_rc, creative_recovery = _probe(
+            env, "scripts/storyos_creative_recovery_readonly.py", ["--episode", rel]
+        )
+        if recovery_rc != 0:
+            creative_recovery = {"status": "CREATIVE_RECOVERY_AUTHORITY_UNVERIFIED"}
         rc, attempts = _probe(env, "scripts/storyos_attempt_readonly_preflight.py",
                               ["--episode", rel])
         if rc != 0 or attempts.get("status") != "ATTEMPT_HISTORY_READ_ONLY":
@@ -154,6 +160,12 @@ def preflight(env: dict[str, str], *, episode: Path | None = None) -> dict:
                     "outcome_unknown_assets": attempts.get("outcome_unknown_assets", []),
                     "active_attempt_assets": attempts.get("active_attempt_assets", [])},
         "driver_state": driver.get("driver_state") if episode else None,
+        "creative_story_recovery": {
+            "status": creative_recovery.get("status"),
+            "model_success_receipt_count": creative_recovery.get("model_success_receipt_count"),
+            "model_success_is_story_lock": False,
+            "model_generation_required": None,
+        } if episode else None,
         "episode_stage": {"status": stage.get("status"), "current_state": stage.get("stage"),
                           "source": stage.get("source")} if episode else None,
         "blockers": blockers,
