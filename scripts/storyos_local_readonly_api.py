@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 from urllib.parse import urlsplit
 import sys
@@ -109,6 +110,103 @@ class LocalEpisodeFileStatuses:
             "image_progress": None,
         }
 
+# R16: only approved images from canonical episode directories; no arbitrary path API.
+MEDIA_NAME = re.compile(r"^(0[1-9]|1[0-9]|20)\.(png|jpg|jpeg|webp)$", re.IGNORECASE)
+MEDIA_TOKEN = re.compile(r"^[0-9a-f]{32}$")
+MEDIA_PREFIX = "/api/v1/local-media/images/"
+MEDIA_MAX_BYTES = 12 * 1024 * 1024
+MEDIA_TYPES = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+
+
+class LocalApprovedMedia:
+    """Path-free read-only media projection for non-archived episodes with state files."""
+
+    def __init__(self, service: LocalEpisodeFileStatuses) -> None:
+        self.service = service
+
+    def scan(self) -> tuple[list[dict], dict[str, Path]]:
+        records: list[dict] = []
+        by_token: dict[str, Path] = {}
+        for state in sorted(self.service.episodes.glob("*/**/meta/episode-state.json")):
+            try:
+                if not state.is_file() or state.is_symlink():
+                    continue
+                parts = state.relative_to(self.service.episodes).parts
+                if any(part.startswith(("_", ".")) for part in parts):
+                    continue
+                state_real = state.resolve(strict=True)
+                if not state_real.is_relative_to(self.service.episodes):
+                    continue
+                evidence = json.loads(state_real.read_text(encoding="utf-8"))
+                title = evidence.get("title")
+                code = evidence.get("episode_id")
+                if not isinstance(title, str) or not title.strip() or not isinstance(code, str) or not code.strip():
+                    continue
+                approved = state.parent.parent / "media" / "approved"
+                if not approved.is_dir() or approved.is_symlink():
+                    continue
+                if not approved.resolve(strict=True).is_relative_to(self.service.episodes):
+                    continue
+                frames: list[dict] = []
+                for file in sorted(approved.iterdir()):
+                    match = MEDIA_NAME.fullmatch(file.name)
+                    if not match or file.is_symlink() or not file.is_file():
+                        continue
+                    resolved = file.resolve(strict=True)
+                    if not resolved.is_relative_to(approved.resolve(strict=True)):
+                        continue
+                    size = file.stat().st_size
+                    if not 0 < size <= MEDIA_MAX_BYTES:
+                        continue
+                    # Do not advertise files whose header is not a real image of the expected type.
+                    with file.open("rb") as image_file:
+                        header = image_file.read(12)
+                    extension = file.suffix.lower()
+                    valid_header = (header.startswith(b"\x89PNG\r\n\x1a\n") if extension == ".png"
+                                    else header.startswith(b"\xff\xd8\xff") if extension in (".jpg", ".jpeg")
+                                    else header[:4] == b"RIFF" and header[8:12] == b"WEBP")
+                    if not valid_header:
+                        continue
+                    frame = int(match.group(1))
+                    relative = file.relative_to(self.service.episodes).as_posix()
+                    token = hashlib.sha256(relative.encode("utf-8")).hexdigest()[:32]
+                    frames.append({"frame": frame, "url": MEDIA_PREFIX + token})
+                    by_token[token] = resolved
+                if frames:
+                    frames.sort(key=lambda x: x["frame"])
+                    # The local status API uses the same opaque episode identity.
+                    relative_state = state_real.relative_to(self.service.episodes).as_posix()
+                    episode_ref = "LOCAL_" + hashlib.sha256(relative_state.encode("utf-8")).hexdigest()[:24]
+                    records.append({
+                        "title": title, "business_episode_id": code, "episode_ref": episode_ref,
+                        "source": "local_workspace_approved_only", "frames": frames,
+                    })
+            except (OSError, ValueError, TypeError, json.JSONDecodeError, UnicodeError):
+                continue
+        return records, by_token
+
+    def image(self, token: str) -> tuple[bytes, str] | None:
+        if not MEDIA_TOKEN.fullmatch(token):
+            return None
+        _items, index = self.scan()  # recheck rights and paths on every request
+        path = index.get(token)
+        if path is None:
+            return None
+        try:
+            with path.open("rb") as reader:
+                data = reader.read(MEDIA_MAX_BYTES + 1)
+            if not data or len(data) > MEDIA_MAX_BYTES:
+                return None
+            extension = path.suffix.lower()
+            valid = (data.startswith(b"\x89PNG\r\n\x1a\n") if extension == ".png"
+                     else data.startswith(b"\xff\xd8\xff") if extension in (".jpg", ".jpeg")
+                     else data[:4] == b"RIFF" and data[8:12] == b"WEBP")
+            if not valid:
+                return None
+            return data, MEDIA_TYPES[extension]
+        except OSError:
+            return None
+
 
 class ReadOnlyLocalDispatcher(PlatformApiDispatcher):
     def dispatch(self, method: str, path: str, body=None):
@@ -116,7 +214,7 @@ class ReadOnlyLocalDispatcher(PlatformApiDispatcher):
         if method.upper() != "GET" or clean not in {
             "/healthz", "/api/v1/runtime/statuses", "/api/v1/runtime/status",
         }:
-            return 403, {"code": "READ_ONLY_LOCAL_EVIDENCE", "message": "local evidence API allows only three read-only GET endpoints", "data": None}
+            return 403, {"code": "READ_ONLY_LOCAL_EVIDENCE", "message": "local evidence API supports only registered read-only GET endpoints", "data": None}
         return super().dispatch(method, path, body)
 
 
@@ -124,6 +222,42 @@ class LocalReadOnlyHandler(PlatformApiRequestHandler):
     # 浏览器与服务使用 Vite 同源代理，不允许外部网页跨域读取本机资料。
     def _cors_headers(self) -> None:
         return
+
+    def do_GET(self) -> None:
+        route = urlsplit(self.path)
+        media = getattr(self.server, "approved_media", None)
+        if media is not None and (route.path == "/api/v1/local-media/catalog" or route.path.startswith(MEDIA_PREFIX)):
+            # Additional guard for browser cross-site reads; the Vite proxy sends Host 127.0.0.1.
+            site = self.headers.get("Sec-Fetch-Site", "")
+            origin = self.headers.get("Origin", "")
+            host = self.headers.get("Host", "")
+            if (site and site not in ("same-origin", "none")) or origin or host not in (
+                f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}"
+            ):
+                self._send(403, {"code": "MEDIA_FORBIDDEN", "data": None})
+                return
+            if route.query or route.fragment:
+                self._send(400, {"code": "INVALID_REQUEST", "data": None})
+                return
+            if route.path == "/api/v1/local-media/catalog":
+                catalog, _ = media.scan()
+                self._send(200, {"code": "OK", "data": {"items": catalog, "source": "local_workspace_approved_only"}})
+                return
+            result = media.image(route.path[len(MEDIA_PREFIX):])
+            if result is None:
+                self._send(404, {"code": "MEDIA_NOT_FOUND", "data": None})
+                return
+            data, content_type = result
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Security-Policy", "default-src 'none'")
+            self.end_headers()
+            self.wfile.write(data)
+            return
+        super().do_GET()
 
     def do_OPTIONS(self) -> None:
         self.send_response(405)
@@ -144,6 +278,7 @@ def main() -> None:
         {"RuntimeStatusApiController": RuntimeStatusApiController(service)},
         host="127.0.0.1", port=args.port,
     )
+    server.approved_media = LocalApprovedMedia(service)
     server.dispatcher = ReadOnlyLocalDispatcher(
         {"RuntimeStatusApiController": RuntimeStatusApiController(service)}
     )

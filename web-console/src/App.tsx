@@ -10,7 +10,8 @@ import { ContextPanel } from './components/ContextPanel';
 
 // Views
 const ProductionMonitorView = React.lazy(() => import('./components/views/ProductionMonitorView').then(m => ({ default: m.ProductionMonitorView })));
-import { HomeOverviewView } from './components/views/HomeOverviewView';
+const HomeOverviewView = React.lazy(() => import('./components/views/HomeOverviewView').then(m=>({default:m.HomeOverviewView})));
+const AntdSurface = React.lazy(() => import('./components/AntdSurface'));
 const WorkflowWorkspaceView = React.lazy(() => import('./components/views/WorkflowWorkspaceView').then(m => ({ default: m.WorkflowWorkspaceView })));
 const AgentWorkspaceView = React.lazy(() => import('./components/views/AgentWorkspaceView').then(m => ({ default: m.AgentWorkspaceView })));
 const SeriesLibraryView = React.lazy(() => import('./components/views/SeriesLibraryView').then(m => ({ default: m.SeriesLibraryView })));
@@ -386,12 +387,12 @@ export default function App() {
           )}
 
           <Suspense fallback={<div role="status" className="py-10 text-center text-[13px] text-[var(--text-secondary)]">正在载入工作区…</div>}>
-          {currentTab === 'overview' && <HomeOverviewView episodes={episodes} projects={projects} onSelectEpisode={(ep) => { setActiveEpisode(ep); setCurrentTab('workbench'); }} onNewStory={() => handleCreateStoryFromHome()} onNavigate={setCurrentTab} />}
+          {currentTab === 'overview' && <AntdSurface><HomeOverviewView episodes={episodes} projects={projects} onSelectEpisode={(ep) => { setActiveEpisode(ep); setCurrentTab('workbench'); }} onNewStory={() => handleCreateStoryFromHome()} onNavigate={setCurrentTab} /></AntdSurface>}
 
           {/* 生产监控台主控页 (StoryOS 生产监控台 V1.0 - Dense Operations Console) */}
           {currentTab === 'production_monitor' && (
             <div className="w-full">
-              <ProductionMonitorView
+              <AntdSurface><ProductionMonitorView
                 onShowToast={showToast}
                 onSelectStoryRun={(run) => {
                   const matchEp = episodes.find(e => e.title === run.storyName);
@@ -399,18 +400,18 @@ export default function App() {
                     setActiveEpisode(matchEp);
                   }
                 }}
-              />
+              /></AntdSurface>
             </div>
           )}
 
           {/* canonical 阶段只读检视，不可前端直接推进 */}
-          {currentTab === 'pipeline' && <WorkflowWorkspaceView />}
-          {currentTab === 'agents' && <AgentWorkspaceView />}
+          {currentTab === 'pipeline' && <AntdSurface><WorkflowWorkspaceView /></AntdSurface>}
+          {currentTab === 'agents' && <AntdSurface><AgentWorkspaceView /></AntdSurface>}
 
           {/* 剧集库视图 */}
           {currentTab === 'episodes' && (
             <div className="w-full">
-              <SeriesLibraryView
+              <AntdSurface><SeriesLibraryView
                 episodes={episodes}
                 activeEpisode={activeEpisode}
                 onSelectEpisode={(ep) => {
@@ -419,30 +420,30 @@ export default function App() {
                 }}
                 onGoToWorkbench={() => setCurrentTab('workbench')}
                 onNewStoryClick={() => handleCreateStoryFromHome()}
-              />
+              /></AntdSurface>
             </div>
           )}
 
           {/* 运行日志审计视图 (占满屏幕，全屏展示) */}
           {currentTab === 'logs' && (
             <div className="w-full h-full flex flex-col overflow-hidden">
-              <RuntimeLogsView />
+              <AntdSurface><RuntimeLogsView /></AntdSurface>
             </div>
           )}
 
           {/* 系统设置视图 */}
           {currentTab === 'settings' && (
-            <div className="mx-auto w-full max-w-[1050px]">
-              <SettingsView
+            <div className="w-full min-w-0">
+              <AntdSurface><SettingsView
                 currentTheme={currentTheme}
                 onThemeChange={handleThemeChange}
-              />
+              /></AntdSurface>
             </div>
           )}
 
           {/* 核心工作流：呼吸感单主轴 */}
           {currentTab === 'workbench' && (
-            <div className="mx-auto w-full max-w-[1100px] space-y-4 pb-24">
+            <div className="w-full min-w-0 space-y-4 pb-24">
               {isHistoricalEpisodeIndex(activeEpisode) ? (
                 <section role={detailError ? 'alert' : 'status'} className="border border-[var(--border-normal)] p-5 text-[13px] text-[var(--text-secondary)]">
                   {detailError ? <>

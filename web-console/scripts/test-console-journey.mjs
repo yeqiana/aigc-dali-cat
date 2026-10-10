@@ -29,7 +29,7 @@ const scenarios=[
   {name:'home',nav:null,expected:'Platform API 未连接'},
   {name:'monitor',nav:'生产监控',expected:'无法连接 Platform API'},
   {name:'workflow',nav:'工作流',expected:'无法连接 Platform API'},
-  {name:'agents',nav:'Agents',expected:'Agent 能力尚未接通'},
+  {name:'agents',nav:'Agents',expected:'Agent Registry 列表 API 尚不可用'},
   {name:'story',nav:'故事制作',expected:'制作与审核记录'}
 ];
 const network="window.fetch=async()=>{throw new Error('test offline: no backend access')};";

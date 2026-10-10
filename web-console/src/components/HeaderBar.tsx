@@ -20,7 +20,7 @@ const PAGE_NAMES: Partial<Record<NavigationTab,string>> = {
 export const HeaderBar: React.FC<HeaderBarProps> = ({ activeEpisode, allEpisodes, onSelectEpisode, onToggleContextPanel, contextPanelOpen, currentTab='overview' }) => {
   const [open,setOpen] = useState(false);
   const showEpisode = currentTab === 'workbench';
-  return <header className="relative z-20 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] px-6 text-[12px] text-[var(--text-secondary)]">
+  return <header className="relative z-20 flex h-[52px] shrink-0 items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[var(--bg-workspace)] px-5 text-[12px] text-[var(--text-secondary)]">
     <div className="flex items-center gap-2 min-w-0">
       <span className="hidden sm:inline font-medium text-[var(--text-tertiary)]">工作空间</span>
       <span className="hidden sm:inline text-[var(--border-strong)]">/</span>
@@ -36,8 +36,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({ activeEpisode, allEpisodes
       {showEpisode && <span className="hidden lg:block text-[11px] tabular-nums text-[var(--text-tertiary)]">{activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧</span>}
     </div>
     <div className="flex items-center gap-3 shrink-0">
-      {import.meta.env.VITE_STORYOS_LOCAL_EVIDENCE_MODE === 'true' && <span role="status" data-testid="local-real-evidence-banner" title="本机真实作品状态文件；只读快照，非 MySQL 权威运行状态，不代表在线任务" className="inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]"/>本机真实作品状态文件 · 只读</span>}
-      <span className="hidden xl:inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[11px] text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--info)]" />{showEpisode ? '历史作品视图' : 'StoryOS Workspace'}</span>
+      {import.meta.env.VITE_STORYOS_LOCAL_EVIDENCE_MODE === 'true' && <span role="status" data-testid="local-real-evidence-banner" title="本机真实作品状态文件；只读快照，非 MySQL 权威运行状态，不代表在线任务" className="inline-flex items-center gap-2 rounded-full border border-[var(--border-normal)] bg-[var(--bg-surface)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--warning)]"/>本机真实作品状态文件 · 只读</span>}
       {showEpisode && <button type="button" onClick={onToggleContextPanel} title={contextPanelOpen?'收起详情':'打开详情'} aria-label="切换详情面板" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[4px]"><PanelRight size={16}/></button>}
     </div>
   </header>;

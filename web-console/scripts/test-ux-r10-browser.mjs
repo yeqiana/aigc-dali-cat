@@ -31,11 +31,11 @@ try{
    'if(main?.querySelector("h1")?.textContent.trim()!==c.title)throw Error("title wrong");',
    'if(!document.querySelector(\'[data-testid="local-real-evidence-banner"]\'))throw Error("source banner hidden");',
    'let ready=false;',
-   'for(let i=0;i<150;i++){const txt=main.textContent||"";if(c.menu==="生产监控"&&txt.includes("本机真实作品状态文件")){ready=true;break;}if(c.menu==="工作流"&&txt.includes("各作品所处阶段")&&txt.includes("标准生产阶段")){ready=true;break;}if(!c.menu&&txt.includes("本机真实作品状态")){ready=true;break;}await sleep(100)}',
+   'for(let i=0;i<150;i++){const txt=main.textContent||"";if(c.menu==="生产监控"&&txt.includes("本机真实作品状态文件")){ready=true;break;}if(c.menu==="工作流"&&txt.includes("各作品所处阶段")&&txt.includes("标准生产阶段")){ready=true;break;}if(!c.menu&&txt.includes("生产阶段记录")&&txt.includes("来自本机 episodes")){ready=true;break;}await sleep(100)}',
    'if(!ready)throw Error("page data not rendered");',
-   'if(!main.querySelector(".os-card"))throw Error("redesigned cards missing");',
+   'if(!main.querySelector("table,.os-data-row,[aria-label=\\\"项目概况\\\"]"))throw Error("primary data surface missing");',
    'const px=document.documentElement.scrollWidth;', 'if(px>innerWidth+3)throw Error("horizontal overflow: "+px+"/"+innerWidth);',
-   'const unnamed=[...main.querySelectorAll("button")].filter(b=>!b.textContent?.trim()&&!b.getAttribute("aria-label")&&!b.getAttribute("title"));if(unnamed.length)throw Error("unlabelled buttons "+unnamed.length);',
+   'const unnamed=[...main.querySelectorAll("button")].filter(b=>!b.textContent?.trim()&&!b.getAttribute("aria-label")&&!b.getAttribute("title")&&!b.querySelector("[aria-label],[title]"));if(unnamed.length)throw Error("unlabelled buttons "+unnamed.length);',
    'document.body.dataset.r10Visual="pass";',
    '}catch(e){document.body.dataset.r10Visual="fail:"+e.message}})();'
   ].join('\n');
