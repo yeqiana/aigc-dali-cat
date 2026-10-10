@@ -79,18 +79,25 @@ def prefix(codex: Path) -> list[str]:
     import codex_cli_contract
     return codex_cli_contract.command_prefix(codex)
 
-def release_critic_prompt(ep: Path, candidate: Path, rows: dict[str, dict]) -> str:
+def release_critic_prompt(ep: Path, candidate: Path, rows: dict[str, dict], *, native_codex: bool = False) -> str:
     manifest = load_manifest(ep)
     publication = manifest.get("publication") or {}
     title = str(publication.get("actual_title") or "")
     description = str(publication.get("description") or "")
     topics = publication.get("topics") or []
     review_rows = release_review_rows(rows)
-    mapping = "\n".join(f"- {role}: {row['path']}" for role, row in review_rows.items())
-    rel = ep.relative_to(ROOT).as_posix()
-    out = candidate.relative_to(ROOT).as_posix()
+    # Host requests keep repository-relative paths; an episode-scoped native
+    # Codex worker receives absolute paths to the few frozen review inputs.
+    def review_path(path: str) -> str:
+        return (ROOT / path).resolve().as_posix() if native_codex else path
+    mapping = "\n".join(f"- {role}: {review_path(row['path'])}" for role, row in review_rows.items())
+    rel = ep.resolve().as_posix() if native_codex else ep.relative_to(ROOT).as_posix()
+    out = candidate.resolve().as_posix() if native_codex else candidate.relative_to(ROOT).as_posix()
+    first_standard = review_path("standards/制作规范_正式版.md")
+    release_standard = review_path("standards/release_preflight_guard_V2.0.3.5.md")
     return f"""You are an adversarial FINAL RELEASE Semantic + Governance Critic in a fresh isolated session.
 Do NOT edit any file except the requested candidate JSON.
+This is a bounded final-release review. Read ONLY the explicitly named inputs below; do not explore the repository, user memory, unrelated Episodes, or general agent instructions. Do not run unrelated shell tools or regenerate images.
 Episode: {rel}
 
 Inspect the ACTUAL final publish assets, not prompts:
@@ -105,9 +112,9 @@ Description:
 Topics:
 {json.dumps(topics, ensure_ascii=False)}
 
-Read:
-- standards/制作规范_正式版.md
-- standards/release_preflight_guard_V2.0.3.5.md
+Read these release rules and evidence only:
+- {first_standard}
+- {release_standard}
 - {rel}/meta/subtitle-layout-audit.json (deterministic all-frame placement/line-count/hash audit)
 - {rel}/meta/caption-image-audit.json (all final publish frames reviewed in SHA-bound chunks of up to 5 for caption support + actual subtitle obstruction)
 - the episode Story Lock / storyboard / captions / publish copy / propagation card.
@@ -232,14 +239,14 @@ def cmd_run_release_critic(args: argparse.Namespace) -> int:
     cmd = prefix(codex) + [
         "exec", "--skip-git-repo-check", "--ephemeral",
         "-c", 'model_reasoning_effort="high"',
-        "-s", codex_critic_runner.default_sandbox(), "-C", str(ROOT), "--json", "-"
+        "-s", codex_critic_runner.default_sandbox(), "-C", str(ep), "--json", "-"
     ]
     log = ep / "meta/release-critic.jsonl"
     before = {role: row["sha256"] for role, row in rows.items()}
     with log.open("w", encoding="utf-8", newline="\n") as handle:
         completed = codex_user_runner.run_model_codex(
             cmd,
-            input=release_critic_prompt(ep, candidate, rows),
+            input=release_critic_prompt(ep, candidate, rows, native_codex=True),
             text=True,
             stdout=handle,
             stderr=subprocess.STDOUT,
