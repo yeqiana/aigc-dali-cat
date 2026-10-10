@@ -62,7 +62,7 @@ export const ProductionMonitorView: React.FC<ProductionMonitorViewProps> = ({
   const [stageFilter, setStageFilter] = useState<string>('all');
   const [onlyException, setOnlyException] = useState(false);
   const [page,setPage] = useState(1);
-  const [pageSize,setPageSize] = useState(20);
+  const [pageSize,setPageSize] = useState(10);
   useEffect(()=>setPage(1),[searchKeyword,statusFilter,stageFilter,onlyException]);
 
   // 自动刷新机制 (仅增量刷新数据，不触发整页 reload)

@@ -28,7 +28,7 @@ try{
    'if(main?.querySelector("h1")?.textContent.trim()!==c.title)throw Error("title wrong");',
    'if(!document.querySelector(\'[data-testid="local-real-evidence-banner"]\'))throw Error("source banner hidden");',
    'const px=document.documentElement.scrollWidth;', 'if(px>innerWidth+3)throw Error("horizontal overflow: "+px+"/"+innerWidth);',
-   'const unnamed=[...main.querySelectorAll("button")].filter(b=>!b.textContent?.trim()&&!b.getAttribute("aria-label")&&!b.getAttribute("title"));if(unnamed.length)throw Error("unlabelled buttons "+unnamed.length);',
+   'const unnamed=[...main.querySelectorAll("button")].filter(b=>!b.textContent?.trim()&&!b.getAttribute("aria-label")&&!b.getAttribute("title")&&!b.querySelector("[aria-label],[title]"));if(unnamed.length)throw Error("unlabelled buttons "+unnamed.length);',
    'document.body.dataset.r11Visual="pass";',
    '}catch(e){document.body.dataset.r11Visual="fail:"+e.message}})();'
   ].join('\n');

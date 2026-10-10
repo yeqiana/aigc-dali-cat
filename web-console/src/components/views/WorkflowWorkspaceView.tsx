@@ -103,7 +103,7 @@ export const WorkflowWorkspaceView: React.FC = () => {
           {title:'操作',key:'action',width:90,render:(_,x)=><Button type="link" size="small" onClick={()=>setSelected(x)} aria-label={'查看阶段详情：'+(x.title||x.episode_ref||x.episode_id)}>详情</Button>}
         ]}
         pagination={{current:Math.min(page,Math.max(1,Math.ceil(filtered.length/pageSize))),pageSize,total:filtered.length,showSizeChanger:true,pageSizeOptions:['10','15','30','50'],showTotal:(n,range)=>`${range[0]}–${range[1]} / 已载入 ${n}`,onChange:(v,s)=>{setPage(v);setPageSize(s);}}}/>
-      {hasMore && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] pt-3 text-[12px] text-[var(--text-secondary)]"><span>继续加载的是下一批服务端记录，不等于翻页。</span><Button loading={loadingMore} disabled={loading||loadingMore} onClick={loadNext}>加载更多阶段记录</Button></div>}
+      {hasMore && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-subtle)] pt-3 text-[12px] text-[var(--text-secondary)]"><span>继续加载的是下一批服务端记录，不等于翻页。</span><Button loading={loadingMore} disabled={loading||loadingMore} onClick={loadNext}>加载更多</Button></div>}
     </section>
     {selected&&<WorkflowDetailPanel selected={selected} onClose={()=>setSelected(null)}/>}
   </div>;

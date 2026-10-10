@@ -10,7 +10,7 @@ export const SeriesLibraryView: React.FC<Props> = ({episodes,activeEpisode,onSel
   const [query,setQuery]=useState('');
   const [stage,setStage]=useState('ALL');
   const [page,setPage]=useState(1);
-  const [pageSize,setPageSize]=useState(15);
+  const [pageSize,setPageSize]=useState(10);
   const rows=useMemo(()=>episodes.filter(ep=>(stage==='ALL'||ep.currentStage===stage)&&`${ep.title} ${ep.code} ${ep.genre}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())),[episodes,stage,query]);
   const open=(ep:Episode)=>{onSelectEpisode(ep);onGoToWorkbench();};
   const columns:TableColumnsType<Episode>=[

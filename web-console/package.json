@@ -27,7 +27,9 @@
     "test:local-real": "node scripts/test-local-real-browser.mjs",
     "test:visual-ux": "node scripts/test-ux-r10-browser.mjs",
     "test:brand-layout": "node scripts/test-brand-layout-r11.mjs",
-    "test:workbench-run": "node scripts/test-workbench-run-detail-r12.mjs"
+    "test:workbench-run": "node scripts/test-workbench-run-detail-r12.mjs",
+    "test:paging": "node scripts/test-antd-pagination-r13-browser.mjs",
+    "test:theme": "node scripts/test-antd-theme-r13-browser.mjs"
   },
   "dependencies": {
     "antd": "^6.6.5",

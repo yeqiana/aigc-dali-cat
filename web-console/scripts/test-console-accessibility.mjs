@@ -38,7 +38,7 @@ try {
       "for(let i=0;i<160;i++){main=document.querySelector('main');if(main?.querySelector('h1')?.textContent.trim()===config.title)break;await wait(100);}",
       "if(main?.querySelector('h1')?.textContent.trim()!==config.title)throw Error('destination route title not loaded');",
       "if(!nav.querySelector('button'))throw Error('sidebar no focusable controls');",
-      "const unnamed=[...main.querySelectorAll('button')].filter(b=>!b.textContent?.trim()&&!b.getAttribute('aria-label')&&!b.getAttribute('title'));",
+      "const unnamed=[...main.querySelectorAll('button')].filter(b=>!b.textContent?.trim()&&!b.getAttribute('aria-label')&&!b.getAttribute('title')&&!b.querySelector('[aria-label],[title]'));",
       "if(unnamed.length)throw Error('unlabelled button count='+unnamed.length);",
       "const width=document.documentElement.scrollWidth;const viewport=window.innerWidth;",
       "if(width>viewport+3)throw Error('horizontal overflow '+width+'/'+viewport);",

@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
-import {ConfigProvider, theme as antdTheme} from 'antd';
-import {THEME_PALETTES} from './theme';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
@@ -12,7 +10,8 @@ import { ContextPanel } from './components/ContextPanel';
 
 // Views
 const ProductionMonitorView = React.lazy(() => import('./components/views/ProductionMonitorView').then(m => ({ default: m.ProductionMonitorView })));
-import { HomeOverviewView } from './components/views/HomeOverviewView';
+const HomeOverviewView = React.lazy(() => import('./components/views/HomeOverviewView').then(m=>({default:m.HomeOverviewView})));
+const AntdSurface = React.lazy(() => import('./components/AntdSurface'));
 const WorkflowWorkspaceView = React.lazy(() => import('./components/views/WorkflowWorkspaceView').then(m => ({ default: m.WorkflowWorkspaceView })));
 const AgentWorkspaceView = React.lazy(() => import('./components/views/AgentWorkspaceView').then(m => ({ default: m.AgentWorkspaceView })));
 const SeriesLibraryView = React.lazy(() => import('./components/views/SeriesLibraryView').then(m => ({ default: m.SeriesLibraryView })));
@@ -330,7 +329,6 @@ export default function App() {
   );
 
   return (
-    <ConfigProvider componentSize="small" theme={{algorithm: currentTheme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm, token:{colorPrimary:THEME_PALETTES[currentTheme].info,colorBgContainer:THEME_PALETTES[currentTheme].bgSurface,colorText:THEME_PALETTES[currentTheme].textPrimary,colorTextSecondary:THEME_PALETTES[currentTheme].textSecondary,colorBorder:THEME_PALETTES[currentTheme].borderNormal,borderRadius:6, fontSize:13, controlHeight:32},components:{Table:{cellPaddingBlockSM:9,cellPaddingInlineSM:12}}}}>
     <div id="storyos-workspace-root" className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased select-text">
       {import.meta.env.VITE_STORYOS_FIXTURE_MODE === 'true' && (
         <div role="status" data-testid="local-fixture-banner" className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none border border-[var(--warning)] bg-[var(--bg-elevated)] px-4 py-2 rounded-[5px] shadow-lg text-[12px] text-[var(--text-primary)]">
@@ -389,12 +387,12 @@ export default function App() {
           )}
 
           <Suspense fallback={<div role="status" className="py-10 text-center text-[13px] text-[var(--text-secondary)]">正在载入工作区…</div>}>
-          {currentTab === 'overview' && <HomeOverviewView episodes={episodes} projects={projects} onSelectEpisode={(ep) => { setActiveEpisode(ep); setCurrentTab('workbench'); }} onNewStory={() => handleCreateStoryFromHome()} onNavigate={setCurrentTab} />}
+          {currentTab === 'overview' && <AntdSurface><HomeOverviewView episodes={episodes} projects={projects} onSelectEpisode={(ep) => { setActiveEpisode(ep); setCurrentTab('workbench'); }} onNewStory={() => handleCreateStoryFromHome()} onNavigate={setCurrentTab} /></AntdSurface>}
 
           {/* 生产监控台主控页 (StoryOS 生产监控台 V1.0 - Dense Operations Console) */}
           {currentTab === 'production_monitor' && (
             <div className="w-full">
-              <ProductionMonitorView
+              <AntdSurface><ProductionMonitorView
                 onShowToast={showToast}
                 onSelectStoryRun={(run) => {
                   const matchEp = episodes.find(e => e.title === run.storyName);
@@ -402,18 +400,18 @@ export default function App() {
                     setActiveEpisode(matchEp);
                   }
                 }}
-              />
+              /></AntdSurface>
             </div>
           )}
 
           {/* canonical 阶段只读检视，不可前端直接推进 */}
-          {currentTab === 'pipeline' && <WorkflowWorkspaceView />}
-          {currentTab === 'agents' && <AgentWorkspaceView />}
+          {currentTab === 'pipeline' && <AntdSurface><WorkflowWorkspaceView /></AntdSurface>}
+          {currentTab === 'agents' && <AntdSurface><AgentWorkspaceView /></AntdSurface>}
 
           {/* 剧集库视图 */}
           {currentTab === 'episodes' && (
             <div className="w-full">
-              <SeriesLibraryView
+              <AntdSurface><SeriesLibraryView
                 episodes={episodes}
                 activeEpisode={activeEpisode}
                 onSelectEpisode={(ep) => {
@@ -422,30 +420,30 @@ export default function App() {
                 }}
                 onGoToWorkbench={() => setCurrentTab('workbench')}
                 onNewStoryClick={() => handleCreateStoryFromHome()}
-              />
+              /></AntdSurface>
             </div>
           )}
 
           {/* 运行日志审计视图 (占满屏幕，全屏展示) */}
           {currentTab === 'logs' && (
             <div className="w-full h-full flex flex-col overflow-hidden">
-              <RuntimeLogsView />
+              <AntdSurface><RuntimeLogsView /></AntdSurface>
             </div>
           )}
 
           {/* 系统设置视图 */}
           {currentTab === 'settings' && (
-            <div className="mx-auto w-full max-w-[1050px]">
-              <SettingsView
+            <div className="w-full min-w-0">
+              <AntdSurface><SettingsView
                 currentTheme={currentTheme}
                 onThemeChange={handleThemeChange}
-              />
+              /></AntdSurface>
             </div>
           )}
 
           {/* 核心工作流：呼吸感单主轴 */}
           {currentTab === 'workbench' && (
-            <div className="mx-auto w-full max-w-[1100px] space-y-4 pb-24">
+            <div className="w-full min-w-0 space-y-4 pb-24">
               {isHistoricalEpisodeIndex(activeEpisode) ? (
                 <section role={detailError ? 'alert' : 'status'} className="border border-[var(--border-normal)] p-5 text-[13px] text-[var(--text-secondary)]">
                   {detailError ? <>
@@ -622,6 +620,5 @@ export default function App() {
         </div>
       )}
     </div>
-    </ConfigProvider>
   );
 }
