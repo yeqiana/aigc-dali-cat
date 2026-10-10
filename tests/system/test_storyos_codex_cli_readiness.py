@@ -56,3 +56,25 @@ def test_missing_bridge_auth_fail_closed():
     assert result["status"]=="BRIDGE_AUTH_UNVERIFIED"
     assert result["auth_context_present"] is False
     assert tool.inspect_storyos_bridge(health_provider=lambda:(_ for _ in ()).throw(RuntimeError("SECRET")))["status"]=="BRIDGE_UNAVAILABLE"
+
+
+def test_bridge_cli_requires_both_cli_and_interactive_auth(monkeypatch, capsys):
+    import sys
+    monkeypatch.setattr(tool.shutil, "which", lambda raw: "codex.exe")
+    monkeypatch.setattr(tool, "inspect_cli", lambda path: {"status": "CLI_FLAGS_SUPPORTED"})
+    monkeypatch.setattr(sys, "argv", ["storyos_codex_cli_readiness.py", "--bridge"])
+    monkeypatch.setattr(tool, "inspect_storyos_bridge", lambda: {"status": "BRIDGE_UNAVAILABLE"})
+    assert tool.main() == 2
+    assert "BRIDGE_UNAVAILABLE" in capsys.readouterr().out
+    monkeypatch.setattr(tool, "inspect_storyos_bridge", lambda: {"status": "BRIDGE_AUTH_PRESENT"})
+    assert tool.main() == 0
+    assert "BRIDGE_AUTH_PRESENT" in capsys.readouterr().out
+
+
+def test_plain_cli_only_does_not_require_bridge(monkeypatch):
+    import sys
+    monkeypatch.setattr(tool.shutil, "which", lambda raw: "codex.exe")
+    monkeypatch.setattr(tool, "inspect_cli", lambda path: {"status": "CLI_FLAGS_SUPPORTED"})
+    monkeypatch.setattr(sys, "argv", ["storyos_codex_cli_readiness.py"])
+    monkeypatch.setattr(tool, "inspect_storyos_bridge", lambda: (_ for _ in ()).throw(AssertionError("bridge called")))
+    assert tool.main() == 0

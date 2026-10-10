@@ -97,7 +97,12 @@ def main() -> int:
     except (OSError, subprocess.TimeoutExpired):
         report = {"status": "CLI_PROBE_FAILED", "runtime_model_calls": 0}
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if report["status"] == "CLI_FLAGS_SUPPORTED" else 2
+    # When explicitly requested, bridge readiness must fail closed too.
+    # A healthy local CLI belonging to the SYSTEM account is not evidence
+    # that the interactive-user Runner can consume the review task.
+    cli_ok = report.get("status") == "CLI_FLAGS_SUPPORTED"
+    bridge_ok = (not args.bridge or (report.get("storyos_user_bridge") or {}).get("status") == "BRIDGE_AUTH_PRESENT")
+    return 0 if cli_ok and bridge_ok else 2
 
 
 if __name__ == "__main__":
