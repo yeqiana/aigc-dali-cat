@@ -10,12 +10,14 @@ interface ActivityStreamProps {
   onShowToast: (msg: string) => void;
 }
 
+const hasVerifiedPreview=(url?:string)=>Boolean(url && !url.startsWith('data:image/svg+xml') && !url.includes('/placeholder'));
 const verdictColor: Record<string,string> = { PASS: 'text-[var(--success)]', WARN: 'text-[var(--warning)]', FAIL: 'text-[var(--danger)]' };
 export const ActivityStream: React.FC<ActivityStreamProps> = ({ activeEpisode }) => {
   const [expanded, setExpanded] = useState(false);
   const reviews = activeEpisode.frameReviews ?? [];
   const batch = activeEpisode.currentBatch;
   const warnings = reviews.filter(x => x.verdict !== 'PASS');
+  const hasPreview=Boolean(batch?.items.some(item=>hasVerifiedPreview(item.imageUrl)));
   return <section className="space-y-4 pb-6 text-[var(--text-primary)]">
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div><h2 className="text-[14px] font-semibold">制作与审核记录</h2><p className="mt-1 text-[12px] text-[var(--text-tertiary)]">来自当前作品的工作区证据，不代表实时执行日志。</p></div>
@@ -26,12 +28,27 @@ export const ActivityStream: React.FC<ActivityStreamProps> = ({ activeEpisode })
         <div><p className="text-[13px] font-medium">当前批次</p><p className="mt-1 text-[12px] text-[var(--text-tertiary)]">{batch?.batchName || '暂无批次证据'}</p></div>
         <span className="text-[12px] text-[var(--text-secondary)]">{batch ? `${batch.items.length} 帧 · ${batch.status}` : '尚无数据'}</span>
       </div>
-      <div className="p-4">
-        {!batch?.items.length ? <div className="flex items-center gap-2 py-5 text-[13px] text-[var(--text-tertiary)]"><ImageIcon size={18}/> 暂无可预览的批次帧，生成操作需使用已授权的 Runtime。</div>
-        : <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">{batch.items.map(frame => <div key={frame.id} className="min-w-0">
-          <div className="aspect-[4/5] rounded-[4px] border border-[var(--border-subtle)] bg-[var(--bg-app)] overflow-hidden">{frame.imageUrl && <img loading="lazy" alt={`第 ${frame.frameIndex} 帧`} src={frame.imageUrl} className="w-full h-full object-cover"/>}</div>
-          <div className="flex items-center justify-between gap-1 mt-2 text-[11px]"><span className="text-[var(--text-secondary)]">Frame {frame.frameIndex}</span><span className="truncate text-[var(--text-tertiary)]">{frame.status}</span></div>
-        </div>)}</div>}
+      <div className="px-4 py-3">
+        {!batch?.items.length ? <div className="flex items-center gap-2 py-5 text-[13px] text-[var(--text-secondary)]"><ImageIcon size={18}/> 暂无可预览的批次帧，生成操作需使用已授权的 Runtime。</div> :
+          <>
+            {!hasPreview&&<p role="status" className="mb-3 flex items-center gap-2 text-[12px] text-[var(--text-secondary)]"><ImageIcon size={15} className="text-[var(--text-tertiary)]"/>本批次只记录了帧状态，尚无可验证的预览图片。下方不会用示意图冒充生成结果。</p>}
+            {hasPreview ?
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+                {batch.items.map(frame=><div key={frame.id} className="min-w-0">
+                  <div className="aspect-[4/5] overflow-hidden rounded-[5px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
+                    {hasVerifiedPreview(frame.imageUrl) ? <img loading="lazy" alt={'第 '+frame.frameIndex+' 帧'} src={frame.imageUrl} className="h-full w-full object-cover"/>:
+                      <div className="flex h-full flex-col items-center justify-center gap-2 text-[var(--text-tertiary)]"><ImageIcon size={21}/><span className="text-[12px]">无可用预览</span></div>}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-1 text-[12px]"><span className="font-medium">Frame {frame.frameIndex}</span><span className="truncate text-[var(--text-secondary)]">{frame.status}</span></div>
+                </div>)}
+              </div> :
+              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[6px] border border-[var(--border-subtle)] bg-[var(--border-subtle)] sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10">
+                {batch.items.map(frame=><div key={frame.id} className="flex min-h-16 flex-col justify-between gap-1 bg-[var(--bg-surface)] px-3 py-2.5">
+                  <span className="text-[12px] font-semibold tabular-nums text-[var(--text-primary)]">{String(frame.frameIndex).padStart(2,'0')}</span>
+                  <span title={frame.status} className="truncate text-[11px] text-[var(--text-secondary)]">{frame.status}</span>
+                </div>)}
+              </div>}
+          </>}
       </div>
     </div>
     <div className="border-t border-[var(--border-subtle)] pt-4">
