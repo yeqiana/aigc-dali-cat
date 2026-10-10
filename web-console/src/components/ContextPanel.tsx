@@ -1,379 +1,129 @@
-import React, { useState } from 'react';
-import { Plus, Copy, Check, FileCode, Download, Flame, ChevronDown } from 'lucide-react';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell
-} from 'recharts';
+import React, { useMemo, useState } from 'react';
+import { AlertTriangle, Check, ChevronDown, Clipboard, Download, FileJson, PanelRightClose, ShieldCheck } from 'lucide-react';
 import { Episode } from '../types';
 
 interface ContextPanelProps {
   activeEpisode: Episode;
   onClose?: () => void;
-  onShowToast: (msg: string) => void;
+  onShowToast: (message: string) => void;
 }
 
-export const ContextPanel: React.FC<ContextPanelProps> = ({
-  activeEpisode,
-  onClose,
-  onShowToast,
-}) => {
-  const [activeJson, setActiveJson] = useState<{ title: string; json: any } | null>(null);
+const stringify = (payload: unknown) => JSON.stringify(payload, null, 2);
+const safeName = (name: string) => name.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').slice(0, 64);
+export const ContextPanel: React.FC<ContextPanelProps> = ({ activeEpisode, onClose, onShowToast }) => {
+  const [openSection, setOpenSection] = useState<'evidence' | 'review' | 'request'>('evidence');
   const [copied, setCopied] = useState(false);
-  const [showHeatmap, setShowHeatmap] = useState(false); // 默认隐藏生产热力图
-
-  // 计算批次热力数据 (基于每批 5 帧)
-  const batchSize = 5;
-  const totalBatches = Math.max(1, Math.ceil(activeEpisode.totalFrames / batchSize));
-  const batchHeatData = Array.from({ length: totalBatches }, (_, i) => {
-    const batchNum = i + 1;
-    const startFrame = i * batchSize + 1;
-    const endFrame = Math.min(activeEpisode.totalFrames, (i + 1) * batchSize);
-    const totalInBatch = endFrame - startFrame + 1;
-
-    // 计算已完成帧数
-    const completedInBatch = Math.max(0, Math.min(totalInBatch, activeEpisode.completedFrames - (startFrame - 1)));
-    const rate = Math.round((completedInBatch / totalInBatch) * 100);
-    const isDone = completedInBatch === totalInBatch;
-    const isInProgress = completedInBatch > 0 && completedInBatch < totalInBatch;
-
-    return {
-      batchKey: `B${batchNum}`,
-      name: `B${batchNum}`,
-      fullName: `第${batchNum}批次`,
-      range: `#${startFrame}-#${endFrame}`,
-      completed: completedInBatch,
-      total: totalInBatch,
-      rate,
-      fillColor: isDone ? '#58A6FF' : (isInProgress ? '#3FB950' : '#8B949E'),
-      status: isDone ? '已交付' : (isInProgress ? '生产中' : '待调度'),
-    };
-  });
-
-  const completionPercent = Math.round((activeEpisode.completedFrames / activeEpisode.totalFrames) * 100);
-
-  const specFiles = [
-    {
-      name: 'episode-state.json',
-      desc: '剧集生产阶段与全帧状态',
-      data: {
-        episodeId: activeEpisode.code,
-        title: activeEpisode.title,
-        currentStage: activeEpisode.currentStage,
-        completedFrames: activeEpisode.completedFrames,
-        totalFrames: activeEpisode.totalFrames,
-        aspectRatio: '4:5 (1080×1350)',
-        qaStatus: '严格门禁已启用',
-      }
+  const snapshot = useMemo(() => ({
+    source_kind: 'web_console_workspace_snapshot',
+    description: '本地前端投影，仅包含工作区已展示的记录；不是磁盘上的原始 JSON 文件、发布放行证据或实时报表',
+    episode: {
+      id: activeEpisode.id,
+      code: activeEpisode.code,
+      title: activeEpisode.title,
+      current_stage_projection: activeEpisode.currentStage,
+      completed_frames_projection: activeEpisode.completedFrames,
+      total_frames_projection: activeEpisode.totalFrames,
+      updated_at: activeEpisode.updatedAt,
     },
-    {
-      name: 'runtime-request.json',
-      desc: '生图引擎与并发规格',
-      data: activeEpisode.runtimeRequest
-    },
-    {
-      name: 'production-ledger.json',
-      desc: '4:5 资产生产与消耗账本',
-      data: {
-        totalGpuSeconds: 842.5,
-        estimatedCostYuan: '¥14.2',
-        retryTimes: 2,
-        anomalyInterceptions: 1,
-      }
+    runtime_request_projection: activeEpisode.runtimeRequest,
+    frame_review_projection: activeEpisode.frameReviews ?? [],
+    preflight_projection: activeEpisode.preflightChecks ?? [],
+  }), [activeEpisode]);
+  const reviews = activeEpisode.frameReviews ?? [];
+  const checks = activeEpisode.preflightChecks ?? [];
+  const failed = reviews.filter(review => review.verdict === 'FAIL');
+  const warnings = reviews.filter(review => review.verdict === 'WARN');
+  const blockers = checks.filter(check => check.status === 'blocking');
+  const pass = reviews.filter(review => review.verdict === 'PASS').length;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(stringify(snapshot));
+      setCopied(true);
+      onShowToast('已复制工作区证据快照，不含原始权威文件');
+    } catch {
+      onShowToast('复制失败，请检查剪贴板权限');
     }
-  ];
-
-  const handleCopy = () => {
-    if (!activeJson) return;
-    navigator.clipboard.writeText(JSON.stringify(activeJson.json, null, 2));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-    onShowToast('JSON 配置已复制至剪贴板');
   };
-
-  const handleDownloadAll = () => {
-    onShowToast('已导出当前剧集 4:5 资产清单与生产账本');
-  };
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-[var(--bg-elevated)] border border-[var(--border-normal)] p-2 rounded-[6px] text-xs font-mono text-[var(--text-primary)] shadow-2xl z-50">
-          <div className="font-bold flex items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-1 mb-1">
-            <span>{data.fullName}</span>
-            <span className="text-[10px] text-[var(--text-tertiary)]">{data.range}</span>
-          </div>
-          <div className="text-[11px] text-[var(--text-secondary)] space-y-0.5">
-            <div className="flex justify-between gap-3">
-              <span className="text-[var(--text-tertiary)]">状态:</span>
-              <span className="font-medium text-[var(--text-primary)]">{data.status}</span>
-            </div>
-            <div className="flex justify-between gap-3">
-              <span className="text-[var(--text-tertiary)]">已产帧数:</span>
-              <span className="font-bold text-[var(--text-primary)]">{data.completed} / {data.total} 帧</span>
-            </div>
-            <div className="flex justify-between gap-3">
-              <span className="text-[var(--text-tertiary)]">批次完成率:</span>
-              <span className="font-mono text-[#58A6FF]">{data.rate}%</span>
-            </div>
-          </div>
-        </div>
-      );
+  const handleExport = () => {
+    try {
+      const blob = new Blob([stringify(snapshot)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = safeName(activeEpisode.code || activeEpisode.id || 'story') + '-workspace-snapshot.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+      onShowToast('已请求下载工作区证据快照（不是生产账本或发布清单）');
+    } catch {
+      onShowToast('导出失败，未生成文件');
     }
-    return null;
   };
 
   return (
-    <aside className="w-64 sm:w-72 shrink-0 bg-[var(--bg-workspace)] border-l border-[var(--border-subtle)] flex flex-col h-full text-xs font-sans select-none text-[var(--text-secondary)]">
-      <div className="p-3 space-y-4 overflow-y-auto scrollbar-none flex-1">
-        {/* 0. 生产进度热力一览图 (默认隐藏，点击可展开) */}
-        <div className="rounded-[6px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setShowHeatmap(!showHeatmap)}
-            className="w-full flex items-center justify-between p-2.5 text-[11px] font-mono text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-          >
-            <span className="font-semibold flex items-center gap-1.5 text-[var(--text-primary)]">
-              <Flame className="w-3.5 h-3.5 text-[#58A6FF]" />
-              <span>生产热力图</span>
-            </span>
-            <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-tertiary)]">
-              <span className="font-mono text-[var(--text-secondary)] font-medium">{activeEpisode.completedFrames}/{activeEpisode.totalFrames} 帧 ({completionPercent}%)</span>
-              <ChevronDown className={`w-3.5 h-3.5 text-[var(--text-tertiary)] transition-transform ${showHeatmap ? 'rotate-180' : ''}`} />
-            </div>
-          </button>
-
-          {showHeatmap && (
-            <div className="p-2 border-t border-[var(--border-subtle)] space-y-2 bg-[var(--bg-elevated)]">
-              {/* Recharts 批次热力柱状图 */}
-              <div className="h-28 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={batchHeatData}
-                    margin={{ top: 8, right: 4, left: -22, bottom: 0 }}
-                  >
-                    <XAxis
-                      dataKey="name"
-                      tick={{ fill: 'var(--text-tertiary)', fontSize: 10, fontFamily: 'monospace' }}
-                      axisLine={{ stroke: 'var(--border-subtle)' }}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      domain={[0, 5]}
-                      ticks={[0, 2, 5]}
-                      tick={{ fill: 'var(--text-tertiary)', fontSize: 9, fontFamily: 'monospace' }}
-                      axisLine={{ stroke: 'var(--border-subtle)' }}
-                      tickLine={false}
-                    />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--bg-hover)' }} />
-                    <Bar
-                      dataKey="completed"
-                      radius={[3, 3, 0, 0]}
-                      isAnimationActive={false}
-                    >
-                      {batchHeatData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={entry.fillColor}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              {/* 逐帧微型热力网格 (展示全帧 32 格) */}
-              <div className="pt-1.5 border-t border-[var(--border-subtle)]">
-                <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-tertiary)] mb-1.5">
-                  <span>逐帧实施热力分布</span>
-                  <span>共 {activeEpisode.totalFrames} 帧</span>
-                </div>
-                <div className="grid grid-cols-8 gap-1">
-                  {Array.from({ length: activeEpisode.totalFrames }, (_, idx) => {
-                    const frameIndex = idx + 1;
-                    const isDone = frameIndex <= activeEpisode.completedFrames;
-                    const isCurrentBatch = frameIndex > activeEpisode.completedFrames && frameIndex <= activeEpisode.completedFrames + 5;
-
-                    return (
-                      <div
-                        key={frameIndex}
-                        title={`Frame #${frameIndex} · ${isDone ? '已质检交付 (PASS)' : (isCurrentBatch ? '当前正在出图' : '待调度队列')}`}
-                        className={`h-2.5 rounded-[2px] transition-colors cursor-help ${
-                          isDone
-                            ? 'bg-[#58A6FF]'
-                            : isCurrentBatch
-                            ? 'bg-amber-400 animate-pulse'
-                            : 'bg-[var(--bg-surface)] border border-[var(--border-subtle)]'
-                        }`}
-                      />
-                    );
-                  })}
-                </div>
-
-                {/* 热力图例 */}
-                <div className="flex items-center justify-between pt-2 text-[10px] font-mono text-[var(--text-tertiary)]">
-                  <div className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-[2px] bg-[#58A6FF] inline-block" />
-                    <span>已交付</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-[2px] bg-amber-400 inline-block" />
-                    <span>出图中</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] inline-block" />
-                    <span>未排期</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 1. 交付与成片切片 */}
-        <div>
-          <div className="flex items-center justify-between text-[var(--text-tertiary)] pb-1.5 border-b border-[var(--border-subtle)] text-[11px] font-mono">
-            <span className="text-[var(--text-primary)] font-semibold">成片切片包</span>
-            <button
-              type="button"
-              onClick={() => onShowToast('已新建切片配置')}
-              className="p-1 hover:text-[var(--text-primary)] rounded hover:bg-[var(--bg-hover)] cursor-pointer"
-              title="添加新切片规则"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="mt-2 space-y-1.5">
-            <button
-              type="button"
-              onClick={() => setActiveJson({
-                title: 'release-manifest.json',
-                json: {
-                  status: '待终审放行',
-                  episode: activeEpisode.code,
-                  aspectRatio: '4:5 1080×1350',
-                  completedFrames: activeEpisode.completedFrames,
-                  totalFrames: activeEpisode.totalFrames,
-                  qaGate: 'PASS'
-                }
-              })}
-              className="w-full text-left p-2 rounded-[4px] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] border border-[var(--border-subtle)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-between font-mono text-[11px]"
-            >
-              <div className="flex flex-col truncate">
-                <span className="truncate text-[var(--text-primary)] font-medium">release-manifest.json</span>
-                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">4:5 规格发布清单</span>
-              </div>
-              <span className="text-[10px] text-[var(--text-secondary)] font-bold ml-1 shrink-0 px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-normal)]">
-                就绪
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onShowToast(`已归档 ${activeEpisode.completedFrames} 帧 4:5 高清成片切片包`)}
-              className="w-full text-left p-2 rounded-[4px] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] border border-[var(--border-subtle)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center justify-between font-mono text-[11px]"
-            >
-              <div className="flex flex-col truncate">
-                <span className="truncate text-[var(--text-primary)] font-medium">4:5 原画切片包</span>
-                <span className="text-[10px] text-[var(--text-tertiary)] font-sans">标准 1080×1350 竖版</span>
-              </div>
-              <span className="text-[10px] text-[var(--text-primary)] font-bold ml-1 shrink-0 px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border-normal)]">
-                {activeEpisode.completedFrames}帧
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {/* 2. 生产规则与账本 */}
-        <div>
-          <div className="flex items-center justify-between text-[var(--text-tertiary)] pb-1.5 border-b border-[var(--border-subtle)] text-[11px] font-mono">
-            <span className="text-[var(--text-primary)] font-semibold">生产规则与账本</span>
-            <button
-              type="button"
-              onClick={() => onShowToast('已添加自定义配置映射')}
-              className="p-1 hover:text-[var(--text-primary)] rounded hover:bg-[var(--bg-hover)] cursor-pointer"
-              title="添加来源映射"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="mt-2 space-y-1.5">
-            {specFiles.map((file) => (
-              <button
-                key={file.name}
-                type="button"
-                onClick={() => setActiveJson({ title: file.name, json: file.data })}
-                className="w-full text-left p-2 rounded-[4px] bg-[var(--bg-surface)] hover:bg-[var(--bg-hover)] border border-[var(--border-subtle)] cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors font-mono text-[11px]"
-              >
-                <div className="flex items-center gap-1.5 text-[var(--text-primary)] font-medium">
-                  <FileCode className="w-3 h-3 text-[var(--text-tertiary)] shrink-0" />
-                  <span className="truncate">{file.name}</span>
-                </div>
-                <div className="text-[10px] text-[var(--text-tertiary)] font-sans mt-0.5 truncate">
-                  {file.desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+    <aside aria-label="当前故事证据检视" className="hidden xl:flex w-[288px] shrink-0 flex-col h-full border-l border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[var(--text-secondary)]">
+      <div className="flex h-12 shrink-0 items-center justify-between px-4 border-b border-[var(--border-subtle)]">
+        <h2 className="text-[13px] font-semibold text-[var(--text-primary)]">作品检视</h2>
+        <button type="button" onClick={onClose} aria-label="关闭作品检视" title="关闭作品检视" className="p-1.5 hover:bg-[var(--bg-hover)] rounded-[4px]"><PanelRightClose size={16} /></button>
       </div>
-
-      {/* 底部一键打包导出 */}
-      <div className="p-3 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-        <button
-          type="button"
-          onClick={handleDownloadAll}
-          className="w-full py-1.5 rounded-[4px] bg-[var(--text-primary)] text-[var(--bg-app)] hover:opacity-90 font-semibold text-xs transition-opacity flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>导出当前剧集全量资产</span>
-        </button>
-      </div>
-
-      {/* 结构化 JSON 查看弹窗 */}
-      {activeJson && (
-        <div
-          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs"
-          onClick={() => setActiveJson(null)}
-        >
-          <div
-            className="bg-[var(--bg-elevated)] border border-[var(--border-normal)] rounded-[8px] max-w-lg w-full p-4 text-[var(--text-primary)] space-y-3 font-mono text-xs shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2">
-              <span className="font-bold text-[var(--text-primary)]">{activeJson.title}</span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="px-2 py-0.5 rounded-[4px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1 text-[11px] cursor-pointer"
-                >
-                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                  <span>{copied ? '已复制' : '复制 JSON'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveJson(null)}
-                  className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] px-1.5 py-0.5 rounded-[4px] cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            <pre className="max-h-80 overflow-y-auto bg-[var(--bg-app)] p-3 rounded-[6px] border border-[var(--border-subtle)] text-[11px] text-[var(--text-secondary)] leading-relaxed scrollbar-thin select-all">
-              {JSON.stringify(activeJson.json, null, 2)}
-            </pre>
-          </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div>
+          <div className="text-[14px] font-semibold text-[var(--text-primary)] break-words">{activeEpisode.title}</div>
+          <div className="mt-1 text-[11px] font-mono text-[var(--text-tertiary)]">{activeEpisode.code} · 更新于 {activeEpisode.updatedAt || '未知'}</div>
+          <p className="mt-3 flex gap-2 text-[11px] leading-5 text-[var(--text-tertiary)]"><ShieldCheck className="shrink-0 mt-0.5" size={14}/> 工作区只读快照。页面不能证明当前生产 Worker 在线或发布门禁通过。</p>
         </div>
-      )}
+        <div className="grid grid-cols-3 divide-x divide-[var(--border-subtle)] border-y border-[var(--border-subtle)] py-3 text-center">
+          <div><div className="text-[17px] font-semibold tabular-nums text-[var(--text-primary)]">{activeEpisode.completedFrames}/{activeEpisode.totalFrames}</div><div className="mt-1 text-[11px] text-[var(--text-tertiary)]">帧数快照</div></div>
+          <div><div className="text-[17px] font-semibold tabular-nums text-[var(--text-primary)]">{pass}/{reviews.length}</div><div className="mt-1 text-[11px] text-[var(--text-tertiary)]">审核通过</div></div>
+          <div><div className={"text-[17px] font-semibold tabular-nums " + (blockers.length ? 'text-[var(--danger)]' : 'text-[var(--text-primary)]')}>{blockers.length}</div><div className="mt-1 text-[11px] text-[var(--text-tertiary)]">已记录阻塞</div></div>
+        </div>
+        {(failed.length > 0 || warnings.length > 0) &&
+          <section className="flex items-start gap-2 border-l-2 border-[var(--warning)] pl-3 text-[12px]">
+            <AlertTriangle size={16} className="shrink-0 mt-0.5 text-[var(--warning)]"/>
+            <div>逐帧审核记录：<strong>{failed.length} 项失败</strong>、{warnings.length} 项警告。请查看逐帧审核详情。</div>
+          </section>}
+        <section>
+          <h3 className="text-[12px] font-semibold text-[var(--text-primary)] mb-2">证据投影</h3>
+          <div className="border border-[var(--border-normal)] rounded-[5px] overflow-hidden">
+            <div className="flex border-b border-[var(--border-subtle)]">
+              {([{ key: 'evidence', label: '概览' }, { key: 'review', label: '审核' }, { key: 'request', label: '规格' }] as const).map(item => (
+                <button key={item.key} type="button" onClick={() => setOpenSection(item.key)}
+                  aria-pressed={openSection === item.key}
+                  className={"flex-1 py-2 text-[11px] " + (openSection === item.key ? 'bg-[var(--bg-selected)] text-[var(--text-primary)] font-semibold' : 'hover:bg-[var(--bg-hover)]')}>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <dl className="p-3 space-y-2 text-[12px]">
+              {openSection === 'evidence' ? <>
+                <div className="flex justify-between gap-3"><dt>当前阶段</dt><dd className="text-[var(--text-primary)] text-right">{activeEpisode.currentStage}</dd></div>
+                <div className="flex justify-between gap-3"><dt>已记录审核</dt><dd className="text-[var(--text-primary)]">{reviews.length}</dd></div>
+                <div className="flex justify-between gap-3"><dt>预检记录</dt><dd className="text-[var(--text-primary)]">{checks.length}</dd></div>
+              </> : openSection === 'review' ? <>
+                <div className="flex justify-between gap-3"><dt>通过</dt><dd>{pass}</dd></div>
+                <div className="flex justify-between gap-3"><dt>警告</dt><dd>{warnings.length}</dd></div>
+                <div className="flex justify-between gap-3"><dt>失败</dt><dd>{failed.length}</dd></div>
+                <div className="flex justify-between gap-3"><dt>门禁阻塞</dt><dd>{blockers.length}</dd></div>
+              </> : <>
+                <div className="flex justify-between gap-3"><dt>模型</dt><dd className="text-right">{activeEpisode.runtimeRequest.imageModel || '未指定'}</dd></div>
+                <div className="flex justify-between gap-3"><dt>画幅</dt><dd className="text-right">{activeEpisode.runtimeRequest.aspectRatio || '未指定'}</dd></div>
+                <div className="flex justify-between gap-3"><dt>数据来源</dt><dd className="text-right">{activeEpisode.runtimeRequest.sourceBadge}</dd></div>
+              </>}
+            </dl>
+          </div>
+        </section>
+        <section>
+          <h3 className="text-[12px] font-semibold text-[var(--text-primary)] mb-2">导出与复查</h3>
+          <p className="text-[11px] leading-5 text-[var(--text-tertiary)] mb-3">仅导出当前浏览器可见的工作区数据，不会假造 production-ledger.json、release-manifest.json 或费用记录。</p>
+          <div className="flex gap-2">
+            <button type="button" onClick={handleCopy} className="h-8 flex-1 flex items-center justify-center gap-1.5 border border-[var(--border-normal)] rounded-[5px] text-[12px] hover:bg-[var(--bg-hover)]">{copied ? <Check size={14}/> : <Clipboard size={14}/>} {copied ? '已复制' : '复制 JSON'}</button>
+            <button type="button" onClick={handleExport} className="h-8 flex-1 flex items-center justify-center gap-1.5 border border-[var(--border-normal)] rounded-[5px] text-[12px] hover:bg-[var(--bg-hover)]"><Download size={14}/> 下载 JSON</button>
+          </div>
+          <p className="mt-3 text-[11px] text-[var(--text-tertiary)] flex items-start gap-1.5"><FileJson size={14} className="shrink-0 mt-0.5"/> 输出文件带 workspace-snapshot 后缀，避免误认为权威生产资产。</p>
+        </section>
+      </div>
     </aside>
   );
 };
