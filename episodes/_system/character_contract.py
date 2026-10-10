@@ -312,9 +312,9 @@ def score(data,p):
     if not str(no.get("ordinary_day_plan") or "").strip():s-=15
     return max(0,s)
 
-def validate(ep,require_locked=False):
+def validate(ep,require_locked=False,*,candidate=None):
     ep=Path(ep).resolve()
-    data=load(ep)
+    data=candidate if candidate is not None else load(ep)
     if not isinstance(data,dict):return ["meta/character-contract.json missing; run prepare"]
     p=pools(); errors=[]
     if world_identity_contract.required(ep):
@@ -349,7 +349,101 @@ def validate(ep,require_locked=False):
         errors.append("NO-ANOMALY TEST must be rechecked_against_final_story=true before Story Lock")
     computed=score(data,p)
     if computed<75:errors.append(f"ORDINARY_PERSON_SCORE too low: {computed} < 75")
+    review=data.get("final_story_review")
+    if require_locked and isinstance(review,dict):
+        try:
+            rel=Path(str(review.get("story_path") or ""))
+            source=(ep/rel).resolve()
+            if rel.is_absolute() or not source.is_relative_to(ep) or not source.is_file():
+                errors.append("final Story review source missing or outside Episode")
+            elif hashlib.sha256(source.read_bytes()).hexdigest()!=review.get("story_sha256"):
+                errors.append("final Story review source SHA drift")
+        except (ValueError,OSError):
+            errors.append("final Story review source unverifiable")
     return errors
+
+def reviewed_story_lock(ep, review_file):
+    """Review/lock an existing Character Contract against a persisted final Story.
+
+    Only the current contract owner may run this command. A model transport
+    SUCCESS is insufficient; the Story worker must attest the saved story
+    bytes and its ordinary-day rationale before the canonical store is updated.
+    """
+    from copy import deepcopy
+    ep=Path(ep).resolve()
+    record=Path(review_file)
+    record=(record if record.is_absolute() else ep/record).resolve()
+    if not record.is_relative_to(ep) or not record.is_file() or record.suffix.lower()!=".json":
+        raise ValueError("CHARACTER_REVIEW_PATH_INVALID")
+    if record.stat().st_size>65536:
+        raise ValueError("CHARACTER_REVIEW_TOO_LARGE")
+    review=story_json.read_json(record,default=None)
+    if not isinstance(review,dict) or review.get("schema_version")!=1:
+        raise ValueError("CHARACTER_REVIEW_SCHEMA_INVALID")
+    current=load(ep)
+    if not isinstance(current,dict):
+        raise ValueError("CHARACTER_CONTRACT_AUTHORITY_MISSING")
+    expected=str(review.get("expected_contract_sha256") or "").lower()
+    if current.get("status")!="LOCKED" and (not re.fullmatch(r"[0-9a-f]{64}",expected) or authority_sha256(ep)!=expected):
+        raise ValueError("CHARACTER_CONTRACT_AUTHORITY_SHA_MISMATCH")
+    rel=Path(str(review.get("story_path") or ""))
+    story=(ep/rel).resolve()
+    if (rel.is_absolute() or not story.is_relative_to(ep) or not story.is_file()
+            or story.suffix.lower() not in {".md",".txt",".json"}):
+        raise ValueError("FINAL_STORY_SOURCE_INVALID")
+    original=story.read_bytes()
+    digest=hashlib.sha256(original).hexdigest()
+    if len(original)<100 or digest!=str(review.get("story_sha256") or "").lower():
+        raise ValueError("FINAL_STORY_SHA_OR_LENGTH_INVALID")
+    verdict=review.get("no_anomaly_test")
+    if (not isinstance(verdict,dict) or verdict.get("pass") is not True
+            or len(str(verdict.get("ordinary_day_plan") or "").strip())<10
+            or len(str(verdict.get("review_reason") or "").strip())<20):
+        raise ValueError("NO_ANOMALY_RECHECK_EVIDENCE_INCOMPLETE")
+    review_sha=hashlib.sha256(record.read_bytes()).hexdigest()
+    if current.get("status")=="LOCKED":
+        prior=current.get("final_story_review") or {}
+        if prior.get("review_source_sha256")==review_sha and prior.get("story_sha256")==digest:
+            if validate(ep,require_locked=True):
+                raise ValueError("CHARACTER_EXISTING_LOCK_INVALID")
+            return {"status":"ALREADY_LOCKED","committed":False,"authority_sha256":expected}
+        raise ValueError("CHARACTER_ALREADY_LOCKED")
+    proposal=review.get("proposed_contract")
+    if proposal is not None:
+        if not isinstance(proposal,dict):
+            raise ValueError("CHARACTER_PROPOSAL_INVALID")
+        for key in ("schema_version","created_at","selection_seed","world_identity"):
+            if proposal.get(key)!=current.get(key):
+                raise ValueError("CHARACTER_PROPOSAL_ORIGIN_DRIFT")
+        updated=deepcopy(proposal)
+    else:
+        updated=deepcopy(current)
+    updated["status"]="LOCKED"
+    updated["locked_at"]=now()
+    updated["no_anomaly_test"]={
+        **(updated.get("no_anomaly_test") or {}),
+        "pass":True,
+        "ordinary_day_plan":str(verdict["ordinary_day_plan"]).strip(),
+        "rechecked_against_final_story":True,
+    }
+    updated["final_story_review"]={
+        "source":"scoped_story_worker_attestation",
+        "story_path":rel.as_posix(),
+        "story_sha256":digest,
+        "review_reason":str(verdict["review_reason"]).strip(),
+        "review_source_sha256":review_sha,
+    }
+    errors=validate(ep,require_locked=True,candidate=updated)
+    if errors:
+        raise ValueError("CHARACTER_CONTRACT_REVIEW_FAIL: "+"; ".join(errors[:5]))
+    # Re-read before appending a new authority version; the canonical single-
+    # writer Episode rule still governs concurrent production ownership.
+    if authority_sha256(ep)!=expected:
+        raise ValueError("CHARACTER_AUTHORITY_CHANGED_BEFORE_SAVE")
+    save(ep,updated)
+    return {"status":"LOCKED","committed":True,"authority_sha256":authority_sha256(ep),
+            "story_sha256":digest}
+
 
 def lock(ep):
     ep=Path(ep).resolve()
@@ -380,7 +474,8 @@ def main():
     p=sub.add_parser("prepare");p.add_argument("episode_dir");p.add_argument("--force",action="store_true")
     p=sub.add_parser("lock");p.add_argument("episode_dir")
     p=sub.add_parser("validate");p.add_argument("episode_dir");p.add_argument("--require-locked",action="store_true")
-    p=sub.add_parser("show");p.add_argument("episode_dir")
+    p=sub.add_parser("show");p.add_argument("episode_dir");p.add_argument("--with-sha",action="store_true")
+    p=sub.add_parser("review-lock");p.add_argument("episode_dir");p.add_argument("--review",required=True)
     sub.add_parser("self-test")
     a=ap.parse_args()
     if a.cmd=="self-test":self_test();return 0
@@ -389,11 +484,18 @@ def main():
         print(json.dumps(prepare(ep,a.force),ensure_ascii=False,indent=2));return 0
     if a.cmd=="lock":
         print(json.dumps(lock(ep),ensure_ascii=False,indent=2));return 0
+    if a.cmd=="review-lock":
+        try:result=reviewed_story_lock(ep,a.review)
+        except (ValueError,OSError) as exc:
+            print("CHARACTER REVIEW LOCK BLOCKED:",str(exc));return 2
+        print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     if a.cmd=="validate":
         errors=validate(ep,a.require_locked)
         if errors:
             [print("FAIL:",x) for x in errors];return 2
         print("CHARACTER CONTRACT VERIFIED");return 0
-    print(json.dumps(load(ep) or {},ensure_ascii=False,indent=2));return 0
+    data=load(ep) or {}
+    result={"contract":data,"authority_sha256":authority_sha256(ep)} if a.with_sha else data
+    print(json.dumps(result,ensure_ascii=False,indent=2));return 0
 
 if __name__=="__main__": raise SystemExit(main())
