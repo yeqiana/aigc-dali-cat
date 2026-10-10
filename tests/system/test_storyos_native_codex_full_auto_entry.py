@@ -75,7 +75,8 @@ def test_canonical_episode_rejects_outside_and_missing(tmp_path):
 
 
 def _proofs(status="ATTEMPT_HISTORY_READ_ONLY", driver="NEVER_STARTED",
-            schema="READY_FOR_FURTHER_ADMISSION", executor="CODEX"):
+            schema="READY_FOR_FURTHER_ADMISSION", executor="CODEX",
+            model_client_ok=True):
     def probe(_env, script, args, **_kw):
         if script.endswith("runtime_router.py"):
             return 0, {
@@ -90,6 +91,14 @@ def _proofs(status="ATTEMPT_HISTORY_READ_ONLY", driver="NEVER_STARTED",
             }
         if script.endswith("codex_user_runner.py"):
             return 0, {"status": "ok", "codex_available": True, "codex_auth_present": True}
+        if script.endswith("storyos_native_model_readiness.py"):
+            return (0 if model_client_ok else 2), {
+                "status": ("CLIENT_VERSION_COMPATIBLE" if model_client_ok
+                           else "CLIENT_VERSION_BLOCKED"),
+                "minimum_cli_version": "0.155.0",
+                "policy_source": "MYSQL_EPISODE_MODEL_POLICY" if args else "CONFIG_UNBOUND",
+                "model_entitlement_verified": False,
+            }
         if script.endswith("storyos_revision_schema_readonly.py"):
             return (0 if schema == "READY_FOR_FURTHER_ADMISSION" else 2), {
                 "status": schema, "reason": "SCHEMA_PRESENT_REQUIRES_VISUAL_LOCK_AND_AUTHORITY"
@@ -120,6 +129,19 @@ def test_preflight_new_idea_can_start_without_existing_episode(monkeypatch):
     assert result["status"] == "READY_TO_START"
     assert result["scope"] == "NATIVE_CODEX_FULL_AUTO"
     assert result["codex"]["tool_generation_proven"] is False
+    assert result["codex"]["model_client_version_ok"] is True
+    assert result["codex"]["model_entitlement_verified"] is False
+    assert result["model_calls"] == result["sql_writes"] == 0
+
+
+def test_preflight_blocks_incompatible_cli_before_paid_production(monkeypatch):
+    monkeypatch.setattr(native, "_probe", _proofs(model_client_ok=False))
+    result = native.preflight(_test_env(), episode=native.ROOT / "episodes")
+    assert result["status"] == "BLOCKED"
+    assert result["codex"]["model_client_version_ok"] is False
+    assert result["codex"]["model_entitlement_verified"] is False
+    assert "NATIVE_CODEX_MODEL_CLI_VERSION_OR_POLICY_UNVERIFIED" in result["blockers"]
+    assert result["production_authorization"] is False
     assert result["model_calls"] == result["sql_writes"] == 0
 
 
