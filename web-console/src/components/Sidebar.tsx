@@ -79,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   return (
     <aside aria-label="主导航" className="flex h-full w-[224px] shrink-0 flex-col border-r border-[var(--border-subtle)] bg-[var(--bg-workspace)] text-[13px]">
-      <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--border-subtle)]">
+      <div className="h-12 flex items-center justify-between px-4 border-b border-[var(--border-subtle)]">
         <button onClick={() => onSelectTab('overview')} className="text-left flex items-center gap-2 text-[var(--text-primary)] font-semibold tracking-tight" type="button" aria-label="返回 StoryOS 工作台">
           <span className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-[var(--border-normal)] bg-[var(--bg-elevated)] text-[#58A6FF] text-sm font-bold">S</span>
           <span className="text-[15px]">StoryOS</span>

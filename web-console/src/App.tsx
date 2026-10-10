@@ -10,7 +10,8 @@ import { ContextPanel } from './components/ContextPanel';
 // Views
 import { ProductionMonitorView } from './components/views/ProductionMonitorView';
 import { HomeOverviewView } from './components/views/HomeOverviewView';
-import { ProductionPipelineView } from './components/views/ProductionPipelineView';
+import { WorkflowWorkspaceView } from './components/views/WorkflowWorkspaceView';
+import { AgentWorkspaceView } from './components/views/AgentWorkspaceView';
 import { SeriesLibraryView } from './components/views/SeriesLibraryView';
 import { RuntimeLogsView } from './components/views/RuntimeLogsView';
 import { SettingsView } from './components/views/SettingsView';
@@ -336,6 +337,7 @@ export default function App() {
           onSelectEpisode={(ep) => setActiveEpisode(ep)}
           onToggleContextPanel={() => setContextPanelOpen(!contextPanelOpen)}
           contextPanelOpen={contextPanelOpen}
+          currentTab={currentTab}
           onOpenSettings={() => setCurrentTab('settings')}
         />
 
@@ -366,17 +368,9 @@ export default function App() {
             </div>
           )}
 
-          {/* 主要流程全景规范与门禁时序视图 */}
-          {currentTab === 'pipeline' && (
-            <div className="max-w-5xl mx-auto">
-              <ProductionPipelineView
-                activeEpisode={activeEpisode}
-                onStageChange={handleStageChange}
-                onGoToWorkbench={() => setCurrentTab('workbench')}
-                onShowToast={showToast}
-              />
-            </div>
-          )}
+          {/* canonical 阶段只读检视，不可前端直接推进 */}
+          {currentTab === 'pipeline' && <WorkflowWorkspaceView />}
+          {currentTab === 'agents' && <AgentWorkspaceView />}
 
           {/* 剧集库视图 */}
           {currentTab === 'episodes' && (
@@ -451,7 +445,7 @@ export default function App() {
       </div>
 
       {/* 4. 纯净右侧上下文与资产账本栏 (日志与大盘下自动让出全屏) */}
-      {contextPanelOpen && currentTab !== 'production_monitor' && currentTab !== 'logs' && (
+      {contextPanelOpen && currentTab === 'workbench' && (
         <ContextPanel
           activeEpisode={activeEpisode}
           onClose={() => setContextPanelOpen(false)}
