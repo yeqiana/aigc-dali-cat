@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, datetime as dt, json, threading, time, uuid
+import argparse, datetime as dt, heapq, json, threading, time, uuid
 from functools import lru_cache
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -84,28 +84,53 @@ def route_event(ep,decision):
     cur=current(ep);emit(ep,{"event":"ROUTE_DECISION","trace_id":cur.get("trace_id"),"run_id":cur.get("run_id"),
         "route_id":decision.get("route_id"),"intent":decision.get("intent"),"workflow_mode":decision.get("workflow_mode"),
         "entry_step":decision.get("entry_step"),"reason_codes":decision.get("reason_codes"),"status":"DECIDED"})
-def _rows(ep):
+def _iter_rows(ep):
     if storage_config.runtime_store_config()["mode"] == "mysql":
-        return runtime_fact_store.load_trace_events(ep)
+        # Keep the MySQL authority path unchanged; no local JSON fallback.
+        yield from runtime_fact_store.load_trace_events(ep)
+        return
     p=_path(ep,"event_path")
-    if not p.is_file():return []
-    out=[]
-    for line in p.read_text(encoding="utf-8-sig").splitlines():
-        try:
-            d=json.loads(line)
-            if isinstance(d,dict):out.append(d)
-        except Exception:pass
-    return out
+    if not p.is_file():return
+    with p.open("r",encoding="utf-8-sig") as handle:
+        for line in handle:
+            try:
+                d=json.loads(line)
+                if isinstance(d,dict):yield d
+            except (ValueError,TypeError):
+                continue
+
+def _rows(ep):
+    # Compatibility helper for existing read-only diagnostics.
+    return list(_iter_rows(ep))
+
 def summarize(ep,*,write=True):
-    rows=_rows(ep);ends=[r for r in rows if r.get("event")=="SPAN_END"];latest=None
-    for r in reversed(rows):
-        if r.get("trace_id"):latest=r["trace_id"];break
     by=defaultdict(float)
-    for r in ends:by[str(r.get("category") or "UNKNOWN")]+=float(r.get("elapsed_ms") or 0)
-    slow=sorted(ends,key=lambda r:float(r.get("elapsed_ms") or 0),reverse=True)[:12]
+    counts=Counter()
+    slowest=[]
+    latest=None
+    total=0
+    finished=0
+    for row in _iter_rows(ep):
+        total+=1
+        if row.get("trace_id"):
+            latest=row["trace_id"]
+        if row.get("event")!="SPAN_END":
+            continue
+        finished+=1
+        category=str(row.get("category") or "UNKNOWN")
+        elapsed=float(row.get("elapsed_ms") or 0)
+        by[category]+=elapsed
+        counts[str(row.get("status") or "UNKNOWN")]+=1
+        # Earlier spans win on equal duration, preserving stable-sort output.
+        entry=(elapsed,-finished,row)
+        if len(slowest)<12:
+            heapq.heappush(slowest,entry)
+        elif entry[:2]>slowest[0][:2]:
+            heapq.heapreplace(slowest,entry)
+    slow=[entry[2] for entry in sorted(slowest,reverse=True)]
     s={"schema_version":1,"generated_at":now(),"diagnostic_only":True,"stage_authority":False,
-       "latest_trace_id":latest,"event_count":len(rows),"span_end_count":len(ends),
-       "status_counts":dict(Counter(str(r.get("status") or "UNKNOWN") for r in ends)),
+       "latest_trace_id":latest,"event_count":total,"span_end_count":finished,
+       "status_counts":dict(counts),
        "elapsed_ms_by_category":{k:round(v,3) for k,v in by.items()},
        "slowest_spans":[{k:r.get(k) for k in ("name","category","status","elapsed_ms","span_id")} for r in slow]}
     if write:
