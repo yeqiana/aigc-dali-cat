@@ -274,6 +274,7 @@ def launch(
     dispatch_authorization=None,
     router_proposed_target=None,
     model_execution_context=None,
+    codex_home_mode="inherit",
 ):
     """Run one critic; returns rc plus the full attempt log text.
 
@@ -337,6 +338,7 @@ def launch(
             check=False,
             task_type="critic",
             request_id=planned_request_id or None,
+            codex_home_mode=codex_home_mode,
         )
     finished_at = dt.datetime.now(dt.timezone.utc).astimezone().isoformat(timespec="milliseconds")
     duration_ms = max(0, int((time.perf_counter() - started_clock) * 1000))
