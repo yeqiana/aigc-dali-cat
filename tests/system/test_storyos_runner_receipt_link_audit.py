@@ -45,3 +45,32 @@ def test_id_mismatch_and_zero_rc_not_accepted(tmp_path):
     assert mismatch["link_state_counts"]=={"DURABLE_ID_MISMATCH":1}
     zero=mod.inspect(tmp_path,read_durable=lambda rid:{"request_id":rid,"returncode":0})
     assert zero["link_state_counts"]=={"DURABLE_ZERO_RC_NEEDS_AUTHORITY_VERIFY":1}
+
+
+def test_legacy_call_id_lookup_is_only_an_unverified_hint(tmp_path):
+    folder=tmp_path/mod.REL
+    folder.mkdir(parents=True)
+    call_id="a"*32
+    (folder/"failed.json").write_text(json.dumps({
+        "status":"TIMEOUT","call_id":call_id,"step":"PREIMAGE_WORLD",
+        "model_role":"preimage.world_prepare"}), encoding="utf-8")
+    called=[]
+    def reader(rid):
+        called.append(rid)
+        return {"request_id":rid,"returncode":0,"output_base64":"SECRET"}
+    report=mod.inspect(tmp_path,read_durable=reader)
+    assert called==[call_id]
+    assert report["link_state_counts"]=={"CALL_ID_DURABLE_HINT_UNVERIFIED":1}
+    assert report["automatic_retry_allowed"] is False
+    assert report["durable_success_promoted_to_review"] is False
+    assert call_id not in json.dumps(report)
+    assert "SECRET" not in json.dumps(report)
+
+
+def test_invalid_call_id_does_not_query_arbitrary_file(tmp_path):
+    folder=tmp_path/mod.REL
+    folder.mkdir(parents=True)
+    (folder/"bad.json").write_text(json.dumps({
+        "status":"TIMEOUT","call_id":"../../private","step":"PREIMAGE_WORLD"}),encoding="utf-8")
+    report=mod.inspect(tmp_path,read_durable=lambda rid: (_ for _ in ()).throw(AssertionError("unexpected lookup")))
+    assert report["link_state_counts"]=={"RUNNER_ID_ABSENT":1}

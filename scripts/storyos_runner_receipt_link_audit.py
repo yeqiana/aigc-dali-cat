@@ -15,6 +15,7 @@ from pathlib import Path
 
 REL = Path("meta/provider-receipts/model-executions")
 _SAFE_LABEL = re.compile(r"^[a-zA-Z0-9_.-]{1,80}$")
+_RUNNER_ID = re.compile(r"^[0-9a-f]{32}$")
 
 
 def _safe_label(value: object) -> str:
@@ -49,7 +50,21 @@ def inspect(episode: Path, *, read_durable=None) -> dict:
             continue
         request_id = row.get("runner_request_id")
         if not request_id:
-            state = "RUNNER_ID_ABSENT"
+            # Some old Receipts only persist call_id. An exact matching
+            # durable request can be surfaced as a non-authoritative hint,
+            # but NEVER adopted without an Inflight / input SHA contract.
+            call_id = str(row.get("call_id") or "")
+            candidate = {}
+            if _RUNNER_ID.fullmatch(call_id):
+                try:
+                    candidate = read_durable(call_id)
+                except Exception:
+                    candidate = {}
+            if (isinstance(candidate, dict) and candidate
+                    and candidate.get("request_id") == call_id):
+                state = "CALL_ID_DURABLE_HINT_UNVERIFIED"
+            else:
+                state = "RUNNER_ID_ABSENT"
         else:
             try:
                 durable = read_durable(str(request_id))
@@ -85,6 +100,7 @@ def inspect(episode: Path, *, read_durable=None) -> dict:
         "durable_success_promoted_to_review": False,
         "limitations": [
             "no runner request ID does not prove absence of Runner evidence",
+            "a matching call ID is a diagnostic hint, not an Inflight fingerprint or authority claim",
             "returncode zero does not prove candidate SHA, Stage or Review Authority",
             "request IDs, credentials and task outputs are deliberately suppressed",
         ],
