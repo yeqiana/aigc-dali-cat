@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
+import {ConfigProvider, theme as antdTheme} from 'antd';
+import {THEME_PALETTES} from './theme';
 import { Sidebar } from './components/Sidebar';
 import { HeaderBar } from './components/HeaderBar';
 import { StatusFlowBanner } from './components/StatusFlowBanner';
@@ -328,6 +330,7 @@ export default function App() {
   );
 
   return (
+    <ConfigProvider componentSize="small" theme={{algorithm: currentTheme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm, token:{colorPrimary:THEME_PALETTES[currentTheme].info,colorBgContainer:THEME_PALETTES[currentTheme].bgSurface,colorText:THEME_PALETTES[currentTheme].textPrimary,colorTextSecondary:THEME_PALETTES[currentTheme].textSecondary,colorBorder:THEME_PALETTES[currentTheme].borderNormal,borderRadius:6, fontSize:13, controlHeight:32},components:{Table:{cellPaddingBlockSM:9,cellPaddingInlineSM:12}}}}>
     <div id="storyos-workspace-root" className="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-[var(--text-primary)] font-sans antialiased select-text">
       {import.meta.env.VITE_STORYOS_FIXTURE_MODE === 'true' && (
         <div role="status" data-testid="local-fixture-banner" className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none border border-[var(--warning)] bg-[var(--bg-elevated)] px-4 py-2 rounded-[5px] shadow-lg text-[12px] text-[var(--text-primary)]">
@@ -619,5 +622,6 @@ export default function App() {
         </div>
       )}
     </div>
+    </ConfigProvider>
   );
 }
