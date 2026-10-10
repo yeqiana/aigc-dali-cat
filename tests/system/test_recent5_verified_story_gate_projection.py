@@ -48,6 +48,10 @@ def _example(tmp_path):
 
 def test_only_sha_verified_recent5_is_projected(tmp_path, monkeypatch, capsys):
     ep, review = _example(tmp_path)
+    # Production ep_path strictly rejects paths outside the repo. The test
+    # fixture lives under pytest tmp_path; substitute only path resolution.
+    # Do not loosen the actual CLI's repository-boundary admission.
+    monkeypatch.setattr(release, "ep_path", lambda raw: Path(raw).resolve())
     monkeypatch.setattr(release, "verify_recent5_evidence", lambda ep: [])
     args = argparse.Namespace(episode_dir=str(ep))
     assert release.cmd_project_verified_recent5(args) == 0
@@ -66,6 +70,10 @@ def test_only_sha_verified_recent5_is_projected(tmp_path, monkeypatch, capsys):
 @pytest.mark.parametrize("tamper", ["invalid_review", "not_pass", "wrong_fp", "wrong_episode"])
 def test_refuses_incomplete_or_unbound_recent5(tmp_path, monkeypatch, tamper):
     ep, review = _example(tmp_path)
+    # Production ep_path strictly rejects paths outside the repo. The test
+    # fixture lives under pytest tmp_path; substitute only path resolution.
+    # Do not loosen the actual CLI's repository-boundary admission.
+    monkeypatch.setattr(release, "ep_path", lambda raw: Path(raw).resolve())
     monkeypatch.setattr(release, "verify_recent5_evidence",
                         lambda ep: ["unverified evidence"] if tamper == "invalid_review" else [])
     if tamper == "not_pass":
@@ -84,6 +92,10 @@ def test_refuses_incomplete_or_unbound_recent5(tmp_path, monkeypatch, tamper):
 
 def test_refuses_stale_existing_binding(tmp_path, monkeypatch):
     ep, review = _example(tmp_path)
+    # Production ep_path strictly rejects paths outside the repo. The test
+    # fixture lives under pytest tmp_path; substitute only path resolution.
+    # Do not loosen the actual CLI's repository-boundary admission.
+    monkeypatch.setattr(release, "ep_path", lambda raw: Path(raw).resolve())
     monkeypatch.setattr(release, "verify_recent5_evidence", lambda ep: [])
     args = argparse.Namespace(episode_dir=str(ep))
     assert release.cmd_project_verified_recent5(args) == 0
